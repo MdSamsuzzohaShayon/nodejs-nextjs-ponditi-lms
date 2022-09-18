@@ -70,7 +70,7 @@ const verifyUser = async (req, res, next) => {
   return res.status(200).json({ msg: "Validated otp successfully" });
 };
 
-const registerTeacher = async (req, res, next) => {
+const registerUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(406).json({ error: errors.array() });
@@ -103,10 +103,15 @@ const registerTeacher = async (req, res, next) => {
     userObj.password = await bcrypt.hash(userObj.password, 10);
     // console.log(userObj);
     // console.log("hashed password - ", hashedPassword);
-    const user = await User.create(userObj);
     // console.log("User - ", user);
+    
+    try {
+      await sendSMS(userObj.phone, `Your OTP code is: ${userObj.otp}`);
+    } catch (smsErr) {
+      return res.status(406).json({ msg: "Invalid phone number" });
+    }
 
-    const sms = await sendSMS(userObj.phone, `Your OTP code is: ${userObj.otp}`);
+    await User.create(userObj);
     // console.log(sms);
 
     // const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.JWT_SECRET, {
@@ -134,7 +139,7 @@ const resendOTP = async (req, res, next) => {
   // );
   // resendotp
   const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
-  if (!findByPhone) return res.status(206).json({ msg: "User is not registred with this phone number" });
+  if (!findByPhone) return res.status(406).json({ msg: "User is not registred with this phone number" });
   const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
   const updateOtp = await User.update({ otp }, { where: { id: findByPhone.dataValues.id } }); // isActive
   const sms = await sendSMS(findByPhone.dataValues.phone, `Your OTP code is: ${otp}`);
@@ -143,4 +148,4 @@ const resendOTP = async (req, res, next) => {
   });
 };
 
-module.exports = { login, registerTeacher, verifyUser, resendOTP, getAllUsers };
+module.exports = { login, registerUser, verifyUser, resendOTP, getAllUsers };

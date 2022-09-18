@@ -1,0 +1,20 @@
+@import '../bootstrap/scss/bootstrap.scss' ;
+
+@import './variables';
+html,
+body {
+  padding: 0;
+  margin: 0;
+  // background: #add8e6; // primary
+  // color: #83838b; // secondary
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a{
+  text-transform: capitalize;
+  text-decoration: none;
+  color: $secondaryColor;
+}

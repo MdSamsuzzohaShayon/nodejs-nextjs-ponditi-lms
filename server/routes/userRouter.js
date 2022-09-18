@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
-const { registerTeacher, verifyUser, resendOTP, getAllUsers, login} = require('../controllers/user.controller.js');
+const { registerUser, verifyUser, resendOTP, getAllUsers, login} = require('../controllers/user.controller.js');
 const ensureAuth = require('../middleware/auth.js');
 
 
@@ -16,7 +16,7 @@ router.post('/register',
     check('experience').notEmpty(),
     check('location').notEmpty(),
     check('password').notEmpty().isLength({ min: 6 }),
-    registerTeacher);
+    registerUser);
 
 
 
