@@ -1,0 +1,15 @@
+Front-end Functionalities:
+a. Ability to add and remove furniture from a specified list of available furniture (i.e., chair,
+sofa, table, lamp, tv, fan). Additionally, each of them should have its own properties
+like size and states (i.e., lamp on/off, fan on/off, recliner reclined or not, etc.)
+
+2.	Front-end considerations
+a.	Feel free to deviate from any of the previous functionality requirements if you feel it is an improvement for the end-user experience.
+b.	Feel free to hard-code or use dummy data that you would assume is provided by the back end, since there is no back end. Please indicate in the code.
+c.	As this works like a prototype, feel free to use any design assets, coding libraries, or frameworks available to you and scope this assignment up or down where necessary
+
+3. Technological requirements:
+a. Front end Using React JS
+b. Unit tests coverage
+c. ESLINT
+d. JSDOC (Documented code)

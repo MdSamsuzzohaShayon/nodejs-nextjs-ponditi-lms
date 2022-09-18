@@ -1,0 +1,34 @@
+{
+  "name": "kinoverse-marketplace",
+  "version": "1.0.0",
+  "description": "node express crud api with sequelize",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "env NODE_ENV=development nodemon server.js",
+    "start": "env NODE_ENV=production node server.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "mysql"
+  ],
+  "author": "gaziAdib",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^14.3.0",
+    "nodemon": "^2.0.15",
+    "sequelize-cli": "^6.4.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "mssql": "^9.0.1",
+    "otp-generator": "^4.0.0",
+    "sequelize": "^6.23.0",
+    "twilio": "^3.82.0"
+  }
+}
