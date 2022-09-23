@@ -1,0 +1,25 @@
+
+$footer-h: 22rem;
+$footer-top: 16rem;
+.Footer{
+  min-height: $footer-h;
+  .footer-top{
+    min-height: $footer-top;
+  }
+  .footer-bottom{
+    min-height: $footer-h - $footer-top;
+  }
+  .footer-bottom-policies{
+    min-height: 6rem;
+  }
+  .footer-bottom-list-item{
+    border-right: $slim-border;
+    min-height: 3.5rem;
+    @include vertical_center();
+  }
+  @media(max-width: $br-md){
+    .footer-bottom-list-item{
+      border: none;
+    }
+  }
+}

@@ -8,6 +8,13 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+     return queryInterface.sequelize.transaction(t => {
+      return Promise.all([
+        queryInterface.addColumn('User', 'classes', {
+          type: Sequelize.DataTypes.STRING
+        }, { transaction: t })
+      ]);
+    });
   },
 
   async down (queryInterface, Sequelize) {

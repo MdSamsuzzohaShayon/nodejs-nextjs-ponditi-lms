@@ -10,8 +10,21 @@
  - Eslint (Clean coding)
  - Typescript
 
+### Development
+ - Make sign out
+ - Add users online, offline field
+ - Create tables of classes, subjects
+ - Setup eslint for server
+ - google place api for location search
+ - 1 hour session
+ - Search teachers
+ - Search category 1, online 2, offline 3, home
+ - Search by Location
+ - Remove teacher/student from login page
+ - User to feedback (many to many relationship)
 
-### Production process(server)
+### Deployment process(server)
+- Disable add admin route from admin router 
 
 
 ### Nest.js entities
@@ -40,4 +53,8 @@
  ```
  SET foreign_key_checks = 0;
  SET foreign_key_checks = 1;
+ ```
+ - Migrations
+ ```
+ npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```

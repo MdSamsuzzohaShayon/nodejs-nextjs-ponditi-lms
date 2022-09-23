@@ -1,6 +1,9 @@
 module.exports = {
-    // ROLES 
-    SUPER: "SUPER",
-    TEACHER: "TEACHER",
-    STUDENT: "STUDENT"
-}
+  // ROLES
+  roles: {
+    ADMIN: 'ADMIN',
+    SUPER: 'SUPER',
+    TEACHER: 'TEACHER',
+    STUDENT: 'STUDENT',
+  },
+};

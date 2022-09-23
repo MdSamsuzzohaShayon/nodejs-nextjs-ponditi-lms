@@ -1,48 +1,88 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
 
 function Header() {
+  const menuItemList = useSelector((state) => state.elements.menuItemList);
+  const socialItems = useSelector((state) => state.elements.socialItems);
   return (
-    <div className="Header">
-      <nav className="navbar navbar-expand-lg bg-light">
-        <div className="container-fluid">
-          <Link href="/">
-            <a>Home</a>
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <Link href="/">
-                  <a className="nav-link active">Home</a>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/user/register">
-                  <a className="nav-link ">Register</a>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/user/login">
-                  <a className="nav-link ">Login</a>
-                </Link>
-              </li>
-            </ul>
+    <>
+      {/* Desktop Menu Start  */}
+      <div className="Header bg-danger text-white p-0 m-0">
+        <div className="row m-0 d-flex flex-column flex-md-row">
+          <div className="logo-column p-0 text-center">
+            <img src="/logo.png" className="img-logo" alt="" />
+          </div>
+          <div className="nav-column p-0">
+            <div className="top-header w-full bg-danger-deep">
+              <div className="top-header-wrapper d-flex justify-content-between h-full flex-md-row flex-column align-items-start align-items-md-center py-0 py-md-3">
+                <div className="social d-flex h-full py-md-0 py-2">
+                  <ul className="d-flex justify-centent-start align-items-center m-0 px-1">
+                    {socialItems.map((si) => (
+                      <li className="nav-item list-unstyled" key={si.id}>
+                        <a href="#" className="nav-link">
+                          <img src={`/icons/${si.icon}`} alt={si.name} />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="auth py-1 py-md-0 py-2">
+                  <Link
+                    href="/user/login"
+                    className="btn btn-outline-primary small-btn mx-2"
+                  >
+                    Login
+                  </Link>
+                  <button
+                    className="btn btn-primary small-btn mx-2"
+                    type="button"
+                  >
+                    <Link href="/user/register">Register</Link>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="bottom-header w-full">
+              <div className="bottom-header-wrapper">
+                <div className="d-flex justify-content-around align-items-start align-items-md-center w-full h-full flex-column flex-md-row">
+                  {menuItemList.map((mil, milIdx) => {
+                    if (milIdx === menuItemList.length - 1) {
+                      return (
+                        <div
+                          key={mil.id}
+                          className="menu-item d-flex flex-column justify-content-center text-md-center mx-2 mx-md-0 border-right-slim"
+                        >
+                          <Link href={mil.link}>{mil.name}</Link>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div
+                        key={mil.id}
+                        className="menu-item d-flex flex-column justify-content-center text-md-center mx-2 mx-md-0"
+                      >
+                        <Link href={mil.link}>{mil.name}</Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
-    </div>
+        <div className="border-of-header w-full bg-danger-deep"  />
+        <style jsx>{`
+          .menu-item {
+            width: ${100 / menuItemList.length} %;
+          }
+        `}</style>
+      </div>
+      {/* Desktop Menu Ends  */}
+    </>
   );
 }
 

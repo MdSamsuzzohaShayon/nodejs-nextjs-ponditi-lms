@@ -20,6 +20,7 @@
   "plugins": ["react", "prettier"],
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "jsx-a11y/label-has-associated-control": "off",
     "react/prop-types": "off",
     "react/jsx-props-no-spreading": "warn",
     "import/no-extraneous-dependencies": "warn",

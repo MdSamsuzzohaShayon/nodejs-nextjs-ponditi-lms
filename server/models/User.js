@@ -1,15 +1,18 @@
-const { Model } = require("sequelize");
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // User.hasOne(models.Contest, { foreignKey: "ContestId" });
-      // User.hasOne(models.Contest);
+      User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
+      User.hasOne(models.Subject, { foreignKey: 'subjectId' });
     }
   }
 
   User.init(
     {
+      /**
+       * @info personal
+       * */
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -17,69 +20,65 @@ module.exports = (sequelize, DataTypes) => {
       },
       firstname: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
 
       lastname: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
       password: {
         type: new DataTypes.STRING(255),
-        allowNull: false,
       },
       phone: {
         type: new DataTypes.STRING(100),
-        allowNull: true,
-        unique: true
+        unique: true,
+      },
+      // cc = country code
+      cc: {
+        type: new DataTypes.STRING(100),
       },
       email: {
         type: new DataTypes.STRING(255),
-        allowNull: false,
-        unique: true
+        unique: true,
       },
       role: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
 
       age: {
-        type: new DataTypes.INTEGER,
-        allowNull: false,
+        type: new DataTypes.INTEGER(),
       },
 
-      // Profession
+      /**
+       * @profession for teachers or students
+       */
       profession: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
 
       institution: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
-      },
-
-      subjects: {
-        type: new DataTypes.STRING(100),
-        allowNull: false,
       },
 
       experience: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
 
       location: {
         type: new DataTypes.STRING(100),
-        allowNull: false,
       },
+      /**
+       * @auth data fields
+       */
       otp: {
         type: new DataTypes.STRING(100),
       },
-      isActive:{
-        type: new DataTypes.BOOLEAN
+      isActive: {
+        type: new DataTypes.BOOLEAN(),
       },
 
+      /**
+       * @education data fields
+       */
       degree: {
         type: new DataTypes.STRING(100),
       },
@@ -89,18 +88,18 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       passing_year: {
-        type: new DataTypes.INTEGER,
+        type: new DataTypes.INTEGER(),
       },
 
       cgpa: {
-        type: new DataTypes.INTEGER,
+        type: new DataTypes.INTEGER(),
       },
     },
     {
       sequelize,
       freezeTableName: true,
-      tableName: "User",
-    }
+      tableName: 'User',
+    },
   );
 
   return User;

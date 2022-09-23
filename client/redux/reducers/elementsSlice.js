@@ -9,56 +9,46 @@ const initialModalState = {
 const initialLayoutItemList = [
   {
     id: 1,
-    name: 'Studio Profile',
-    link: '/studio/profile',
-    icon: 'ManageAccount',
-    subList: [],
+    name: 'Home',
+    link: '/home',
   },
   {
     id: 2,
-    name: 'Staff',
-    link: '/studio/staff',
-    icon: 'SupervisedUserCircle',
-    subList: [],
+    name: 'about',
+    link: '/about',
   },
   {
     id: 3,
-    name: 'Instructors',
-    link: '/studio/instructor',
-    icon: 'PregnantWoman',
-    subList: [],
+    name: 'contact',
+    link: '/contact',
   },
   {
     id: 4,
-    name: 'Class',
-    link: '/studio/danceclass',
-    icon: 'Class',
-    subList: [],
+    name: 'faq',
+    link: '/faq',
+  },
+];
+
+const initialSocialLinks = [
+  {
+    id: 1,
+    name: 'fb',
+    icon: 'fb.svg',
   },
   {
-    id: 5,
-    name: 'Rooms',
-    link: '/studio/rooms',
-    icon: 'MeetingRoom',
-    subList: [],
+    id: 2,
+    name: 'twitter',
+    icon: 'twitter.svg',
   },
   {
-    id: 6,
-    name: 'Sessions',
-    link: '/studio/sessions',
-    icon: 'Sip',
-    subList: [
-      {
-        subId: 6.1,
-        name: 'Add',
-        icon: 'Add',
-      },
-      {
-        subId: 6.2,
-        name: 'List',
-        icon: 'FormatListBulleted',
-      },
-    ],
+    id: 3,
+    name: 'linkedin',
+    icon: 'linkedin.svg',
+  },
+  {
+    id: 4,
+    name: 'instagram',
+    icon: 'instagram.svg',
   },
 ];
 
@@ -67,11 +57,10 @@ const elementsSlice = createSlice({
   initialState: {
     modal: initialModalState,
     isLoading: false,
-    layoutItemList: initialLayoutItemList,
-    selectedSubMenu: {
-      subId: null,
-      subName: null,
-    },
+    menuItemList: initialLayoutItemList,
+    socialItems: initialSocialLinks,
+    errorList: [],
+    successMessageList: [],
   },
   reducers: {
     openModal: (state, action) => {
@@ -84,13 +73,25 @@ const elementsSlice = createSlice({
     toggleLoading: (state, action) => {
       state.isLoading = action.payload;
     },
-    setSubMenu: (state, action) => {
-      state.selectedSubMenu = action.payload;
+    setErrorList: (state, action) => {
+      state.errorList = action.payload;
+    },
+    resetErrorList: (state)=>{
+      state.errorList = [];
+    },
+    setSuccessMessageList: (state, action) => {
+      state.successMessageList = action.payload;
     },
   },
 });
 
-export const { openModal, closeModal, toggleLoading, setSubMenu } =
-  elementsSlice.actions;
+export const {
+  openModal,
+  closeModal,
+  toggleLoading,
+  setErrorList,
+  setSuccessMessageList,
+  resetErrorList
+} = elementsSlice.actions;
 
 export default elementsSlice.reducer;

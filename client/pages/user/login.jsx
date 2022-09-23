@@ -1,13 +1,25 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 // import cookieCutter from 'cookie-cutter';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import router from 'next/router';
 import axios from '../../config/axios';
-import { openModal, toggleLoading } from '../../redux/reducers/elementsSlice';
-import { setLoginInfo } from '../../redux/reducers/userReducer';
+import {
+  openModal,
+  setErrorList,
+  toggleLoading,
+} from '../../redux/reducers/elementsSlice';
+import {
+  setLoginInfo,
+  setLoginWith,
+  resetLoginInfo,
+  setTeacherLogin,
+} from '../../redux/reducers/userReducer';
 import Loader from '../../components/elements/Loader';
 import Layout from '../../components/layouts/Layout';
+import ErrorMessages from '../../components/elements/ErrorMessages';
 
 function login() {
   const dispatch = useDispatch();
@@ -20,6 +32,8 @@ function login() {
 
   const isLoading = useSelector((state) => state.elements.isLoading);
   const loginInfo = useSelector((state) => state.user.loginInfo);
+  const loginWithEmail = useSelector((state) => state.user.loginWithEmail);
+  const teacherLogin = useSelector((state) => state.user.teacherLogin);
 
   // const makeSureNotAuthenticated = async () => {
   //   try {
@@ -42,33 +56,44 @@ function login() {
   // eslint-disable-next-line consistent-return
   const loginHandler = async (rhe) => {
     rhe.preventDefault();
-    if(loginInfo.phone === '' && loginInfo.email === ''){
-      return setErrMsg('You must use email or phone');
+    if (loginInfo.phoneoremail === '' && loginInfo.password === '') {
+      dispatch(setErrorList(['both field must be filled']));
     }
-    if (loginInfo.password.length < 4) {
-      return setErrMsg('Password must be more than 4 charecter long');
+
+    // if (loginInfo.password.length < 4) {
+    //   dispatch(setErrorList(['both field must be filled']));
+    // }
+
+    const newObj = {};
+    // console.log(login.phoneoremail);
+    if (loginInfo.phoneoremail.toString().includes('@')) {
+      newObj.email = loginInfo.phoneoremail;
+    } else {
+      newObj.phone = loginInfo.phoneoremail;
     }
+    newObj.password = loginInfo.password;
 
     try {
       // dispatch(toggleLoading(true));
-      const response = await axios.post('/user/login', loginInfo);
+      const response = await axios.post('/user/login', newObj, {
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+      });
+      localStorage.setItem('user', 'true');
       if (response.status === 200) {
-        router.push('/');
+        router.push('/user/dashboard');
       }
     } catch (error) {
       console.log(error);
-      // Open Modal
-      // if (error.response) {
-      //   setErrMsg(error.response.data.msg);
-      //   dispatch(
-      //     openModal({
-      //       heading: 'Login unsuccessful!',
-      //       body: error.response.data.msg,
-      //     })
-      //   );
-      // }
-    } finally {
-      // dispatch(toggleLoading(false));
+      if (error.response) {
+        if (error?.response?.status === 406) {
+          dispatch(setErrorList([error.response.data.msg]));
+        }
+        // setErrMsg(error.response.data.msg);
+      }
     }
   };
 
@@ -81,52 +106,125 @@ function login() {
   //   return <Loader />;
   // }
 
+  function toggleInputHandle(tihe, isEmail) {
+    tihe.preventDefault();
+    dispatch(setLoginWith(isEmail));
+    dispatch(resetLoginInfo());
+  }
+
+  function toggleTeacherLogin(ttle, val) {
+    ttle.preventDefault();
+    dispatch(setTeacherLogin(val));
+  }
+
   return (
     <Layout>
-      <div className="container">
-        <h2 className="login">Login</h2>
-        <form onSubmit={loginHandler}>
-          <div className="row mb-3">
-            <label htmlFor="phone">Phone</label>
-            <input
-              type="text"
-              className="form-control"
-              name="phone"
-              id="phone"
-              defaultValue={loginInfo.phone}
-              onChange={inputChangeHandler}
-              placeholder="phone"
-            />
+      <section className="Login d-flex p-0 m-0">
+        <div className="side left-side bg-danger-deep d-none d-md-block">
+          <div className="left-side-wrapper h-full vertical-center">
+            <div className="login-shape">
+              <img src="/shape/login.svg" alt="Login" />
+            </div>
           </div>
+        </div>
+        <div className="side right-side">
+          <div className="right-side-wrapper h-full vertical-center">
+            <h1 className="login">Login</h1>
+            <ErrorMessages />
+            <form onSubmit={loginHandler}>
+              {/* <div className="login-register-toggle row mb-3 mx-0">
+                <div
+                  className="btn-group p-0"
+                  role="group"
+                  aria-label="Basic radio toggle button group"
+                >
+                  <button
+                    type="button"
+                    className={
+                      teacherLogin ? 'btn btn-primary'  : 'btn btn-secondary'
+                    }
+                    onClick={(e) => toggleTeacherLogin(e, true)}
+                  >
+                    Teacher
+                  </button>
 
-          <div className="row mb-3">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              id="email"
-              defaultValue={loginInfo.email}
-              onChange={inputChangeHandler}
-              placeholder="email"
-            />
+                  <button
+                    type="button"
+                    className={
+                      teacherLogin ? 'btn btn-secondary' : 'btn btn-primary' 
+                    }
+                    onClick={(e) => toggleTeacherLogin(e, false)}
+                  >
+                    Student
+                  </button>
+                </div>
+              </div> */}
+              <div className="row mb-3 mx-0">
+                <label htmlFor="phoneoremail">Phone or Email</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="phoneoremail"
+                  id="phoneoremail"
+                  defaultValue={loginInfo.phoneoremail}
+                  onChange={inputChangeHandler}
+                  placeholder="phone or email"
+                />
+              </div>
+
+              <div className="row mb-3 mx-0">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  id="password"
+                  placeholder="*******"
+                  defaultValue={loginInfo.password}
+                  onChange={inputChangeHandler}
+                />
+              </div>
+              <div className="row mb-3 mx-0">
+                <button type="submit" className="btn btn-primary w-fit">
+                  Login
+                </button>
+              </div>
+              <div className="row mb-3 mx-0">
+                {loginWithEmail === false ? (
+                  <a
+                    href="#"
+                    onClick={(e) => toggleInputHandle(e, true)}
+                    className="text-decoration-underline text-capitalize text-dark"
+                  >
+                    Use Email Instead
+                  </a>
+                ) : (
+                  <a
+                    href="#"
+                    onClick={(e) => toggleInputHandle(e, false)}
+                    className="text-decoration-underline text-capitalize text-dark"
+                  >
+                    Use Phone Instead
+                  </a>
+                )}
+
+                <a
+                  href="#"
+                  className="text-decoration-underline text-capitalize text-dark"
+                >
+                  Password forgotten?
+                </a>
+                <a
+                  href="#"
+                  className="text-decoration-underline text-capitalize text-dark"
+                >
+                  Don&apos;t have an account?
+                </a>
+              </div>
+            </form>
           </div>
-          <div className="row mb-3">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              id="password"
-              defaultValue={loginInfo.password}
-              onChange={inputChangeHandler}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Login
-          </button>
-        </form>
-      </div>
+        </div>
+      </section>
     </Layout>
   );
 }
