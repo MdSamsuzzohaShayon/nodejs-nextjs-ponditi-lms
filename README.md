@@ -11,6 +11,7 @@
  - Typescript
 
 ### Development
+ - Student teacher relationship for send request
  - Make sign out
  - Add users online, offline field
  - Create tables of classes, subjects
@@ -24,7 +25,7 @@
  - User to feedback (many to many relationship)
 
 ### Deployment process(server)
-- Disable add admin route from admin router 
+- Disable add admin route from admin router and get all users from user route
 
 
 ### Nest.js entities

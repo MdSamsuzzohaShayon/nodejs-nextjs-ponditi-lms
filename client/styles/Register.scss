@@ -1,0 +1,20 @@
+.SendCode{
+    min-height: $section-min-height;
+    padding: $section-padding;
+    .form-select{
+      min-width: 20%;
+    }
+    a{
+      color: $dark-color;
+    }
+  }
+  .VerifyCode{
+    a{
+      color: $dark-color;
+    }
+  }
+  .RegistrationForm{
+    a{
+      color: $dark-color;
+    }
+  }

@@ -1,13 +1,59 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { roles } from '../../config/keys';
+import axios from '../../config/axios';
 
 function Header() {
+  const { ADMIN } = roles;
+  const router = useRouter();
   const menuItemList = useSelector((state) => state.elements.menuItemList);
   const socialItems = useSelector((state) => state.elements.socialItems);
+  const authenticatedUser = useSelector(
+    (state) => state.user.authenticatedUser
+  );
+  const [dashboardUrl, setDashboardUrl] = useState('/initial');
+  // () => {
+  //   console.log({authUserInfo});
+  //   if (authUserInfo.role === 'ADMIN') {
+  //     return '/admin';
+  //   }
+  //   return '/user/dashboard';
+  // }
+
+  let isMounted = false;
+  useEffect(() => {
+    if (isMounted === false) {
+      const user = localStorage.getItem('user');
+      const userData = JSON.parse(user);
+
+      if (user !== null) {
+        if (userData.role === ADMIN) {
+          setDashboardUrl('/admin');
+        } else {
+          setDashboardUrl('/user/dashboard');
+        }
+      }
+    }
+    isMounted = true;
+  }, []);
+
+  const logoutHandler = async (lhe) => {
+    lhe.preventDefault();
+    try {
+      const response = await axios.post('/user/logout');
+      router.push('/');
+    } catch (error) {
+      console.log(error);
+    }finally{
+      window.localStorage.removeItem('user');
+    }
+  };
+
   return (
     <>
       {/* Desktop Menu Start  */}
@@ -31,18 +77,38 @@ function Header() {
                   </ul>
                 </div>
                 <div className="auth py-1 py-md-0 py-2">
-                  <Link
-                    href="/user/login"
-                    className="btn btn-outline-primary small-btn mx-2"
-                  >
-                    Login
-                  </Link>
-                  <button
-                    className="btn btn-primary small-btn mx-2"
-                    type="button"
-                  >
-                    <Link href="/user/register">Register</Link>
-                  </button>
+                  {authenticatedUser ? (
+                    <>
+                      <Link
+                        href={dashboardUrl}
+                        className="btn btn-outline-primary small-btn mx-2"
+                      >
+                        dashboard
+                      </Link>
+                      <button
+                        className="btn btn-primary small-btn mx-2"
+                        type="button"
+                        onClick={logoutHandler}
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/user/login"
+                        className="btn btn-outline-primary small-btn mx-2"
+                      >
+                        Login
+                      </Link>
+                      <button
+                        className="btn btn-primary small-btn mx-2"
+                        type="button"
+                      >
+                        <Link href="/user/register">Register</Link>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -74,7 +140,7 @@ function Header() {
             </div>
           </div>
         </div>
-        <div className="border-of-header w-full bg-danger-deep"  />
+        <div className="border-of-header w-full bg-danger-deep" />
         <style jsx>{`
           .menu-item {
             width: ${100 / menuItemList.length} %;

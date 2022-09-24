@@ -6,7 +6,14 @@ export const SEND_CODE = 'SEND_CODE';
 export const VERIFY_CODE = 'VERIFY_CODE';
 export const REGISTER = 'REGISTER';
 
-export const staffRoles = {
+export const roles = {
   ADMIN: 'ADMIN',
-  STAFF: 'STAFF',
+  TEACHER: 'TEACHER',
+  STUDENT: 'STUDENT',
+};
+
+export const adminSidebarList = {
+  CLASS_TYPE: 'CLASS_TYPE',
+  SUBJECT: 'SUBJECT',
+  STUDENT: 'STUDENT',
 };

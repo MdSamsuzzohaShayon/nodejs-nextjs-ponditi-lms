@@ -55,10 +55,17 @@ const initialSocialLinks = [
 const elementsSlice = createSlice({
   name: 'elements',
   initialState: {
-    modal: initialModalState,
-    isLoading: false,
+    /**
+     * @static elements
+     */
     menuItemList: initialLayoutItemList,
     socialItems: initialSocialLinks,
+
+    /**
+     * @dynamic or changable elements of the website
+     */
+    modal: initialModalState,
+    isLoading: false,
     errorList: [],
     successMessageList: [],
   },
@@ -76,7 +83,7 @@ const elementsSlice = createSlice({
     setErrorList: (state, action) => {
       state.errorList = action.payload;
     },
-    resetErrorList: (state)=>{
+    resetErrorList: (state) => {
       state.errorList = [];
     },
     setSuccessMessageList: (state, action) => {
@@ -91,7 +98,7 @@ export const {
   toggleLoading,
   setErrorList,
   setSuccessMessageList,
-  resetErrorList
+  resetErrorList,
 } = elementsSlice.actions;
 
 export default elementsSlice.reducer;

@@ -47,6 +47,21 @@ for (let i = 0; i < initialps3.length; i += 1) {
   psobj3[initialps3[i].field] = initialps3[i].default;
 }
 
+const initialRegisterStaps = [
+  {
+    step: 1,
+    properties: initialps1,
+  },
+  {
+    step: 2,
+    properties: initialps2,
+  },
+  {
+    step: 3,
+    properties: initialps3,
+  },
+];
+
 const initialCurrentUser = {
   // Account
   ...psobj1,
@@ -73,6 +88,12 @@ const initialVerifyCode = {
   otp: '',
 };
 
+const initialAuthUserInfo = {
+  email: null,
+  id: null,
+  role: null,
+};
+
 // http://www.healthstream.com/hlchelp/Administrator/Classes/HLC_Time_Zone_Abbreviations.htm
 
 export const userSlice = createSlice({
@@ -89,20 +110,11 @@ export const userSlice = createSlice({
     verifyCode: initialVerifyCode,
 
     selectedStep: 1,
-    registerSteps: [
-      {
-        step: 1,
-        properties: initialps1,
-      },
-      {
-        step: 2,
-        properties: initialps2,
-      },
-      {
-        step: 3,
-        properties: initialps3,
-      },
-    ],
+    registerSteps: initialRegisterStaps,
+
+    authenticatedUser: false,
+
+    authUserInfo: initialAuthUserInfo,
   },
   reducers: {
     resetUser: (state) => {
@@ -118,17 +130,15 @@ export const userSlice = createSlice({
       state.loginInfo = { ...state.loginInfo, ...action.payload };
     },
 
-
     setVerifyCode: (state, action) => {
       state.verifyCode = { ...state.verifyCode, ...action.payload };
     },
     resetVerifyCode: (state) => {
       state.verifyCode = initialVerifyCode;
     },
-    setHasPhone: (state, action)=>{
+    setHasPhone: (state, action) => {
       state.hasPhone = action.payload;
     },
-
 
     setLoginWith: (state, action) => {
       state.loginWithEmail = action.payload;
@@ -145,6 +155,16 @@ export const userSlice = createSlice({
 
     setSendOTP: (state, action) => {
       state.sendOTP = { ...state.sendOTP, ...action.payload };
+    },
+
+    toggleAuthUser: (state, action) => {
+      state.authenticatedUser = action.payload;
+    },
+    setAuthUserInfo: (state, action)=>{
+      state.authUserInfo = action.payload;
+    },
+    resetAuthUserInfo: (state)=>{
+      state.authUserInfo = initialAuthUserInfo;
     },
   },
 });
@@ -163,6 +183,9 @@ export const {
   setSendOTP,
   resetVerifyCode,
   setHasPhone,
+  toggleAuthUser,
+  setAuthUserInfo,
+  resetAuthUserInfo
 } = userSlice.actions;
 
 export default userSlice.reducer;
