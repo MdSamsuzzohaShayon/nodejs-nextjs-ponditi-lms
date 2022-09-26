@@ -1,37 +1,224 @@
-
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/button-has-type */
+/* eslint-disable jsx-a11y/no-redundant-roles */
+/* eslint-disable @next/next/no-img-element */
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from '../config/axios';
 import styles from '../styles/Home.module.scss'; // We can create css file like this
 import Layout from '../components/layouts/Layout';
+import { setErrorList } from '../redux/reducers/elementsSlice';
+import { setClasstypeList } from '../redux/reducers/classtypeReducer';
+import { setSubjectList } from '../redux/reducers/subjectReducer';
+import {
+  setNewClasstypeList,
+  setNewSubjectList,
+} from '../redux/reducers/searchReducer';
 
 export default function Home() {
+  let isMounted = false;
+  const dispatch = useDispatch();
+
+  const newClasstypeList = useSelector(
+    (state) => state.search.newClasstypeList
+  );
+  const newSubjectList = useSelector((state) => state.search.newSubjectList);
+  const searchParams = useSelector((state) => state.search.searchParams);
+  const searchTypes = useSelector((state) => state.search.searchTypes);
+
+  const fetchAllClassType = async () => {
+    try {
+      const response = await axios.get('/classtype/all');
+      if (response.status === 200) {
+        // dispatch(setClasstypeList(response.data.classTypes));
+        const defaultItem = { id: 0, name: 'Any Class' };
+        dispatch(
+          setNewClasstypeList([defaultItem, ...response.data.classTypes])
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+    }
+  };
+
+  // Initial subject list
+  const fetchAllSubject = async () => {
+    try {
+      const response = await axios.get('/subject/all');
+      if (response.status === 200) {
+        // console.log(response);
+        // dispatch(setSubjectList(response.data.subjects));
+        const defaultItem = { id: 0, name: 'Any Subject' };
+        dispatch(setNewSubjectList([defaultItem, ...response.data.subjects]));
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (isMounted === false) {
+        await Promise.all([fetchAllClassType(), fetchAllSubject()]);
+      }
+    })();
+    isMounted = true;
+  }, []);
+
+  const classtypeChangeHandler = () => {};
+  const subectChangeHandler = () => {};
+
   return (
     <Layout>
       <div className={styles.wrapper}>
-        <div className="container">
-          <div>
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-            <br />Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-            <br />Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-            <br />The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-            <br />Where can I get some? There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-                    Home
+        <section className="section section-1 py-5" id="home-section">
+          <div className="container d-flex justify-content-between">
+            <div className="caption">
+              <h1>Deliver Better Learning Through Better Teacher</h1>
+              <p>
+                Offer engaging learning experiences that go beyond traditional
+                Learning Management Systems. packed with advanced features to
+                find teachers, educate yourself,{' '}
+              </p>
+            </div>
+            <div className="learner text-end">
+              <img
+                src="/shape/learner.svg"
+                alt="learner"
+                className="learner-img"
+              />
+            </div>
           </div>
-          <div>
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-            <br />Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-            <br />Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-            <br />The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-            <br />Where can I get some? There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-                    Home
+        </section>
+        <section className="section section-2 bg-secondary text-dark">
+          <div className="container">
+            <form className="py-4">
+              <div className="row mx-0 mb-3">
+                <div className="col-md-6">
+                  <label htmlFor="location">Location</label>
+                  <div className="input-group mb-3">
+                    <span
+                      className="input-group-text bg-white"
+                      id="basic-addon1"
+                    >
+                      <img src="/icons/location.svg" alt="" />
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-0 shadow-none"
+                      name="location"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="classtype">Class</label>
+                  <div className="input-group mb-3">
+                    <span
+                      className="input-group-text bg-white"
+                      id="basic-addon1"
+                    >
+                      <img src="/icons/classtype.svg" alt="" />
+                    </span>
+                    <select
+                      name="classtype"
+                      id="classtype"
+                      className="form-control border-0 shadow-none"
+                      onChange={classtypeChangeHandler}
+                      defaultValue={searchParams.classtype}
+                    >
+                      {newClasstypeList.length > 0 ? (
+                        newClasstypeList.map((ctl) => (
+                          <option key={ctl.id} value={ctl.id}>
+                            {ctl.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">Any Class</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="row mx-0 mb-3">
+                <div className="col-md-6">
+                  <label htmlFor="subject">Subject</label>
+                  <div className="input-group mb-3">
+                    <span
+                      className="input-group-text bg-white"
+                      id="subject-addon"
+                    >
+                      <img src="/icons/subject.svg" alt="" />
+                    </span>
+                    <select
+                      name="subject"
+                      id="subject"
+                      className="form-control border-0 shadow-none"
+                      onChange={subectChangeHandler}
+                      defaultValue={searchParams.subject}
+                    >
+                      {newSubjectList.length > 0 ? (
+                        newSubjectList.map((ctl) => (
+                          <option key={ctl.id} value={ctl.id}>
+                            {ctl.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">Any Subject</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="classtype">Types</label>
+                  <div className="input-group mb-3">
+                    <span
+                      className="input-group-text bg-white"
+                      id="subject-addon"
+                    >
+                      <img src="/icons/classtype.svg" alt="" />
+                    </span>
+                    <select
+                      name="types"
+                      id="classtype"
+                      className="form-control border-0 shadow-none"
+                      defaultValue={searchParams.types}
+                    >
+                      {searchTypes.length > 0 ? (
+                        searchTypes.map((ctl, idx) => (
+                          <option key={idx} value={ctl}>
+                            {ctl}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">Any Types</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="row mx-0 mb-3">
+                <button
+                  className="btn btn-primary w-fit text-uppercase mx-3s"
+                  role="button"
+                >
+                  Search Teacher
+                </button>
+              </div>
+              <div className="row mx-0 mb-3">
+                <a href="#" className="text-danger">
+                  Advanced search
+                </a>
+              </div>
+            </form>
           </div>
-          <div>
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-            <br />Why do we use it? It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-            <br />Where does it come from? Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-            <br />The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-            <br />Where can I get some? There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-                    Home
-          </div>
-        </div>
+        </section>
       </div>
     </Layout>
   );

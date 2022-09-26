@@ -7,8 +7,9 @@ const {
   getAllUsers,
   login,
   sendOTP,
+  getSingleUser,
   updateUser,
-  logout
+  logout,
 } = require('../controllers/user.controller');
 const {ensureAuth} = require('../middleware/auth');
 
@@ -21,10 +22,13 @@ router.put(
   check('age').notEmpty(),
   check('profession').notEmpty(),
   check('institution').notEmpty(),
-  check('subjects').notEmpty(),
+  // check('subjects').notEmpty(), // In update section
   check('experience').notEmpty(),
   check('location').notEmpty(),
   check('password').notEmpty().isLength({ min: 6 }),
+  // Relational
+  // check('classTypeId').notEmpty(), // In update section
+  // check('subjectId').notEmpty(), // In update section
   registerUser,
 );
 
@@ -49,5 +53,8 @@ router.put(
 router.post('/logout', logout);
 
 router.get('/all', getAllUsers);
+
+
+router.get('/single/:id', getSingleUser);
 
 module.exports = router;

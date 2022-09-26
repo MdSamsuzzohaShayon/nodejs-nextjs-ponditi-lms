@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useDispatch, useSelector } from 'react-redux';
-import { openModal, toggleLoading } from '../../redux/reducers/elementsSlice';
 import Layout from '../../components/layouts/Layout';
 import { REGISTER, SEND_CODE, VERIFY_CODE } from '../../config/keys';
 import RegistrationForm from '../../components/register/RegistrationForm';

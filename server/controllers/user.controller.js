@@ -71,17 +71,11 @@ const verifyUser = async (req, res, next) => {
   }
   await User.update(
     { isActive: true },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
 };
-
-const getAllUsers = async (req, res, next) => {
-  const users = await User.findAll();
-  res.status(200).json({ msg: 'Getting all users', users });
-};
-
 const login = async (req, res, next) => {
   const errors = validationResult(req);
   // console.log(errors);
@@ -106,15 +100,17 @@ const login = async (req, res, next) => {
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
 
+    console.log(userExist.dataValues.role);
+
     if (
-      userExist.dataValues.role !== TEACHER
-      || userExist.dataValues.role !== TEACHER
+      userExist.dataValues.role !== TEACHER &&
+      userExist.dataValues.role !== STUDENT
     ) {
-      return res.status(406).json({ msg: 'You are not teacher or admin' });
+      return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password
+      userExist.dataValues.password,
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -153,8 +149,7 @@ const logout = async (req, res) => {
   // }
   res.cookie('token', '', options); // Remove cookie
   return res.status(200).json({ msg: 'Logout success' });
-}
-
+};
 
 const registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -172,6 +167,8 @@ const registerUser = async (req, res, next) => {
   if (userObj.classes) {
     userObj.classes = userObj.classes.toLowerCase();
   }
+
+  // handle classtype id and subject id (relationship)
 
   try {
     const userFindByPhone = await User.findOne({
@@ -202,14 +199,13 @@ const registerUser = async (req, res, next) => {
     const result = await User.update(userObj, {
       where: { phone: req.body.phone },
     });
-
-    res.status(201).json({
+    return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: 'Something went wrong', error });
   }
+  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const resendOTP = async (req, res, next) => {
@@ -234,15 +230,34 @@ const resendOTP = async (req, res, next) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
+    `Your OTP code is: ${otp}`,
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
   });
+};
+
+const getAllUsers = async (req, res, next) => {
+  const users = await User.findAll();
+  res.status(200).json({ msg: 'Getting all users', users });
+};
+
+const getSingleUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userExist = await User.findOne({ where: { id } });
+    if (userExist === null) return res.status(404).json({ msg: 'user not found' });
+    const {password, otp, ...user} = userExist.dataValues;
+    // console.log(user);
+    return res.status(200).json({msg: 'Single user found', user});
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const updateUser = (req, res, next) => {};
@@ -254,6 +269,7 @@ module.exports = {
   resendOTP,
   getAllUsers,
   sendOTP,
+  getSingleUser,
   updateUser,
-  logout
+  logout,
 };

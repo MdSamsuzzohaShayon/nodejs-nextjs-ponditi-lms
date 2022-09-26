@@ -71,7 +71,7 @@ function SendCode() {
           <select
             name="cc"
             id="cc"
-            className="form-select"
+            className="w-fit bg-white border-2 border-secondary phone-code"
             defaultValue={sendOTP.cc}
             onChange={inputChangeHandler}
           >

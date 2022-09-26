@@ -31,10 +31,10 @@ export const adminSlice = createSlice({
      * @static elements
      */
     adminSidebarElements: initialAdminSidebarElements,
+    selectedContent: CLASS_TYPE,
     /**
      * @dynamic or changable elements of the website
      */
-    selectedContent: CLASS_TYPE,
     loginAdmin: initialLoginAdmin,
     useEmailToLogin: true,
   },

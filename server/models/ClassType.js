@@ -7,7 +7,13 @@ module.exports = (sequelize, DataTypes) => {
       ClassType.belongsToMany(models.Subject, {
         through: 'subject_to_classtype',
       });
-      ClassType.belongsTo(models.User);
+      // ClassType.belongsTo(models.User);
+      ClassType.hasOne(models.User);
+      // ClassType.belongsToMany(models.ScheduledClass, {
+      //   through: 'requestedclass_to_classtype',
+      // });
+
+      ClassType.hasMany(models.ScheduledClass);
     }
   }
 
@@ -31,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       freezeTableName: true,
       tableName: 'ClassType',
-    },
+    }
   );
 
   return ClassType;

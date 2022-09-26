@@ -11,6 +11,8 @@
  - Typescript
 
 ### Development
+ - Remove from signup - subjects, classes
+ - Profession
  - Student teacher relationship for send request
  - Make sign out
  - Add users online, offline field

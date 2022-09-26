@@ -7,7 +7,9 @@ module.exports = (sequelize, DataTypes) => {
       Subject.belongsToMany(models.ClassType, {
         through: 'subject_to_classtype',
       });
-      Subject.belongsTo(models.User);
+      // Subject.belongsTo(models.User);
+      Subject.hasOne(models.User);
+      Subject.hasMany(models.ScheduledClass);
     }
   }
 

@@ -5,6 +5,7 @@ import elementReducer from './reducers/elementsSlice'
 import adminReducer from './reducers/adminReducer';
 import classtypeReducer from './reducers/classtypeReducer';
 import subjectReducer from './reducers/subjectReducer';
+import searchReducer from './reducers/searchReducer';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     admin: adminReducer,
     classtype: classtypeReducer,
     subject: subjectReducer,
+    search: searchReducer,
   },
   // middleware: (getDefaultMiddleware) =>
   //   getDefaultMiddleware({

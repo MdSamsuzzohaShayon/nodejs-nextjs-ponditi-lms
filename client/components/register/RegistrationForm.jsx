@@ -56,7 +56,6 @@ function RegistrationForm() {
         userInfo.age === '' ||
         userInfo.profession === '' ||
         userInfo.institution === '' ||
-        userInfo.subjects === '' ||
         userInfo.experience === '' ||
         userInfo.location === ''
       ) {

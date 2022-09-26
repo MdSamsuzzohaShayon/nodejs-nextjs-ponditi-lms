@@ -1,7 +1,10 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { SEND_CODE } from '../../config/keys';
+import { userDashboardSidebarList, SEND_CODE } from '../../config/keys';
+
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS } =
+  userDashboardSidebarList;
 
 // ps = property step
 const initialps1 = [
@@ -94,11 +97,39 @@ const initialAuthUserInfo = {
   role: null,
 };
 
+const initialDashboardSidebarElements = [
+  {
+    id: 1,
+    name: PROFILE,
+    text: 'Profile',
+  },
+  {
+    id: 2,
+    name: STUDENT_OR_TEACHER_REQUESTS,
+    text: 'SOT Request', // if logged in user is student then use student elsewhere use teacher
+  },
+  {
+    id: 3,
+    name: CLASS_SCHEDULED,
+    text: 'Class Scheduled',
+  },
+];
+
 // http://www.healthstream.com/hlchelp/Administrator/Classes/HLC_Time_Zone_Abbreviations.htm
 
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
+    /**
+     * @static not connected to backend and databases
+     * for only showing correct content in sidebar on user dashboard
+     */
+    dashboardSidebarElements: initialDashboardSidebarElements,
+    selectedContent: PROFILE,
+
+    /**
+     * @dynamic all those connected to backend and databases
+     */
     currentUser: initialCurrentUser,
     userFormsType: SEND_CODE,
     loginInfo: initialLoginInfo,
@@ -117,6 +148,16 @@ export const userSlice = createSlice({
     authUserInfo: initialAuthUserInfo,
   },
   reducers: {
+    /**
+     * @static not connected to backend and databases
+     */
+    setSelectedContent: (state, action) => {
+      state.selectedContent = action.payload;
+    },
+
+    /**
+     * @dynamic all those connected to backend and databases
+     */
     resetUser: (state) => {
       state.currentUser = initialCurrentUser;
     },
@@ -160,10 +201,10 @@ export const userSlice = createSlice({
     toggleAuthUser: (state, action) => {
       state.authenticatedUser = action.payload;
     },
-    setAuthUserInfo: (state, action)=>{
+    setAuthUserInfo: (state, action) => {
       state.authUserInfo = action.payload;
     },
-    resetAuthUserInfo: (state)=>{
+    resetAuthUserInfo: (state) => {
       state.authUserInfo = initialAuthUserInfo;
     },
   },
@@ -185,7 +226,8 @@ export const {
   setHasPhone,
   toggleAuthUser,
   setAuthUserInfo,
-  resetAuthUserInfo
+  resetAuthUserInfo,
+  setSelectedContent,
 } = userSlice.actions;
 
 export default userSlice.reducer;

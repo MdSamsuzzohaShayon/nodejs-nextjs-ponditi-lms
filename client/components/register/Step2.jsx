@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-function Step2({ inputChangeHandler, nextStepHandler}) {
+function Step2({ inputChangeHandler, nextStepHandler }) {
   const userInfo = useSelector((state) => state.user.currentUser);
   return (
     <>
@@ -44,24 +44,10 @@ function Step2({ inputChangeHandler, nextStepHandler}) {
           />
         </div>
       </div>
-      <div className="row mb-3 mx-0">
-        <div className="col-12">
-          <label htmlFor="subjects">Subjects (Comma seperated list)</label>
-          <input
-            type="text"
-            className="form-control"
-            name="subjects"
-            id="subjects"
-            defaultValue={userInfo.subjects}
-            onChange={inputChangeHandler}
-            placeholder="subjects"
-          />
-        </div>
-      </div>
 
       <div className="row mb-3 mx-0">
         <div className="col-sm-12 col-md-6">
-          <label htmlFor="experience">Experience</label>
+          <label htmlFor="experience">Experience(years)</label>
           <input
             type="number"
             className="form-control"

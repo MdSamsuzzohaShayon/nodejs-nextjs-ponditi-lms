@@ -84,6 +84,7 @@ function login() {
       });
       localStorage.setItem('user', 'true');
       if (response.status === 200) {
+        window.localStorage.setItem('user', JSON.stringify(response.data.user));
         router.push('/user/dashboard');
       }
     } catch (error) {

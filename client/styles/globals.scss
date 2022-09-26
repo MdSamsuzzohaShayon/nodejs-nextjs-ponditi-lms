@@ -1,10 +1,5 @@
-
 @import './variables';
 @import './mixins';
-
-
-
-
 
 // Login
 $half-width: 50%;
@@ -13,14 +8,13 @@ $wrapper-margin: 30%;
 $section-min-height: 72vh;
 $section-padding: 3rem 0;
 
-
 // Layout
 $danger-color: #852b3a;
 $danger-deep: #5f1d28;
 $white: rgb(255, 255, 255);
 $primary-color: #215971;
-$dark-color: #201F1F;
-$secondary-color: #E0E2DB;
+$dark-color: #201f1f;
+$secondary-color: #e0e2db;
 
 $br-xxl: 1400px;
 $br-md: 768px;
@@ -41,17 +35,14 @@ $theme-colors: (
   'secondary': $secondary-color,
 );
 
-
-// Bootstrap 
-$border-radius:               2rem;
+// Bootstrap
+$border-radius: 2rem;
 $btn-line-height: 1rem;
-$btn-padding-y:  0.8rem;
-$btn-padding-x:  1.5rem;
+$btn-padding-y: 0.8rem;
+$btn-padding-x: 1.5rem;
 $input-padding-y: 0.6rem;
 
-
 @import '../bootstrap/scss/bootstrap.scss';
-
 
 html,
 body {
@@ -72,7 +63,7 @@ a {
   text-decoration: none;
   color: $white;
 }
-a:hover{
+a:hover {
   color: $danger-color;
 }
 
@@ -91,50 +82,83 @@ a:hover{
 .bg-danger-deep {
   background: $danger-deep !important;
 }
-.border-right-slim{
+.border-right-slim {
   border-right: $slim-border;
 }
-.h-fit{
+.h-fit {
   height: fit-content;
 }
-.w-fit{
+.w-fit {
   width: fit-content;
 }
 
-.vertical-center{
+.vertical-center {
   // bg-danger d-flex justify-content-center flex-column align-items-center
   @include vertical_center();
 }
 
+@import './Header.scss';
 
-@import "./Header.scss";
-@import "./Register.scss";
+// Home
+#home-section {
+  .caption {
+    width: 50%;
+  }
+  .learner {
+    width: 50%;
+    .learner-img{
+      width: 70%;
+    }
+  }
+}
 
+@import './Register.scss';
 
-
-
-
-
-
-
-// Admin 
-.Admin{
-  .Dashboard{
+// Admin
+.Admin {
+  .Dashboard {
     min-height: $section-min-height;
-    .sidebar{
+    .sidebar {
       min-height: $section-min-height;
       width: 15%;
-      li{
+      li {
         border-bottom: $slim-border;
       }
     }
-    .content{
+    .content {
       min-height: $section-min-height;
       width: 85%;
     }
   }
 }
 
-@import "./Login.scss";
-@import "./Footer.scss";
 
+.user-dashboard {
+  min-height: $section-min-height;
+    .sidebar {
+      min-height: $section-min-height;
+      width: 15%;
+      li {
+        border-bottom: $slim-border;
+      }
+    }
+    .content {
+      min-height: $section-min-height;
+      width: 85%;
+    }
+    .Profile{
+      .profile-img{
+
+        height: 10rem;
+        width: 10rem;
+        object-fit: cover;
+        object-position: center;
+      }
+      .explain-icon{
+        width: 3rem;
+      }
+    }
+}
+
+@import './Login.scss';
+@import './Footer.scss';

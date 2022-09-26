@@ -17,3 +17,18 @@ export const adminSidebarList = {
   SUBJECT: 'SUBJECT',
   STUDENT: 'STUDENT',
 };
+
+export const userDashboardSidebarList = {
+  CLASS_SCHEDULED: 'CLASS_SCHEDULED',
+  STUDENT_OR_TEACHER_REQUESTS: 'STUDENT_OR_TEACHER_REQUESTS',
+  PROFILE: 'PROFILE',
+};
+
+
+export const types = {
+  ONLINE: 'ONLINE',
+  OFFLINE: 'OFFLINE',
+  TL: 'TL', // teacher's location
+};
+
+

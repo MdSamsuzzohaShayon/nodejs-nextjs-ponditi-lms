@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
-import { toggleAuthUser, setAuthUserInfo, resetAuthUserInfo} from '../../redux/reducers/userReducer';
+import {
+  toggleAuthUser,
+  setAuthUserInfo,
+  resetAuthUserInfo,
+} from '../../redux/reducers/userReducer';
 import Header from './Header';
 import Footer from './Footer';
 

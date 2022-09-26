@@ -3,8 +3,13 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
-      User.hasOne(models.Subject, { foreignKey: 'subjectId' });
+      // User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
+      User.belongsTo(models.ClassType);
+      User.belongsTo(models.Subject);
+      // User.hasOne(models.Subject, { foreignKey: 'subjectId' });
+
+      User.hasMany(models.ScheduledClass, { foreignKey: 'senderId' });
+      User.hasMany(models.ScheduledClass, { foreignKey: 'receverId' });
     }
   }
 
