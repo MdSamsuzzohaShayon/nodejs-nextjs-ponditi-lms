@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   toggleLoading,
@@ -14,6 +15,8 @@ import {
 import Layout from '../layouts/Layout';
 import { userDashboardSidebarList, roles } from '../../config/keys';
 import axios from '../../config/axios';
+
+
 
 // inspire -  https://dribbble.com/shots/4986374-Job-dashboard-profile/attachments/1115022?mode=media
 
@@ -46,7 +49,7 @@ function Profile() {
       // console.log('try');
       const response = await axios.get(`/user/single/${userId}`);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         // const newUser = Object.assign(currentUser, response.data.user);
         dispatch(setCurrentUser({ ...response.data.user }));
       }
@@ -79,9 +82,14 @@ function Profile() {
         </div>
         <div className="col-md-9">
           {currentUser.firstname && (
-            <h1 className="h1">
-              {`${currentUser.firstname} ${currentUser.lastname}`}
-            </h1>
+            <div className="name-edit-profile-wrapper d-flex justify-content-between align-items-center">
+              <h1 className="h1">
+                {`${currentUser.firstname} ${currentUser.lastname}`}
+              </h1>
+              <button className="btn btn-primary" type="button">
+                <Link href="/user/update">Edit</Link>
+              </button>
+            </div>
           )}
           {currentUser.location && (
             <div className="d-flex">

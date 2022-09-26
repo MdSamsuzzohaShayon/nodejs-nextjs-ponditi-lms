@@ -10,7 +10,7 @@ export const subjectSlice = createSlice({
     subjectList: [],
     addSubject: {
       name: '',
-      classTypeId: 1
+      classTypeId: []
     },
   },
   reducers: {

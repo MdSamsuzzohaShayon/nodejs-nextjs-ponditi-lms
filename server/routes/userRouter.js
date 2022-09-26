@@ -11,7 +11,7 @@ const {
   updateUser,
   logout,
 } = require('../controllers/user.controller');
-const {ensureAuth} = require('../middleware/auth');
+const { ensureAuth } = require('../middleware/auth');
 
 router.put(
   '/register',
@@ -53,8 +53,6 @@ router.put(
 router.post('/logout', logout);
 
 router.get('/all', getAllUsers);
-
-
 router.get('/single/:id', getSingleUser);
 
 module.exports = router;

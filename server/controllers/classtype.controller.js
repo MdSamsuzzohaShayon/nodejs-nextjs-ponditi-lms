@@ -12,20 +12,34 @@ const { ADMIN, TEACHER } = keys.roles;
 /**
  * @add class type
  */
-const addClassType = async (req, res, next) => {
+const addClassType = async (req, res) => {
+  const { name, subjectId } = req.body;
+
   try {
-    const { name } = req.body;
-    const classTypeExist = await ClassType.findOne({ where: { name } });
+    const newName = name.toUpperCase();
+    const classTypeExist = await ClassType.findOne({
+      where: { name: newName },
+    });
     if (classTypeExist) {
       return res
         .status(406)
-        .json({ msg: 'this class already exist in our database' });
+        .json({ msg: 'this classtype already exist in our database' });
     }
 
-    const newClassType = await ClassType.create(req.body);
+    const newClassType = await ClassType.create({ name: newName });
+    if (subjectId && subjectId.length > 0) {
+      const findAllSubject = await Subject.findAll({
+        where: { id: subjectId },
+      });
+      if (findAllSubject.length > 0) {
+        // set classes in subjects
+        await newClassType.setSubjects(findAllSubject); // working
+      }
+    }
+
     return res
       .status(201)
-      .json({ msg: 'Class created successfully', classType: newClassType });
+      .json({ msg: 'ClassType created successfully', classType: newClassType });
   } catch (error) {
     console.log(error);
   }

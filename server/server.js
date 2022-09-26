@@ -41,7 +41,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
 // IF THERE ARE NO TABLE THIS WILL CREATE
-// db.sequelize.sync({ alter: true, force: true}).then(() => {
+// db.sequelize.sync({ alter: true, force: true }).then(() => {
 //   app.listen(PORT, () => {
 //     console.log(`Server is running on ${PORT}`);
 //   });

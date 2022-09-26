@@ -14,27 +14,30 @@ const { ADMIN, TEACHER } = keys.roles;
  * @add subject with relation of classtype
  */
 const addSubject = async (req, res) => {
+  const { name, classTypeId } = req.body;
+
   try {
-    const { name, classTypeId } = req.body;
-    const subjectExist = await Subject.findOne({ where: { name } });
+    const newName = name.toUpperCase();
+    const subjectExist = await Subject.findOne({ where: { name: newName } });
     if (subjectExist) {
       return res
         .status(406)
         .json({ msg: 'this subject already exist in our database' });
     }
 
-    const findClassType = await ClassType.findOne({
-      where: { id: classTypeId },
-    });
-    if (findClassType === null) {
-      return res
-        .status(406)
-        .json({ msg: 'No class found with your classTypeId' });
+    const newSubject = await Subject.create({ name: newName });
+    if (classTypeId && classTypeId.length > 0) {
+      const findAllClassType = await ClassType.findAll({
+        where: { id: classTypeId },
+      });
+      if (findAllClassType.length > 0) {
+        // set classes in subjects
+        await newSubject.setClassTypes(findAllClassType); // working
+      }
     }
-    const newSubject = await Subject.create({ name });
     // await Promise.all([findClassType, newSubject]);
     // console.log(newSubject);
-    await newSubject.setClassTypes(findClassType); // working
+
     return res
       .status(201)
       .json({ msg: 'Subject created successfully', subject: newSubject });

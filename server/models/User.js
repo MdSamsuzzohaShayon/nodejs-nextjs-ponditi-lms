@@ -4,9 +4,12 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       // User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
-      User.belongsTo(models.ClassType);
-      User.belongsTo(models.Subject);
+      // User.belongsTo(models.ClassType);
+      // User.belongsTo(models.Subject);
       // User.hasOne(models.Subject, { foreignKey: 'subjectId' });
+
+      User.belongsToMany(models.ClassType, { through: 'UserToClasstype' });
+      User.belongsToMany(models.Subject, { through: 'UserToSubject' });
 
       User.hasMany(models.ScheduledClass, { foreignKey: 'senderId' });
       User.hasMany(models.ScheduledClass, { foreignKey: 'receverId' });
@@ -104,7 +107,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       freezeTableName: true,
       tableName: 'User',
-    },
+    }
   );
 
   return User;

@@ -10,6 +10,7 @@ export const classtypeSlice = createSlice({
     classtypeList: [],
     addClassType: {
       name: '',
+      subjectId: []
     },
   },
   reducers: {

@@ -13,7 +13,7 @@ import {
 import {
   setErrorList,
   resetErrorList,
-  setSuccessMessageList
+  setSuccessMessageList,
 } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 
@@ -102,7 +102,7 @@ function RegistrationForm() {
     } catch (error) {
       console.log(error);
       if (error.response) {
-        if(error?.response?.status === 406){
+        if (error?.response?.data?.msg) {
           dispatch(setErrorList([error.response.data.msg]));
         }
         // setErrMsg(error.response.data.msg);
@@ -119,6 +119,7 @@ function RegistrationForm() {
     if (selectedStep === 1) {
       return (
         <Step1
+          update={false}
           inputChangeHandler={inputChangeHandler}
           nextStepHandler={(sbhe) => stepBtnHandler(sbhe, selectedStep + 1)}
         />
@@ -127,6 +128,7 @@ function RegistrationForm() {
     if (selectedStep === 2) {
       return (
         <Step2
+          update={false}
           inputChangeHandler={inputChangeHandler}
           nextStepHandler={(sbhe) => stepBtnHandler(sbhe, selectedStep + 1)}
         />
@@ -134,6 +136,7 @@ function RegistrationForm() {
     }
     return (
       <Step3
+        update={false}
         inputChangeHandler={inputChangeHandler}
         nextStepHandler={registerHandler}
       />
@@ -183,9 +186,9 @@ function RegistrationForm() {
         /> */}
         {showSteps()}
 
-        <div className="row mb-3 mx-0">
+        {/* <div className="row mb-3 mx-0">
           <Link href="/user/login">Already have an account?</Link>
-        </div>
+        </div> */}
       </form>
     </div>
   );

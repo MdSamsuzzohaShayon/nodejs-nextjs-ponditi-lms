@@ -5,10 +5,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // ClassType.hasMany(models.Subject);
       ClassType.belongsToMany(models.Subject, {
-        through: 'subject_to_classtype',
+        through: 'SubjectToClasstype',
       });
       // ClassType.belongsTo(models.User);
-      ClassType.hasOne(models.User);
+      // ClassType.hasOne(models.User);
+      ClassType.belongsToMany(models.User, { through: 'UserToClasstype' });
       // ClassType.belongsToMany(models.ScheduledClass, {
       //   through: 'requestedclass_to_classtype',
       // });
@@ -37,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       freezeTableName: true,
       tableName: 'ClassType',
-    }
+    },
   );
 
   return ClassType;

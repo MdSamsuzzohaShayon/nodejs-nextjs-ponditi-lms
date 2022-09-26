@@ -8,12 +8,9 @@ import SubjectContent from './SubjectContent';
 import { adminSidebarList } from '../../config/keys';
 import { setSelectedContent } from '../../redux/reducers/adminReducer';
 import axios from '../../config/axios';
-import {
-  setErrorList,
-} from '../../redux/reducers/elementsSlice';
-import {
-  setClasstypeList,
-} from '../../redux/reducers/classtypeReducer';
+import { setErrorList, resetErrorList} from '../../redux/reducers/elementsSlice';
+import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
+import { setSubjectList } from '../../redux/reducers/subjectReducer';
 
 const { CLASS_TYPE, SUBJECT } = adminSidebarList;
 
@@ -49,6 +46,26 @@ function Dashboard() {
       // dispatch(toggleLoading(false));
     }
   };
+  const fetchAllSubject = async () => {
+    try {
+      // dispatch(toggleLoading(true));
+      // console.log('try');
+      const response = await axios.get('/subject/all');
+      if (response.status === 200) {
+        // console.log(response);
+        dispatch(setSubjectList(response.data.subjects));
+        dispatch(resetErrorList());
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+    } finally {
+      // console.log('finally');
+      // dispatch(toggleLoading(false));
+    }
+  };
 
   const showContent = () => {
     switch (selectedContent) {
@@ -64,7 +81,8 @@ function Dashboard() {
 
   useEffect(() => {
     if (isMounted === false) {
-      fetchAllClassType();
+      fetchAllClassType().catch((err) => console.log(err));
+      fetchAllSubject().catch((err) => console.log(err));
     }
     isMounted = true;
   }, []);

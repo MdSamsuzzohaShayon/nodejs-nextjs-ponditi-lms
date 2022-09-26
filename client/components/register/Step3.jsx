@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-function Step3({ inputChangeHandler }) {
+function Step3({ inputChangeHandler, update }) {
   const userInfo = useSelector((state) => state.user.currentUser);
   return (
     <>
@@ -14,7 +14,7 @@ function Step3({ inputChangeHandler }) {
             id="degree"
             defaultValue={userInfo.degree}
             onChange={inputChangeHandler}
-            placeholder="degree"
+            placeholder="E.G. BBA"
           />
         </div>
         <div className="col-sm-12 col-md-6">
@@ -26,7 +26,7 @@ function Step3({ inputChangeHandler }) {
             id="major"
             defaultValue={userInfo.major}
             onChange={inputChangeHandler}
-            placeholder="major"
+            placeholder="E.G. Finance"
           />
         </div>
       </div>
@@ -40,7 +40,7 @@ function Step3({ inputChangeHandler }) {
             id="passing_year"
             defaultValue={userInfo.passing_year}
             onChange={inputChangeHandler}
-            placeholder="passing_year"
+            placeholder="E.G. 2020"
           />
         </div>
         <div className="col-sm-12 col-md-6">
@@ -52,14 +52,14 @@ function Step3({ inputChangeHandler }) {
             id="cgpa"
             defaultValue={userInfo.cgpa}
             onChange={inputChangeHandler}
-            placeholder="cgpa"
+            placeholder="E.G. 3.50"
           />
         </div>
       </div>
 
       <div className="row mb-3 mx-0">
-        <button className="btn btn-primary w-fit" type="submit">
-          Register
+        <button className="btn btn-primary w-fit mx-3" type="submit">
+          {update ? 'Update' : 'Register'}
         </button>
       </div>
     </>

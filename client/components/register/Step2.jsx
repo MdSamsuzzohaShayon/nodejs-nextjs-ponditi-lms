@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-function Step2({ inputChangeHandler, nextStepHandler }) {
+function Step2({ inputChangeHandler, nextStepHandler, update }) {
   const userInfo = useSelector((state) => state.user.currentUser);
   return (
     <>
@@ -14,7 +14,7 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
             id="age"
             defaultValue={userInfo.age}
             onChange={inputChangeHandler}
-            placeholder="age"
+            placeholder="E.G. 25"
           />
         </div>
         <div className="col-sm-12 col-md-6">
@@ -26,7 +26,7 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
             id="profession"
             defaultValue={userInfo.profession}
             onChange={inputChangeHandler}
-            placeholder="profession"
+            placeholder="E.G. Footballer"
           />
         </div>
       </div>
@@ -40,7 +40,7 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
             id="institution"
             defaultValue={userInfo.institution}
             onChange={inputChangeHandler}
-            placeholder="institution"
+            placeholder="E.G. UEFA"
           />
         </div>
       </div>
@@ -55,7 +55,7 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
             id="experience"
             defaultValue={userInfo.experience}
             onChange={inputChangeHandler}
-            placeholder="experience"
+            placeholder="E.G. 20"
           />
         </div>
         <div className="col-sm-12 col-md-6">
@@ -67,11 +67,12 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
             id="location"
             defaultValue={userInfo.location}
             onChange={inputChangeHandler}
-            placeholder="location"
+            placeholder="E.G. Dhaka, Bangladesh"
           />
         </div>
       </div>
 
+      {update === false && (
       <div className="row mb-3 mx-0">
         <button
           className="btn btn-primary w-fit"
@@ -81,6 +82,7 @@ function Step2({ inputChangeHandler, nextStepHandler }) {
           Next
         </button>
       </div>
+      )}
     </>
   );
 }

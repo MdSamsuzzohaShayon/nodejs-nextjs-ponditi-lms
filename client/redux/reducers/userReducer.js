@@ -133,8 +133,6 @@ export const userSlice = createSlice({
     currentUser: initialCurrentUser,
     userFormsType: SEND_CODE,
     loginInfo: initialLoginInfo,
-    loginWithEmail: true,
-    teacherLogin: true,
 
     sendOTP: initialSendOTP,
     hasPhone: false,
@@ -181,12 +179,7 @@ export const userSlice = createSlice({
       state.hasPhone = action.payload;
     },
 
-    setLoginWith: (state, action) => {
-      state.loginWithEmail = action.payload;
-    },
-    setTeacherLogin: (state, action) => {
-      state.teacherLogin = action.payload;
-    },
+
     setSelectedStep: (state, action) => {
       state.selectedStep = action.payload;
     },
@@ -216,9 +209,7 @@ export const {
   setCurrentUser,
   setVerifyCode,
   setLoginInfo,
-  setLoginWith,
   resetLoginInfo,
-  setTeacherLogin,
   setSelectedStep,
   setUserFormsType,
   setSendOTP,

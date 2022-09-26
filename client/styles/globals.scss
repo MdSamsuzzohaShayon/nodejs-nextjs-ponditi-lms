@@ -66,6 +66,10 @@ a {
 a:hover {
   color: $danger-color;
 }
+label{
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
 
 .w-full {
   width: 100% !important;

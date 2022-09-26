@@ -8,11 +8,11 @@ const sendSMS = require('../utils/sendSMS');
 // bcryptjs
 const db = require('../models');
 
-const { User } = db;
+const { User, ClassType, Subject } = db;
 
 const keys = require('../config/keys.js');
 
-const { SUPER, TEACHER, STUDENT } = keys.roles;
+const { ADMIN, TEACHER, STUDENT } = keys.roles;
 
 // Initialize
 const sendOTP = async (req, res, next) => {
@@ -71,7 +71,7 @@ const verifyUser = async (req, res, next) => {
   }
   await User.update(
     { isActive: true },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -103,14 +103,14 @@ const login = async (req, res, next) => {
     console.log(userExist.dataValues.role);
 
     if (
-      userExist.dataValues.role !== TEACHER &&
-      userExist.dataValues.role !== STUDENT
+      userExist.dataValues.role !== TEACHER
+      && userExist.dataValues.role !== STUDENT
     ) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password,
+      userExist.dataValues.password
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -162,6 +162,10 @@ const registerUser = async (req, res, next) => {
     userObj.role = TEACHER;
   } else {
     userObj.role = STUDENT;
+  }
+
+  if (userObj.cgpa) {
+    userObj.cgpa = parseFloat(userObj.cgpa);
   }
 
   if (userObj.classes) {
@@ -230,11 +234,11 @@ const resendOTP = async (req, res, next) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`,
+    `Your OTP code is: ${otp}`
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -242,7 +246,15 @@ const resendOTP = async (req, res, next) => {
 };
 
 const getAllUsers = async (req, res, next) => {
-  const users = await User.findAll();
+  const users = await User.findAll({
+    include: [
+      {
+        model: Subject,
+        attributes: ['id', 'name'],
+        // through: { where: { amount: 10 } }
+      },
+    ],
+  });
   res.status(200).json({ msg: 'Getting all users', users });
 };
 
@@ -250,17 +262,67 @@ const getSingleUser = async (req, res) => {
   const { id } = req.params;
   try {
     const userExist = await User.findOne({ where: { id } });
-    if (userExist === null) return res.status(404).json({ msg: 'user not found' });
-    const {password, otp, ...user} = userExist.dataValues;
+    if (userExist === null) {
+      return res.status(404).json({ msg: 'user not found' });
+    }
+    const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
-    return res.status(200).json({msg: 'Single user found', user});
+    return res.status(200).json({ msg: 'Single user found', user });
   } catch (error) {
     console.log(error);
   }
   return res.status(500).json({ msg: 'Something went wrong' });
 };
 
-const updateUser = (req, res, next) => {};
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const previousUser = await User.findOne({ where: { id } });
+    if (previousUser.role === ADMIN) {
+      return res.status(406).json({ msg: "Admin can't be updated" });
+    }
+    if (previousUser === null) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    const updatedObj = Object.assign(req.body);
+
+    // check password,
+    if (updatedObj.password || updatedObj.password === '') {
+      delete updatedObj.password;
+    }
+    // check phone
+    if (updatedObj.phone || updatedObj.phone === '') {
+      delete updatedObj.phone;
+    }
+    // check email
+    if (updatedObj.email || updatedObj.email === '') {
+      delete updatedObj.email;
+    }
+    if (updatedObj?.subjectId?.length > 0) {
+      // set subject
+      const findAllSubject = await Subject.findAll({
+        where: { id: updatedObj.subjectId },
+      });
+      await previousUser.setSubjects(findAllSubject);
+      delete updatedObj.subjectId;
+    }
+    if (updatedObj?.classTypeId?.length > 0) {
+      // set classtype
+      const findAllClassType = await ClassType.findAll({
+        where: { id: updatedObj.classTypeId },
+      });
+      await previousUser.setClassTypes(findAllClassType);
+      delete updatedObj.classTypeId;
+    }
+
+    await User.update({ updatedObj }, { where: { id } });
+    // console.log(user);
+    return res.status(202).json({ msg: 'A user updated', user: updatedObj });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
+};
 
 module.exports = {
   login,

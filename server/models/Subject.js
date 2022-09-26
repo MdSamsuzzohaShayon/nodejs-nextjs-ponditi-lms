@@ -5,10 +5,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Subject.belongsTo(models.ClassType);
       Subject.belongsToMany(models.ClassType, {
-        through: 'subject_to_classtype',
+        through: 'SubjectToClasstype',
       });
       // Subject.belongsTo(models.User);
-      Subject.hasOne(models.User);
+      // Subject.hasOne(models.User);
+      Subject.belongsToMany(models.User, { through: 'UserToSubject' });
       Subject.hasMany(models.ScheduledClass);
     }
   }

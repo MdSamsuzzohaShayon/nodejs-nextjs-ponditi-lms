@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleLoading } from '../../redux/reducers/elementsSlice';
+import { toggleLoading, resetErrorList} from '../../redux/reducers/elementsSlice';
 import {
   setSelectedContent,
   toggleAuthUser,
@@ -13,7 +13,7 @@ import Layout from '../../components/layouts/Layout';
 import Profile from '../../components/user/Profile';
 import { userDashboardSidebarList, roles } from '../../config/keys';
 
-const { TEACHER, STUDENT } = roles;
+const { TEACHER, STUDENT, ADMIN} = roles;
 
 const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS } =
   userDashboardSidebarList;
@@ -57,7 +57,12 @@ function dashboard() {
         router.push('/user/login');
       } else {
         dispatch(toggleAuthUser(true));
+        const userData = JSON.stringify(user);
+        if (userData.role === ADMIN) {
+          router.push('/admin');
+        }
       }
+      dispatch(resetErrorList([]));
       dispatch(toggleLoading(false));
     }
     isMounted = true;
