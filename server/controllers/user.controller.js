@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
@@ -71,7 +72,7 @@ const verifyUser = async (req, res, next) => {
   }
   await User.update(
     { isActive: true },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -103,14 +104,14 @@ const login = async (req, res, next) => {
     console.log(userExist.dataValues.role);
 
     if (
-      userExist.dataValues.role !== TEACHER
-      && userExist.dataValues.role !== STUDENT
+      userExist.dataValues.role !== TEACHER &&
+      userExist.dataValues.role !== STUDENT
     ) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password
+      userExist.dataValues.password,
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -234,11 +235,11 @@ const resendOTP = async (req, res, next) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
+    `Your OTP code is: ${otp}`,
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -252,6 +253,10 @@ const getAllUsers = async (req, res, next) => {
         model: Subject,
         attributes: ['id', 'name'],
         // through: { where: { amount: 10 } }
+      },
+      {
+        model: ClassType,
+        attributes: ['id', 'name'],
       },
     ],
   });
@@ -298,30 +303,74 @@ const updateUser = async (req, res) => {
     if (updatedObj.email || updatedObj.email === '') {
       delete updatedObj.email;
     }
-    if (updatedObj?.subjectId?.length > 0) {
+    // console.log(updatedObj.subjectId);
+    // console.log(updatedObj.classTypeId);
+    if (updatedObj?.SubjectId?.length > 0) {
       // set subject
       const findAllSubject = await Subject.findAll({
-        where: { id: updatedObj.subjectId },
+        where: { id: updatedObj.SubjectId },
       });
+      // console.log('Setting subject');
       await previousUser.setSubjects(findAllSubject);
-      delete updatedObj.subjectId;
+      delete updatedObj.SubjectId;
     }
-    if (updatedObj?.classTypeId?.length > 0) {
+    if (updatedObj?.ClassTypeId?.length > 0) {
       // set classtype
       const findAllClassType = await ClassType.findAll({
-        where: { id: updatedObj.classTypeId },
+        where: { id: updatedObj.ClassTypeId },
       });
       await previousUser.setClassTypes(findAllClassType);
-      delete updatedObj.classTypeId;
+      // console.log('Setting classtype');
+      delete updatedObj.ClassTypeId;
     }
 
+    
     await User.update({ updatedObj }, { where: { id } });
+    // console.log({updatedUser});
     // console.log(user);
     return res.status(202).json({ msg: 'A user updated', user: updatedObj });
   } catch (error) {
     console.log(error);
   }
   return res.status(500).json({ msg: 'Something went wrong' });
+};
+
+// disable in production
+const seedUsers = async (req, res) => {
+  const userList = [];
+
+  const location = ['Comilla','Feni','Brahmanbaria','Rangamati','Noakhali','Chandpur','Lakshmipur','Chattogram','Coxsbazar','Khagrachhari','Bandarban','Sirajganj','Pabna','Bogura','Rajshahi','Natore','Joypurhat','Chapainawabganj','Naogaon','Jashore','Satkhira',   ];
+  const institution = [ 'Sir Salimullah Medical College', 'Sheikh Hasina Medical College, Jamalpur', 'Sheikh Hasina Medical College, Tangail', 'Mugda Medical College', 'Patuakhali Medical College', 'Abdul Hamid Medical College', 'Ad-din Womens Medical College', 'AICHI Medical College', 'Anwer Khan Modern Medical College', 'Ashiyan Medical College', 'Bangladesh Medical College', 'Bashundhara Ad-din Medical College', 'Bikrampur Bhuiyan Medical College', 'CARe Medical College', 'City Medical College', 'Community Based Medical College, Bangladesh', 'Delta Medical College', 'Dhaka Central International', 'Dhaka Community Medical College', 'Dhaka National Medical College', 'Diabetic Association Medical College', 'Dr. Sirajul Islam Medical College', 'East-West Medical College', ];
+  const profession = ["Academic librarian","Accountant","Accounting technician","Actuary","Adult nurse","Advertising account executive","Advertising account planner","Advertising copywriter","Advice worker","Advocate (Scotland)","Aeronautical engineer","Agricultural consultant","Agricultural manager","Aid worker/humanitarian worker","Air traffic controller","Airline cabin crew","Amenity horticulturist","Analytical chemist","Animal nutritionist","Animator","Archaeologist","Architect","Architectural technologist","Archivist","Armed forces officer","Aromatherapist","Art therapist","Arts administrator","Auditor","Automotive engineer","Barrister","Barrister’s clerk","Bilingual secretary", ];
+  let i = 0;
+  const total = 20;
+  const password = await bcrypt.hash('Test1234', 10);
+
+  while (i < total) {
+    const oneUser = {
+      firstname: Buffer.from(Math.random().toString()).toString('base64').substring(10, 5),
+      lastname: Buffer.from(Math.random().toString()).toString('base64').substring(10, 5),
+      password,
+      phone: Math.floor(100000000 + Math.random() * 900000000).toString() + i.toString(),
+      cc: '+880',
+      email: `${(Buffer.from(Math.random().toString()).toString('base64').substring(10, 5).toLowerCase())}@email.com`,
+      role: i % 2 === 0 ? TEACHER : STUDENT,
+      age: total + i,
+      profession: profession[i],
+      institution: institution[i],
+      experience: 2 + i,
+      location: location[i],
+      otp: Buffer.from(Math.random().toString()).toString('base64').substring(6,3),
+      isActive: true,
+      // ClassTypes 
+      // Subjects 
+    };
+    userList.push(oneUser);
+    i += 1;
+  }
+
+  const allUsers = await User.bulkCreate(userList);
+  res.json({msg: 'all user created', users: allUsers});
 };
 
 module.exports = {
@@ -334,4 +383,5 @@ module.exports = {
   getSingleUser,
   updateUser,
   logout,
+  seedUsers,
 };

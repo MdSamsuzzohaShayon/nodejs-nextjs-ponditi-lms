@@ -11,6 +11,9 @@
  - Typescript
 
 ### Development
+ - Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY)
+ - Add hourly fees if he is teacher
+ - Create or seed some random user 
  - Remove from signup - subjects, classes
  - Profession
  - Student teacher relationship for send request
@@ -27,7 +30,7 @@
  - User to feedback (many to many relationship)
 
 ### Deployment process(server)
-- Disable add admin route from admin router and get all users from user route
+- Disable add admin route and seed route from admin router and get all users from user route
 
 
 ### Nest.js entities

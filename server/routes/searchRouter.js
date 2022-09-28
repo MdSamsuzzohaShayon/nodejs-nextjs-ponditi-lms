@@ -5,6 +5,6 @@
 const router = require('express').Router();
 const { searchTeacher } = require('../controllers/search.controller');
 
-router.get('/teachers', searchTeacher);
+router.get('/teacherstudent', searchTeacher);
 
 module.exports = router;

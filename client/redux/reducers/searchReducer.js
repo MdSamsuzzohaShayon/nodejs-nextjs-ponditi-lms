@@ -1,39 +1,91 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { types } from '../../config/keys';
+import { types, roles } from '../../config/keys';
 
-const { ONLINE, OFFLINE, TL } = types;
+const { ONLINE, TL, SL, ANY } = types;
+const { TEACHER } = roles;
+
+export const initialSearchParams = {
+  location: '',
+  ClassTypeId: '', // id
+  SubjectId: '', // id
+  type: ANY, // Online - tution location
+  role: TEACHER,
+};
 
 export const searchSlice = createSlice({
   name: 'search',
   initialState: {
+    searchTypeList: [
+      {
+        id: 0,
+        types: ANY,
+        text: 'Any types',
+      },
+      {
+        id: 1,
+        types: ONLINE,
+        text: 'Online',
+      },
+      {
+        id: 2,
+        types: TL,
+        text: "Teacher's Location",
+      },
+      {
+        id: 3,
+        types: SL,
+        text: "Student's Location",
+      },
+    ],
     /**
      * @dynamic or changable elements of the website
      */
-    searchTypes: [ONLINE, OFFLINE, TL],
-    searchParams: {
-      classtype: 0, // id
-      subject: 0, // id
-      types: ONLINE, // Online
-    },
+    searchParams: initialSearchParams,
+    searchAllUserList: [],
 
-    // Add a default value
-    newClasstypeList: [],
-    newSubjectList: [],
+    /**
+     * @function for paginations
+    */
+    searchUserList: [],
+    rpStart: 0, // rp = result pagination
+    rpTotal: 10,
+    rpCurrentPage: 1,
+    rpTotalPage: 1,
   },
   reducers: {
     setSearchParams: (state, action) => {
-      state.addSearch = { ...state.addSearch, ...action.payload };
+      state.searchParams = { ...state.searchParams, ...action.payload };
     },
-    setNewClasstypeList: (state, action)=>{
-        state.newClasstypeList = action.payload;
+    setSearchUserList: (state, action) => {
+      state.searchUserList = action.payload;
     },
-    setNewSubjectList: (state, action)=>{
-        state.newSubjectList = action.payload;
+    setSearchAllUserList: (state, action) => {
+      state.searchAllUserList = action.payload;
+    },
+    setRPStart: (state, action) => {
+      state.rpStart = action.payload;
+    },
+    setRPTotal: (state, action) => {
+      state.rpTotal = action.payload;
+    },
+    setRPCurrentPage: (state, action) => {
+      state.rpCurrentPage = action.payload;
+    },
+    setRPTotalPage: (state, action) => {
+      state.rpTotalPage = action.payload;
     },
   },
 });
 
-export const { setSearchParams, setNewClasstypeList, setNewSubjectList } = searchSlice.actions;
+export const {
+  setSearchParams,
+  setSearchUserList,
+  setSearchAllUserList,
+  setRPStart,
+  setRPTotal,
+  setRPTotalPage,
+  setRPCurrentPage,
+} = searchSlice.actions;
 
 export default searchSlice.reducer;

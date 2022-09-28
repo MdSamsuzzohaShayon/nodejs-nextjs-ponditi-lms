@@ -104,7 +104,7 @@ function update() {
       // console.log('try');
       const response = await axios.get(`/user/single/${userId}`);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         // const newUser = Object.assign(currentUser, response.data.user);
         dispatch(setCurrentUser({ ...response.data.user }));
       }
@@ -168,7 +168,7 @@ function update() {
           response.status === 201 ||
           response.status === 200
         ) {
-          // console.log(response);
+          console.log(response);
           // const newUser = Object.assign(currentUser, response.data.user);
           dispatch(setCurrentUser({ ...response.data.user }));
         }

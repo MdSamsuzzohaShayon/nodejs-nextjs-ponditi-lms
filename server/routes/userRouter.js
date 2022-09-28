@@ -10,6 +10,7 @@ const {
   getSingleUser,
   updateUser,
   logout,
+  seedUsers
 } = require('../controllers/user.controller');
 const { ensureAuth } = require('../middleware/auth');
 
@@ -54,5 +55,11 @@ router.post('/logout', logout);
 
 router.get('/all', getAllUsers);
 router.get('/single/:id', getSingleUser);
+
+
+// disable on production
+router.post('/seed', seedUsers);
+
+
 
 module.exports = router;

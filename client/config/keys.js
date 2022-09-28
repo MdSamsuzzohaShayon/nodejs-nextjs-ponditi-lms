@@ -26,9 +26,10 @@ export const userDashboardSidebarList = {
 
 
 export const types = {
+  ANY: 'ANY',
   ONLINE: 'ONLINE',
-  OFFLINE: 'OFFLINE',
   TL: 'TL', // teacher's location
+  SL: 'SL', // student's location
 };
 
 

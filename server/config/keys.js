@@ -6,4 +6,10 @@ module.exports = {
     TEACHER: 'TEACHER',
     STUDENT: 'STUDENT',
   },
+  types: {
+    ANY: 'ANY',
+    TL: 'TL',
+    SL: 'SL',
+    ONLINE: 'ONLINE',
+  }
 };
