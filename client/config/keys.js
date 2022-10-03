@@ -22,6 +22,7 @@ export const userDashboardSidebarList = {
   CLASS_SCHEDULED: 'CLASS_SCHEDULED',
   STUDENT_OR_TEACHER_REQUESTS: 'STUDENT_OR_TEACHER_REQUESTS',
   PROFILE: 'PROFILE',
+  REJECTED: 'REJECTED',
 };
 
 
@@ -32,4 +33,8 @@ export const types = {
   SL: 'SL', // student's location
 };
 
-
+export const scheduledclassStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+}

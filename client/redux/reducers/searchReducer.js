@@ -19,22 +19,22 @@ export const searchSlice = createSlice({
     searchTypeList: [
       {
         id: 0,
-        types: ANY,
+        type: ANY,
         text: 'Any types',
       },
       {
         id: 1,
-        types: ONLINE,
+        type: ONLINE,
         text: 'Online',
       },
       {
         id: 2,
-        types: TL,
+        type: TL,
         text: "Teacher's Location",
       },
       {
         id: 3,
-        types: SL,
+        type: SL,
         text: "Student's Location",
       },
     ],
@@ -59,6 +59,9 @@ export const searchSlice = createSlice({
     },
     setSearchUserList: (state, action) => {
       state.searchUserList = action.payload;
+    },
+    resetSearchUserList: (state)=>{
+      state.searchUserList = [];
     },
     setSearchAllUserList: (state, action) => {
       state.searchAllUserList = action.payload;
@@ -86,6 +89,7 @@ export const {
   setRPTotal,
   setRPTotalPage,
   setRPCurrentPage,
+  resetSearchUserList,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;

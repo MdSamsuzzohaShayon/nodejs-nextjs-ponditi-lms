@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable import/extensions */
 /* eslint-disable no-param-reassign */
 /**
@@ -13,9 +14,7 @@ const { User, Subject, ClassType } = db;
 const { roles, types } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
-const {
- ANY, ONLINE, TL, SL 
-} = types;
+const { ANY, ONLINE, TL, SL } = types;
 
 const searchTeacher = async (req, res, next) => {
   try {
@@ -35,16 +34,20 @@ const searchTeacher = async (req, res, next) => {
       searchParams.location !== ANY &&
       searchParams.location !== ''
     ) {
+      // console.log({location: searchParams.location});
       // [Op.notILike]
       where.location = sequelize.where(
         sequelize.fn('LOWER', sequelize.col('location')),
         'LIKE',
-        `%${searchParams.location.toLowerCase()}%`,
+        `%${searchParams.location.toLowerCase()}%`
       ); // making case insensative
     }
-
-
-    if (searchParams.role && searchParams.role !== null && searchParams.role !== ANY) {
+    if (
+      searchParams.role &&
+      searchParams.role !== null &&
+      searchParams.role !== ANY
+    ) {
+      // console.log({role: searchParams.role});
       if (searchParams.role === TEACHER) {
         where.role = TEACHER;
       } else if (searchParams.role === STUDENT) {
@@ -54,13 +57,14 @@ const searchTeacher = async (req, res, next) => {
       }
     }
 
-
-
-
-
-
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);
-    if (searchParams.SubjectId && searchParams.SubjectId !== ANY && searchParams.SubjectId !== '') {
+    if (
+      searchParams.SubjectId &&
+      searchParams.SubjectId !== ANY &&
+      searchParams.SubjectId !== '' &&
+      searchParams.SubjectId !== '0'
+    ) {
+      console.log({ SubjectId: searchParams.SubjectId });
       // && searchParams.SubjectId[0] !== 0
       const newSIArrInt = [];
       if (searchParams.SubjectId.includes(',')) {
@@ -80,7 +84,13 @@ const searchTeacher = async (req, res, next) => {
       where = { ...where, '$Subjects.id$': newSIArrInt };
     }
 
-    if (searchParams.ClassTypeId && searchParams.ClassTypeId  !== ANY && searchParams.ClassTypeId  !== '') {
+    if (
+      searchParams.ClassTypeId &&
+      searchParams.ClassTypeId !== ANY &&
+      searchParams.ClassTypeId !== '' &&
+      searchParams.ClassTypeId !== '0'
+    ) {
+      // console.log({ ClassTypeId: searchParams.ClassTypeId });
       // && searchParams.ClassTypeId[0] !== 0
       const newCTIArrInt = [];
       if (searchParams.ClassTypeId.includes(',')) {
@@ -100,7 +110,7 @@ const searchTeacher = async (req, res, next) => {
       where = { ...where, '$ClassTypes.id$': newCTIArrInt };
     }
     /*
-    */
+     */
 
     /**
      * @search by online offline or home

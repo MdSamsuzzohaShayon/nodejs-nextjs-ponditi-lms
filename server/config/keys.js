@@ -11,5 +11,10 @@ module.exports = {
     TL: 'TL',
     SL: 'SL',
     ONLINE: 'ONLINE',
+  },
+  scheduledClassStatus: {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
   }
 };

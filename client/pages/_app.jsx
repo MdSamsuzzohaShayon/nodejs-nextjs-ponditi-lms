@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import Head from 'next/head';
 import { Provider } from 'react-redux';
 import store from '../redux/store';

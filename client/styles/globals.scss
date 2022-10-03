@@ -101,6 +101,11 @@ label{
   @include vertical_center();
 }
 
+.section{
+  min-height: $section-min-height;
+  padding: $section-padding;
+}
+
 @import './Header.scss';
 
 // Home
@@ -162,6 +167,18 @@ label{
         width: 3rem;
       }
     }
+}
+
+
+.search {
+  .request-details{
+    min-width: 10rem;
+  }
+}
+
+.detail{
+  min-height: $section-min-height;
+  padding: $section-padding;
 }
 
 @import './Login.scss';

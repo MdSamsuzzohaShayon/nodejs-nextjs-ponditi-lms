@@ -2,13 +2,15 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { roles } from '../../config/keys';
 import axios from '../../config/axios';
+import { toggleAuthUser } from '../../redux/reducers/userReducer';
 
 function Header() {
+  const dispatch = useDispatch();
   const { ADMIN } = roles;
   const router = useRouter();
   const menuItemList = useSelector((state) => state.elements.menuItemList);
@@ -46,6 +48,7 @@ function Header() {
     lhe.preventDefault();
     try {
       const response = await axios.post('/user/logout');
+      dispatch(toggleAuthUser());
       router.push('/');
     } catch (error) {
       console.log(error);

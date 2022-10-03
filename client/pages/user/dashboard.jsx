@@ -4,18 +4,29 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleLoading, resetErrorList} from '../../redux/reducers/elementsSlice';
+import {
+  toggleLoading,
+  resetErrorList,
+} from '../../redux/reducers/elementsSlice';
 import {
   setSelectedContent,
   toggleAuthUser,
 } from '../../redux/reducers/userReducer';
+
+import {
+  fetchAllRequestedSCOU,
+  fetchSingleUser,
+} from '../../redux/reducers/scheduledclassReducer';
 import Layout from '../../components/layouts/Layout';
 import Profile from '../../components/user/Profile';
+import SOTRequest from '../../components/scheduledclass/SOTRequest';
+import ApprovedClass from '../../components/scheduledclass/ApprovedClass';
+import RejectedClass from '../../components/scheduledclass/RejectedClass';
 import { userDashboardSidebarList, roles } from '../../config/keys';
 
-const { TEACHER, STUDENT, ADMIN} = roles;
+const { TEACHER, STUDENT, ADMIN } = roles;
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS } =
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED} =
   userDashboardSidebarList;
 
 function dashboard() {
@@ -36,11 +47,13 @@ function dashboard() {
   const showContent = () => {
     switch (selectedContent) {
       case STUDENT_OR_TEACHER_REQUESTS:
-        return <div>SOT request content</div>;
+        return <SOTRequest />;
       case PROFILE:
         return <Profile />;
       case CLASS_SCHEDULED:
-        return <div>Class scheduled content</div>;
+        return <ApprovedClass />;
+      case REJECTED:
+          return <RejectedClass />;
 
       default:
         return <Profile />;
@@ -68,6 +81,13 @@ function dashboard() {
     isMounted = true;
   }, []);
 
+  useEffect(() => {
+    if (authUserInfo.id) {
+      dispatch(fetchAllRequestedSCOU(authUserInfo.id));
+      dispatch(fetchSingleUser(authUserInfo.id));
+    }
+  }, [authUserInfo]);
+
   return (
     <Layout>
       <div className="user-dashboard d-flex">
@@ -79,7 +99,7 @@ function dashboard() {
                 if (authUserInfo.role === TEACHER) {
                   displayText = "Student's requests";
                 } else if (authUserInfo.role === STUDENT) {
-                  displayText = "Teacher's requests";
+                  displayText = 'Sent requests';
                 } else {
                   displayText = "Student's requests";
                 }

@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 // eslint-disable-next-line import/prefer-default-export
+import { types } from '../config/keys';
+
+const { ONLINE, TL, SL, ANY } = types;
 
 export function removeEmpty(obj) {
   const newObj = { ...obj };
@@ -10,6 +13,20 @@ export function removeEmpty(obj) {
   });
   return newObj;
 }
+
+export const locationSelection = (loc) => {
+  switch (loc) {
+    case ONLINE:
+      return 'Online';
+    case TL:
+      return "Teacher's Location";
+    case SL:
+      return "Student's Location";
+
+    default:
+      return null;
+  }
+};
 
 export async function getStudioAndStaff(token, axios) {
   try {

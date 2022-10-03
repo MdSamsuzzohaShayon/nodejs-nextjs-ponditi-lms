@@ -6,6 +6,7 @@ import adminReducer from './reducers/adminReducer';
 import classtypeReducer from './reducers/classtypeReducer';
 import subjectReducer from './reducers/subjectReducer';
 import searchReducer from './reducers/searchReducer';
+import scheduledclassReducer from './reducers/scheduledclassReducer';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     classtype: classtypeReducer,
     subject: subjectReducer,
     search: searchReducer,
+    scheduledclass: scheduledclassReducer,
   },
   // middleware: (getDefaultMiddleware) =>
   //   getDefaultMiddleware({

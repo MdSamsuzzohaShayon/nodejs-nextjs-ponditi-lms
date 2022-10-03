@@ -4,7 +4,7 @@ import Layout from '../components/layouts/Layout';
 import SearchForm from '../components/search/SearchForm';
 import Section1 from '../components/home/Section1';
 
-export default function index() {
+export default function home() {
 
   return (
     <Layout>

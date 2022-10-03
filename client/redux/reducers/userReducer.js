@@ -3,7 +3,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { userDashboardSidebarList, SEND_CODE } from '../../config/keys';
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS } =
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED} =
   userDashboardSidebarList;
 
 // ps = property step
@@ -112,6 +112,11 @@ const initialDashboardSidebarElements = [
     id: 3,
     name: CLASS_SCHEDULED,
     text: 'Class Scheduled',
+  },
+  {
+    id: 4,
+    name: REJECTED,
+    text: 'Rejected Class',
   },
 ];
 

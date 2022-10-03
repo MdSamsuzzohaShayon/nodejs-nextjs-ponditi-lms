@@ -13,6 +13,8 @@ const searchRoutes = require('./routes/searchRouter');
 const adminRoutes = require('./routes/adminRouter');
 const classtypeRoutes = require('./routes/classtypeRouter');
 const subjectRoutes = require('./routes/subjectRouter');
+const scheduledclassRoutes = require('./routes/scheduledclassRouter');
+
 
 const db = require('./models');
 
@@ -34,6 +36,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/classtype', classtypeRoutes);
 app.use('/api/subject', subjectRoutes);
+app.use('/api/scheduledclass', scheduledclassRoutes);
 
 const PORT = process.env.PORT || 9000;
 

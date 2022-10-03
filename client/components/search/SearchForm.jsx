@@ -16,6 +16,7 @@ import {
   setRPTotalPage,
   setRPStart,
   setRPCurrentPage,
+  resetSearchUserList,
 } from '../../redux/reducers/searchReducer';
 
 function SearchForm() {
@@ -94,6 +95,9 @@ function SearchForm() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
+      if (error?.response?.status === 404) {
+        dispatch(resetSearchUserList());
+      }
     }
   };
 
@@ -105,27 +109,6 @@ function SearchForm() {
     })();
     isMounted = true;
   }, []);
-
-  /**
-   * @state change and update on onchange event
-   */
-  const classtypeInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    // ClassTypeId
-    dispatch(setSearchParams({ ClassTypeId: [val] }));
-    const newSubjectList = classtypeList.find((ctl) => ctl.id === val).Subjects;
-    if (newSubjectList.length === 1) {
-      // dispatch(setCurrentUser({ SubjectId: [newSubjectList[0].id] }));
-      dispatch(setSearchParams({ SubjectId: [newSubjectList[0].id] }));
-      dispatch(setSubjectList(newSubjectList));
-    } else {
-      dispatch(setSubjectList(newSubjectList));
-    }
-  };
-  const subjectInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    dispatch(setSearchParams({ SubjectId: [val] }));
-  };
 
   // online, teacher's location, student's location
   const inputChangeHandler = (tiche) => {
@@ -225,15 +208,12 @@ function SearchForm() {
                 defaultValue={searchParams.type}
                 onChange={inputChangeHandler}
               >
-                {searchTypeList.length > 0 ? (
+                {searchTypeList.length > 0 &&
                   searchTypeList.map((ctl) => (
                     <option key={ctl.id} value={ctl.type}>
                       {ctl.text}
                     </option>
-                  ))
-                ) : (
-                  <option value="ANY">Any Types</option>
-                )}
+                  ))}
               </select>
             </div>
           </div>

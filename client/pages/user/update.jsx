@@ -12,8 +12,8 @@ import {
   toggleAuthUser,
   setCurrentUser,
 } from '../../redux/reducers/userReducer';
-import { setSubjectList } from '../../redux/reducers/subjectReducer';
-import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
+import { setSubjectList, fetchAllSubjects} from '../../redux/reducers/subjectReducer';
+import { setClasstypeList, fetchAllClassTypes} from '../../redux/reducers/classtypeReducer';
 import Layout from '../../components/layouts/Layout';
 import Step1 from '../../components/register/Step1';
 import Step2 from '../../components/register/Step2';
@@ -37,6 +37,7 @@ function update() {
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const subjectList = useSelector((state) => state.subject.subjectList);
 
+  /*
   const fetchAllSubject = async () => {
     try {
       // dispatch(toggleLoading(true));
@@ -75,6 +76,8 @@ function update() {
       // dispatch(toggleLoading(false));
     }
   };
+  */
+
 
   useEffect(() => {
     if (isMounted === false) {
@@ -90,8 +93,10 @@ function update() {
         if (userData.role === ADMIN) {
           router.push('/admin');
         }
-        fetchAllClassType().catch((err) => console.log(err));
-        fetchAllSubject().catch((err) => console.log(err));
+        // fetchAllClassType().catch((err) => console.log(err));
+        dispatch(fetchAllClassTypes(null));
+        // fetchAllSubject().catch((err) => console.log(err));
+        dispatch(fetchAllSubjects(null));
       }
       dispatch(toggleLoading(false));
     }
@@ -149,7 +154,7 @@ function update() {
     dispatch(setCurrentUser({ SubjectId: [val] }));
   };
 
-  const nextStepHandler = (nshe) => {};
+
   const userChangeHandler = async (uche) => {
     uche.preventDefault();
     try {

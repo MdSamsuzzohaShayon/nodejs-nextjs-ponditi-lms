@@ -11,21 +11,26 @@
  - Typescript
 
 ### Development
+ - Teacher per hour rate need to update
+ - Send request with current time of client to initialize scheduled class
+ - To delete a scheduled class the class status must be completed or rejected
+ - List of requested students
+ - Validate with express validator in every page
  - Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY)
+ - Add users online, TL, SL
  - Add hourly fees if he is teacher
- - Create or seed some random user 
- - Remove from signup - subjects, classes
- - Profession
  - Student teacher relationship for send request
+ - Remove from signup - subjects, classes
+ - Create or seed some random user 
+ - Profession
  - Make sign out
- - Add users online, offline field
  - Create tables of classes, subjects
  - Setup eslint for server
  - google place api for location search
  - 1 hour session
  - Search teachers
  - Search category 1, online 2, offline 3, home
- - Search by Location
+ - Search by Location - google place api 
  - Remove teacher/student from login page
  - User to feedback (many to many relationship)
 

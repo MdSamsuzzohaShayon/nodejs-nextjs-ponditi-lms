@@ -1,4 +1,7 @@
 const { Model } = require('sequelize');
+const { types } = require('../config/keys');
+
+const { ONLINE } = types;
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -11,8 +14,16 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.ClassType, { through: 'UserToClasstype' });
       User.belongsToMany(models.Subject, { through: 'UserToSubject' });
 
-      User.hasMany(models.ScheduledClass, { foreignKey: 'senderId' });
-      User.hasMany(models.ScheduledClass, { foreignKey: 'receverId' });
+      User.hasMany(models.ScheduledClass, {
+        foreignKey: 'senderId',
+        as: 'Sender',
+      });
+      User.hasMany(models.ScheduledClass, {
+        foreignKey: 'receverId',
+        as: 'Recever',
+      });
+
+      User.hasMany(models.Review);
     }
   }
 
@@ -102,6 +113,23 @@ module.exports = (sequelize, DataTypes) => {
       cgpa: {
         type: new DataTypes.INTEGER(),
       },
+
+      /**
+       * @additional
+       * Added later on
+       */
+      status: {
+        // Online offline teacher's location
+        type: new DataTypes.STRING(70),
+        defaultValue: ONLINE,
+      },
+      rate: {
+        type: new DataTypes.INTEGER(10),
+        defaultValue: 150, // per hour
+      },
+      totalHours: {
+        type: new DataTypes.INTEGER(10),
+      }
     },
     {
       sequelize,

@@ -1,7 +1,6 @@
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
@@ -270,9 +269,11 @@ const getSingleUser = async (req, res) => {
     if (userExist === null) {
       return res.status(404).json({ msg: 'user not found' });
     }
+    const classTypes = await userExist.getClassTypes();
+    const subjects = await userExist.getSubjects();
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
-    return res.status(200).json({ msg: 'Single user found', user });
+    return res.status(200).json({ msg: 'Single user found', user, classTypes, subjects});
   } catch (error) {
     console.log(error);
   }
@@ -281,8 +282,11 @@ const getSingleUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
+  const pId = parseInt(id, 10);
+  // console.log({id ,pId: req.userId});
+  if (pId !== req.userId) return res.status(406).json({ msg: 'You can not update someonelse detail' });
   try {
-    const previousUser = await User.findOne({ where: { id } });
+    const previousUser = await User.findOne({ where: { id: req.userId } });
     if (previousUser.role === ADMIN) {
       return res.status(406).json({ msg: "Admin can't be updated" });
     }
@@ -324,7 +328,6 @@ const updateUser = async (req, res) => {
       delete updatedObj.ClassTypeId;
     }
 
-    
     await User.update({ updatedObj }, { where: { id } });
     // console.log({updatedUser});
     // console.log(user);

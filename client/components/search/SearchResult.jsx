@@ -2,11 +2,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @next/next/no-img-element */
 import { useSelector, useDispatch } from 'react-redux';
+import Router from 'next/router';
 import {
   setRPCurrentPage,
   setRPStart,
   setSearchUserList,
 } from '../../redux/reducers/searchReducer';
+import {
+  setSelectedSearchUser,
+  showRequest,
+} from '../../redux/reducers/scheduledclassReducer';
 
 function SearchResult() {
   const dispatch = useDispatch();
@@ -59,80 +64,116 @@ function SearchResult() {
     }
   };
 
+  const viewDetailHandler = (vde, userId) => {
+    vde.preventDefault();
+    const newSelectedUser = searchUserList.find((sul) => sul.id === userId);
+    console.log(newSelectedUser);
+    dispatch(showRequest(true));
+    // dispatch(setSelectedSearchUser(newSelectedUser));
+    Router.push(`/search/selected/?userId=${userId}`);
+  };
+
   return (
     <div className="SearchResult">
-      {searchUserList &&
-        searchUserList.map((sul) => (
-          <div className="card my-3" key={sul.id}>
-            <div className="row g-0">
-              <div className="col-md-3">
-                <img
-                  src="/img/default-img.jpg"
-                  className="img-fluid rounded-start"
-                  alt={`${sul?.firstname} ${sul?.lastname}`}
-                />
-              </div>
-              <div className="col-md-6">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between">
-                    <h5 className="card-title text-capitalize">
-                      {`${sul?.firstname} ${sul?.lastname}`}
-                    </h5>
-                    <h5 className="card-title text-capitalize">Reviews</h5>
+      {searchUserList && (
+        <div className="container search-result">
+          {searchUserList.length > 0 ? (
+            <>
+              {searchUserList.map((sul) => (
+                <div className="card my-3" key={sul.id}>
+                  <div className="row g-0">
+                    <div className="col-md-3">
+                      <img
+                        src="/img/default-img.jpg"
+                        className="img-fluid rounded-start"
+                        alt={`${sul?.firstname} ${sul?.lastname}`}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between">
+                          <h5 className="card-title text-capitalize">
+                            {`${sul?.firstname} ${sul?.lastname}`}
+                          </h5>
+                          <h5 className="card-title text-capitalize">
+                            Reviews
+                          </h5>
+                        </div>
+                        <p className="card-text">
+                          Experience: {sul?.experience} years
+                        </p>
+                        <p className="card-text">Fees: {sul?.rate} tk per hour</p>
+                      </div>
+                    </div>
+                    <div className="col-md-3 vertical-center ">
+                      <a
+                        href="#"
+                        className="btn btn-primary my-2 request-details"
+                      >
+                        Send Request
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-danger my-2 request-details"
+                        onClick={(vde) => viewDetailHandler(vde, sul.id)}
+                      >
+                        View Details
+                      </button>
+                    </div>
                   </div>
-                  <p className="card-text">
-                    Experience: {sul?.experience} years
-                  </p>
-                  <p className="card-text">Fees: null tk</p>
                 </div>
-              </div>
-              <div className="col-md-3 vertical-center ">
-                <a href="#" className="btn btn-primary">
-                  Send Request
-                </a>
-              </div>
-            </div>
-          </div>
-        ))}
-      <nav className="w-full">
-        <ul className="pagination justify-content-center">
-          <li
-            className={rpCurrentPage === 1 ? 'page-item disabled' : 'page-item'}
-            onClick={changePrevPageHandler}
-            role="presentation"
-          >
-            <a className="page-link">Previous</a>
-          </li>
-          {rpTotalPage &&
-            Array(rpTotalPage)
-              .fill()
-              .map((rpt, idx) => (
-                <li
-                  className={
-                    idx + 1 === rpCurrentPage ? 'page-item active' : 'page-item'
-                  }
-                  key={idx}
-                  onClick={(cpe) => changePageHandler(cpe, idx + 1)}
-                  role="presentation"
-                >
-                  <a className="page-link" href="#">
-                    {idx + 1}
-                  </a>
-                </li>
               ))}
-          <li
-            className={
-              rpCurrentPage === rpTotalPage ? 'page-item disable' : 'page-item'
-            }
-            onClick={changeNextPageHandler}
-            role="presentation"
-          >
-            <a className="page-link" href="#">
-              Next
-            </a>
-          </li>
-        </ul>
-      </nav>
+              <nav className="w-full">
+                <ul className="pagination justify-content-center">
+                  <li
+                    className={
+                      rpCurrentPage === 1 ? 'page-item disabled' : 'page-item'
+                    }
+                    onClick={changePrevPageHandler}
+                    role="presentation"
+                  >
+                    <a className="page-link">Previous</a>
+                  </li>
+                  {rpTotalPage &&
+                    Array(rpTotalPage)
+                      .fill()
+                      .map((rpt, idx) => (
+                        <li
+                          className={
+                            idx + 1 === rpCurrentPage
+                              ? 'page-item active'
+                              : 'page-item'
+                          }
+                          key={idx}
+                          onClick={(cpe) => changePageHandler(cpe, idx + 1)}
+                          role="presentation"
+                        >
+                          <a className="page-link" href="#">
+                            {idx + 1}
+                          </a>
+                        </li>
+                      ))}
+                  <li
+                    className={
+                      rpCurrentPage === rpTotalPage
+                        ? 'page-item disable'
+                        : 'page-item'
+                    }
+                    onClick={changeNextPageHandler}
+                    role="presentation"
+                  >
+                    <a className="page-link" href="#">
+                      Next
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </>
+          ) : (
+            <div className="alert alert-danger">No result found</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

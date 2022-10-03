@@ -11,6 +11,7 @@ import {
   setSearchUserList,
   setSearchAllUserList,
   setRPTotalPage,
+  resetSearchUserList
 } from '../../redux/reducers/searchReducer';
 
 import Layout from '../../components/layouts/Layout';
@@ -49,6 +50,10 @@ function search() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
+      if(error?.response?.status === 404){
+        dispatch(resetSearchUserList());
+      }
+
     }
   };
 
