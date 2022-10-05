@@ -16,5 +16,6 @@ module.exports = {
     PENDING: 'PENDING',
     APPROVED: 'APPROVED',
     REJECTED: 'REJECTED',
+    COMPLETE_REQUESTED: 'COMPLETE_REQUESTED',
   }
 };

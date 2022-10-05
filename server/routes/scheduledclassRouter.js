@@ -7,6 +7,8 @@ const {
   getAllScheduledClassofAMember,
   acceptRequestedScheduledClass,
   rejectRequestedScheduledClass,
+  getSingleScheduledClass,
+  completeRequestedScheduledClass,
 } = require('../controllers/scheduledclass.controller');
 
 const { ensureAuth, ensureStudent } = require('../middleware/auth');
@@ -27,20 +29,32 @@ router.post(
   check('SubjectId').notEmpty().isDecimal(),
   check('start').notEmpty().isISO8601().toDate(),
   check('hours').notEmpty().isDecimal(),
-  initiateScheduledClass
+  initiateScheduledClass,
 );
 
 router.get('/all', getAllScheduledClass);
+router.get('/single/:scheduledclassId', ensureAuth, getSingleScheduledClass);
 router.get('/member/:memberId', ensureAuth, getAllScheduledClassofAMember);
 router.put(
   '/accept/:scheduledclassId',
   ensureAuth,
-  acceptRequestedScheduledClass,
+  acceptRequestedScheduledClass
 );
 router.put(
   '/reject/:scheduledclassId',
   ensureAuth,
-  rejectRequestedScheduledClass,
+  rejectRequestedScheduledClass
 );
+
+// Complete request
+router.put(
+  '/completerequest/:scheduledclassId',
+  ensureAuth,
+  check('stars').notEmpty().isDecimal(),
+  check('comment').notEmpty().isLength({ min: 10 }),
+  completeRequestedScheduledClass,
+);
+
+// after completation
 
 module.exports = router;

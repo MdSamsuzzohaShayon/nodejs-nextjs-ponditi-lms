@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       //   has many Scheduled Class
       // has many users
       Review.belongsTo(models.User);
-      Review.belongsTo(models.ScheduledClass);
+      Review.belongsTo(models.ScheduledClass); // will have one review
     }
   }
 
@@ -22,8 +22,19 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
+      stars: {
+        type: new DataTypes.INTEGER(),
+        allowNull: false,
+      },
       comment: {
         type: new DataTypes.TEXT(),
+        allowNull: false,
+      },
+      // need to check review completed or not
+      publish: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
     },
     {

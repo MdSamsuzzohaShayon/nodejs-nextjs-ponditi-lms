@@ -38,6 +38,7 @@
     "mssql": "^9.0.1",
     "otp-generator": "^4.0.0",
     "sequelize": "^6.23.0",
+    "tedious": "^15.1.0",
     "twilio": "^3.82.0"
   }
 }

@@ -1,15 +1,17 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable operator-linebreak */
 const { validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const db = require('../models');
 
 const { roles, scheduledClassStatus, types } = require('../config/keys');
 
 const { STUDENT, TEACHER } = roles;
-const { PENDING, APPROVED, REJECTED } = scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, COMPLETE_REQUESTED } =
+  scheduledClassStatus;
 const { ONLINE } = types;
 
-const { ScheduledClass, User, ClassType, Subject } = db;
+const { ScheduledClass, User, ClassType, Subject, Review } = db;
 
 const initiateScheduledClass = async (req, res) => {
   const errors = validationResult(req);
@@ -120,6 +122,50 @@ const getAllScheduledClass = async (req, res) => {
       ],
     });
     return res.json(allScheduledClass);
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'server error' });
+};
+
+const getSingleScheduledClass = async (req, res) => {
+  const { scheduledclassId } = req.params;
+  const where = {
+    id: scheduledclassId,
+    [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+  };
+  try {
+    const singleScheduledClass = await ScheduledClass.findOne({
+      include: [
+        { model: User, as: 'Sender' },
+        { model: User, as: 'Recever' },
+        { model: ClassType },
+        { model: Subject },
+      ],
+      where,
+    });
+    if (singleScheduledClass === null) {
+      return res.status(404).json({
+        msg: 'You do not have any scheduled class with this ID',
+      });
+    }
+    const newSingleScheduledClass = Object.assign(singleScheduledClass);
+    const newSender = Object.assign(newSingleScheduledClass.Sender);
+    if (newSender.password) {
+      newSender.password = undefined;
+    }
+    // console.log(newSender);
+    const newRecever = Object.assign(newSingleScheduledClass.Recever);
+    if (newRecever.password) {
+      newRecever.password = undefined;
+    }
+    newSingleScheduledClass.Sender = newSender;
+    newSingleScheduledClass.Recever = newRecever;
+    // const { password, ...restRecever} = Recever;
+    return res.status(200).json({
+      msg: 'found scheduled class',
+      scheduledclass: newSingleScheduledClass,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -263,10 +309,82 @@ const rejectRequestedScheduledClass = async (req, res) => {
   return res.status(500).json({ msg: 'server error' });
 };
 
+const completeRequestedScheduledClass = async (req, res) => {
+  const errors = validationResult(req);
+  const reviewObj = Object.assign(req.body);
+  reviewObj.publish = false;
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+  try {
+    if (reviewObj.stars <= 5 && reviewObj.stars > 0) {
+      return res.status(406).json({
+        msg: 'Stars must be between 1 to 5 numbers',
+      });
+    }
+    const where = {
+      id: req.params.scheduledclassId,
+      status: APPROVED,
+      [Op.or]: [{ senderId: req.userId }, { receverId: req.userId }],
+    };
+    const findScheduledClass = await ScheduledClass.findOne({
+      include: [
+        { model: User, as: 'Sender' },
+        { model: User, as: 'Recever' },
+      ],
+      where,
+    });
+    if (!findScheduledClass) {
+      return res.status(406).json({
+        msg: 'No class found - scheduled class must be approved in order to complete it',
+      });
+    }
+
+    let findUser = null;
+    // Check who is the request sender
+    if (req.userRole === STUDENT) {
+      findUser = findScheduledClass.Recever;
+    } else if (req.userRole === TEACHER) {
+      // get sender id
+      findUser = findScheduledClass.Sender;
+    } else {
+      return res
+        .status(406)
+        .json({ msg: 'Only teacher or student could send request' });
+    }
+
+    const reviewExist = Review.findOne({
+      where: { UserId: findUser.id, ScheduledClassId: findScheduledClass.id },
+    });
+    if (reviewExist) {
+      return res.status(406).json({ msg: 'You already made a commented' });
+    }
+    const sendUserReview = await Review.create(reviewObj);
+    await sendUserReview.setUser(findUser);
+    await sendUserReview.setScheduledClass(findScheduledClass);
+
+    const updatedScheduledClass = await findScheduledClass.update({
+      status: COMPLETE_REQUESTED,
+    });
+    // console.log(findScheduledClass);
+    return res.status(202).json({
+      msg: 'complete request made successfully',
+      updatedScheduledClass,
+      sendUserReview,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  return res.status(500).json({ msg: 'server error' });
+};
+
 module.exports = {
   initiateScheduledClass,
   getAllScheduledClass,
   getAllScheduledClassofAMember,
   acceptRequestedScheduledClass,
   rejectRequestedScheduledClass,
+  getSingleScheduledClass,
+  completeRequestedScheduledClass,
 };

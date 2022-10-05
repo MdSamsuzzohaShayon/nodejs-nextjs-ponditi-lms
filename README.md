@@ -11,28 +11,77 @@
  - Typescript
 
 ### Development
- - Teacher per hour rate need to update
- - Send request with current time of client to initialize scheduled class
- - To delete a scheduled class the class status must be completed or rejected
- - List of requested students
- - Validate with express validator in every page
- - Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY)
- - Add users online, TL, SL
- - Add hourly fees if he is teacher
- - Student teacher relationship for send request
- - Remove from signup - subjects, classes
- - Create or seed some random user 
- - Profession
- - Make sign out
- - Create tables of classes, subjects
- - Setup eslint for server
+
+ - **Requirement update-2**
+ - **Register user**
+   - Only digit for OTP Code 
+   - Verify user profile by admin (Until they are verified they will be unlisted from search)
+   - Next button to the right 
+   - Use bulk sms bd for sending messages
+ - **Send request**
+   - Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student 
+   - After filtering by default they will select subjects and class (By default no available class and subjects)
+   - No duration or estimated bill - only hourly rate 
+   - Select slot (8 to 10)
+ - **Update profile**
+   1. Educational qualification
+      - Exam name (SSC / HSC / )
+      - Institution
+      - Group (Science, Arts, & commerce)
+      - Result 
+      - Passing Year 
+   2. Personal Detail 
+      - Name 
+      - Email 
+      - District 
+      - Present Address (Used to search )
+   3. Tution Detail 
+      - Rate per hour 
+      - Status (Currenty available to request or not )
+      - Tution place multile selection 
+ - **Scheduled Class detail**
+   - No bill and duration 
+   - Detail location of student 
+   - Institution name 
+   - Scheduled time 
+   - Picture, Name, Class & Subject 
+ - **Top Bar**
+   - Profile
+   - Request histry (Filter by pending requests, rejected requestes)
+   - Notifications
+ - **Tution process by teacher**
+   - Start tution (No more request acceptable)
+   - Minutes counting 
+   - Finish tution (per minute count)
+   - Mark as paid (Student can not send request until they pay their dues)
+
+
+
+ - **Requirement-1**
+ - Work with review ✅
+ - Generate link for scheduled class that is online only
+ - Send notification for new requests via phone or mobile browser
+ - Teacher per hour rate need to update (client's dashboard input fields) 
+ - Send request with current time of client to initialize scheduled class ✅
+ - List of requested students ✅
+ - Validate with express validator in every page ✅
+ - Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY) ✅
+ - Add users online, TL, SL ✅
+ - Add hourly fees if he is teacher ✅
+ - Student teacher relationship for send request ✅
+ - Remove from signup - subjects, classes ✅
+ - Create or seed some random user ✅
+ - Profession ✅
+ - Make sign out ✅
+ - Create tables of classes, subjects ✅
+ - Setup eslint for server ✅
  - google place api for location search
- - 1 hour session
- - Search teachers
- - Search category 1, online 2, offline 3, home
+ - 1 hour session ✅
+ - Search teachers ✅
+ - Search category 1, online 2, offline 3, home ✅
  - Search by Location - google place api 
- - Remove teacher/student from login page
- - User to feedback (many to many relationship)
+ - Remove teacher/student from login page ✅
+ - User to feedback (many to many relationship) 
 
 ### Deployment process(server)
 - Disable add admin route and seed route from admin router and get all users from user route
@@ -68,4 +117,5 @@
  - Migrations
  ```
  npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
+ npx sequelize-cli db:migrate:undo:all --to XXXXXXXXXXXXXX-create-posts.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```

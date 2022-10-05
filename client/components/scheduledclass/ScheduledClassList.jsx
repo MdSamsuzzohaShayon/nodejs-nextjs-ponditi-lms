@@ -13,7 +13,7 @@ import axios from '../../config/axios';
 
 const { STUDENT, TEACHER } = roles;
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS } =
+const { CLASS_SCHEDULED, REJECTED, STUDENT_OR_TEACHER_REQUESTS } =
   userDashboardSidebarList;
 
 // SOR = student or teacher
@@ -50,6 +50,17 @@ function ScheduledClassList({
                     Reject
                   </button>
                 </td>
+                <td>
+                  <button className="btn btn-primary" type="button">
+                    <Link
+                      href={`/scheduledclass/detail/${src.id}`}
+                      type="button"
+                      className="btn btn-primary"
+                    >
+                      Detail
+                    </Link>
+                  </button>
+                </td>
               </>
             )}
             <td>
@@ -58,24 +69,21 @@ function ScheduledClassList({
               </button>
             </td>
             <td>
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
-                Detail
-              </Link>
+              <button className="btn btn-primary" type="button">
+                <Link
+                  href={`/scheduledclass/detail/${src.id}`}
+                  type="button"
+                  className="btn btn-primary"
+                >
+                  Detail
+                </Link>
+              </button>
             </td>
           </>
         );
       case CLASS_SCHEDULED:
         return (
           <>
-            <td>
-              <button type="button" className="btn btn-primary">
-                Detail
-              </button>
-            </td>
             <td>
               <button type="button" className="btn btn-primary">
                 Support
@@ -86,7 +94,25 @@ function ScheduledClassList({
                 Cancel
               </button>
             </td>
+            <td>
+              <button className="btn btn-primary" type="button">
+                <Link href={`/scheduledclass/detail/${src.id}`} type="button">
+                  Detail
+                </Link>
+              </button>
+            </td>
           </>
+        );
+
+      case REJECTED:
+        return (
+          <td>
+            <button className="btn btn-primary" type="button">
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button">
+                Detail
+              </Link>
+            </button>
+          </td>
         );
 
       default:

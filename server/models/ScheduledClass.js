@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       ScheduledClass.belongsTo(models.ClassType); // one class type
       ScheduledClass.belongsTo(models.Subject); // one subject
 
-      ScheduledClass.hasMany(models.Review);
+      ScheduledClass.hasMany(models.Review); // will have two review, one for teacher and one for student
     }
   }
 
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
        * @info personal
        * */
       id: {
-        type: DataTypes.INTEGER,
+        type: new DataTypes.INTEGER(),
         autoIncrement: true,
         primaryKey: true,
       },

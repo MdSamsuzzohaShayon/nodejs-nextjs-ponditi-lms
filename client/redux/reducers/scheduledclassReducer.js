@@ -17,7 +17,6 @@ const initicalAddScheduledClass = {
   subjectId: '',
 };
 
-
 const iscHours = 1;
 const iscStart = new Date().toISOString();
 const initialAScheduledClass = {
@@ -76,9 +75,39 @@ export const fetchAllRequestedSCOU = createAsyncThunk(
   }
 );
 
+// scou = Scheduled Class of a User
+export const fetchSingleScheduledClass = createAsyncThunk(
+  'scheduledclass/singleScheduledClass',
+  async (scheduledclassId, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `/scheduledclass/single/${scheduledclassId}`
+      );
+      // console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        Router.push('/user/login');
+      }else if(error?.response?.status === 404){
+        Router.push('/user/dashboard');
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const scheduledclassSlice = createSlice({
   name: 'scheduledclass',
   initialState: {
+    /**
+     * @static content
+     */
+    showReviewFields: false,
     madeRequest: false,
     /**
      * @dynamic or changable elements of the website
@@ -95,10 +124,14 @@ export const scheduledclassSlice = createSlice({
     rejectedSCOU: [],
 
     initializeSchedule: initialAScheduledClass,
+    singleScheduledClass: {},
   },
   reducers: {
     showRequest: (state, action) => {
       state.madeRequest = action.payload;
+    },
+    setShowReviewFields: (state, action)=>{
+      state.showReviewFields = action.payload;
     },
     setRequestedSCOU: (state, action) => {
       state.requestedSCOU = action.payload;
@@ -159,12 +192,17 @@ export const scheduledclassSlice = createSlice({
         (csl) => csl.status === REJECTED
       );
     });
+
+    builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action)=>{
+      state.singleScheduledClass = action.payload.scheduledclass;
+    });
   },
 });
 
 export const {
   // Showing content
   showRequest,
+  setShowReviewFields,
 
   // scheduled class of a user
   setRequestedSCOU,
