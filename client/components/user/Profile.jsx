@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleAuthUser } from '../../redux/reducers/userReducer';
-import Detail from '../detail/Detail';
+import Detail from './Detail';
 
 // inspire -  https://dribbble.com/shots/4986374-Job-dashboard-profile/attachments/1115022?mode=media
 
@@ -14,9 +14,7 @@ function Profile() {
   const router = useRouter();
 
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const currentUser = useSelector(
-    (state) => state.scheduledclass.selectedSearchUser
-  );
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   useEffect(() => {
     if (isMounted === false) {

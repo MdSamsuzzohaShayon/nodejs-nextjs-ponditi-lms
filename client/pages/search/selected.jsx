@@ -5,7 +5,7 @@ import Layout from '../../components/layouts/Layout';
 import { fetchSingleUser } from '../../redux/reducers/scheduledclassReducer';
 import ErrorMessages from '../../components/elements/ErrorMessages';
 import SendRequest from '../../components/detail/SendRequest';
-import Detail from '../../components/detail/Detail';
+import Detail from '../../components/user/Detail';
 import { roles } from '../../config/keys';
 
 const { TEACHER } = roles;

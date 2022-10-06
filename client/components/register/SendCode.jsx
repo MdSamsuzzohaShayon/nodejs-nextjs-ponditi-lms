@@ -88,7 +88,7 @@ function SendCode() {
                 // }
                 <option
                   key={idx}
-                  value={`+${cpc.code}`}
+                  value={`${cpc.code}`}
                 >{`+${cpc.code} (${cpc.iso})`}</option>
               )
               // <option value="1">1</option>

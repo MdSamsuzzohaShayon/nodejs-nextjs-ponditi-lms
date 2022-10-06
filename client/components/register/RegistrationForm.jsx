@@ -9,11 +9,11 @@ import Step3 from './Step3';
 import {
   setSelectedStep,
   setCurrentUser,
+  resetCurrentUser,
 } from '../../redux/reducers/userReducer';
 import {
   setErrorList,
   resetErrorList,
-  setSuccessMessageList,
 } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 
@@ -70,12 +70,12 @@ function RegistrationForm() {
 
   const registerHandler = async (rhe) => {
     rhe.preventDefault();
-    // if (userInfo.password !== userInfo.password2) {
-    //   return setErrMsg('Password did not matched');
-    // }
-    // if (userInfo.password.length < 5) {
-    //   return setErrMsg('Password must be 5 charecter long');
-    // }
+    if (userInfo.password !== userInfo.password2) {
+      return dispatch(setErrorList(['Password did not match']));
+    }
+    if (userInfo.password.length < 6) {
+      return dispatch(setErrorList(['Password must be more than 6 charecter long']));
+    }
 
     try {
       const response = await axios.put('/user/register', userInfo, {
@@ -87,16 +87,8 @@ function RegistrationForm() {
         response.status === 201 ||
         response.status === 200
       ) {
-        // setRegisterForm(VERIFY);
-        // Open Modal
-        // setErrMsg(null);
-        // dispatch(
-        //   openModal({
-        //     heading: 'Validate your email!',
-        //     body: response.data.msg,
-        //   })
-        // );
-        // dispatch(setSuccessMessageList([response.data.msg]));
+        dispatch(resetErrorList());
+        dispatch(resetCurrentUser());
         Router.push('/user/login');
       }
     } catch (error) {

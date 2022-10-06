@@ -16,6 +16,7 @@ export const adminSidebarList = {
   CLASS_TYPE: 'CLASS_TYPE',
   SUBJECT: 'SUBJECT',
   STUDENT: 'STUDENT',
+  USERS: 'USERS',
 };
 
 export const userDashboardSidebarList = {
@@ -37,4 +38,5 @@ export const scheduledclassStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
+  ANY: 'ANY',
 }

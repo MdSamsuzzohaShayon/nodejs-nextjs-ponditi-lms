@@ -1,7 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../config/axios';
 import { setErrorList } from './elementsSlice';
+
+const initialAddSubject = {
+  name: '',
+  classTypeId: [],
+};
 
 export const fetchAllSubjects = createAsyncThunk(
   'scheduledclass/getAllSubjects',
@@ -28,10 +33,7 @@ export const subjectSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     subjectList: [],
-    addSubject: {
-      name: '',
-      classTypeId: []
-    },
+    addSubject: initialAddSubject,
   },
   reducers: {
     setSubjectList: (state, action) => {
@@ -43,15 +45,24 @@ export const subjectSlice = createSlice({
     setAddSubject: (state, action) => {
       state.addSubject = { ...state.addSubject, ...action.payload };
     },
+    resetAddSubject: (state) => {
+      state.addSubject = initialAddSubject;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllSubjects.fulfilled, (state, action) => {
-      state.subjectList = action.payload;
+      if (action.payload.subjects.length > 0) {
+        state.subjectList = action.payload.subjects;
+      }
     });
   },
 });
 
-export const { setSubjectList, resetSubjectList, setAddSubject } =
-  subjectSlice.actions;
+export const {
+  setSubjectList,
+  resetSubjectList,
+  setAddSubject,
+  resetAddSubject,
+} = subjectSlice.actions;
 
 export default subjectSlice.reducer;

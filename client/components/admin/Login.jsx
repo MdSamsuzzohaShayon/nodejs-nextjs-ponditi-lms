@@ -54,6 +54,10 @@ function Login() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        await axios.post('/user/logout');
+      }
     } finally {
       dispatch(toggleLoading(false));
     }

@@ -2,18 +2,50 @@ const router = require('express').Router();
 const { check } = require('express-validator');
 const {
   registerUser,
+  rejectUser,
+  acceptUser,
   verifyUser,
   resendOTP,
+  getAllUsersTemp,
   getAllUsers,
   login,
   sendOTP,
   getSingleUser,
   updateUser,
   logout,
-  seedUsers
+  seedUsers,
 } = require('../controllers/user.controller');
-const { ensureAuth } = require('../middleware/auth');
+const { ensureAuth, ensureAdmin } = require('../middleware/auth');
 
+/**
+ * @step 1 - regestration process
+ */
+router.post(
+  '/sendotp',
+  check('phone').notEmpty(),
+  check('cc').notEmpty(),
+  sendOTP,
+);
+
+/**
+ * @step 1 - regestration process
+ * same step in case,  he has forgotten
+ */
+router.put('/resendotp', check('phone').notEmpty(), resendOTP);
+
+/**
+ * @step 2 - regestration process
+ */
+router.put(
+  '/verifyotp',
+  check('otp').notEmpty(),
+  check('phone').notEmpty(),
+  verifyUser,
+);
+
+/**
+ * @step 3 - regestration process
+ */
 router.put(
   '/register',
   check('firstname').notEmpty(),
@@ -33,33 +65,21 @@ router.put(
   registerUser,
 );
 
+/**
+ * @step 4 - regestration process
+ */
+router.put('/reject/:userId', ensureAdmin, rejectUser);
+router.put('/accept/:userId', ensureAdmin, acceptUser);
+
 router.put('/update/:id', ensureAuth, updateUser);
 
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
-router.post(
-  '/sendotp',
-  check('phone').notEmpty(),
-  check('cc').notEmpty(),
-  sendOTP,
-);
-
-router.put('/resendotp', check('phone').notEmpty(), resendOTP);
-router.put(
-  '/verifyotp',
-  check('otp').notEmpty(),
-  check('phone').notEmpty(),
-  verifyUser,
-);
-
 router.post('/logout', logout);
 
-router.get('/all', getAllUsers);
+router.get('/temp/all', getAllUsersTemp);
+router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);
-
-
 // disable on production
 router.post('/seed', seedUsers);
-
-
 
 module.exports = router;

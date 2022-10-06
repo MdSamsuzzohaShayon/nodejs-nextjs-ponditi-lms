@@ -4,6 +4,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { setErrorList } from './elementsSlice';
 import axios from '../../config/axios';
 
+const initialAddClassType = {
+  name: '',
+  subjectId: [],
+};
+
 export const fetchAllClassTypes = createAsyncThunk(
   'scheduledclass/getClassTypes',
   async (args, { dispatch, rejectWithValue }) => {
@@ -11,6 +16,7 @@ export const fetchAllClassTypes = createAsyncThunk(
       // dispatch(toggleLoading(true));
       // console.log('try');
       const response = await axios.get('/classtype/all');
+      // console.log(response);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -29,10 +35,7 @@ export const classtypeSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     classtypeList: [],
-    addClassType: {
-      name: '',
-      subjectId: [],
-    },
+    addClassType: initialAddClassType,
   },
   reducers: {
     setClasstypeList: (state, action) => {
@@ -44,15 +47,20 @@ export const classtypeSlice = createSlice({
     setAddClassType: (state, action) => {
       state.addClassType = { ...state.addClassType, ...action.payload };
     },
+    resetAddClassType: (state)=>{
+      state.addClassType = initialAddClassType;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllClassTypes.fulfilled, (state, action) => {
-      state.classtypeList = action.payload;
+      if(action.payload.classTypes.length > 0){
+        state.classtypeList = action.payload.classTypes;
+      }
     });
   },
 });
 
-export const { setClasstypeList, resetClasstypeList, setAddClassType } =
+export const { setClasstypeList, resetClasstypeList, setAddClassType, resetAddClassType } =
   classtypeSlice.actions;
 
 export default classtypeSlice.reducer;

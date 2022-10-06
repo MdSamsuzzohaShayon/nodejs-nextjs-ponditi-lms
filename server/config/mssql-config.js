@@ -11,4 +11,13 @@ module.exports = {
     acquire: 30000,
     idle: 10000,
   },
+
+  dialectOptions: {
+    // Observe the need for this nested `options` field for MSSQL
+    options: {
+      // Your tedious options here
+      useUTC: false,
+      dateFirst: 1,
+    },
+  },
 };

@@ -1,7 +1,8 @@
 const { Model } = require('sequelize');
-const { types } = require('../config/keys');
+const { types, scheduledClassStatus } = require('../config/keys');
 
 const { ONLINE } = types;
+const { PENDING } = scheduledClassStatus; // 
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -49,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       phone: {
         type: new DataTypes.STRING(100),
-        unique: true,
+        // unique: true,
       },
       // cc = country code
       cc: {
@@ -57,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: new DataTypes.STRING(255),
-        unique: true,
+        // unique: true,
       },
       role: {
         type: new DataTypes.STRING(100),
@@ -91,8 +92,15 @@ module.exports = (sequelize, DataTypes) => {
       otp: {
         type: new DataTypes.STRING(100),
       },
-      isActive: {
+      isActive: { // by admin
+        type: new DataTypes.STRING(50),
+        defaultValue: PENDING,
+        allowNull: false,
+      },
+      isVerified: { // once they verify
         type: new DataTypes.BOOLEAN(),
+        defaultValue: false,
+        allowNull: false,
       },
 
       /**

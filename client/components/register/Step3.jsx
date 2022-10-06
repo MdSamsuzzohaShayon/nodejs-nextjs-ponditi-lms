@@ -57,7 +57,7 @@ function Step3({ inputChangeHandler, update }) {
         </div>
       </div>
 
-      <div className="row mb-3 mx-0">
+      <div className="row mb-3 mx-0 d-flex w-full justify-content-end">
         <button className="btn btn-primary w-fit mx-3" type="submit">
           {update ? 'Update' : 'Register'}
         </button>

@@ -2,10 +2,16 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layouts/Layout';
-import { toggleAuthUser } from '../../redux/reducers/userReducer';
+import {
+  toggleAuthUser,
+  fetchAllUsersByAdmin,
+  resetAllUserList,
+} from '../../redux/reducers/userReducer';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
 import Loader from '../../components/elements/Loader';
 import Dashboard from '../../components/admin/Dashboard';
+import { fetchAllClassTypes } from '../../redux/reducers/classtypeReducer';
+import { fetchAllSubjects } from '../../redux/reducers/subjectReducer';
 
 function index() {
   const router = useRouter();
@@ -24,10 +30,22 @@ function index() {
         router.push('/admin/login');
       } else {
         dispatch(toggleAuthUser(true));
+        dispatch(toggleLoading(false));
+  
+        // Fetch data
+        (async () => {
+          await Promise.all([
+            dispatch(fetchAllUsersByAdmin(null)),
+            dispatch(fetchAllClassTypes()),
+            dispatch(fetchAllSubjects()),
+          ]);
+        })();
       }
-      dispatch(toggleLoading(false));
     }
     isMounted = true;
+    // return () => {
+    //   dispatch(resetAllUserList());
+    // };
   }, []);
 
   // otherwise use dashboard component

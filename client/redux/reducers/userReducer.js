@@ -1,10 +1,20 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-param-reassign */
-import { createSlice } from '@reduxjs/toolkit';
-import { userDashboardSidebarList, SEND_CODE } from '../../config/keys';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import Router from 'next/router';
+import { fetchAllClassTypes } from './classtypeReducer';
+import { fetchAllSubjects } from './subjectReducer';
+import { setErrorList } from './elementsSlice';
+import {
+  userDashboardSidebarList,
+  SEND_CODE,
+  scheduledclassStatus,
+} from '../../config/keys';
+import axios from '../../config/axios';
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED} =
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } =
   userDashboardSidebarList;
+const { ANY, PENDING, APPROVED } = scheduledclassStatus;
 
 // ps = property step
 const initialps1 = [
@@ -83,7 +93,7 @@ const initialLoginInfo = {
 
 const initialSendOTP = {
   phone: '',
-  cc: '+880',
+  cc: '880',
 };
 
 const initialVerifyCode = {
@@ -120,6 +130,72 @@ const initialDashboardSidebarElements = [
   },
 ];
 
+const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.get(`/user/single/${userId}`);
+    // console.log(response.data);
+    if (response.data.classTypes.legth === 0) {
+      // fetch all class types
+      await dispatch(fetchAllClassTypes(null));
+    }
+    if (response.data.subjects.legth === 0) {
+      // fetch all subjects
+      await dispatch(fetchAllSubjects(null));
+    }
+    return response.data;
+  } catch (error) {
+    // console.log(error.response.status);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
+    }
+    if (error?.response?.status === 401 || error?.response?.status === 405) {
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        Router.push('/admin');
+      } else if (error?.response?.status === 404) {
+        Router.push('/admin');
+      }
+    }
+    return rejectWithValue(error.response.data);
+  }
+};
+
+export const fetchCurrentSingleUser = createAsyncThunk(
+  'user/currentSingleUser',
+  fetchUser
+);
+export const fetchSelectedSingleUser = createAsyncThunk(
+  'user/selectedSingleUser',
+  fetchUser
+);
+
+export const fetchAllUsersByAdmin = createAsyncThunk(
+  'user/allUsers',
+  async (props, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/user/all`);
+      return response.data;
+    } catch (error) {
+      // console.log(error.response.status);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 405
+        ) {
+          window.localStorage.removeItem('user');
+          Router.push('/admin');
+        } else if (error?.response?.status === 404) {
+          Router.push('/admin');
+        }
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // http://www.healthstream.com/hlchelp/Administrator/Classes/HLC_Time_Zone_Abbreviations.htm
 
 export const userSlice = createSlice({
@@ -135,7 +211,9 @@ export const userSlice = createSlice({
     /**
      * @dynamic all those connected to backend and databases
      */
-    currentUser: initialCurrentUser,
+    currentUser: initialCurrentUser, // The user who logged in
+    selectedUser: initialCurrentUser, // the user whose detail will be shown
+
     userFormsType: SEND_CODE,
     loginInfo: initialLoginInfo,
 
@@ -149,6 +227,10 @@ export const userSlice = createSlice({
     authenticatedUser: false,
 
     authUserInfo: initialAuthUserInfo,
+    allUserList: [],
+    allPendingUserList: [],
+    allRejectedUserList: [],
+    allApprovedUserList: [],
   },
   reducers: {
     /**
@@ -184,7 +266,6 @@ export const userSlice = createSlice({
       state.hasPhone = action.payload;
     },
 
-
     setSelectedStep: (state, action) => {
       state.selectedStep = action.payload;
     },
@@ -205,6 +286,51 @@ export const userSlice = createSlice({
     resetAuthUserInfo: (state) => {
       state.authUserInfo = initialAuthUserInfo;
     },
+    resetAllUserList: (state) => {
+      state.allUserList = [];
+    },
+  },
+  extraReducers(builder) {
+    // builder.addCase(addNewPost.fulfilled, (state, action) => {
+    //   // We can directly add the new post object to our posts array
+    //   state.posts.push(action.payload)
+    // })
+    builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
+      // console.log(action.payload, state);
+      state.currentUser = action.payload.user;
+    });
+    builder.addCase(fetchCurrentSingleUser.rejected, (state) => {
+      // console.log(action.payload, state);
+      state.allUserList = [];
+      state.authUserInfo = initialAuthUserInfo;
+    });
+
+    builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
+      // console.log(action.payload, state);
+      state.selectedUser = action.payload.user;
+    });
+    builder.addCase(fetchSelectedSingleUser.rejected, (state) => {
+      // console.log(action.payload, state);
+      state.allUserList = [];
+      state.authUserInfo = initialAuthUserInfo;
+    });
+
+    builder.addCase(fetchAllUsersByAdmin.fulfilled, (state, action) => {
+      state.allUserList = action.payload.users;
+      state.allPendingUserList = action.payload.users.filter(
+        (user) => user.isActive === PENDING
+      );
+      state.allRejectedUserList = action.payload.users.filter(
+        (user) => user.isActive === REJECTED
+      );
+      state.allApprovedUserList = action.payload.users.filter(
+        (user) => user.isActive === APPROVED
+      );
+    });
+    builder.addCase(fetchAllUsersByAdmin.rejected, (state) => {
+      state.allUserList = [];
+      state.authUserInfo = initialAuthUserInfo;
+    });
   },
 });
 
@@ -224,6 +350,7 @@ export const {
   setAuthUserInfo,
   resetAuthUserInfo,
   setSelectedContent,
+  resetAllUserList,
 } = userSlice.actions;
 
 export default userSlice.reducer;

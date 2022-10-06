@@ -5,14 +5,11 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ClassTypeContent from './ClassTypeContent';
 import SubjectContent from './SubjectContent';
+import UserContent from './UserContent';
 import { adminSidebarList } from '../../config/keys';
 import { setSelectedContent } from '../../redux/reducers/adminReducer';
-import axios from '../../config/axios';
-import { setErrorList, resetErrorList} from '../../redux/reducers/elementsSlice';
-import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
-import { setSubjectList } from '../../redux/reducers/subjectReducer';
 
-const { CLASS_TYPE, SUBJECT } = adminSidebarList;
+const { CLASS_TYPE, SUBJECT, USERS} = adminSidebarList;
 
 function Dashboard() {
   let isMounted = false;
@@ -27,45 +24,6 @@ function Dashboard() {
     dispatch(setSelectedContent(selectedElement));
   };
 
-  const fetchAllClassType = async () => {
-    try {
-      // dispatch(toggleLoading(true));
-      // console.log('try');
-      const response = await axios.get('/classtype/all');
-      if (response.status === 200) {
-        // console.log(response);
-        dispatch(setClasstypeList(response.data.classTypes));
-      }
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error.response.data.msg]));
-      }
-    } finally {
-      // console.log('finally');
-      // dispatch(toggleLoading(false));
-    }
-  };
-  const fetchAllSubject = async () => {
-    try {
-      // dispatch(toggleLoading(true));
-      // console.log('try');
-      const response = await axios.get('/subject/all');
-      if (response.status === 200) {
-        // console.log(response);
-        dispatch(setSubjectList(response.data.subjects));
-        dispatch(resetErrorList());
-      }
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error.response.data.msg]));
-      }
-    } finally {
-      // console.log('finally');
-      // dispatch(toggleLoading(false));
-    }
-  };
 
   const showContent = () => {
     switch (selectedContent) {
@@ -73,19 +31,14 @@ function Dashboard() {
         return <ClassTypeContent />;
       case SUBJECT:
         return <SubjectContent />;
+      case USERS:
+        return <UserContent />;
 
       default:
         return <ClassTypeContent />;
     }
   };
 
-  useEffect(() => {
-    if (isMounted === false) {
-      fetchAllClassType().catch((err) => console.log(err));
-      fetchAllSubject().catch((err) => console.log(err));
-    }
-    isMounted = true;
-  }, []);
 
   return (
     <div className="Dashboard d-flex">

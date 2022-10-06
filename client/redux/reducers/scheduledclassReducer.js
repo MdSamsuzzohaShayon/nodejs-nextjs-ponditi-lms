@@ -6,9 +6,7 @@ import Router from 'next/router';
 import { setErrorList } from './elementsSlice';
 import axios from '../../config/axios';
 import { scheduledclassStatus } from '../../config/keys';
-import { fetchAllClassTypes } from './classtypeReducer';
-import { fetchAllSubjects } from './subjectReducer';
-import { resetAuthUserInfo } from './userReducer';
+import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
 
 const { APPROVED, PENDING, REJECTED } = scheduledclassStatus;
 
@@ -28,30 +26,7 @@ const initialAScheduledClass = {
   hours: iscHours,
 };
 
-export const fetchSingleUser = createAsyncThunk(
-  'scheduledclass/selectedSearchUser',
-  async (userId, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.get(`/user/single/${userId}`);
-      // console.log(response.data);
-      if (response.data.classTypes.legth === 0) {
-        // fetch all class types
-        await dispatch(fetchAllClassTypes(null));
-      }
-      if (response.data.subjects.legth === 0) {
-        // fetch all subjects
-        await dispatch(fetchAllSubjects(null));
-      }
-      return response.data;
-    } catch (error) {
-      // console.log(error.response.status);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
+
 
 // scou = Scheduled Class of a User
 export const fetchAllRequestedSCOU = createAsyncThunk(
@@ -161,7 +136,7 @@ export const scheduledclassSlice = createSlice({
     //   // We can directly add the new post object to our posts array
     //   state.posts.push(action.payload)
     // })
-    builder.addCase(fetchSingleUser.fulfilled, (state, action) => {
+    builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
       state.selectedSearchUser = action.payload.user;
       const initialSchedule = {

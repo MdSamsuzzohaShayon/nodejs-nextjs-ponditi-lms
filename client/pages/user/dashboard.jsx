@@ -11,12 +11,10 @@ import {
 import {
   setSelectedContent,
   toggleAuthUser,
+  fetchSingleUser,
 } from '../../redux/reducers/userReducer';
 
-import {
-  fetchAllRequestedSCOU,
-  fetchSingleUser,
-} from '../../redux/reducers/scheduledclassReducer';
+import { fetchAllRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
 import Layout from '../../components/layouts/Layout';
 import Profile from '../../components/user/Profile';
 import SOTRequest from '../../components/scheduledclass/SOTRequest';
@@ -26,7 +24,7 @@ import { userDashboardSidebarList, roles } from '../../config/keys';
 
 const { TEACHER, STUDENT, ADMIN } = roles;
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED} =
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } =
   userDashboardSidebarList;
 
 function dashboard() {
@@ -53,7 +51,7 @@ function dashboard() {
       case CLASS_SCHEDULED:
         return <ApprovedClass />;
       case REJECTED:
-          return <RejectedClass />;
+        return <RejectedClass />;
 
       default:
         return <Profile />;

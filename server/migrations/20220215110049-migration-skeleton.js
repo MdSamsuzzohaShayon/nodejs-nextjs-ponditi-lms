@@ -21,7 +21,8 @@ module.exports = {
     );
     */
 
-    return queryInterface.sequelize.transaction((t) => Promise.all([
+    return queryInterface.sequelize.transaction((t) =>
+      Promise.all([
         /*
         queryInterface.addColumn(
           'Review',
@@ -33,6 +34,7 @@ module.exports = {
           { transaction: t },
         ),
         */
+        /*
         queryInterface.addColumn(
           'Review',
           'publish',
@@ -43,16 +45,33 @@ module.exports = {
           },
           { transaction: t },
         ),
-      ]),
+        */
+       /*
+        queryInterface.addColumn(
+          'User',
+          'isActive',
+          {
+            type: new Sequelize.DataTypes.STRING(50),
+            defaultValue: "PENDING",
+            allowNull: false,
+          },
+          { transaction: t }
+        ),
+        */
+      ])
     );
   },
 
-  async down(queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-  },
+  down: (queryInterface, Sequelize) =>
+    queryInterface.sequelize.transaction((t) =>
+      Promise.all([
+        /**
+         * Add reverting commands here.
+         *
+         * Example:
+         * await queryInterface.dropTable('users');
+         */
+        // queryInterface.removeColumn('User', 'isActive', { transaction: t }),
+      ])
+    ),
 };

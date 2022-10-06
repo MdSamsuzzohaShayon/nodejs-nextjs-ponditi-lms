@@ -73,7 +73,7 @@ function Step2({ inputChangeHandler, nextStepHandler, update }) {
       </div>
 
       {update === false && (
-      <div className="row mb-3 mx-0">
+      <div className="row mb-3 mx-0 d-flex w-full justify-content-end">
         <button
           className="btn btn-primary w-fit"
           type="button"

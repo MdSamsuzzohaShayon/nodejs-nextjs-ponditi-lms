@@ -13,11 +13,12 @@
 ### Development
 
  - **Requirement update-2**
+ - Reset all targeted value after making request and mounting a component
  - **Register user**
-   - Only digit for OTP Code 
-   - Verify user profile by admin (Until they are verified they will be unlisted from search)
-   - Next button to the right 
-   - Use bulk sms bd for sending messages
+   - Only digit for OTP Code ✅
+   - Verify user profile by **admin** (Until they are verified they will be unlisted from search) 
+   - Next button to the right ✅
+   - Use bulk sms bd for sending messages ✅
  - **Send request**
    - Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student 
    - After filtering by default they will select subjects and class (By default no available class and subjects)
@@ -117,5 +118,5 @@
  - Migrations
  ```
  npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
- npx sequelize-cli db:migrate:undo:all --to XXXXXXXXXXXXXX-create-posts.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
+ npx sequelize-cli db:migrate:undo:all --to 20220215110049-migration-skeleton.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```
