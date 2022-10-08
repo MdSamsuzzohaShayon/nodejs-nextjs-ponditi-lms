@@ -90,7 +90,7 @@ const initiateScheduledClass = async (req, res) => {
       status: PENDING,
       types: ONLINE,
       start: scObj.start,
-      hours: scObj.hours,
+      // hours: scObj.hours,
       perHourRate: findRecever.dataValues.rate,
     };
     if (scObj.desc) {
@@ -218,7 +218,7 @@ const getAllScheduledClassofAMember = async (req, res) => {
         status: newScheduledClass[i].status,
         start: newScheduledClass[i].start,
         perHourRate: newScheduledClass[i].perHourRate,
-        hours: newScheduledClass[i].hours,
+        // hours: newScheduledClass[i].hours,
         createdAt: newScheduledClass[i].createdAt,
         updatedAt: newScheduledClass[i].updatedAt,
       };

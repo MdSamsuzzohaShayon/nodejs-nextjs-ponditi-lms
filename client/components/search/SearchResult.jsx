@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @next/next/no-img-element */
 import { useSelector, useDispatch } from 'react-redux';
+import Link from 'next/link';
 import Router from 'next/router';
 import {
   setRPCurrentPage,
@@ -11,12 +12,20 @@ import {
 import {
   setSelectedSearchUser,
   showRequest,
+  setInitializeSchedule,
 } from '../../redux/reducers/scheduledclassReducer';
+import { roles } from '../../config/keys';
+
+const { STUDENT } = roles;
 
 function SearchResult() {
   const dispatch = useDispatch();
 
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const searchUserList = useSelector((state) => state.search.searchUserList);
+  const searchParams = useSelector((state) => state.search.searchParams);
+  const classtypeList = useSelector((state) => state.classtype.classtypeList);
+  const subjectList = useSelector((state) => state.subject.subjectList);
   const searchAllUserList = useSelector(
     (state) => state.search.searchAllUserList
   );
@@ -73,6 +82,29 @@ function SearchResult() {
     Router.push(`/search/selected/?userId=${userId}`);
   };
 
+  const headToSendRequestHandler = (htsre, teacherId) => {
+    htsre.preventDefault();
+    const classAndSubject = {};
+    if (searchParams.ClassTypeId === '0') {
+      classAndSubject.ClassTypeId = classtypeList[1].id;
+    } else {
+      classAndSubject.ClassTypeId = parseInt(searchParams.ClassTypeId, 10);
+    }
+    if (searchParams.SubjectId === '0') {
+      classAndSubject.SubjectId = subjectList[1].id;
+    } else {
+      classAndSubject.SubjectId = parseInt(searchParams.SubjectId, 10);
+    }
+    dispatch(setInitializeSchedule(classAndSubject));
+    // console.log(classAndSubject);
+    // console.log(subjectList);
+    // Set localstorage
+    // css = Class Scheduled and Subject
+    // window.localStorage.setItem('css', JSON.stringify(classAndSubject));
+    // redirect to `/search/request/${sul.id}`
+    Router.push(`/search/request/${teacherId}`);
+  };
+
   return (
     <div className="SearchResult">
       {searchUserList && (
@@ -102,22 +134,31 @@ function SearchResult() {
                         <p className="card-text">
                           Experience: {sul?.experience} years
                         </p>
-                        <p className="card-text">Fees: {sul?.rate} tk per hour</p>
+                        <p className="card-text">
+                          Fees: {sul?.rate} tk per hour
+                        </p>
                       </div>
                     </div>
                     <div className="col-md-3 vertical-center ">
-                      <a
-                        href="#"
-                        className="btn btn-primary my-2 request-details"
-                      >
-                        Send Request
-                      </a>
+                      {authUserInfo?.role === STUDENT && (
+                        <button
+                          type="button"
+                          className="btn btn-primary my-2 request-details"
+                          onClick={(htsre) =>
+                            headToSendRequestHandler(htsre, sul.id)
+                          }
+                        >
+                          Send Request
+                        </button>
+                      )}
                       <button
                         type="button"
-                        className="btn btn-danger my-2 request-details"
-                        onClick={(vde) => viewDetailHandler(vde, sul.id)}
+                        className="btn btn-primary my-2 request-details"
+                        // onClick={(vde) => viewDetailHandler(vde, sul.id)}
                       >
-                        View Details
+                        <Link href={`/search/detail/${sul.id}`}>
+                          View Details
+                        </Link>
                       </button>
                     </div>
                   </div>

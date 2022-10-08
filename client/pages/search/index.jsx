@@ -11,8 +11,11 @@ import {
   setSearchUserList,
   setSearchAllUserList,
   setRPTotalPage,
-  resetSearchUserList
+  resetSearchUserList,
+  setAllSubjectList
 } from '../../redux/reducers/searchReducer';
+import { fetchAllClassTypesSearch } from '../../redux/reducers/classtypeReducer';
+import { fetchAllSubjectsSearch } from '../../redux/reducers/subjectReducer';
 
 import Layout from '../../components/layouts/Layout';
 import SearchForm from '../../components/search/SearchForm';
@@ -32,9 +35,8 @@ function search() {
   // Search on mount
   const initialSearchUsers = async () => {
     try {
-      console.log(searchParams);
-      const response = await axios.get('/search/teacherstudent', {
-        params: searchParams, 
+      const response = await axios.get('/search/teacher', {
+        params: searchParams,
       });
       // console.log(response);
       if (response.status === 200) {
@@ -50,14 +52,11 @@ function search() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
-      if(error?.response?.status === 404){
+      if (error?.response?.status === 404) {
         dispatch(resetSearchUserList());
       }
-
     }
   };
-
-
 
   // get localstorage
   useEffect(() => {
@@ -66,10 +65,21 @@ function search() {
       if (
         JSON.stringify(initialSearchParams) === JSON.stringify(searchParams)
       ) {
+        // Set local storage from home page
         const searchData = localStorage.getItem('search');
         if (searchData) {
           dispatch(setSearchParams(JSON.parse(searchData)));
         }
+
+        (async () => {
+          if (isMounted === false) {
+            await Promise.all([
+              dispatch(fetchAllClassTypesSearch()),
+              dispatch(fetchAllSubjectsSearch()),
+            ]);
+
+          }
+        })();
       }
       // console.log(searchData);
       // set search params if there is no params availabl
@@ -80,12 +90,13 @@ function search() {
     isMounted = true;
   }, []);
 
+
   return (
     <Layout>
       <div className="search">
         <section className="section section-1 bg-secondary search-form">
           <div className="container">
-            <SearchForm  />
+            <SearchForm />
           </div>
         </section>
         <section className="section section-2 search-result">

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import Layout from '../../components/layouts/Layout';
-import { fetchSingleUser } from '../../redux/reducers/scheduledclassReducer';
+// import { fetchSingleUser } from '../../redux/reducers/scheduledclassReducer';
 import ErrorMessages from '../../components/elements/ErrorMessages';
 import SendRequest from '../../components/detail/SendRequest';
 import Detail from '../../components/user/Detail';
@@ -29,7 +29,7 @@ function selected() {
       }
       if (Object.keys(selectedSearchUser).length === 0) {
         // get single user
-        dispatch(fetchSingleUser(userId));
+        // dispatch(fetchSingleUser(userId));
       }
     }
     isMounted = true;

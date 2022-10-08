@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/destructuring-assignment */
 import Router from 'next/router';
@@ -95,7 +96,7 @@ function ClassTypeAdd(props) {
         <div className="row mx-0 mb-3">
           {subjectList &&
             subjectList.map((sl, slIdx) => (
-              <div className="col-md-3" key={sl.id}>
+              <div className="col-md-3" key={slIdx}>
                 <div className="form-check form-check-inline">
                   <input
                     className="form-check-input"

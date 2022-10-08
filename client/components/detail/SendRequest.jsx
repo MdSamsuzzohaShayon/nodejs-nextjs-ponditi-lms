@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
 import {
@@ -12,6 +11,9 @@ import {
 import axios from '../../config/axios';
 import { inputToISOtime } from '../../utils/timeFunction';
 import { roles } from '../../config/keys';
+import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
+
+import Calendar from '../elements/Calendar';
 
 const { TEACHER } = roles;
 
@@ -22,8 +24,7 @@ function SendRequest() {
   const selectedClassTypesSU = useSelector(
     (state) => state.scheduledclass.selectedClassTypesSU
   );
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
-  const subjectList = useSelector((state) => state.subject.subjectList);
+
   const selectedSubjectsSU = useSelector(
     (state) => state.scheduledclass.selectedSubjectsSU
   );
@@ -33,6 +34,7 @@ function SendRequest() {
   const initializeSchedule = useSelector(
     (state) => state.scheduledclass.initializeSchedule
   );
+  const slotList = useSelector((state) => state.scheduledclass.slotList);
 
   const cancelRequesthandler = (cre) => {
     cre.preventDefault();
@@ -45,16 +47,25 @@ function SendRequest() {
     dispatch(setInitializeSchedule({ [ice.target.name]: ice.target.value }));
   };
 
-  const startTimeChangeHandler = (ste) => {
-    ste.preventDefault();
-    dispatch(
-      setInitializeSchedule({ start: inputToISOtime(ste.target.value) })
-    );
-  };
+  // const startTimeChangeHandler = (ste) => {
+  //   ste.preventDefault();
+  //   dispatch(
+  //     setInitializeSchedule({ start: inputToISOtime(ste.target.value) })
+  //   );
+  // };
 
   const initializeScheduledClassHandler = async (isce) => {
     isce.preventDefault();
-    console.log('Send request with current time of client');
+    if (!initializeSchedule.time) {
+      return dispatch(setErrorList(['You must select a slot']));
+    }
+    const startDateTime = new Date([
+      initializeSchedule.date,
+      initializeSchedule.time,
+    ]);
+    // console.log(startDateTime);
+    // console.log(startDateTime.toISOString());
+    // console.log('Send request with current time of client');
     if (!initializeSchedule.receverId) {
       return dispatch(setErrorList(['You must have a recever']));
     }
@@ -65,13 +76,17 @@ function SendRequest() {
       return dispatch(setErrorList(['You must have a subject']));
     }
     // console.log(initializeSchedule);
+    const newObj = { ...initializeSchedule };
+    delete newObj.date;
+    delete newObj.time;
+    newObj.start = startDateTime.toISOString();
+    // console.log(newObj);
+
+
 
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.post(
-        '/scheduledclass/initiate',
-        initializeSchedule
-      );
+      const response = await axios.post('/scheduledclass/initiate', newObj);
       if (response.status === 201) {
         Router.push('/user/dashboard');
       }
@@ -80,22 +95,45 @@ function SendRequest() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        Router.push('/user/login');
+      }
     } finally {
       // console.log('finally');
       dispatch(toggleLoading(false));
     }
   };
 
-  useEffect(() => {
-    if (authUserInfo.role === TEACHER) {
-      Router.push('/user/dashboard');
+
+
+  const dateChangeHandler = (sde, detail) => {
+    sde.preventDefault();
+    // console.log(detail);
+    // const tutionDate = new Date(detail.year, detail.month, detail.date);
+    // console.log(tutionDate.toISOString());
+    dispatch(
+      setInitializeSchedule({
+        date: `${detail.year}-${detail.month}-${detail.date}`,
+      })
+    );
+  };
+
+  const selectSlotHandler = (sse, slot, ampm) => {
+    sse.preventDefault();
+    if (ampm === 'PM') {
+      dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
+    } else {
+      dispatch(setInitializeSchedule({ time: `${slot}:00` }));
     }
-  }, []);
+  };
 
   return (
     <div className="SendRequest">
+      <h1>Send Request</h1>
       <form onSubmit={initializeScheduledClassHandler}>
-        <div className="row mb-3 mx-0">
+        {/* <div className="row mb-3 mx-0">
           <div className="col-md-6">
             <label htmlFor="ClassTypeId">Available Classes</label>
             <select
@@ -140,27 +178,22 @@ function SendRequest() {
                   ))}
             </select>
           </div>
-        </div>
+        </div> */}
         <div className="row mb-3 mx-0">
-          <div className="col-md-6">
-            <label htmlFor="start">Start at</label>
-            <input
-              className="form-control"
-              type="datetime-local"
-              name="start"
-              onChange={startTimeChangeHandler}
-              defaultValue={initializeSchedule.start}
-            />
+          <div className="my-2 week-calendar">
+            <Calendar onDateChange={dateChangeHandler} />
           </div>
-          <div className="col-md-6">
-            <label htmlFor="end">Durations (hours)</label>
-            <input
-              className="form-control"
-              type="number"
-              name="hours"
-              onChange={inputChangeHandler}
-              defaultValue={initializeSchedule.hours}
-            />
+          <div className="time-slot d-flex w-full justify-content-between align-items-start flex-wrap">
+            {slotList.map((sl) => (
+              <button
+                className="btn btn-outline-primary"
+                type="button"
+                key={sl.id}
+                onClick={(sse) => selectSlotHandler(sse, sl.slot, sl.ampm)}
+              >
+                {`${sl.slotName} ${sl.ampm}`}{' '}
+              </button>
+            ))}
           </div>
         </div>
         <div className="row mb-3 mx-0">
@@ -176,12 +209,17 @@ function SendRequest() {
             />
           </div>
         </div>
+        <div className="row mb-3 mx-0">
+          <div className="col-md-6">
+            <h3 htmlFor="rate">Hourly Rate {selectedSearchUser?.rate}</h3>
+          </div>
+        </div>
         <hr />
         <div className="row mb-3 mx-0">
-          <div className="col-md-12">
+          {/* <div className="col-md-12">
             <h5>Estimated bill </h5>
             <span>{initializeSchedule.hours * selectedSearchUser.rate} TK</span>
-          </div>
+          </div> */}
         </div>
         <div className="row mb-3 mx-0">
           <div className="col-md-12">

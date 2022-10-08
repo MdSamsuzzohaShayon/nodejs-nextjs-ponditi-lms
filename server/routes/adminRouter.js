@@ -18,7 +18,6 @@ const {
  */
 router.post(
   '/add',
-  ensureGuest,
   check('firstname').notEmpty(),
   check('lastname').notEmpty(),
   check('phone').notEmpty(),
@@ -36,7 +35,7 @@ router.post(
  * @route
  * Login as admin
  */
-router.post('/login', ensureGuest, check('password').notEmpty(), loginAdmin);
+router.post('/login', check('password').notEmpty(), loginAdmin);
 
 
 // make relationship with class and subjects [many-to-many]

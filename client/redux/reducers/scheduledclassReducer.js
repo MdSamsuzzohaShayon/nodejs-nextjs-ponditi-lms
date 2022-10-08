@@ -15,18 +15,106 @@ const initicalAddScheduledClass = {
   subjectId: '',
 };
 
+const today = new Date();
 const iscHours = 1;
-const iscStart = new Date().toISOString();
+const iscStart = today.toISOString();
 const initialAScheduledClass = {
-  receverId: 2,
-  ClassTypeId: 3,
-  SubjectId: 1,
+  receverId: null,
+  ClassTypeId: null ,
+  SubjectId: null ,
   desc: 'This is description',
-  start: iscStart,
-  hours: iscHours,
+  date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+  time: null,
+  // start: iscStart,
+  // hours: iscHours,
 };
 
-
+const initialSlotList = [
+  {
+    id: 1,
+    slot: 8,
+    slotName: '08 - 09',
+    ampm: 'AM',
+  },
+  {
+    id: 2,
+    slot: 9,
+    slotName: '09 - 10',
+    ampm: 'AM',
+  },
+  {
+    id: 3,
+    slot: 10,
+    slotName: '10 - 11',
+    ampm: 'AM',
+  },
+  {
+    id: 4,
+    slot: 11,
+    slotName: '11 - 12',
+    ampm: 'AM',
+  },
+  {
+    id: 5,
+    slot: 12,
+    slotName: '12 - 01',
+    ampm: 'PM',
+  },
+  {
+    id: 6,
+    slot: 1,
+    slotName: '01 - 02',
+    ampm: 'PM',
+  },
+  {
+    id: 7,
+    slot: 2,
+    slotName: '02 - 03',
+    ampm: 'PM',
+  },
+  {
+    id: 8,
+    slot: 3,
+    slotName: '03 - 04',
+    ampm: 'PM',
+  },
+  {
+    id: 9,
+    slot: 4,
+    slotName: '04 - 05',
+    ampm: 'PM',
+  },
+  {
+    id: 10,
+    slot: 5,
+    slotName: '05 - 06',
+    ampm: 'PM',
+  },
+  {
+    id: 11,
+    slot: 6,
+    slotName: '06 - 07',
+    ampm: 'PM',
+  },
+  {
+    id: 12,
+    slot: 7,
+    slotName: '07 - 08',
+    ampm: 'PM',
+  },
+  {
+    id: 13,
+    slot: 8,
+    slotName: '08 - 09',
+    ampm: 'PM',
+  },
+  {
+    id: 14,
+    slot: 9,
+    slotName: '09 - 10',
+    ampm: 'PM',
+  }
+];
 
 // scou = Scheduled Class of a User
 export const fetchAllRequestedSCOU = createAsyncThunk(
@@ -68,7 +156,7 @@ export const fetchSingleScheduledClass = createAsyncThunk(
         window.localStorage.removeItem('user');
         dispatch(resetAuthUserInfo());
         Router.push('/user/login');
-      }else if(error?.response?.status === 404){
+      } else if (error?.response?.status === 404) {
         Router.push('/user/dashboard');
       }
       return rejectWithValue(error.response.data);
@@ -84,6 +172,7 @@ export const scheduledclassSlice = createSlice({
      */
     showReviewFields: false,
     madeRequest: false,
+    slotList: initialSlotList,
     /**
      * @dynamic or changable elements of the website
      */
@@ -105,7 +194,7 @@ export const scheduledclassSlice = createSlice({
     showRequest: (state, action) => {
       state.madeRequest = action.payload;
     },
-    setShowReviewFields: (state, action)=>{
+    setShowReviewFields: (state, action) => {
       state.showReviewFields = action.payload;
     },
     setRequestedSCOU: (state, action) => {
@@ -139,6 +228,7 @@ export const scheduledclassSlice = createSlice({
     builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
       state.selectedSearchUser = action.payload.user;
+      /*
       const initialSchedule = {
         receverId: action.payload.user.id,
         desc: 'This is description',
@@ -154,6 +244,7 @@ export const scheduledclassSlice = createSlice({
         initialSchedule.ClassTypeId = action.payload.classTypes[0].id;
       }
       state.initializeSchedule = initialSchedule;
+      */
     });
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
@@ -168,7 +259,7 @@ export const scheduledclassSlice = createSlice({
       );
     });
 
-    builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action)=>{
+    builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action) => {
       state.singleScheduledClass = action.payload.scheduledclass;
     });
   },

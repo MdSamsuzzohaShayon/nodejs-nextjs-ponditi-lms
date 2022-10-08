@@ -9,12 +9,14 @@ import {
   userDashboardSidebarList,
   SEND_CODE,
   scheduledclassStatus,
+  roles,
 } from '../../config/keys';
 import axios from '../../config/axios';
 
 const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } =
   userDashboardSidebarList;
 const { ANY, PENDING, APPROVED } = scheduledclassStatus;
+const { TEACHER } = roles;
 
 // ps = property step
 const initialps1 = [
@@ -212,7 +214,8 @@ export const userSlice = createSlice({
      * @dynamic all those connected to backend and databases
      */
     currentUser: initialCurrentUser, // The user who logged in
-    selectedUser: initialCurrentUser, // the user whose detail will be shown
+    selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
+    selectedUserRole: TEACHER, // the user whose detail will be shown
 
     userFormsType: SEND_CODE,
     loginInfo: initialLoginInfo,
@@ -312,7 +315,6 @@ export const userSlice = createSlice({
     builder.addCase(fetchSelectedSingleUser.rejected, (state) => {
       // console.log(action.payload, state);
       state.allUserList = [];
-      state.authUserInfo = initialAuthUserInfo;
     });
 
     builder.addCase(fetchAllUsersByAdmin.fulfilled, (state, action) => {

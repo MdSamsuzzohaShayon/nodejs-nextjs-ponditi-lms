@@ -2,13 +2,10 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable @next/next/no-img-element */
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import axios from '../../config/axios';
 import { setErrorList } from '../../redux/reducers/elementsSlice';
-import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
-import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import {
   setSearchParams,
   setSearchAllUserList,
@@ -18,6 +15,10 @@ import {
   setRPCurrentPage,
   resetSearchUserList,
 } from '../../redux/reducers/searchReducer';
+import { setSubjectList } from '../../redux/reducers/subjectReducer';
+import { types } from '../../config/keys';
+
+const { ANY } = types;
 
 function SearchForm() {
   const searchParams = useSelector((state) => state.search.searchParams);
@@ -26,54 +27,19 @@ function SearchForm() {
   const rpTotal = useSelector((state) => state.search.rpTotal);
 
   const subjectList = useSelector((state) => state.subject.subjectList);
+  const subjectListCopy = useSelector((state) => state.subject.subjectListCopy);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
 
   /**
    * @fetch all data on component mounted
    */
-  let isMounted = false;
+  const isMounted = false;
   const dispatch = useDispatch();
-
-  const fetchAllClassType = async () => {
-    try {
-      const response = await axios.get('/classtype/all');
-      if (response.status === 200) {
-        // dispatch(setClasstypeList(response.data.classTypes));
-        const defaultItem = { id: 0, name: 'Any Class' };
-        // setNewClasstypeList([defaultItem, ...response.data.classTypes]);
-        dispatch(setClasstypeList([defaultItem, ...response.data.classTypes]));
-      }
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error.response.data.msg]));
-      }
-    }
-  };
-
-  // Initial subject list
-  const fetchAllSubject = async () => {
-    try {
-      const response = await axios.get('/subject/all');
-      if (response.status === 200) {
-        // console.log(response);
-        // dispatch(setSubjectList(response.data.subjects));
-        const defaultItem = { id: 0, name: 'Any Subject' };
-        // dispatch(setNewSubjectList([defaultItem, ...response.data.subjects]));
-        dispatch(setSubjectList([defaultItem, ...response.data.subjects]));
-      }
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error.response.data.msg]));
-      }
-    }
-  };
 
   const searchTeacherHandler = async () => {
     try {
       // console.log(searchParams);
-      const response = await axios.get('/search/teacherstudent', {
+      const response = await axios.get('/search/teacher', {
         params: searchParams,
       });
       if (response.status === 200) {
@@ -101,14 +67,26 @@ function SearchForm() {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      if (isMounted === false) {
-        await Promise.all([fetchAllClassType(), fetchAllSubject()]);
+  const classtypeInputChangeHandler = (iche) => {
+    const val = parseInt(iche.target.value, 10);
+    // console.log(iche.target.value === '0');
+    // ClassTypeId
+    dispatch(setSearchParams({ [iche.target.name]: iche.target.value }));
+    if (iche.target.value === '0') {
+      dispatch(setSubjectList(subjectListCopy));
+    } else {
+      const newSubjectList = classtypeList.find(
+        (ctl) => ctl.id === val
+      )?.Subjects;
+      if (newSubjectList?.length > 0) {
+        // dispatch(setCurrentUser({ SubjectId: [newSubjectList[0].id] }));
+        dispatch(setSubjectList(newSubjectList));
+        dispatch(
+          setSearchParams({ SubjectId: newSubjectList[0].id.toString() })
+        );
       }
-    })();
-    isMounted = true;
-  }, []);
+    }
+  };
 
   // online, teacher's location, student's location
   const inputChangeHandler = (tiche) => {
@@ -153,7 +131,7 @@ function SearchForm() {
                 name="ClassTypeId"
                 id="ClassTypeId"
                 className="form-control border-0 shadow-none"
-                onChange={inputChangeHandler}
+                onChange={classtypeInputChangeHandler}
                 defaultValue={searchParams.ClassTypeId}
               >
                 {classtypeList !== null ? (

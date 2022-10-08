@@ -2,12 +2,11 @@
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { showRequest } from '../../redux/reducers/scheduledclassReducer';
-import { roles, scheduledclassStatus } from '../../config/keys';
+import { roles } from '../../config/keys';
 
-const { STUDENT, TEACHER } = roles;
-const { PENDING } = scheduledclassStatus;
+const { TEACHER } = roles;
 
-function Detail({ userDetail }) {
+function Detail({ userDetail, update }) {
   const dispatch = useDispatch();
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
@@ -34,8 +33,13 @@ function Detail({ userDetail }) {
                   <h1 className="h1">
                     {`${userDetail.firstname} ${userDetail.lastname}`}
                   </h1>
+                  {update && (
+                    <button className="btn btn-primary" type="button">
+                      <Link href="/user/update">Edit</Link>
+                    </button>
+                  )}
 
-                  {authUserInfo?.id !== userDetail.id && authUserInfo?.role === STUDENT && (
+                  {update === false && authUserInfo.role !== TEACHER && (
                     <button
                       className="btn btn-primary"
                       type="button"
@@ -56,8 +60,8 @@ function Detail({ userDetail }) {
                   </div>
                   <p>{userDetail?.role}</p>
                   <p>
-                    {authUserInfo?.role &&
-                      authUserInfo.isActive === PENDING && (
+                    {userDetail?.role === TEACHER &&
+                      userDetail.isActive === false && (
                         <div className="alert alert-danger">
                           This profile is under survullence. If your
                           informations assure that all informations is currect

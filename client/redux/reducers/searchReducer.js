@@ -3,14 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import { types, roles } from '../../config/keys';
 
 const { ONLINE, TL, SL, ANY } = types;
-const { TEACHER } = roles;
 
 export const initialSearchParams = {
   location: '',
   ClassTypeId: '', // id
   SubjectId: '', // id
   type: ANY, // Online - tution location
-  role: TEACHER,
 };
 
 export const searchSlice = createSlice({

@@ -20,10 +20,10 @@
    - Next button to the right ✅
    - Use bulk sms bd for sending messages ✅
  - **Send request**
-   - Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student 
-   - After filtering by default they will select subjects and class (By default no available class and subjects)
-   - No duration or estimated bill - only hourly rate 
-   - Select slot (8 to 10)
+   - Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student ✅
+   - After filtering by default they will select subjects and class (By default no available class and subjects) ✅
+   - No duration or estimated bill - only hourly rate ✅
+   - Select slot (8 to 10) ✅
  - **Update profile**
    1. Educational qualification
       - Exam name (SSC / HSC / )
@@ -55,6 +55,11 @@
    - Minutes counting 
    - Finish tution (per minute count)
    - Mark as paid (Student can not send request until they pay their dues)
+
+  - **Modification**
+    - select default subject and class of teacher if search has none of it
+    - select item background in Calender
+    - Make responsive
 
 
 
@@ -117,6 +122,6 @@
  ```
  - Migrations
  ```
- npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
  npx sequelize-cli db:migrate:undo:all --to 20220215110049-migration-skeleton.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
+ npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```

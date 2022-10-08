@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   toggleLoading,
   setErrorList,
+  resetErrorList,
 } from '../../redux/reducers/elementsSlice';
 import {
   toggleAuthUser,
@@ -163,6 +164,7 @@ function update() {
         const options = {
           headers: { 'Content-Type': 'application/json' },
         };
+        // console.log(currentUser);
         const response = await axios.put(
           `/user/update/${authUserInfo.id}`,
           currentUser,
@@ -173,7 +175,8 @@ function update() {
           response.status === 201 ||
           response.status === 200
         ) {
-          console.log(response);
+          // console.log(response);
+          dispatch(resetErrorList());
           // const newUser = Object.assign(currentUser, response.data.user);
           dispatch(setCurrentUser({ ...response.data.user }));
         }

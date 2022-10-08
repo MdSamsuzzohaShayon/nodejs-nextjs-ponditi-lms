@@ -2,28 +2,36 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../config/axios';
 import { setErrorList } from './elementsSlice';
+import { setAllSubjectList } from './searchReducer';
 
 const initialAddSubject = {
   name: '',
   classTypeId: [],
 };
 
+const fetchSubjects = async (args, { dispatch, rejectWithValue }) => {
+  try {
+    // dispatch(toggleLoading(true));
+    // console.log('try');
+    const response = await axios.get('/subject/all');
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
+    }
+    return rejectWithValue(error.response.data);
+  }
+};
+
 export const fetchAllSubjects = createAsyncThunk(
   'scheduledclass/getAllSubjects',
-  async (args, { dispatch, rejectWithValue }) => {
-    try {
-      // dispatch(toggleLoading(true));
-      // console.log('try');
-      const response = await axios.get('/subject/all');
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      return rejectWithValue(error.response.data);
-    }
-  }
+  fetchSubjects
+);
+
+export const fetchAllSubjectsSearch = createAsyncThunk(
+  'scheduledclass/getAllSubjectsSearch',
+  fetchSubjects
 );
 
 export const subjectSlice = createSlice({
@@ -33,6 +41,7 @@ export const subjectSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     subjectList: [],
+    subjectListCopy: [], // Unchangable
     addSubject: initialAddSubject,
   },
   reducers: {
@@ -54,6 +63,11 @@ export const subjectSlice = createSlice({
       if (action.payload.subjects.length > 0) {
         state.subjectList = action.payload.subjects;
       }
+    });
+    builder.addCase(fetchAllSubjectsSearch.fulfilled, (state, action) => {
+      const defaultItem = { id: 0, name: 'Any Subject' };
+      state.subjectList = [defaultItem, ...action.payload.subjects];
+      state.subjectListCopy = [defaultItem, ...action.payload.subjects];
     });
   },
 });

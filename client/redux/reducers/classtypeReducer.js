@@ -9,23 +9,30 @@ const initialAddClassType = {
   subjectId: [],
 };
 
+const fetchClassTypes = async (args, { dispatch, rejectWithValue }) => {
+  try {
+    // dispatch(toggleLoading(true));
+    // console.log('try');
+    const response = await axios.get('/classtype/all');
+    // console.log(response);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
+    }
+    return rejectWithValue(error.response.data);
+  }
+};
+
 export const fetchAllClassTypes = createAsyncThunk(
   'scheduledclass/getClassTypes',
-  async (args, { dispatch, rejectWithValue }) => {
-    try {
-      // dispatch(toggleLoading(true));
-      // console.log('try');
-      const response = await axios.get('/classtype/all');
-      // console.log(response);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      return rejectWithValue(error.response.data);
-    }
-  }
+  fetchClassTypes
+);
+
+export const fetchAllClassTypesSearch = createAsyncThunk(
+  'scheduledclass/getClassTypesSearch',
+  fetchClassTypes
 );
 
 export const classtypeSlice = createSlice({
@@ -47,20 +54,28 @@ export const classtypeSlice = createSlice({
     setAddClassType: (state, action) => {
       state.addClassType = { ...state.addClassType, ...action.payload };
     },
-    resetAddClassType: (state)=>{
+    resetAddClassType: (state) => {
       state.addClassType = initialAddClassType;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllClassTypes.fulfilled, (state, action) => {
-      if(action.payload.classTypes.length > 0){
+      if (action.payload.classTypes.length > 0) {
         state.classtypeList = action.payload.classTypes;
       }
+    });
+    builder.addCase(fetchAllClassTypesSearch.fulfilled, (state, action) => {
+      const defaultItem = { id: 0, name: 'Any Class' };
+      state.classtypeList = [defaultItem, ...action.payload.classTypes];
     });
   },
 });
 
-export const { setClasstypeList, resetClasstypeList, setAddClassType, resetAddClassType } =
-  classtypeSlice.actions;
+export const {
+  setClasstypeList,
+  resetClasstypeList,
+  setAddClassType,
+  resetAddClassType,
+} = classtypeSlice.actions;
 
 export default classtypeSlice.reducer;

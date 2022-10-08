@@ -72,6 +72,7 @@ module.exports = {
          * await queryInterface.dropTable('users');
          */
         // queryInterface.removeColumn('User', 'isActive', { transaction: t }),
+        queryInterface.removeColumn('ScheduledClass', 'hours', { transaction: t }),
       ])
     ),
 };

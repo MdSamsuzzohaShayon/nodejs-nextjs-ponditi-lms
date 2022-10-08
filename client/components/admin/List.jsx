@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 
@@ -7,10 +8,10 @@ function List(props) {
       <h1>{props.title}</h1>
       {props.list.length > 0 && (
         <ul className="list-group">
-          {props.list.map((ctl) => (
+          {props.list.map((ctl, idx) => (
             <li
               className="list-group-item rounded-1 d-flex justify-content-between"
-              key={ctl.id}
+              key={idx}
             >
               <span className="text-capitalize props prop-1">{ctl.name}</span>
               <p className="props prop-2 text-center">

@@ -69,9 +69,9 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.INTEGER(10),
       },
       // hours
-      hours: {
-        type: new DataTypes.INTEGER(10),
-      },
+      // hours: {
+      //   type: new DataTypes.INTEGER(10),
+      // },
       // bill
       // total hours
       // reviews

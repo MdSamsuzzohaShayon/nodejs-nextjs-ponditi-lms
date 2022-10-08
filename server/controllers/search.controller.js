@@ -11,19 +11,22 @@ const { Op } = sequelize;
 const db = require('../models');
 
 const { User, Subject, ClassType } = db;
-const { roles, types } = require('../config/keys.js');
+const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
-const { ANY, ONLINE, TL, SL } = types;
+const {
+ ANY, ONLINE, TL, SL 
+} = types;
+const { APPROVED } = scheduledClassStatus;
 
 const searchTeacher = async (req, res, next) => {
   try {
     const searchQuery = {};
-    let where = {};
+    let where = { isActive: APPROVED, role: TEACHER };
     const include = [];
 
     const searchParams = Object.assign(req.query);
-    console.log({ searchParams });
+    // console.log({ searchParams });
 
     /**
      * @search by location, role, classtypes, subjects
@@ -39,15 +42,17 @@ const searchTeacher = async (req, res, next) => {
       where.location = sequelize.where(
         sequelize.fn('LOWER', sequelize.col('location')),
         'LIKE',
-        `%${searchParams.location.toLowerCase()}%`
+        `%${searchParams.location.toLowerCase()}%`,
       ); // making case insensative
     }
+    /*
     if (
       searchParams.role &&
       searchParams.role !== null &&
       searchParams.role !== ANY
     ) {
       // console.log({role: searchParams.role});
+      // Search reacher only for now
       if (searchParams.role === TEACHER) {
         where.role = TEACHER;
       } else if (searchParams.role === STUDENT) {
@@ -55,6 +60,16 @@ const searchTeacher = async (req, res, next) => {
       } else {
         // null or ANY type
       }
+    }
+    */
+    // Search by location
+    if (
+      searchParams.type &&
+      searchParams.type !== ANY &&
+      searchParams.type !== '' &&
+      searchParams.type !== '0'
+    ) {
+      where.status = searchParams.type;
     }
 
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);
@@ -64,7 +79,7 @@ const searchTeacher = async (req, res, next) => {
       searchParams.SubjectId !== '' &&
       searchParams.SubjectId !== '0'
     ) {
-      console.log({ SubjectId: searchParams.SubjectId });
+      // console.log({ SubjectId: searchParams.SubjectId });
       // && searchParams.SubjectId[0] !== 0
       const newSIArrInt = [];
       if (searchParams.SubjectId.includes(',')) {

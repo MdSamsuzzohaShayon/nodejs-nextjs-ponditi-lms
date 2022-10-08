@@ -452,8 +452,9 @@ const updateUser = async (req, res) => {
       // console.log('Setting classtype');
       delete updatedObj.ClassTypeId;
     }
-
-    await User.update({ updatedObj }, { where: { id } });
+    // console.log(updatedObj);
+    await User.update(updatedObj, { where: { id } });
+    // console.log(updatedUser);
     // console.log({updatedUser});
     // console.log(user);
     return res.status(202).json({ msg: 'A user updated', user: updatedObj });
@@ -573,6 +574,8 @@ const seedUsers = async (req, res) => {
         .toLowerCase()}@email.com`,
       role: i % 2 === 0 ? TEACHER : STUDENT,
       age: total + i,
+      isVerified: true,
+      isActive: PENDING,
       profession: profession[i],
       institution: institution[i],
       experience: 2 + i,
@@ -580,7 +583,6 @@ const seedUsers = async (req, res) => {
       otp: Buffer.from(Math.random().toString())
         .toString('base64')
         .substring(6, 3),
-      isActive: true,
       // ClassTypes
       // Subjects
     };

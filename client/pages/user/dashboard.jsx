@@ -11,7 +11,7 @@ import {
 import {
   setSelectedContent,
   toggleAuthUser,
-  fetchSingleUser,
+  fetchCurrentSingleUser,
 } from '../../redux/reducers/userReducer';
 
 import { fetchAllRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
@@ -82,7 +82,7 @@ function dashboard() {
   useEffect(() => {
     if (authUserInfo.id) {
       dispatch(fetchAllRequestedSCOU(authUserInfo.id));
-      dispatch(fetchSingleUser(authUserInfo.id));
+      dispatch(fetchCurrentSingleUser(authUserInfo.id));
     }
   }, [authUserInfo]);
 
