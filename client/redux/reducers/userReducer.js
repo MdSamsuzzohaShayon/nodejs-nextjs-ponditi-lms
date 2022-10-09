@@ -103,8 +103,6 @@ const initialVerifyCode = {
   otp: '',
 };
 
-
-
 const initialAuthUserInfo = {
   email: null,
   id: null,
@@ -192,6 +190,33 @@ export const fetchSelectedSingleUser = createAsyncThunk(
   fetchUser
 );
 
+export const requestHistorySeen = createAsyncThunk(
+  'user/historySeen',
+  async (args, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axios.put(`/user/notification/seen`);
+      return response.data;
+    } catch (error) {
+      // console.log(error.response.status);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 405
+        ) {
+          window.localStorage.removeItem('user');
+          Router.push('/user');
+        } else if (error?.response?.status === 404) {
+          Router.push('/user');
+        }
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const fetchAllUsersByAdmin = createAsyncThunk(
   'user/allUsers',
   async (props, { dispatch, rejectWithValue }) => {
@@ -231,6 +256,8 @@ export const userSlice = createSlice({
     dashboardSidebarElements: initialDashboardSidebarElements,
     selectedContent: PROFILE,
     degreeList: initialDegreeList,
+    userNotifications: [],
+    userUnseenNotifications: [],
 
     /**
      * @dynamic all those connected to backend and databases
@@ -339,6 +366,8 @@ export const userSlice = createSlice({
     // })
     builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
+      state.userUnseenNotifications = action.payload.notifications.filter((n)=> n.viewed === false);
+      state.userNotifications = action.payload.notifications;
       state.currentUser = action.payload.user;
       state.userClassTypes = action.payload.classTypes;
       state.userSubjects = action.payload.subjects;

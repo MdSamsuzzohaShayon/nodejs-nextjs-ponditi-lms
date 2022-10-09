@@ -1,20 +1,13 @@
-import { useSelector, useDispatch } from 'react-redux';
-import Router from 'next/router';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
-import { roles, userDashboardSidebarList } from '../../config/keys';
-import {
-  toggleLoading,
-  setErrorList,
-} from '../../redux/reducers/elementsSlice';
+import { roles, scheduledclassStatus } from '../../config/keys';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 import { convertISOToReadableTime } from '../../utils/timeFunction';
-import axios from '../../config/axios';
 
-const { STUDENT, TEACHER } = roles;
+const { TEACHER } = roles;
 
-const { CLASS_SCHEDULED, REJECTED, STUDENT_OR_TEACHER_REQUESTS } =
-  userDashboardSidebarList;
+const { APPROVED, REJECTED, PENDING } = scheduledclassStatus;
 
 // SOR = student or teacher
 function ScheduledClassList({
@@ -27,88 +20,88 @@ function ScheduledClassList({
 
   const showContent = (src) => {
     switch (selectedContent) {
-      case STUDENT_OR_TEACHER_REQUESTS:
-        return (
-          <>
-            {resetAuthUserInfo.role === TEACHER && (
-              <>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={(are) => acceptRequestHandler(are, src.id)}
-                  >
-                    Accept
-                  </button>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={(are) => rejectRequestHandler(are, src.id)}
-                  >
-                    Reject
-                  </button>
-                </td>
-                <td>
-                  <button className="btn btn-primary" type="button">
-                    <Link
-                      href={`/scheduledclass/detail/${src.id}`}
-                      type="button"
-                      className="btn btn-primary"
-                    >
-                      Detail
-                    </Link>
-                  </button>
-                </td>
-              </>
-            )}
-            <td>
-              <button type="button" className="btn btn-danger">
-                Delete
-              </button>
-            </td>
-            <td>
-              <button className="btn btn-primary" type="button">
-                <Link
-                  href={`/scheduledclass/detail/${src.id}`}
-                  type="button"
-                  className="btn btn-primary"
-                >
-                  Detail
-                </Link>
-              </button>
-            </td>
-          </>
+      case PENDING:
+        return authUserInfo.role === TEACHER ? (
+          <td>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={(are) => acceptRequestHandler(are, src.id)}
+            >
+              Accept
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={(are) => rejectRequestHandler(are, src.id)}
+            >
+              Reject
+            </button>
+            <button className="btn btn-primary" type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
+                Detail
+              </Link>
+            </button>
+          </td>
+        ) : (
+          <td>
+            <button className="btn btn-primary" type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
+                Detail
+              </Link>
+            </button>
+          </td>
         );
-      case CLASS_SCHEDULED:
-        return (
-          <>
-            <td>
-              <button type="button" className="btn btn-primary">
-                Support
-              </button>
-            </td>
-            <td>
-              <button type="button" className="btn btn-danger">
-                Cancel
-              </button>
-            </td>
-            <td>
-              <button className="btn btn-primary" type="button">
-                <Link href={`/scheduledclass/detail/${src.id}`} type="button">
-                  Detail
-                </Link>
-              </button>
-            </td>
-          </>
-        );
-
-      case REJECTED:
+      case APPROVED:
         return (
           <td>
             <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
+                Detail
+              </Link>
+            </button>
+          </td>
+        );
+      case REJECTED:
+        return authUserInfo.role === TEACHER ? (
+          <td>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={(are) => acceptRequestHandler(are, src.id)}
+            >
+              Accept
+            </button>
+            <button className="btn btn-primary" type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
+                Detail
+              </Link>
+            </button>
+          </td>
+        ) : (
+          <td>
+            <button className="btn btn-primary" type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
                 Detail
               </Link>
             </button>
@@ -116,7 +109,19 @@ function ScheduledClassList({
         );
 
       default:
-        return null;
+        return (
+          <td>
+            <button className="btn btn-primary" type="button">
+              <Link
+                href={`/scheduledclass/detail/${src.id}`}
+                type="button"
+                className="btn btn-primary"
+              >
+                Detail
+              </Link>
+            </button>
+          </td>
+        );
     }
   };
 
@@ -127,47 +132,22 @@ function ScheduledClassList({
           <table className="table">
             <thead className="bg-primary text-white border-white">
               <tr>
-                <th colSpan="5">Class</th>
-                {authUserInfo.role === STUDENT && (
-                  <th colSpan="3">Teacher Detail</th>
-                )}
-                {authUserInfo.role === TEACHER && (
-                  <th colSpan="3">Student Detail</th>
-                )}
-                <th colSpan="3">Handler</th>
-              </tr>
-              <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Tution Location</th>
-                <th scope="col">Start time</th>
-                <th scope="col">Duration</th>
-                <th scope="col">End time</th>
-
+                <th scope="col">Time</th>
                 <th scope="col">Class</th>
                 <th scope="col">Subject</th>
-                <th scope="col">Sender</th>
-                <th scope="col">Accept</th>
-                <th scope="col">Reject</th>
-                <th scope="col">Delete</th>
-                <th scope="col">Detail</th>
+                <th scope="col">Handler</th>
               </tr>
             </thead>
             <tbody className="text-lowercase">
               {scheduledClassList.map((src) => (
                 <tr key={src.id}>
                   <td>{src.id}</td>
-                  <td>{locationSelection(src.types)}</td>
+                  <td>{locationSelection(src?.types)}</td>
                   <td>{convertISOToReadableTime(src.start)}</td>
-                  <td>{src.hours} h</td>
-                  <td>end time</td>
-
-                  <td>{src.status}</td>
                   <td>{src?.Subject?.name}</td>
                   <td>{src?.ClassType?.name}</td>
-                  <td>
-                    {`${src?.Sender?.firstname} ${src?.Sender?.lastname}`}
-                  </td>
-
                   {/* handler content start  */}
                   {showContent(src)}
                   {/* handler content end  */}

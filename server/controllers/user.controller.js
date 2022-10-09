@@ -9,7 +9,9 @@ const sendSMS = require('../utils/sendSMS');
 const db = require('../models');
 const keys = require('../config/keys');
 
-const { User, ClassType, Subject } = db;
+const {
+ User, ClassType, Subject, Notification 
+} = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
 
@@ -82,7 +84,7 @@ const verifyUser = async (req, res) => {
   }
   await User.update(
     { isVerified: true, otp: null },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -176,7 +178,7 @@ const rejectUser = async (req, res) => {
 
     await User.update(
       { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
@@ -208,7 +210,7 @@ const acceptUser = async (req, res) => {
 
     await User.update(
       { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
@@ -245,14 +247,14 @@ const login = async (req, res, next) => {
     console.log(userExist.dataValues.role);
 
     if (
-      userExist.dataValues.role !== TEACHER
-      && userExist.dataValues.role !== STUDENT
+      userExist.dataValues.role !== TEACHER &&
+      userExist.dataValues.role !== STUDENT
     ) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password
+      userExist.dataValues.password,
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -315,11 +317,11 @@ const resendOTP = async (req, res, next) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
+    `Your OTP code is: ${otp}`,
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -388,6 +390,8 @@ const getSingleUser = async (req, res) => {
     }
     const classTypes = await userExist.getClassTypes();
     const subjects = await userExist.getSubjects();
+    const notifications = await userExist.getNotifications();
+    // console.log(notifications);
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
     return res.status(200).json({
@@ -395,6 +399,7 @@ const getSingleUser = async (req, res) => {
       user,
       classTypes,
       subjects,
+      notifications,
     });
   } catch (error) {
     console.log(error);
@@ -460,6 +465,26 @@ const updateUser = async (req, res) => {
     // console.log({updatedUser});
     // console.log(user);
     return res.status(202).json({ msg: 'A user updated', user: updatedObj });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
+};
+
+const notificationSeen = async (req, res) => {
+  try {
+    const seenNotifications = await Notification.update(
+      { viewed: true },
+      { where: { userId: req.userId } },
+    );
+    if (seenNotifications === null) {
+      return res.status(404).json({ msg: 'No notification found' });
+    }
+    // console.log(user);
+    return res.status(200).json({
+      msg: 'Single user found',
+      seenNotifications,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -567,8 +592,8 @@ const seedUsers = async (req, res) => {
         .substring(10, 5),
       password,
       phone:
-        Math.floor(100000000 + Math.random() * 900000000).toString() +
-        i.toString(),
+        Math.floor(100000000 + Math.random() * 900000000).toString()
+        + i.toString(),
       cc: '+880',
       email: `${Buffer.from(Math.random().toString())
         .toString('base64')
@@ -609,5 +634,6 @@ module.exports = {
   getSingleUser,
   updateUser,
   logout,
+  notificationSeen,
   seedUsers,
 };

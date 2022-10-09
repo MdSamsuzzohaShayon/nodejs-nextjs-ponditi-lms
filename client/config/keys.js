@@ -38,5 +38,6 @@ export const scheduledclassStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
+  START_CLASS: 'START_CLASS',
   ANY: 'ANY',
 }

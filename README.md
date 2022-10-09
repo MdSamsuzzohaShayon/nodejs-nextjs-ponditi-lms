@@ -26,45 +26,46 @@
    - Select slot (8 to 10) ✅
  - **Update profile**
    1. Educational qualification
-      - Exam name (SSC / HSC / )
-      - Institution
-      - Group (Science, Arts, & commerce)
-      - Result 
-      - Passing Year 
-      // result instifute group
+      - Exam name (SSC / HSC / )  ✅
+      - Institution ✅
+      - Group (Science, Arts, & commerce) ✅
+      - Result  ✅
+      - Passing Year  ✅
    2. Personal Detail 
       - Picture (Later)
-      - Name 
-      - Email 
-      - District 
-      - Present Address (Used to search )
+      - Name  ✅
+      - Email  ✅
+      - District  ✅
+      - Present Address (Used to search ) 
    3. Tution Detail 
-      - Rate per hour 
-      - Status (Currenty available to request or not )
+      - Rate per hour  ✅
+      - Status (Currenty available to request or not ) ✅
       - Tution place multile selection 
    4. Subjects
-      - Tution subjects
-      - Tution class types
+      - Tution subjects ✅
+      - Tution class types ✅
  - **Scheduled Class detail**
-   - No bill and duration 
-   - Detail location of student 
-   - Institution name 
-   - Scheduled time 
-   - Picture, Name, Class & Subject 
+   - No bill and duration ✅
+   - Detail location of student ✅
+   - Institution name ✅
+   - Scheduled time ✅
+   - Picture, Name, Class & Subject ✅ 
  - **Top Bar**
-   - Profile
-   - Request histry (Filter by pending requests, rejected requestes)
+   - Profile ✅ 
+   - Request histry (Filter by pending requests, rejected requestes) ✅ 
    - Notifications
  - **Tution process by teacher**
    - Start tution (No more request acceptable)
    - Minutes counting 
-   - Finish tution (per minute count)
+   - Finish tution (bill depends on per minute count)
    - Mark as paid (Student can not send request until they pay their dues)
+   - Give feedback
 
   - **Modification**
     - select default subject and class of teacher if search has none of it
     - select item background in Calender
     - Make responsive
+    - All class are online for now. Fix in server initiate class 
 
 
 

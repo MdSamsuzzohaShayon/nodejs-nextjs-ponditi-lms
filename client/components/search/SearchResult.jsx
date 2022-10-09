@@ -14,9 +14,10 @@ import {
   showRequest,
   setInitializeSchedule,
 } from '../../redux/reducers/scheduledclassReducer';
-import { roles } from '../../config/keys';
+import { roles, scheduledclassStatus } from '../../config/keys';
 
 const { STUDENT } = roles;
+const { ANY } = scheduledclassStatus;
 
 function SearchResult() {
   const dispatch = useDispatch();
@@ -73,28 +74,29 @@ function SearchResult() {
     }
   };
 
-  const viewDetailHandler = (vde, userId) => {
-    vde.preventDefault();
-    const newSelectedUser = searchUserList.find((sul) => sul.id === userId);
-    console.log(newSelectedUser);
-    dispatch(showRequest(true));
-    // dispatch(setSelectedSearchUser(newSelectedUser));
-    Router.push(`/search/selected/?userId=${userId}`);
-  };
-
-  const headToSendRequestHandler = (htsre, teacherId) => {
+  const headToSendRequestHandler = (htsre, receverId) => {
     htsre.preventDefault();
-    const classAndSubject = {};
-    if (searchParams.ClassTypeId === '0') {
+    const classAndSubject = { receverId };
+    // console.log(searchParams);
+    if (
+      searchParams.ClassTypeId === '0' ||
+      searchParams.ClassTypeId === '' ||
+      searchParams.ClassTypeId === ANY
+    ) {
       classAndSubject.ClassTypeId = classtypeList[1].id;
     } else {
       classAndSubject.ClassTypeId = parseInt(searchParams.ClassTypeId, 10);
     }
-    if (searchParams.SubjectId === '0') {
+    if (
+      searchParams.SubjectId === '0' ||
+      searchParams.SubjectId === '' ||
+      searchParams.SubjectId === ANY
+    ) {
       classAndSubject.SubjectId = subjectList[1].id;
     } else {
       classAndSubject.SubjectId = parseInt(searchParams.SubjectId, 10);
     }
+    // console.log(classAndSubject);
     dispatch(setInitializeSchedule(classAndSubject));
     // console.log(classAndSubject);
     // console.log(subjectList);
@@ -102,7 +104,12 @@ function SearchResult() {
     // css = Class Scheduled and Subject
     // window.localStorage.setItem('css', JSON.stringify(classAndSubject));
     // redirect to `/search/request/${sul.id}`
-    Router.push(`/search/request/${teacherId}`);
+    const search = window.localStorage.getItem('search');
+    const searchData = JSON.parse(search);
+    const newSearch = { ...searchData, ...classAndSubject };
+    // console.log(newSearch);
+    window.localStorage.setItem('search', JSON.stringify(newSearch));
+    Router.push(`/search/request/${receverId}`);
   };
 
   return (

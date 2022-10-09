@@ -8,10 +8,17 @@ const {
   acceptRequestedScheduledClass,
   rejectRequestedScheduledClass,
   getSingleScheduledClass,
+  startScheduledClass,
   completeRequestedScheduledClass,
+  updateScheduledClass,
 } = require('../controllers/scheduledclass.controller');
 
-const { ensureAuth, ensureStudent } = require('../middleware/auth');
+const {
+  ensureAuth,
+  ensureStudent,
+  ensureAdmin,
+  ensureTeacher,
+} = require('../middleware/auth');
 
 /** *
  * @route to get server timezone
@@ -37,21 +44,30 @@ router.get('/single/:scheduledclassId', ensureAuth, getSingleScheduledClass);
 router.get('/member/:memberId', ensureAuth, getAllScheduledClassofAMember);
 router.put(
   '/accept/:scheduledclassId',
-  ensureAuth,
+  ensureTeacher,
   acceptRequestedScheduledClass
 );
 router.put(
   '/reject/:scheduledclassId',
-  ensureAuth,
+  ensureTeacher,
   rejectRequestedScheduledClass
+);
+
+router.put('/start/:scheduledclassId', ensureTeacher, startScheduledClass);
+
+router.put(
+  '/update/:scheduledclassId',
+  ensureAuth,
+  check('meetlink').notEmpty().isURL(),
+  updateScheduledClass
 );
 
 // Complete request
 router.put(
-  '/completerequest/:scheduledclassId',
-  ensureAuth,
-  check('stars').notEmpty().isDecimal(),
-  check('comment').notEmpty().isLength({ min: 10 }),
+  '/finishclass/:scheduledclassId',
+  ensureTeacher,
+  // check('stars').notEmpty().isDecimal(),
+  // check('comment').notEmpty().isLength({ min: 10 }),
   completeRequestedScheduledClass,
 );
 

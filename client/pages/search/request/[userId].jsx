@@ -7,6 +7,7 @@ import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
 import { setInitializeSchedule } from '../../../redux/reducers/scheduledclassReducer';
 import ErrorMessages from '../../../components/elements/ErrorMessages';
+import { resetErrorList } from '../../../redux/reducers/elementsSlice';
 
 const { STUDENT, TEACHER } = roles;
 
@@ -23,7 +24,7 @@ function index() {
 
   const { userId } = router.query;
 
-  const initializeScheduleValue = ()=>{
+  const initializeScheduleValue = (receverId) => {
     if (authUserInfo.role === TEACHER) {
       router.push('/user/dashboard');
     } else if (
@@ -35,7 +36,7 @@ function index() {
         const searchData = JSON.parse(search);
         dispatch(
           setInitializeSchedule({
-            receverId: parseInt(userId, 10),
+            receverId: parseInt(receverId, 10),
             SubjectId: parseInt(searchData.SubjectId, 10),
             ClassTypeId: parseInt(searchData.ClassTypeId, 10),
           })
@@ -48,13 +49,14 @@ function index() {
 
   useEffect(() => {
     if (userId && isMounted) {
+      dispatch(resetErrorList());
       if (authUserInfo?.role !== STUDENT) {
         router.push('/user/login');
       }
       (async () => {
         // console.log({ userId, authUserInfo });
         await dispatch(fetchSelectedSingleUser(userId));
-        initializeScheduleValue();
+        await initializeScheduleValue(userId);
         // console.log(selectedUser);
       })();
       isMounted = false;

@@ -104,7 +104,17 @@ module.exports = {
           },
           { transaction: t }
         ), 
-        */    
+        */   
+       /*
+        queryInterface.addColumn(
+          'ScheduledClass',
+          'startprocess',
+          {
+            type: new Sequelize.DataTypes.DATE(),
+          },
+          { transaction: t }
+        ), 
+        */ 
       ])
     );
   },
@@ -124,6 +134,7 @@ module.exports = {
         // queryInterface.removeColumn('User', 'status', { transaction: t }),
         // queryInterface.removeColumn('User', 'major', { transaction: t }),
         // queryInterface.removeColumn('User', 'cgpa', { transaction: t }),
+        // queryInterface.removeColumn('ScheduledClass', 'processstart', { transaction: t }),
       ])
     ),
 };

@@ -13,7 +13,7 @@ import {
   toggleAuthUser,
   fetchCurrentSingleUser,
 } from '../../redux/reducers/userReducer';
-import Detail from '../../components/user/Detail';
+
 import { fetchAllRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
 import Layout from '../../components/layouts/Layout';
 import Profile from '../../components/user/Profile';
@@ -41,9 +41,22 @@ function dashboard() {
     ssee.preventDefault();
     dispatch(setSelectedContent(selectedElement));
   };
-  const currentUser = useSelector((state) => state.user.currentUser);
 
+  const showContent = () => {
+    switch (selectedContent) {
+      case STUDENT_OR_TEACHER_REQUESTS:
+        return <SOTRequest />;
+      case PROFILE:
+        return <Profile />;
+      case CLASS_SCHEDULED:
+        return <ApprovedClass />;
+      case REJECTED:
+        return <RejectedClass />;
 
+      default:
+        return <Profile />;
+    }
+  };
 
   useEffect(() => {
     if (isMounted === false) {
@@ -76,9 +89,45 @@ function dashboard() {
   return (
     <Layout>
       <div className="user-dashboard d-flex">
-          <div className="container">
-            <Detail userDetail={currentUser} update />
+        <div className="sidebar bg-danger text-secondary">
+          <ul className="d-flex flex-column list-unstyled">
+            {dashboardSidebarElements.map((ase) => {
+              let displayText = ase.text;
+              if (ase.name === STUDENT_OR_TEACHER_REQUESTS) {
+                if (authUserInfo.role === TEACHER) {
+                  displayText = "Student's requests";
+                } else if (authUserInfo.role === STUDENT) {
+                  displayText = 'Sent requests';
+                } else {
+                  displayText = "Student's requests";
+                }
+              }
+              return (
+                <li
+                  className={
+                    selectedContent === ase.name
+                      ? 'px-4 py-2 menu-item bg-primary'
+                      : 'px-4 py-2 menu-item '
+                  }
+                  key={ase.id}
+                >
+                  <a
+                    onClick={(e) => selectSidebarElement(e, ase.name)}
+                    href="#"
+                    role="button"
+                  >
+                    {displayText}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <div className="content">
+          <div className="w-full">
+            <div className="p-4">{showContent()}</div>
           </div>
+        </div>
       </div>
     </Layout>
   );

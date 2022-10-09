@@ -60,8 +60,19 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(100),
         allowNull: false,
       },
-      // date
+      // scheduled
       start: {
+        type: new DataTypes.DATE(),
+      },
+      // class started at
+      startedat: {
+        type: new DataTypes.DATE(),
+      },
+      meetlink: {
+        type: new DataTypes.STRING(255),
+      },
+      terminatedat: {
+        // class started at
         type: new DataTypes.DATE(),
       },
       // not necessary

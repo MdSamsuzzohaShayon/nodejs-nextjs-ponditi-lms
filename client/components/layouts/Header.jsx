@@ -15,6 +15,9 @@ function Header() {
   const router = useRouter();
   const menuItemList = useSelector((state) => state.elements.menuItemList);
   const socialItems = useSelector((state) => state.elements.socialItems);
+  const userUnseenNotifications = useSelector(
+    (state) => state.user.userUnseenNotifications
+  );
   const authenticatedUser = useSelector(
     (state) => state.user.authenticatedUser
   );
@@ -52,7 +55,7 @@ function Header() {
       router.push('/');
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       window.localStorage.removeItem('user');
     }
   };
@@ -81,21 +84,30 @@ function Header() {
                 </div>
                 <div className="auth py-1 py-md-0 py-2">
                   {authenticatedUser ? (
-                    <>
-                      <Link
-                        href={dashboardUrl}
-                        className="btn btn-outline-primary small-btn mx-2"
-                      >
-                        dashboard
-                      </Link>
-                      <button
-                        className="btn btn-primary small-btn mx-2"
-                        type="button"
-                        onClick={logoutHandler}
-                      >
-                        Logout
-                      </button>
-                    </>
+                    <ul className="list-unstyled d-flex justify-content-center align-items-center flex-direction-column flex-md-direction-row">
+                      <li className="mx-2">
+                        <Link href={dashboardUrl}>Profile</Link>
+                      </li>
+                      <li className="mx-2 d-flex">
+                        <div className='p-1'>
+                          <Link href="/user/requesthistory">Request history</Link>
+                        </div>
+                        {userUnseenNotifications.length > 0 && (
+                          <div className="bg-primary text-white p-1 w-fit rounded-3">
+                            {userUnseenNotifications.length}
+                          </div>
+                        )}
+                      </li>
+                      <li className="mx-2">
+                        <button
+                          className="btn btn-primary small-btn mx-2"
+                          type="button"
+                          onClick={logoutHandler}
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
                   ) : (
                     <>
                       <Link

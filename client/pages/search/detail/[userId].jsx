@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
 import Detail from '../../../components/user/Detail';
 import { fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
+import { resetErrorList } from '../../../redux/reducers/elementsSlice';
 
 function index() {
   let isMounted = false;
@@ -16,6 +17,7 @@ function index() {
   useEffect(() => {
     if (userId && isMounted === false) {
       (async () => {
+        dispatch(resetErrorList());
         // console.log({ userId });
         await dispatch(fetchSelectedSingleUser(userId));
       })();

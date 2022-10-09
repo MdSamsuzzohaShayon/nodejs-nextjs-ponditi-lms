@@ -8,7 +8,7 @@ import axios from '../../config/axios';
 import { scheduledclassStatus } from '../../config/keys';
 import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
 
-const { APPROVED, PENDING, REJECTED } = scheduledclassStatus;
+const { APPROVED, PENDING, REJECTED, START_CLASS } = scheduledclassStatus;
 
 const initicalAddScheduledClass = {
   name: '',
@@ -20,14 +20,37 @@ const iscHours = 1;
 const iscStart = today.toISOString();
 const initialAScheduledClass = {
   receverId: null,
-  ClassTypeId: null ,
-  SubjectId: null ,
+  ClassTypeId: null,
+  SubjectId: null,
   desc: 'This is description',
   date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
   time: null,
   // start: iscStart,
   // hours: iscHours,
 };
+
+const initialSCTabElements = [
+  {
+    id: 1,
+    name: APPROVED,
+    text: 'Approved Class',
+  },
+  {
+    id: 2,
+    name: PENDING,
+    text: 'Pending Class',
+  },
+  {
+    id: 3,
+    name: REJECTED,
+    text: 'Rejected Class',
+  },
+  {
+    id: 4,
+    name: START_CLASS,
+    text: 'Running Class',
+  },
+];
 
 const initialSlotList = [
   {
@@ -113,7 +136,7 @@ const initialSlotList = [
     slot: 9,
     slotName: '09 - 10',
     ampm: 'PM',
-  }
+  },
 ];
 
 // scou = Scheduled Class of a User
@@ -173,6 +196,8 @@ export const scheduledclassSlice = createSlice({
     showReviewFields: false,
     madeRequest: false,
     slotList: initialSlotList,
+    tabElements: initialSCTabElements,
+    generateBill: 0, // bill per minutes
     /**
      * @dynamic or changable elements of the website
      */
@@ -186,9 +211,15 @@ export const scheduledclassSlice = createSlice({
     requestedSCOU: [],
     acceptedSCOU: [],
     rejectedSCOU: [],
+    runningSCOU: [],
+
+    allScheduledClassList: [],
+    filteredSCOU: [],
 
     initializeSchedule: initialAScheduledClass,
     singleScheduledClass: {},
+
+    updateScheduledClass: {},
   },
   reducers: {
     showRequest: (state, action) => {
@@ -196,6 +227,9 @@ export const scheduledclassSlice = createSlice({
     },
     setShowReviewFields: (state, action) => {
       state.showReviewFields = action.payload;
+    },
+    setGenerateBill: (state, action) => {
+      state.generateBill = action.payload;
     },
     setRequestedSCOU: (state, action) => {
       state.requestedSCOU = action.payload;
@@ -216,6 +250,18 @@ export const scheduledclassSlice = createSlice({
     setInitializeSchedule: (state, action) => {
       state.initializeSchedule = {
         ...state.initializeSchedule,
+        ...action.payload,
+      };
+    },
+    setSingleScheduledClass: (state, action) => {
+      state.singleScheduledClass = {
+        ...state.singleScheduledClass,
+        ...action.payload,
+      };
+    },
+    setUpdateScheduledClass: (state, action) => {
+      state.updateScheduledClass = {
+        ...state.updateScheduledClass,
         ...action.payload,
       };
     },
@@ -248,6 +294,7 @@ export const scheduledclassSlice = createSlice({
     });
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
+      state.allScheduledClassList = action.payload.classScheduledList;
       state.requestedSCOU = action.payload?.classScheduledList.filter(
         (csl) => csl.status === PENDING
       );
@@ -256,6 +303,9 @@ export const scheduledclassSlice = createSlice({
       );
       state.rejectedSCOU = action.payload?.classScheduledList.filter(
         (csl) => csl.status === REJECTED
+      );
+      state.runningSCOU = action.payload?.classScheduledList.filter(
+        (csl) => csl.status === START_CLASS
       );
     });
 
@@ -269,6 +319,7 @@ export const {
   // Showing content
   showRequest,
   setShowReviewFields,
+  setGenerateBill,
 
   // scheduled class of a user
   setRequestedSCOU,
@@ -279,6 +330,8 @@ export const {
   setAddscheduledclass,
   setSelectedSearchUser,
   setInitializeSchedule,
+  setSingleScheduledClass,
+  setUpdateScheduledClass,
 } = scheduledclassSlice.actions;
 
 export default scheduledclassSlice.reducer;

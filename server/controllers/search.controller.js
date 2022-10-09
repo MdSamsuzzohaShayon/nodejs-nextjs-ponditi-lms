@@ -22,7 +22,7 @@ const { APPROVED } = scheduledClassStatus;
 const searchTeacher = async (req, res, next) => {
   try {
     const searchQuery = {};
-    let where = { isActive: APPROVED, role: TEACHER };
+    let where = { isActive: APPROVED, role: TEACHER, isAvailable: true };
     const include = [];
 
     const searchParams = Object.assign(req.query);
@@ -39,11 +39,19 @@ const searchTeacher = async (req, res, next) => {
     ) {
       // console.log({location: searchParams.location});
       // [Op.notILike]
+      /*
       where.location = sequelize.where(
-        sequelize.fn('LOWER', sequelize.col('location')),
+        sequelize.fn('LOWER', sequelize.col('district')),
         'LIKE',
         `%${searchParams.location.toLowerCase()}%`,
-      ); // making case insensative
+      );
+      */
+      where[Op.or] = [
+        { district: searchParams.location },
+        { presentaddress: { [Op.substring]: searchParams.location } },
+      ];
+      // where.presentaddress = {[Op.substring]: searchParams.location};
+      // making case insensative
     }
     /*
     if (
@@ -64,12 +72,12 @@ const searchTeacher = async (req, res, next) => {
     */
     // Search by location
     if (
-      searchParams.type &&
-      searchParams.type !== ANY &&
-      searchParams.type !== '' &&
-      searchParams.type !== '0'
+      searchParams.tutionplace &&
+      searchParams.tutionplace !== ANY &&
+      searchParams.tutionplace !== '' &&
+      searchParams.tutionplace !== '0'
     ) {
-      where.status = searchParams.type;
+      where.tutionplace = searchParams.tutionplace;
     }
 
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);

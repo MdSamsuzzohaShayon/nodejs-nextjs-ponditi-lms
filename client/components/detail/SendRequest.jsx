@@ -56,6 +56,7 @@ function SendRequest() {
 
   const initializeScheduledClassHandler = async (isce) => {
     isce.preventDefault();
+    // console.log(initializeSchedule);
     if (!initializeSchedule.time) {
       return dispatch(setErrorList(['You must select a slot']));
     }
@@ -88,6 +89,7 @@ function SendRequest() {
       dispatch(toggleLoading(true));
       const response = await axios.post('/scheduledclass/initiate', newObj);
       if (response.status === 201) {
+        window.localStorage.removeItem('search');
         Router.push('/user/dashboard');
       }
     } catch (error) {

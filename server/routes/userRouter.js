@@ -13,6 +13,7 @@ const {
   getSingleUser,
   updateUser,
   logout,
+  notificationSeen,
   seedUsers,
 } = require('../controllers/user.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
@@ -79,6 +80,9 @@ router.post('/logout', logout);
 router.get('/temp/all', getAllUsersTemp);
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);
+
+// Notification seen
+router.put('/notification/seen', ensureAuth, notificationSeen);
 // disable on production
 router.post('/seed', seedUsers);
 

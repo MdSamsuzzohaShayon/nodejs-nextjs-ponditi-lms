@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 // import cookieCutter from 'cookie-cutter';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 import router from 'next/router';
 import axios from '../../config/axios';
 import {
@@ -24,6 +25,7 @@ function login() {
   // eslint-disable-next-line consistent-return
   const loginHandler = async (rhe) => {
     rhe.preventDefault();
+    dispatch(resetErrorList());
     if (loginInfo.phoneoremail === '' && loginInfo.password === '') {
       dispatch(setErrorList(['both field must be filled']));
     }
@@ -63,6 +65,10 @@ function login() {
     // iche.preventDefault();
     dispatch(setLoginInfo({ [iche.target.name]: iche.target.value }));
   };
+
+  useEffect(()=>{
+    dispatch(resetErrorList());
+  }, []);
 
   return (
     <Layout>

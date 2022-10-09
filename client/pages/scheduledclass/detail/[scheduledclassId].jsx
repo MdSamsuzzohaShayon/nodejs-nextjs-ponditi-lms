@@ -4,14 +4,23 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
 import {
+  setSingleScheduledClass,
   fetchSingleScheduledClass,
   setShowReviewFields,
+  setUpdateScheduledClass,
 } from '../../../redux/reducers/scheduledclassReducer';
-import { roles } from '../../../config/keys';
-import { locationSelection } from '../../../utils/helper';
-import { convertISOToReadableTime } from '../../../utils/timeFunction';
+import {
+  resetErrorList,
+  setErrorList,
+} from '../../../redux/reducers/elementsSlice';
+import { resetAuthUserInfo } from '../../../redux/reducers/userReducer';
+import { scheduledclassStatus, roles } from '../../../config/keys';
+import axios from '../../../config/axios';
 import Review from '../../../components/scheduledclass/Review';
+import SingleScheduledClassInfo from '../../../components/scheduledclass/SingleScheduledClassInfo';
+import StopWatch from '../../../components/elements/StopWatch';
 
+const { START_CLASS, APPROVED } = scheduledclassStatus;
 const { TEACHER, STUDENT } = roles;
 
 function detail() {
@@ -22,10 +31,16 @@ function detail() {
   const singleScheduledClass = useSelector(
     (state) => state.scheduledclass.singleScheduledClass
   );
+  const updateScheduledClass = useSelector(
+    (state) => state.scheduledclass.updateScheduledClass
+  );
   const showReviewFields = useSelector(
     (state) => state.scheduledclass.showReviewFields
   );
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
+  const generateBill = useSelector(
+    (state) => state.scheduledclass.generateBill
+  );
 
   // console.log({scheduledclassId});
 
@@ -45,111 +60,169 @@ function detail() {
   }, [singleScheduledClass]);
   */
 
-  const completeSCHandler = (csce) => {
-    csce.preventDefault();
-    dispatch(setShowReviewFields(true));
+  const startClassHandler = async (sce) => {
+    sce.preventDefault();
+    try {
+      const response = await axios.put(
+        `/scheduledclass/start/${scheduledclassId}`
+      );
+      if (response.status === 202) {
+        dispatch(dispatch(resetErrorList()));
+        setSingleScheduledClass({
+          status: START_CLASS,
+          startedat: new Date().toISOString(),
+        });
+      }
+      // console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        router.push('/user/login');
+      }
+    }
+  };
+
+  const inputChangeHandler = (ice) => {
+    dispatch(setUpdateScheduledClass({ meetlink: ice.target.value }));
+    // updateScheduledClass
+  };
+
+  const addMeetLinkHandler = async (amle) => {
+    amle.preventDefault();
+    try {
+      if (!updateScheduledClass.meetlink) {
+        return dispatch(setErrorList(['Fill all input field']));
+      }
+      const response = await axios.put(
+        `/scheduledclass/update/${scheduledclassId}`,
+        { meetlink: updateScheduledClass.meetlink }
+      );
+      if (response.status === 202) {
+        dispatch(dispatch(resetErrorList()));
+        setSingleScheduledClass({
+          meetlink: response.data.meetlink,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        router.push('/user/login');
+      }
+    }
+  };
+
+  const finishClassHandler = async (fce) => {
+    fce.preventDefault();
+    try {
+      const response = await axios.put(
+        `/scheduledclass/finishclass/${scheduledclassId}`
+      );
+      if (response.status === 202) {
+        dispatch(dispatch(resetErrorList()));
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        router.push('/user/login');
+      }
+    }
   };
 
   return (
     <Layout>
       <section className="section section-1">
         <div className="container">
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <h3>Icon</h3>
-              <h4>Tution Place</h4>
-              <p>{locationSelection(singleScheduledClass?.types)}</p>
-            </div>
-            <div className="col-md-3">
-              <h3>Icon</h3>
-              <h4>Status</h4>
-              <p>{singleScheduledClass?.status}</p>
-            </div>
-            <div className="col-md-3">
-              <h3>Icon</h3>
-              <h4>Bill</h4>
-              <p>
-                {singleScheduledClass.hours * singleScheduledClass.perHourRate}{' '}
-                TK total
-              </p>
-            </div>
-            <div className="col-md-3">
-              <h3>Icon</h3>
-              <h4>Duration</h4>
-              <p>{singleScheduledClass.hours} hours</p>
-            </div>
-          </div>
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <div className="card rounded-1">
-                {authUserInfo.role === TEACHER && (
-                  <div className="card-body">
-                    <h5 className="card-title">Student&apos;s Detail</h5>
-                    <h6 className="card-subtitle mb-2 text-muted">
-                      {singleScheduledClass?.Sender?.lastname}
-                      &nbsp;
-                      {singleScheduledClass?.Sender?.firstname}
-                    </h6>
-                    <p className="card-text">
-                      Location: {singleScheduledClass?.Sender?.location}
-                    </p>
-                    <p className="card-text">
-                      Age: {singleScheduledClass?.Sender?.age}
-                    </p>
-                  </div>
-                )}
-                {authUserInfo.role === STUDENT && (
-                  <div className="card-body">
-                    <h5 className="card-title">Teacher&apos;s Detail</h5>
-                    <h6 className="card-subtitle mb-2 text-muted">
-                      {singleScheduledClass?.Recever?.lastname}
-                      &nbsp;
-                      {singleScheduledClass?.Recever?.firstname}
-                    </h6>
-                    <p className="card-text">
-                      Location: {singleScheduledClass?.Recever?.location}
-                    </p>
-                    <p className="card-text">
-                      Age: {singleScheduledClass?.Recever?.age}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="card rounded-1">
-                <div className="card-body">
-                  <h5 className="card-title">Subject Detail</h5>
-                  <h6 className="card-subtitle mb-2 text-muted">Any</h6>
-                  <p className="card-text">
-                    Class: {singleScheduledClass?.ClassType?.name}
-                  </p>
-                  <p className="card-text">
-                    Subject: {singleScheduledClass?.Subject?.name}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="row mb-3">
-            Start : {convertISOToReadableTime(singleScheduledClass.start)}
-          </div>
+          <SingleScheduledClassInfo
+            authUserInfo={authUserInfo}
+            singleScheduledClass={singleScheduledClass}
+          />
           <p>{singleScheduledClass?.desc}</p>
-          <p>Resolution Center</p>
-          {/* Make as completed  */}
+          {singleScheduledClass.status === APPROVED &&
+            authUserInfo.role === TEACHER && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={startClassHandler}
+              >
+                Start Class
+              </button>
+            )}
 
-          {showReviewFields ? (
-            <Review />
-          ) : (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={completeSCHandler}
-            >
-              Complete
-            </button>
-          )}
-          <p>Is paid or completed(button)?</p>
+          {singleScheduledClass.startedat &&
+            singleScheduledClass.status === START_CLASS && (
+              <>
+                <div className="card rounded-1">
+                  <div className="card-header">Class Running</div>
+                  <div className="card-body">
+                    {/* <p>Time{singleScheduledClass.startedat}</p> */}
+                    <div className="card-text">
+                      <StopWatch
+                        startedat={singleScheduledClass.startedat}
+                        perHourRate={singleScheduledClass.perHourRate}
+                      />
+                      Bill {generateBill} TK{' '}
+                    </div>
+                    <blockquote className="blockquote mt-4">
+                      <footer className="blockquote-footer">
+                        {authUserInfo.role === TEACHER &&
+                          'Once student paid his payment you must need to finish'}
+                        {authUserInfo.role === STUDENT &&
+                          'You must pay and teacher will finish the task afterword you will be available to send another request'}
+                      </footer>
+                    </blockquote>
+                    <button
+                      type="button"
+                      className="btn btn-primary w-fit"
+                      onClick={finishClassHandler}
+                    >
+                      Finish
+                    </button>
+                  </div>
+                </div>
+
+                {singleScheduledClass.meetlink &&
+                  singleScheduledClass.status === START_CLASS && (
+                    <div className="alert alert-primary mt-3 rounded-1">
+                      {singleScheduledClass.meetlink}
+                    </div>
+                  )}
+
+                <form className="my-3" onSubmit={addMeetLinkHandler}>
+                  <h5>Submit google meet link</h5>
+                  <div className="row mx-0 mb-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="meetlink"
+                      onChange={inputChangeHandler}
+                    />
+                  </div>
+                  <div className="row mx-0 mb-3">
+                    <button type="submit" className="btn btn-primary w-fit">
+                      Add Link
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+
+          {showReviewFields && <Review />}
         </div>
       </section>
     </Layout>
