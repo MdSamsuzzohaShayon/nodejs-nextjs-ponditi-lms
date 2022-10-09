@@ -18,7 +18,7 @@ function index() {
       const user = window.localStorage.getItem('user');
       if (isFetched === false && user) {
         (async () => {
-          console.log(userId);
+          // console.log(userId);
           await dispatch(fetchSelectedSingleUser(userId));
         })();
         // Check auth

@@ -58,6 +58,53 @@ module.exports = {
           { transaction: t }
         ),
         */
+       /*
+        queryInterface.addColumn(
+          'User',
+          'district',
+          {
+            type: new Sequelize.DataTypes.STRING(255)
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'User',
+          'presentaddress',
+          {
+            type: new Sequelize.DataTypes.STRING(255)
+          },
+          { transaction: t }
+        ),
+        */
+
+        /*
+        queryInterface.addColumn(
+          'User',
+          'institute',
+          {
+            type: new Sequelize.DataTypes.STRING(255)
+          },
+          { transaction: t }
+        ), 
+        queryInterface.addColumn(
+          'User',
+          'group',
+          {
+            type: new Sequelize.DataTypes.STRING(100)
+          },
+          { transaction: t }
+        ),   
+        */ 
+       /*
+        queryInterface.addColumn(
+          'User',
+          'cgpa',
+          {
+            type: new Sequelize.DataTypes.STRING(80)
+          },
+          { transaction: t }
+        ), 
+        */    
       ])
     );
   },
@@ -72,7 +119,11 @@ module.exports = {
          * await queryInterface.dropTable('users');
          */
         // queryInterface.removeColumn('User', 'isActive', { transaction: t }),
-        queryInterface.removeColumn('ScheduledClass', 'hours', { transaction: t }),
+        // queryInterface.removeColumn('ScheduledClass', 'hours', { transaction: t }),
+        // queryInterface.removeColumn('User', 'location', { transaction: t }),
+        // queryInterface.removeColumn('User', 'status', { transaction: t }),
+        // queryInterface.removeColumn('User', 'major', { transaction: t }),
+        // queryInterface.removeColumn('User', 'cgpa', { transaction: t }),
       ])
     ),
 };

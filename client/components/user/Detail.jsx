@@ -1,19 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
-import Link from 'next/link';
+import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { showRequest } from '../../redux/reducers/scheduledclassReducer';
 import { roles, scheduledclassStatus } from '../../config/keys';
+import { setUpdatePart } from '../../redux/reducers/userReducer';
+import { locationSelection } from '../../utils/helper';
 
-const { STUDENT, TEACHER } = roles;
+const { STUDENT } = roles;
 const { PENDING } = scheduledclassStatus;
 
-function Detail({ userDetail }) {
+function Detail({ userDetail, update }) {
   const dispatch = useDispatch();
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+  const userSubjects = useSelector((state) => state.user.userSubjects);
+  const userClassTypes = useSelector((state) => state.user.userClassTypes);
 
   const sendRequesthandler = (sre) => {
     sre.preventDefault();
     dispatch(showRequest(true));
+  };
+  // console.log(userDetail);
+
+  const editPartToUpdateHandler = (epse, partNum) => {
+    epse.preventDefault();
+    // selectPart / set part
+    dispatch(setUpdatePart(partNum));
+    window.localStorage.setItem('updatePart', partNum);
+    // redirect
+    Router.push(`/user/update/${userDetail.id}`);
   };
 
   return (
@@ -35,15 +48,16 @@ function Detail({ userDetail }) {
                     {`${userDetail.firstname} ${userDetail.lastname}`}
                   </h1>
 
-                  {authUserInfo?.id !== userDetail.id && authUserInfo?.role === STUDENT && (
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={sendRequesthandler}
-                    >
-                      Send Request
-                    </button>
-                  )}
+                  {userDetail?.id !== userDetail.id &&
+                    userDetail?.role === STUDENT && (
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={sendRequesthandler}
+                      >
+                        Send Request
+                      </button>
+                    )}
                 </div>
               )}
               {userDetail.location && (
@@ -56,14 +70,13 @@ function Detail({ userDetail }) {
                   </div>
                   <p>{userDetail?.role}</p>
                   <p>
-                    {authUserInfo?.role &&
-                      authUserInfo.isActive === PENDING && (
-                        <div className="alert alert-danger">
-                          This profile is under survullence. If your
-                          informations assure that all informations is currect
-                          you will be verified and available in search result
-                        </div>
-                      )}
+                    {userDetail?.role && userDetail.isActive === PENDING && (
+                      <div className="alert alert-danger">
+                        This profile is under survullence. If your informations
+                        assure that all informations is currect you will be
+                        verified and available in search result
+                      </div>
+                    )}
                   </p>
                 </>
               )}
@@ -128,6 +141,184 @@ function Detail({ userDetail }) {
             <br />
             Class type subject review
           </div>
+
+          {/* Subject and class start  */}
+          {update && (
+            <div className="row mx-0 mb-3 bg-secondary py-3">
+              <div className="heading d-flex justify-content-between row align-items-center my-3">
+                <h3 className="h5 w-fit">Preffered Subjects</h3>
+                <button
+                  className="btn btn-primary w-fit"
+                  type="button"
+                  onClick={(epse) => editPartToUpdateHandler(epse, 1)}
+                >
+                  Edit
+                </button>
+              </div>
+              <hr />
+              <div className="body-content row">
+                {userSubjects.length > 0 && (
+                  <div className="col-md-6">
+                    <h5>Subjects</h5>
+                    <ul className="list-group">
+                      {userSubjects.map((us) => (
+                        <li className="list-group-item rounded-1" key={us.id}>
+                          {us.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {userClassTypes.length > 0 && (
+                  <div className="col-md-6">
+                    <h5>Classes</h5>
+                    <ul className="list-group">
+                      {userClassTypes.map((us) => (
+                        <li className="list-group-item rounded-1" key={us.id}>
+                          {us.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {/* Subject and class end  */}
+
+          {/* personal detail start  */}
+          <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="heading d-flex justify-content-between align-items-center row py-3">
+              <h3 className="h5 w-fit">Personal Detail</h3>
+              {update && (
+                <button
+                  className="btn btn-primary w-fit"
+                  type="button"
+                  onClick={(epse) => editPartToUpdateHandler(epse, 2)}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+            <hr />
+            <div className="body-content row">
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Name</div>
+                <div className="col-md-6">
+                  <p>{`${userDetail.firstname} ${userDetail.lastname}`}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Email</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.email}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">District</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.district}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Present address</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.presentaddress}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* personal detail end  */}
+
+          {/* tution detail start  */}
+          <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="heading d-flex justify-content-between align-items-center row py-3">
+              <h3 className="h5 w-fit">Tution Detail</h3>
+              {update && (
+                <button
+                  className="btn btn-primary w-fit"
+                  type="button"
+                  onClick={(epse) => editPartToUpdateHandler(epse, 3)}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+            <hr />
+            <div className="body-content row">
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Per Hour Rate</div>
+                <div className="col-md-6">
+                  <p>{userDetail.rate} TK</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Available Status</div>
+                <div className="col-md-6">
+                  <p>
+                    {userDetail?.isAvailable ? 'Available' : 'Not Available'}
+                  </p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Tution Place</div>
+                <div className="col-md-6">
+                  <p>{locationSelection(userDetail.tutionplace)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* tution detail end  */}
+
+          {/* Exam detail start  */}
+          <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="heading d-flex justify-content-between align-items-center row py-3">
+              <h3 className="h5 w-fit">Exam Detail</h3>
+              {update && (
+                <button
+                  className="btn btn-primary w-fit"
+                  type="button"
+                  onClick={(epse) => editPartToUpdateHandler(epse, 4)}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+            <hr />
+            <div className="body-content row">
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Exam Name</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.degree}</p>
+                </div>
+              </div>              
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Institution</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.institution}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Group</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.group}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Result (CGPA / GPA)</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.cgpa}</p>
+                </div>
+              </div>
+              <div className="row mx-0 mb-1">
+                <div className="col-md-6">Passing Year</div>
+                <div className="col-md-6">
+                  <p>{userDetail?.passing_year}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Exam detail end  */}
         </>
       )}
     </div>

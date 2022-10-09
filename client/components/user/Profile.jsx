@@ -62,7 +62,10 @@ function Profile() {
   }, [authUserInfo]);
   return (
     <div className="Profile m-4">
+      {/* general detail  */}
       <Detail userDetail={currentUser} update />
+      {/* updateable detail  */}
+      
     </div>
   );
 }

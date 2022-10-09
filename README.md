@@ -31,7 +31,9 @@
       - Group (Science, Arts, & commerce)
       - Result 
       - Passing Year 
+      // result instifute group
    2. Personal Detail 
+      - Picture (Later)
       - Name 
       - Email 
       - District 
@@ -40,6 +42,9 @@
       - Rate per hour 
       - Status (Currenty available to request or not )
       - Tution place multile selection 
+   4. Subjects
+      - Tution subjects
+      - Tution class types
  - **Scheduled Class detail**
    - No bill and duration 
    - Detail location of student 

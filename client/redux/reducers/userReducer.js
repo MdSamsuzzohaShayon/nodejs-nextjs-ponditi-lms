@@ -103,6 +103,8 @@ const initialVerifyCode = {
   otp: '',
 };
 
+
+
 const initialAuthUserInfo = {
   email: null,
   id: null,
@@ -129,6 +131,25 @@ const initialDashboardSidebarElements = [
     id: 4,
     name: REJECTED,
     text: 'Rejected Class',
+  },
+];
+
+const initialDegreeList = [
+  {
+    id: 1,
+    name: 'SSC',
+  },
+  {
+    id: 2,
+    name: 'HSC',
+  },
+  {
+    id: 3,
+    name: 'DIPLOMA',
+  },
+  {
+    id: 4,
+    name: 'HONOURS',
   },
 ];
 
@@ -209,11 +230,14 @@ export const userSlice = createSlice({
      */
     dashboardSidebarElements: initialDashboardSidebarElements,
     selectedContent: PROFILE,
+    degreeList: initialDegreeList,
 
     /**
      * @dynamic all those connected to backend and databases
      */
     currentUser: initialCurrentUser, // The user who logged in
+    userSubjects: [],
+    userClassTypes: [],
     selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
     selectedUserRole: TEACHER, // the user whose detail will be shown
 
@@ -234,6 +258,11 @@ export const userSlice = createSlice({
     allPendingUserList: [],
     allRejectedUserList: [],
     allApprovedUserList: [],
+
+    // For updating a user
+    updatePart: 1,
+    // cts = class types subjects
+    updateUser: {},
   },
   reducers: {
     /**
@@ -292,6 +321,16 @@ export const userSlice = createSlice({
     resetAllUserList: (state) => {
       state.allUserList = [];
     },
+    setUpdatePart: (state, action) => {
+      state.updatePart = action.payload;
+    },
+    // cts = class type subject
+    setUpdateUser: (state, action) => {
+      state.updateUser = { ...state.updateUser, ...action.payload };
+    },
+    resetUpdateUser: (state) => {
+      state.updateUser = {};
+    },
   },
   extraReducers(builder) {
     // builder.addCase(addNewPost.fulfilled, (state, action) => {
@@ -301,6 +340,8 @@ export const userSlice = createSlice({
     builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
       state.currentUser = action.payload.user;
+      state.userClassTypes = action.payload.classTypes;
+      state.userSubjects = action.payload.subjects;
     });
     builder.addCase(fetchCurrentSingleUser.rejected, (state) => {
       // console.log(action.payload, state);
@@ -353,6 +394,9 @@ export const {
   resetAuthUserInfo,
   setSelectedContent,
   resetAllUserList,
+  setUpdatePart,
+  setUpdateUser,
+  resetUpdateUser,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -60,6 +60,12 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(255),
         // unique: true,
       },
+      district: {
+        type: new DataTypes.STRING(255),
+      },
+      presentaddress: {
+        type: new DataTypes.STRING(255),
+      },
       role: {
         type: new DataTypes.STRING(100),
       },
@@ -82,10 +88,6 @@ module.exports = (sequelize, DataTypes) => {
       experience: {
         type: new DataTypes.STRING(100),
       },
-
-      location: {
-        type: new DataTypes.STRING(100),
-      },
       /**
        * @auth data fields
        */
@@ -106,11 +108,15 @@ module.exports = (sequelize, DataTypes) => {
       /**
        * @education data fields
        */
+      //  result instifute group
       degree: {
         type: new DataTypes.STRING(100),
       },
 
-      major: {
+      institute: {
+        type: new DataTypes.STRING(255),
+      },
+      group: {
         type: new DataTypes.STRING(100),
       },
 
@@ -119,17 +125,21 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       cgpa: {
-        type: new DataTypes.INTEGER(),
+        type: new DataTypes.STRING(80),
       },
 
       /**
        * @additional
        * Added later on
        */
-      status: {
-        // Online offline teacher's location
+      tutionplace: {
         type: new DataTypes.STRING(70),
         defaultValue: ONLINE,
+      },
+      // isAvailable: true / false 
+      isAvailable: {
+        type: new DataTypes.BOOLEAN(),
+        defaultValue: true,
       },
       rate: {
         type: new DataTypes.INTEGER(10),
@@ -137,7 +147,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       totalHours: {
         type: new DataTypes.INTEGER(10),
-      }
+      },
     },
     {
       sequelize,

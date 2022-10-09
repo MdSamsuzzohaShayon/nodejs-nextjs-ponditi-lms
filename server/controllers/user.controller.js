@@ -140,7 +140,7 @@ const registerUser = async (req, res, next) => {
         msg: 'User already exist with this email address, you can now login',
       });
     }
-    userObj.isActive = false;
+    // userObj.isActive = false;
     userObj.password = await bcrypt.hash(userObj.password, 10);
     const result = await User.update(userObj, {
       where: { phone: req.body.phone },
@@ -381,7 +381,8 @@ const getAllUsers = async (req, res, next) => {
 const getSingleUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const userExist = await User.findOne({ where: { id } });
+    const userId = parseInt(id, 10);
+    const userExist = await User.findOne({ where: { id: userId } });
     if (userExist === null) {
       return res.status(404).json({ msg: 'user not found' });
     }
@@ -404,7 +405,7 @@ const getSingleUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
-  // console.log({id ,pId: req.userId});
+  // console.log(req.body);
   if (pId !== req.userId) {
     return res
       .status(406)
@@ -419,6 +420,7 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ msg: 'User not found' });
     }
     const updatedObj = Object.assign(req.body);
+    // console.log(updatedObj);
 
     // check password,
     if (updatedObj.password || updatedObj.password === '') {
