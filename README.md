@@ -53,19 +53,21 @@
  - **Top Bar**
    - Profile ✅ 
    - Request histry (Filter by pending requests, rejected requestes) ✅ 
-   - Notifications
+   - Notifications ✅ 
  - **Tution process by teacher**
-   - Start tution (No more request acceptable)
-   - Minutes counting 
-   - Finish tution (bill depends on per minute count)
-   - Mark as paid (Student can not send request until they pay their dues)
-   - Give feedback
+   - Start tution (No more request acceptable) ✅ 
+   - Minutes counting  ✅ 
+   - Finish tution (bill depends on per minute count) ✅ 
+   - Mark as paid (Student can not send request until they pay their dues) ✅ 
+   - Give feedback ✅ 
 
   - **Modification**
+    - Start imiddeate action after start class, accept, reject, finish class, review etc
     - select default subject and class of teacher if search has none of it
     - select item background in Calender
     - Make responsive
     - All class are online for now. Fix in server initiate class 
+    - Show slot time
 
 
 
@@ -97,6 +99,8 @@
 
 ### Deployment process(server)
 - Disable add admin route and seed route from admin router and get all users from user route
+- make npm start script in package.json for **heroku** deployment
+- Remove dotend requirement from server.js for **heroku** deployment
 
 
 ### Nest.js entities

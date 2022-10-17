@@ -7,7 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       //   has many Scheduled Class
       // has many users
-      Review.belongsTo(models.User);
+      Review.belongsTo(models.User, {
+        foreignKey: 'reviewerId',
+        as: 'Reviewer',
+      });
+      Review.belongsTo(models.User, {
+        foreignKey: 'reviewtakerId',
+        as: 'Reviewtaker',
+      });
       Review.belongsTo(models.ScheduledClass); // will have one review
     }
   }

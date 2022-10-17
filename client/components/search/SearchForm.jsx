@@ -5,7 +5,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import axios from '../../config/axios';
-import { setErrorList } from '../../redux/reducers/elementsSlice';
+import { setErrorList, toggleLoading, resetErrorList} from '../../redux/reducers/elementsSlice';
 import {
   setSearchParams,
   setSearchAllUserList,
@@ -18,27 +18,30 @@ import {
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import { types } from '../../config/keys';
 
+
 const { ANY } = types;
 
 function SearchForm() {
+  
+  const dispatch = useDispatch();
+  
+  
   const searchParams = useSelector((state) => state.search.searchParams);
   const searchTypeList = useSelector((state) => state.search.searchTypeList);
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
-
+  
   const subjectList = useSelector((state) => state.subject.subjectList);
   const subjectListCopy = useSelector((state) => state.subject.subjectListCopy);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
-
+  
   /**
    * @fetch all data on component mounted
    */
-  const isMounted = false;
-  const dispatch = useDispatch();
-
   const searchTeacherHandler = async () => {
     try {
       // console.log(searchParams);
+      dispatch(toggleLoading(true));
       const response = await axios.get('/search/teacher', {
         params: searchParams,
       });
@@ -58,12 +61,15 @@ function SearchForm() {
       }
     } catch (error) {
       console.log(error);
+      window.localStorage.removeItem('search');
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
       if (error?.response?.status === 404) {
         dispatch(resetSearchUserList());
       }
+    }finally{
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -180,10 +186,10 @@ function SearchForm() {
                 <img src="/icons/classtype.svg" alt="" />
               </span>
               <select
-                name="type"
+                name="tutionplace"
                 id="classtype"
                 className="form-control border-0 shadow-none"
-                defaultValue={searchParams.type}
+                defaultValue={searchParams.tutionplace}
                 onChange={inputChangeHandler}
               >
                 {searchTypeList.length > 0 &&

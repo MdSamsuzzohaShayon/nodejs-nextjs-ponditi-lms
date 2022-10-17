@@ -14,8 +14,7 @@ const adminRoutes = require('./routes/adminRouter');
 const classtypeRoutes = require('./routes/classtypeRouter');
 const subjectRoutes = require('./routes/subjectRouter');
 const scheduledclassRoutes = require('./routes/scheduledclassRouter');
-
-
+const reviewRoutes = require('./routes/reviewRouter');
 const db = require('./models');
 
 const app = express();
@@ -26,6 +25,11 @@ app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  console.log('\x1b[33m%s\x1b[0m', `${req.method} - ${req.url}`);
+  next();
+});
 // routers
 app.get('/api/test', (req, res, next) => {
   res.send('hi');
@@ -37,6 +41,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api/classtype', classtypeRoutes);
 app.use('/api/subject', subjectRoutes);
 app.use('/api/scheduledclass', scheduledclassRoutes);
+app.use('/api/review', reviewRoutes);
 
 const PORT = process.env.PORT || 9000;
 

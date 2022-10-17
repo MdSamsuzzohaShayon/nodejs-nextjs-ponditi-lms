@@ -37,8 +37,12 @@ function SubjectContent() {
 
   const deleteSubjectHandler = async (dche, subjectId) => {
     dche.preventDefault();
+    // console.log(subjectId);
     try {
       dispatch(toggleLoading(true));
+      if(!subjectId){
+        return dispatch(setErrorList(["No id found"]));
+      }
       const response = await axios.delete(`/subject/delete/${subjectId}`);
       if (response.status === 200) {
         const newSubjectList = subjectList.filter(

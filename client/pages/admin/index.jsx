@@ -12,23 +12,24 @@ import Loader from '../../components/elements/Loader';
 import Dashboard from '../../components/admin/Dashboard';
 import { fetchAllClassTypes } from '../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../redux/reducers/subjectReducer';
+import { roles } from '../../config/keys';
+
+const { ADMIN } = roles;
 
 function index() {
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.elements.isLoading);
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
   // get localstorage
   let isMounted = false;
   useEffect(() => {
     if (isMounted === false) {
       dispatch(toggleLoading(true));
-      const user = localStorage.getItem('user');
-      // console.log(user);
-      if (user === null) {
-        dispatch(toggleAuthUser(false));
-        router.push('/admin/login');
-      } else {
+      const user = window.localStorage.getItem('user');
+      const userData = JSON.parse(user);
+      if (userData && userData.role === ADMIN){
         dispatch(toggleAuthUser(true));
         dispatch(toggleLoading(false));
   
@@ -40,6 +41,10 @@ function index() {
             dispatch(fetchAllSubjects()),
           ]);
         })();
+      } else {
+        dispatch(toggleAuthUser(false));
+        window.localStorage.removeItem('user');
+        router.push('/admin/login');
       }
     }
     isMounted = true;

@@ -14,7 +14,8 @@ import axios from '../../config/axios';
 import { SEND_CODE, REGISTER } from '../../config/keys';
 import {
   setErrorList,
-  setSuccessMessageList,
+  resetErrorList,
+  toggleLoading
 } from '../../redux/reducers/elementsSlice';
 
 function VerifyCode() {
@@ -24,18 +25,23 @@ function VerifyCode() {
 
   const submitVerifyCodeHandler = async (vhe) => {
     vhe.preventDefault();
-    if (verifyCode.phone === '' || verifyCode.otp === '') {
+    const verifyObj = {...verifyCode};
+    if (verifyObj.phone === '' || verifyObj.otp === '') {
       dispatch(setErrorList(['Invalid phone or OTP']));
     }
+
+    // Only For Bangladesh
     try {
-      const response = await axios.put('/user/verifyotp', verifyCode, {
+      dispatch(toggleLoading(true));
+      const response = await axios.put('/user/verifyotp', verifyObj, {
         headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.status === 200) {
         // dispatch(resetUser());
         // Router.push('/user/login');
-        dispatch(setCurrentUser({ phone: verifyCode.phone }));
+        dispatch(resetErrorList());
+        dispatch(setCurrentUser({ phone: verifyObj.phone }));
         dispatch(setUserFormsType(REGISTER));
         dispatch(resetVerifyCode());
       }
@@ -46,6 +52,8 @@ function VerifyCode() {
       } else {
         dispatch(setErrorList(['Request unsuccessfull']));
       }
+    }finally{
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -75,7 +83,7 @@ function VerifyCode() {
               id="phone"
               defaultValue={verifyCode.phone}
               onChange={inputChangeHandler}
-              placeholder="phone"
+              placeholder="E.g. 017000000000"
             />
           </div>
         )}
@@ -89,7 +97,7 @@ function VerifyCode() {
             id="otp"
             defaultValue=""
             onChange={inputChangeHandler}
-            placeholder="otp"
+            placeholder="E.g. 273647"
           />
         </div>
         <div className="row mx-0 mb-3">

@@ -9,9 +9,10 @@ import { roles } from '../../config/keys';
 import axios from '../../config/axios';
 import { toggleAuthUser } from '../../redux/reducers/userReducer';
 
+const { ADMIN, STUDENT, TEACHER } = roles;
+
 function Header() {
   const dispatch = useDispatch();
-  const { ADMIN } = roles;
   const router = useRouter();
   const menuItemList = useSelector((state) => state.elements.menuItemList);
   const socialItems = useSelector((state) => state.elements.socialItems);
@@ -21,6 +22,7 @@ function Header() {
   const authenticatedUser = useSelector(
     (state) => state.user.authenticatedUser
   );
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const [dashboardUrl, setDashboardUrl] = useState('/initial');
   // () => {
   //   console.log({authUserInfo});
@@ -85,19 +87,31 @@ function Header() {
                 <div className="auth py-1 py-md-0 py-2">
                   {authenticatedUser ? (
                     <ul className="list-unstyled d-flex justify-content-center align-items-center flex-direction-column flex-md-direction-row">
-                      <li className="mx-2">
-                        <Link href={dashboardUrl}>Profile</Link>
-                      </li>
-                      <li className="mx-2 d-flex">
-                        <div className='p-1'>
-                          <Link href="/user/requesthistory">Request history</Link>
-                        </div>
-                        {userUnseenNotifications.length > 0 && (
-                          <div className="bg-primary text-white p-1 w-fit rounded-3">
-                            {userUnseenNotifications.length}
-                          </div>
-                        )}
-                      </li>
+                      {authUserInfo.role === ADMIN && (
+                        <li className="mx-2">
+                          <Link href="/admin">Dashboard</Link>
+                        </li>
+                      )}
+                      {authUserInfo.role === STUDENT ||
+                      authUserInfo.role === TEACHER ? (
+                        <>
+                          <li className="mx-2">
+                            <Link href={dashboardUrl}>Profile</Link>
+                          </li>
+                          <li className="mx-2 d-flex">
+                            <div className="p-1">
+                              <Link href="/user/requesthistory">
+                                Request history
+                              </Link>
+                            </div>
+                            {userUnseenNotifications.length > 0 && (
+                              <div className="bg-primary text-white p-1 w-fit rounded-3">
+                                {userUnseenNotifications.length}
+                              </div>
+                            )}
+                          </li>
+                        </>
+                      ) : null}
                       <li className="mx-2">
                         <button
                           className="btn btn-primary small-btn mx-2"

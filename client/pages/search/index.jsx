@@ -12,7 +12,6 @@ import {
   setSearchAllUserList,
   setRPTotalPage,
   resetSearchUserList,
-  setAllSubjectList
 } from '../../redux/reducers/searchReducer';
 import { fetchAllClassTypesSearch } from '../../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../../redux/reducers/subjectReducer';
@@ -20,6 +19,8 @@ import { fetchAllSubjectsSearch } from '../../redux/reducers/subjectReducer';
 import Layout from '../../components/layouts/Layout';
 import SearchForm from '../../components/search/SearchForm';
 import SearchResult from '../../components/search/SearchResult';
+import Loader from '../../components/elements/Loader';
+
 
 import axios from '../../config/axios';
 
@@ -31,10 +32,12 @@ function search() {
   // rp = result pagination
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
+  const isLoading = useSelector((state) => state.elements.isLoading);
 
   // Search on mount
   const initialSearchUsers = async () => {
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get('/search/teacher', {
         params: searchParams,
       });
@@ -55,6 +58,8 @@ function search() {
       if (error?.response?.status === 404) {
         dispatch(resetSearchUserList());
       }
+    }finally{
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -94,14 +99,14 @@ function search() {
   return (
     <Layout>
       <div className="search">
-        <section className="section section-1 bg-secondary search-form">
+        <section className="bg-secondary search-form">
           <div className="container">
             <SearchForm />
           </div>
         </section>
         <section className="section section-2 search-result">
           <div className="container">
-            <SearchResult />
+            {isLoading ? <Loader /> : <SearchResult /> }
           </div>
         </section>
       </div>

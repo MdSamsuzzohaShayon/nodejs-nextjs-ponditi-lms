@@ -40,4 +40,5 @@ export const scheduledclassStatus = {
   REJECTED: 'REJECTED',
   START_CLASS: 'START_CLASS',
   ANY: 'ANY',
+  FINISH_CLASS: 'FINISH_CLASS'
 }

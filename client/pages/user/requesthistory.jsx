@@ -24,7 +24,8 @@ import {
 } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 
-const { APPROVED, PENDING, REJECTED, START_CLASS } = scheduledclassStatus;
+const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } =
+  scheduledclassStatus;
 
 function requesthistory() {
   const dispatch = useDispatch();
@@ -37,6 +38,9 @@ function requesthistory() {
     (state) => state.scheduledclass.requestedSCOU
   );
   const runningSCOU = useSelector((state) => state.scheduledclass.runningSCOU);
+  const completedSCOU = useSelector(
+    (state) => state.scheduledclass.completedSCOU
+  );
   const acceptedSCOU = useSelector(
     (state) => state.scheduledclass.acceptedSCOU
   );
@@ -148,6 +152,14 @@ function requesthistory() {
             acceptRequestHandler={acceptRequestHandler}
             rejectRequestHandler={rejectRequestHandler}
             scheduledClassList={runningSCOU}
+          />
+        );
+      case FINISH_CLASS:
+        return (
+          <ScheduledClassList
+            acceptRequestHandler={acceptRequestHandler}
+            rejectRequestHandler={rejectRequestHandler}
+            scheduledClassList={completedSCOU}
           />
         );
 

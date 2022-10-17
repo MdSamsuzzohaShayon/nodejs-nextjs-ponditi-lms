@@ -8,6 +8,7 @@ import { roles } from '../../../config/keys';
 import { setInitializeSchedule } from '../../../redux/reducers/scheduledclassReducer';
 import ErrorMessages from '../../../components/elements/ErrorMessages';
 import { resetErrorList } from '../../../redux/reducers/elementsSlice';
+import Loader from '../../../components/elements/Loader';
 
 const { STUDENT, TEACHER } = roles;
 
@@ -16,6 +17,7 @@ function index() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const isLoading = useSelector((state) => state.elements.isLoading);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const initializeSchedule = useSelector(
@@ -45,7 +47,7 @@ function index() {
         router.push('/search');
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (userId && isMounted) {
@@ -70,12 +72,17 @@ function index() {
     }
   }, [selectedUser]);
 
-  
   return (
     <Layout>
       <div className="container">
-        <ErrorMessages />
-        <SendRequest />
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <ErrorMessages />
+            <SendRequest />
+          </>
+        )}
       </div>
     </Layout>
   );

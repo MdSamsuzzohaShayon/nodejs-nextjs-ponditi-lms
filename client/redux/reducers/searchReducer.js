@@ -8,7 +8,7 @@ export const initialSearchParams = {
   location: '',
   ClassTypeId: '', // id
   SubjectId: '', // id
-  type: ANY, // Online - tution location
+  tutionplace: ANY, // Online - tution location
 };
 
 export const searchSlice = createSlice({

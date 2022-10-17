@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 import { locationSelection } from '../../utils/helper';
 import { roles } from '../../config/keys';
-import { convertISOToReadableTime } from '../../utils/timeFunction';
+import { convertISOToReadableTime, formatAsDate, makeSlot} from '../../utils/timeFunction';
 
 const { TEACHER, STUDENT } = roles;
 
@@ -86,8 +86,9 @@ function SingleScheduledClassInfo(props) {
         </div>
       </div>
       <div className="row mb-3 mx-0">
-        Scheduled Time :{' '}
-        {convertISOToReadableTime(props.singleScheduledClass.start)}
+        Scheduled Time : {formatAsDate(props.singleScheduledClass.start)}
+        <br />
+        Slot : {makeSlot(props.singleScheduledClass.start)}
       </div>
       <style jsx>{`
         .icon-img img {

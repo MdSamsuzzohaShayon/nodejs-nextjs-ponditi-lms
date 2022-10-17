@@ -106,6 +106,13 @@ label{
   min-height: $section-min-height;
   padding: $section-padding;
 }
+.spinner-wrapper {
+  min-height: 70vh;
+}
+.spinner-grow {
+  min-height: 6rem;
+  min-width: 6rem;
+}
 
 @import './Header.scss';
 

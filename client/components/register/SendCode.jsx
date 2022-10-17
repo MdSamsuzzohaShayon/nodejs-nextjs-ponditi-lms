@@ -10,6 +10,7 @@ import {
   setVerifyCode,
   setHasPhone,
 } from '../../redux/reducers/userReducer';
+import { toggleLoading } from '../../redux/reducers/elementsSlice';
 import {
   setErrorList,
   setSuccessMessageList,
@@ -23,17 +24,25 @@ function SendCode() {
   // duplicate
   const sendCodeHandler = async (rche) => {
     rche.preventDefault();
-    if (sendOTP.phone.length < 3) {
+    const otpObj = { ...sendOTP };
+    if (otpObj.phone.length < 3) {
       dispatch(setErrorList(['Seems this number is not valid']));
     }
+
+    // Only for bangladesh
+    if (otpObj.cc === '880' && otpObj.phone.length === 11) {
+      otpObj.phone = otpObj.phone.substring(1);
+    }
+    // console.log(otpObj);
     // setRegisterForm(VERIFY);
     try {
-      const response = await axios.post('/user/sendotp', sendOTP, {
+      dispatch(toggleLoading(true));
+      const response = await axios.post('/user/sendotp', otpObj, {
         headers: { 'Content-Type': 'application/json' },
       });
       if (response.status === 201 || response.status === 208) {
         const phoneWithSuffix =
-          sendOTP.cc[sendOTP.cc.length - 1] + sendOTP.phone;
+          otpObj.cc[otpObj.cc.length - 1] + otpObj.phone;
         dispatch(setVerifyCode({ phone: phoneWithSuffix, otp: '' }));
         dispatch(setHasPhone(true));
         dispatch(setUserFormsType(VERIFY_CODE));
@@ -47,6 +56,8 @@ function SendCode() {
       } else {
         dispatch(setErrorList(['Request unsuccessfull']));
       }
+    }finally{
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -99,6 +110,8 @@ function SendCode() {
             onChange={inputChangeHandler}
             name="phone"
             className="form-control"
+            defaultValue={sendOTP.phone}
+            placeholder="E.g. 1700000000"
           />
         </div>
         <div className="row mx-0 mb-3">
@@ -110,7 +123,7 @@ function SendCode() {
           <a href="#" className="text-dark" onClick={verifyCodeSegment}>
             Verify your existing code.
           </a>
-          <Link href="/user/login" >Already have an account?</Link>
+          <Link href="/user/login">Already have an account?</Link>
         </div>
       </form>
     </section>

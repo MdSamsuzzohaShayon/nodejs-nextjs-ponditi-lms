@@ -123,7 +123,7 @@ function index() {
 
   const cancelBtnHandler = (cbe) => {
     cbe.preventDefault();
-    router.push('user/dashboard');
+    router.push('/user/dashboard');
   };
   return (
     <Layout>

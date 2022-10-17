@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(100),
         allowNull: false,
       },
-      // scheduled
+      // scheduled slot
       start: {
         type: new DataTypes.DATE(),
       },

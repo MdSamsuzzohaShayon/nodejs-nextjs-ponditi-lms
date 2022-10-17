@@ -8,14 +8,15 @@ import VerifyCode from '../../components/register/VerifyCode';
 import SendCode from '../../components/register/SendCode';
 import ErrorMessages from '../../components/elements/ErrorMessages';
 import { resetErrorList } from '../../redux/reducers/elementsSlice';
+import Loader from '../../components/elements/Loader';
 
 function register() {
   const dispatch = useDispatch();
   const userFormsType = useSelector((state) => state.user.userFormsType);
+  const isLoading = useSelector((state) => state.elements.isLoading);
+  // let isLoading = true;
 
   // eslint-disable-next-line consistent-return
-
-
 
   const showSelectedForm = () => {
     if (userFormsType === REGISTER) {
@@ -27,15 +28,21 @@ function register() {
     return <SendCode />;
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(resetErrorList());
   }, []);
 
   return (
     <Layout>
       <div className="register container">
-        <ErrorMessages />
-        {showSelectedForm()}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <ErrorMessages />
+            {showSelectedForm()}
+          </>
+        )}
         {/* <RegistrationForm /> */}
       </div>
     </Layout>

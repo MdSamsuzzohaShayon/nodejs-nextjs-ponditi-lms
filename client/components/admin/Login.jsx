@@ -45,7 +45,7 @@ function Login() {
         headers: { 'Content-Type': 'application/json' },
       });
       if (response.status === 200) {
-        dispatch(resetErrorList);
+        dispatch(resetErrorList());
         window.localStorage.setItem('user', JSON.stringify(response.data.user));
         // Change to dashboard view
         dispatch(toggleAuthUser(true));

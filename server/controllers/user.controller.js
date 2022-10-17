@@ -9,9 +9,7 @@ const sendSMS = require('../utils/sendSMS');
 const db = require('../models');
 const keys = require('../config/keys');
 
-const {
- User, ClassType, Subject, Notification 
-} = db;
+const { User, ClassType, Subject, Notification } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
 
@@ -76,27 +74,27 @@ const verifyUser = async (req, res) => {
   }
 
   if (findByPhone.dataValues.isVerified === true) {
-    return res.status(406).json({ msg: 'You already verified your otp' });
+    return res.status(200).json({ msg: 'Validated OTP successfully' });
   }
 
   if (findByPhone.dataValues.otp !== req.body.otp) {
     return res.status(406).json({ msg: 'Invalid OTP' });
   }
   await User.update(
-    { isVerified: true, otp: null },
-    { where: { id: findByPhone.dataValues.id } },
+    { isVerified: true },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
 };
 
-const registerUser = async (req, res, next) => {
+const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(406).json({ error: errors.array() });
   }
 
-  const userObj = Object.assign(req.body);
+  const userObj = { ...req.body };
   if (userObj.isActive) {
     return res
       .status(406)
@@ -115,6 +113,7 @@ const registerUser = async (req, res, next) => {
   if (userObj.classes) {
     userObj.classes = userObj.classes.toLowerCase();
   }
+  userObj.otp = null;
 
   // handle classtype id and subject id (relationship)
 
@@ -144,7 +143,7 @@ const registerUser = async (req, res, next) => {
     }
     // userObj.isActive = false;
     userObj.password = await bcrypt.hash(userObj.password, 10);
-    const result = await User.update(userObj, {
+    await User.update(userObj, {
       where: { phone: req.body.phone },
     });
     return res.status(201).json({
@@ -178,7 +177,7 @@ const rejectUser = async (req, res) => {
 
     await User.update(
       { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } }
+      { where: { id: findByPhone.dataValues.id } },
     ); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
@@ -210,7 +209,7 @@ const acceptUser = async (req, res) => {
 
     await User.update(
       { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } }
+      { where: { id: findByPhone.dataValues.id } },
     ); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
@@ -220,7 +219,7 @@ const acceptUser = async (req, res) => {
   return res.status(500).json({ msg: 'Server error' });
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   const errors = validationResult(req);
   // console.log(errors);
   if (!errors.isEmpty()) {
@@ -244,17 +243,15 @@ const login = async (req, res, next) => {
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
 
-    console.log(userExist.dataValues.role);
-
     if (
-      userExist.dataValues.role !== TEACHER &&
-      userExist.dataValues.role !== STUDENT
+      userExist.dataValues.role !== TEACHER
+      && userExist.dataValues.role !== STUDENT
     ) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password,
+      userExist.dataValues.password
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -295,7 +292,7 @@ const logout = async (req, res) => {
   return res.status(200).json({ msg: 'Logout success' });
 };
 
-const resendOTP = async (req, res, next) => {
+const resendOTP = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(406).json({ error: errors.array() });
@@ -317,18 +314,18 @@ const resendOTP = async (req, res, next) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`,
+    `Your OTP code is: ${otp}`
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
   });
 };
 
-const getAllUsersTemp = async (req, res, next) => {
+const getAllUsersTemp = async (req, res) => {
   const users = await User.findAll({
     include: [
       {
@@ -345,7 +342,7 @@ const getAllUsersTemp = async (req, res, next) => {
   res.status(200).json({ msg: 'Getting all users', users });
 };
 
-const getAllUsers = async (req, res, next) => {
+const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       include: [
@@ -475,7 +472,7 @@ const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update(
       { viewed: true },
-      { where: { userId: req.userId } },
+      { where: { userId: req.userId } }
     );
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
@@ -592,8 +589,8 @@ const seedUsers = async (req, res) => {
         .substring(10, 5),
       password,
       phone:
-        Math.floor(100000000 + Math.random() * 900000000).toString()
-        + i.toString(),
+        Math.floor(100000000 + Math.random() * 900000000).toString() +
+        i.toString(),
       cc: '+880',
       email: `${Buffer.from(Math.random().toString())
         .toString('base64')

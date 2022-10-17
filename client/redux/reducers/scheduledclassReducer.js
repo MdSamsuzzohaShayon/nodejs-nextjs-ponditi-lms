@@ -8,7 +8,8 @@ import axios from '../../config/axios';
 import { scheduledclassStatus } from '../../config/keys';
 import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
 
-const { APPROVED, PENDING, REJECTED, START_CLASS } = scheduledclassStatus;
+const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } =
+  scheduledclassStatus;
 
 const initicalAddScheduledClass = {
   name: '',
@@ -49,6 +50,11 @@ const initialSCTabElements = [
     id: 4,
     name: START_CLASS,
     text: 'Running Class',
+  },
+  {
+    id: 5,
+    name: FINISH_CLASS,
+    text: 'Completed Class',
   },
 ];
 
@@ -139,6 +145,8 @@ const initialSlotList = [
   },
 ];
 
+const initialLeaveAReview = { stars: 0, comment: '' };
+
 // scou = Scheduled Class of a User
 export const fetchAllRequestedSCOU = createAsyncThunk(
   'scheduledclass/allRequestedScheduledClass',
@@ -212,6 +220,7 @@ export const scheduledclassSlice = createSlice({
     acceptedSCOU: [],
     rejectedSCOU: [],
     runningSCOU: [],
+    completedSCOU: [],
 
     allScheduledClassList: [],
     filteredSCOU: [],
@@ -220,6 +229,8 @@ export const scheduledclassSlice = createSlice({
     singleScheduledClass: {},
 
     updateScheduledClass: {},
+
+    leaveAReview: initialLeaveAReview,
   },
   reducers: {
     showRequest: (state, action) => {
@@ -265,6 +276,15 @@ export const scheduledclassSlice = createSlice({
         ...action.payload,
       };
     },
+    setLeaveAReview: (state, action) => {
+      state.leaveAReview = {
+        ...state.leaveAReview,
+        ...action.payload,
+      };
+    },
+    resetLeaveAReview: (state) => {
+      state.leaveAReview = initialLeaveAReview;
+    },
   },
   extraReducers(builder) {
     // builder.addCase(addNewPost.fulfilled, (state, action) => {
@@ -307,6 +327,9 @@ export const scheduledclassSlice = createSlice({
       state.runningSCOU = action.payload?.classScheduledList.filter(
         (csl) => csl.status === START_CLASS
       );
+      state.completedSCOU = action.payload?.classScheduledList.filter(
+        (csl) => csl.status === FINISH_CLASS
+      );
     });
 
     builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action) => {
@@ -332,6 +355,8 @@ export const {
   setInitializeSchedule,
   setSingleScheduledClass,
   setUpdateScheduledClass,
+  setLeaveAReview,
+  resetLeaveAReview,
 } = scheduledclassSlice.actions;
 
 export default scheduledclassSlice.reducer;

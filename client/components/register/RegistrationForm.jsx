@@ -9,11 +9,11 @@ import Step3 from './Step3';
 import {
   setSelectedStep,
   setCurrentUser,
-  resetCurrentUser,
 } from '../../redux/reducers/userReducer';
 import {
   setErrorList,
   resetErrorList,
+  toggleLoading,
 } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 
@@ -42,6 +42,7 @@ function RegistrationForm() {
       if (userInfo.password !== userInfo.password2) {
         return dispatch(setErrorList(['Password did not patch']));
       }
+      dispatch(resetErrorList());
 
       // const filter =
       //   /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
@@ -74,10 +75,13 @@ function RegistrationForm() {
       return dispatch(setErrorList(['Password did not match']));
     }
     if (userInfo.password.length < 6) {
-      return dispatch(setErrorList(['Password must be more than 6 charecter long']));
+      return dispatch(
+        setErrorList(['Password must be more than 6 charecter long'])
+      );
     }
 
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.put('/user/register', userInfo, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -88,7 +92,6 @@ function RegistrationForm() {
         response.status === 200
       ) {
         dispatch(resetErrorList());
-        dispatch(resetCurrentUser());
         Router.push('/user/login');
       }
     } catch (error) {
@@ -99,6 +102,8 @@ function RegistrationForm() {
         }
         // setErrMsg(error.response.data.msg);
       }
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 

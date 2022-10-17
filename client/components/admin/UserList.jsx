@@ -10,6 +10,7 @@ import {
 } from '../../redux/reducers/elementsSlice';
 import { scheduledclassStatus } from '../../config/keys';
 import { setSelectedTabElement } from '../../redux/reducers/adminReducer';
+import { fetchAllUsersByAdmin } from '../../redux/reducers/userReducer';
 
 const { APPROVED, REJECTED, PENDING } = scheduledclassStatus;
 
@@ -53,6 +54,8 @@ function UserList(props) {
       // console.log(response);
       if (response.status === 202) {
         dispatch(resetErrorList());
+        // Get all user one more time
+        dispatch(fetchAllUsersByAdmin(null));
       }
     } catch (error) {
       console.log(error);
@@ -108,17 +111,17 @@ function UserList(props) {
                 {`${aul?.firstname} ${aul?.lastname}`}{' '}
               </span>
               <div className="props prop-2 info d-flex flex-wrap justify-content-start">
-                <p>{aul?.phone}</p>
+                <p className='me-1'>{aul?.phone}</p> &nbsp;
                 <p>{aul?.email}</p>
               </div>
               <div className="props prop-4 justify-content-end d-flex flex-wrap">
-                <button className="btn btn-primary w-fit " type="button">
+                <button className="btn btn-primary w-fit h-fit " type="button">
                   <Link href={`/user/detail/${aul.id}`}>Detail</Link>
                 </button>
                 {aul.isActive === PENDING && (
                   <>
                     <button
-                      className="btn btn-primary w-fit "
+                      className="btn btn-primary w-fit h-fit "
                       type="button"
                       onClick={(e) => acceptUserHandler(e, aul.id)}
                     >
@@ -136,7 +139,7 @@ function UserList(props) {
 
                 {aul.isActive === REJECTED && (
                   <button
-                    className="btn btn-primary w-fit "
+                    className="btn btn-primary w-fit h-fit "
                     type="button"
                     onClick={(e) => acceptUserHandler(e, aul.id)}
                   >

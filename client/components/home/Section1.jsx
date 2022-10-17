@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 function Section1() {
   return (
-    <section className="section section-1 py-5" id="home-section">
+    <section className="py-5" id="home-section">
       <div className="container d-flex justify-content-between">
         <div className="caption">
           <h1>Deliver Better Learning Through Better Teacher</h1>

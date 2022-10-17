@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 import Router from 'next/router';
 import {
   showRequest,
@@ -18,6 +19,8 @@ import Calendar from '../elements/Calendar';
 const { TEACHER } = roles;
 
 function SendRequest() {
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedAmpm, setSelectedAmpm] = useState(null);
   const dispatch = useDispatch();
 
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
@@ -83,8 +86,6 @@ function SendRequest() {
     newObj.start = startDateTime.toISOString();
     // console.log(newObj);
 
-
-
     try {
       dispatch(toggleLoading(true));
       const response = await axios.post('/scheduledclass/initiate', newObj);
@@ -108,8 +109,6 @@ function SendRequest() {
     }
   };
 
-
-
   const dateChangeHandler = (sde, detail) => {
     sde.preventDefault();
     // console.log(detail);
@@ -124,6 +123,8 @@ function SendRequest() {
 
   const selectSlotHandler = (sse, slot, ampm) => {
     sse.preventDefault();
+    setSelectedSlot(slot);
+    setSelectedAmpm(ampm);
     if (ampm === 'PM') {
       dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
     } else {
@@ -135,52 +136,6 @@ function SendRequest() {
     <div className="SendRequest">
       <h1>Send Request</h1>
       <form onSubmit={initializeScheduledClassHandler}>
-        {/* <div className="row mb-3 mx-0">
-          <div className="col-md-6">
-            <label htmlFor="ClassTypeId">Available Classes</label>
-            <select
-              className="form-control"
-              name="ClassTypeId"
-              id="ClassTypeId"
-              defaultValue={initializeSchedule.ClassTypeId}
-              onChange={inputChangeHandler}
-            >
-              {selectedClassTypesSU.length > 0
-                ? selectedClassTypesSU.map((sct) => (
-                    <option value={sct.id} key={sct.id}>
-                      {sct.name}
-                    </option>
-                  ))
-                : classtypeList.map((sct) => (
-                    <option value={sct.id} key={sct.id}>
-                      {sct.name}
-                    </option>
-                  ))}
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="SubjectId">Available Sujects</label>
-            <select
-              className="form-control"
-              name="SubjectId"
-              id="SubjectId"
-              defaultValue={initializeSchedule.SubjectId}
-              onChange={inputChangeHandler}
-            >
-              {selectedSubjectsSU.length > 0
-                ? selectedSubjectsSU.map((ss) => (
-                    <option value={ss.id} key={ss.id}>
-                      {ss.name}
-                    </option>
-                  ))
-                : subjectList.map((ss) => (
-                    <option value={ss.id} key={ss.id}>
-                      {ss.name}
-                    </option>
-                  ))}
-            </select>
-          </div>
-        </div> */}
         <div className="row mb-3 mx-0">
           <div className="my-2 week-calendar">
             <Calendar onDateChange={dateChangeHandler} />
@@ -188,7 +143,11 @@ function SendRequest() {
           <div className="time-slot d-flex w-full justify-content-between align-items-start flex-wrap">
             {slotList.map((sl) => (
               <button
-                className="btn btn-outline-primary"
+                className={
+                  sl.slot === selectedSlot && sl.ampm === selectedAmpm
+                    ? 'btn btn-primary'
+                    : 'btn btn-outline-primary'
+                }
                 type="button"
                 key={sl.id}
                 onClick={(sse) => selectSlotHandler(sse, sl.slot, sl.ampm)}

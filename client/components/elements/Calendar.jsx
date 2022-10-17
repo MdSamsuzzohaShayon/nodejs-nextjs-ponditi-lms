@@ -179,6 +179,8 @@ function Calendar(props) {
 
   const [startOfWeek, setStartOfWeek] = useState(7 - selectedDay);
 
+  const [clickedDate, setClickedDate] = useState(selectedDate);
+
   function daysInMonth(month, year) {
     const monthNum = new Date(Date.parse(`${month} 1,${year}`)).getMonth() + 1;
     return new Date(year, monthNum, 0).getDate();
@@ -207,7 +209,30 @@ function Calendar(props) {
   };
 
   const keyboardHandler = (khe) => {};
-  
+
+  const dateChangeHandler = (dce, date, month, year) => {
+    dce.preventDefault();
+    setClickedDate(date);
+    if (props.onDateChange) {
+      props.onDateChange(dce, {
+        date,
+        month,
+        year,
+      });
+    } else {
+      console.log('No date change event listener');
+    }
+  };
+
+  const setClassForSelectedItem = (itemDateNum) => {
+    if (itemDateNum === selectedDate) {
+      return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day';
+    }
+    if (itemDateNum === clickedDate) {
+      return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center active-day';
+    }
+    return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center';
+  };
 
   const weekContent = () => {
     const cols = [];
@@ -218,21 +243,23 @@ function Calendar(props) {
       if (daysOfMonthList[i]) {
         cols.push(
           <li
-            className={
-              i === selectedDate - 1
-                ? 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day'
-                : 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center'
-            }
+            // className={
+            //   i === selectedDate - 1
+            //     ? 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day'
+            //     : 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center'
+            // }
+            className={setClassForSelectedItem(i + 1)}
             style={{ flexBasis: '14.28%' }}
             role="button"
             key={i}
             onKeyUp={keyboardHandler}
             onClick={(sde) =>
-              props.onDateChange(sde, {
-                date: daysOfMonthList[i].num,
-                month: selectedMonth,
-                year: selectedYear,
-              })
+              dateChangeHandler(
+                sde,
+                daysOfMonthList[i].num,
+                selectedMonth,
+                selectedYear
+              )
             }
           >
             <span>{daysOfMonthList[i].num}</span>

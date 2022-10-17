@@ -15,6 +15,7 @@ import {
   setInitializeSchedule,
 } from '../../redux/reducers/scheduledclassReducer';
 import { roles, scheduledclassStatus } from '../../config/keys';
+import MakeStar from '../elements/MakeStar';
 
 const { STUDENT } = roles;
 const { ANY } = scheduledclassStatus;
@@ -112,6 +113,16 @@ function SearchResult() {
     Router.push(`/search/request/${receverId}`);
   };
 
+  const findStarLimit = (sul) => {
+    const totalReviews = sul.Reviews.length;
+    let totalMarks = 0;
+    for (let i = 0; i < totalReviews; i += 1) {
+      totalMarks += sul.Reviews[i].stars;
+    }
+    const limit = totalMarks / totalReviews;
+    return limit;
+  };
+
   return (
     <div className="SearchResult">
       {searchUserList && (
@@ -135,7 +146,7 @@ function SearchResult() {
                             {`${sul?.firstname} ${sul?.lastname}`}
                           </h5>
                           <h5 className="card-title text-capitalize">
-                            Reviews
+                            <MakeStar limit={findStarLimit(sul)} />
                           </h5>
                         </div>
                         <p className="card-text">

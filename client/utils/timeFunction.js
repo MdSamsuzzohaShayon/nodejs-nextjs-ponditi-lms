@@ -16,6 +16,21 @@ export const convertISOToReadableTime = (isoTime) => {
   const formathours = formatAMPM(newTimeDate);
   return `${newDate} ${formathours}`;
 };
+
+export const formatAsDate = (isoTime) => {
+  //     const isoToReadAble = new Date(isoTime);
+  const newTimeDate = new Date(isoTime);
+  const newDate = `${newTimeDate.getDate()}-${newTimeDate.getMonth()}-${newTimeDate.getFullYear()}`;
+  return newDate;
+};
+
+export const makeSlot = (isoTime) => {
+  //     const isoToReadAble = new Date(isoTime);
+  const newTimeDate = new Date(isoTime);
+  const newDate = `${newTimeDate.getHours()}-${newTimeDate.getHours()+1}`;
+  return newDate;
+};
+
 export const convertReadableToISOTime = (readableTime) => readableTime;
 
 export const inputToISOtime = (inputedDT)=>{

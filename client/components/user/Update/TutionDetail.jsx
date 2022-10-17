@@ -75,7 +75,7 @@ function TutionDetail(props) {
                 name="available"
                 id="available"
                 onChange={(ace) => availablityChangeHandler(ace, true)}
-                checked={!!updateUser.isAvailable}
+                checked={!updateUser.isAvailable}
               />
               <label className="form-check-label" htmlFor="available">
                 Available
@@ -87,7 +87,7 @@ function TutionDetail(props) {
                 type="radio"
                 name="notavailable"
                 id="notavailable"
-                checked={!updateUser.isAvailable}
+                checked={!!updateUser.isAvailable}
                 onChange={(ace) => availablityChangeHandler(ace, false)}
               />
               <label className="form-check-label" htmlFor="notavailable">

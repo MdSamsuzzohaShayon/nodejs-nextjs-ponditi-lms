@@ -10,7 +10,7 @@ const sequelize = require('sequelize');
 const { Op } = sequelize;
 const db = require('../models');
 
-const { User, Subject, ClassType } = db;
+const { User, Subject, ClassType, Review } = db;
 const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
@@ -23,7 +23,11 @@ const searchTeacher = async (req, res, next) => {
   try {
     const searchQuery = {};
     let where = { isActive: APPROVED, role: TEACHER, isAvailable: true };
-    const include = [];
+    const include = [
+      {
+        model: Review,
+      },
+    ];
 
     const searchParams = Object.assign(req.query);
     // console.log({ searchParams });
@@ -146,6 +150,8 @@ const searchTeacher = async (req, res, next) => {
       teacher.password = undefined;
       return teacher;
     });
+
+    // console.log(teachers);
     if (teachers.length > 0) {
       return res.status(200).json({ msg: 'teacher found', teachers });
     }
