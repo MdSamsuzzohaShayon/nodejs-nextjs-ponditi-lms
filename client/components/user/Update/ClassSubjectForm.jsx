@@ -14,6 +14,7 @@ function ClassSubjectForm(props) {
     // ClassTypeId
     dispatch(setUpdateUser({ ClassTypeId: [val] }));
     const newSubjectList = classtypeList.find((ctl) => ctl.id === val).Subjects;
+    // console.log(newSubjectList);
     if (newSubjectList.length === 1) {
       dispatch(setUpdateUser({ SubjectId: [newSubjectList[0].id] }));
       dispatch(setSubjectList(newSubjectList));

@@ -41,8 +41,13 @@ function StopWatch(props) {
       } else if (secondsToStart === 60) {
         // Set bill
         const perMinRate = props.perHourRate / 60;
-        const rateOfHours = hourToStart * props.perHourRate;
-        dispatch(setGenerateBill(rateOfHours + minuteToStart * perMinRate));
+        // const rateOfHours = hourToStart * props.perHourRate;
+        // dispatch(setGenerateBill(rateOfHours + minuteToStart * perMinRate));
+        dispatch(
+          setGenerateBill(
+            props.perHourRate * hourToStart + minuteToStart * perMinRate
+          )
+        );
 
         setMinuteToStart((prevState) => (prevState += 1));
         setSecondsToStart(0);

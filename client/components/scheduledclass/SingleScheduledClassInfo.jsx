@@ -8,6 +8,8 @@ const { TEACHER, STUDENT } = roles;
 function SingleScheduledClassInfo(props) {
   return (
     <div className="SingleScheduledClassInfo">
+
+      {/* Basic info start  */}
       <div className="row mb-3">
         <div className="col-md-6">
           <div className="icon-img">
@@ -24,6 +26,9 @@ function SingleScheduledClassInfo(props) {
           <p>{props.singleScheduledClass?.status}</p>
         </div>
       </div>
+      {/* Basic info end  */}
+
+      {/* student, teacher and subject start  */}
       <div className="row mb-3">
         <div className="col-md-6">
           <div className="card rounded-1">
@@ -85,11 +90,15 @@ function SingleScheduledClassInfo(props) {
           </div>
         </div>
       </div>
+      {/* student, teacher and subject end  */}
+
+      {/* Time detail start  */}
       <div className="row mb-3 mx-0">
         Scheduled Time : {formatAsDate(props.singleScheduledClass.start)}
         <br />
         Slot : {makeSlot(props.singleScheduledClass.start)}
       </div>
+      {/* Time detail end  */}
       <style jsx>{`
         .icon-img img {
           width: 2rem;

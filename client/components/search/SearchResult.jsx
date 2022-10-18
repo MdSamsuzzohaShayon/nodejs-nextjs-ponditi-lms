@@ -114,12 +114,13 @@ function SearchResult() {
   };
 
   const findStarLimit = (sul) => {
-    const totalReviews = sul.Reviews.length;
+    // console.log(sul);
+    const totalReviewtaker = sul.Reviewtaker.length;
     let totalMarks = 0;
-    for (let i = 0; i < totalReviews; i += 1) {
-      totalMarks += sul.Reviews[i].stars;
+    for (let i = 0; i < totalReviewtaker; i += 1) {
+      totalMarks += sul.Reviewtaker[i].stars;
     }
-    const limit = totalMarks / totalReviews;
+    const limit = totalMarks / totalReviewtaker;
     return limit;
   };
 
