@@ -15,6 +15,9 @@ const { ADMIN, TEACHER } = keys.roles;
 const addClassType = async (req, res) => {
   const { name, subjectId } = req.body;
 
+  // console.log(name, subjectId);
+  // console.log("Req made");
+
   try {
     const newName = name.toUpperCase();
     const classTypeExist = await ClassType.findOne({

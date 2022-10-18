@@ -81,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       age: {
-        type: new DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
       },
 
       /**
@@ -131,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       passing_year: {
-        type: new DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
       },
 
       cgpa: {
@@ -152,11 +152,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: true,
       },
       rate: {
-        type: new DataTypes.INTEGER(10),
+        type: DataTypes.INTEGER,
         defaultValue: 150, // per hour
       },
       totalHours: {
-        type: new DataTypes.INTEGER(10),
+        type: DataTypes.INTEGER,
       },
     },
     {

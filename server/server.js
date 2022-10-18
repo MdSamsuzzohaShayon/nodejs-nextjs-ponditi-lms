@@ -21,7 +21,7 @@ const app = express();
 // middleware
 
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL}));
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,9 +45,13 @@ app.use('/api/review', reviewRoutes);
 
 const PORT = process.env.PORT || 9000;
 
+
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
+
+
+
 // IF THERE ARE NO TABLE THIS WILL CREATE
 // db.sequelize.sync({ alter: true, force: true }).then(() => {
 //   app.listen(PORT, () => {

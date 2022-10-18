@@ -10,13 +10,13 @@ const sequelize = require('sequelize');
 const { Op } = sequelize;
 const db = require('../models');
 
-const { User, Subject, ClassType, Review } = db;
+const {
+ User, Subject, ClassType, Review 
+} = db;
 const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
-const {
- ANY, ONLINE, TL, SL 
-} = types;
+const { ANY, ONLINE, TL, SL } = types;
 const { APPROVED } = scheduledClassStatus;
 
 const searchTeacher = async (req, res, next) => {
@@ -26,6 +26,7 @@ const searchTeacher = async (req, res, next) => {
     const include = [
       {
         model: Review,
+        as: 'Reviewtaker',
       },
     ];
 

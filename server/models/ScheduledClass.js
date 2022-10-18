@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
        * @info personal
        * */
       id: {
-        type: new DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       // not necessary
       perHourRate: {
-        type: new DataTypes.INTEGER(10),
+        type: DataTypes.INTEGER,
       },
       // hours
       // hours: {

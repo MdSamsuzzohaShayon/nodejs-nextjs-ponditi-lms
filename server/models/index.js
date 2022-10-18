@@ -6,16 +6,45 @@ const dbConfig = require('../config/mssql-config');
 const basename = path.basename(__filename);
 
 const db = {};
+
 // DATABASE CONNECTION
+
+/*
+const sequelize = new Sequelize(
+  'mssql://shayon2022:Ponditi2022@server.ryansoftbd.com/Ponditi',
+  {
+    // host: dbConfig.HOST,
+    dialect: dbConfig.dialect,
+    operatorsAliases: false,
+    dialectOptions: {
+      options: {
+        encrypt: false,
+      },
+    },
+    // port : null,
+    pool: dbConfig.pool,
+  }
+);
+*/
+
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
   operatorsAliases: false,
-
+  dialectOptions: {
+    options: {
+      encrypt: false,
+    },
+  },
   pool: dbConfig.pool,
+});
+/*
+const sequelize = new Sequelize('Ponditi', 'shayon2022', 'Ponditi2022', {
+  host: 'server.ryansoftbd.com',
+  dialect: 'mssql'
 
 });
-
+*/
 sequelize
   .authenticate()
   .then(() => {

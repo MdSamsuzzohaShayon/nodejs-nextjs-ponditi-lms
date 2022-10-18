@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       stars: {
-        type: new DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       comment: {

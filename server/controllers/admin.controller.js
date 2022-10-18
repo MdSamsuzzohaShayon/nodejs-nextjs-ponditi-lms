@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
+const cookieOptions = require('../config/cookie-config');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 // bcryptjs
@@ -102,7 +103,7 @@ const loginAdmin = async (req, res, next) => {
     const token = jwt.sign(userDetailResponse, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.cookie('token', token);
+    res.cookie('token', token, cookieOptions);
     res
       .status(200)
       .json({ msg: 'Logged in successfully', user: userDetailResponse });

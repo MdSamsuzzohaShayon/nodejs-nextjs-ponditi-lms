@@ -8,6 +8,7 @@ const sendSMS = require('../utils/sendSMS');
 // bcryptjs
 const db = require('../models');
 const keys = require('../config/keys');
+const cookieOptions = require('../config/cookie-config');
 
 const { User, ClassType, Subject, Notification } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
@@ -271,7 +272,7 @@ const login = async (req, res) => {
     //   role: userExist.role,
     //   id: userExist.id,
     // };
-    res.cookie('token', token);
+    res.cookie('token', token, cookieOptions);
     res
       .status(200)
       .json({ msg: 'Logged in successfully', user: userDetailResponse });

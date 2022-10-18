@@ -5,6 +5,7 @@ module.exports = {
   DB: process.env.MSSQL_DATABASE,
   dialect: 'mssql',
 
+  
   pool: {
     max: 5,
     min: 0,
@@ -20,4 +21,5 @@ module.exports = {
       dateFirst: 1,
     },
   },
+
 };
