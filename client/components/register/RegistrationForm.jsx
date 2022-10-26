@@ -9,6 +9,8 @@ import Step3 from './Step3';
 import {
   setSelectedStep,
   setCurrentUser,
+  setUserFormsType,
+  resetUser,
 } from '../../redux/reducers/userReducer';
 import {
   setErrorList,
@@ -16,6 +18,7 @@ import {
   toggleLoading,
 } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
+import { SEND_CODE } from '../../config/keys';
 
 function RegistrationForm() {
   const dispatch = useDispatch();
@@ -92,6 +95,8 @@ function RegistrationForm() {
         response.status === 200
       ) {
         dispatch(resetErrorList());
+        dispatch(setUserFormsType(SEND_CODE));
+        dispatch(resetUser());
         Router.push('/user/login');
       }
     } catch (error) {

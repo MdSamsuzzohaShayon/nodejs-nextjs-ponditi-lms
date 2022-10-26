@@ -10,7 +10,9 @@ const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
 
-const { User, ClassType, Subject, Notification } = db;
+const {
+ User, ClassType, Subject, Notification 
+} = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
 
@@ -22,6 +24,8 @@ const sendOTP = async (req, res) => {
   }
 
   try {
+    // isVerified === true
+    // isActive === APPROVED
     const { phone, cc } = req.body;
     const phoneWithSufix = cc.substring(cc.length - 1) + phone;
     const phoneForMSG = cc + phone;
@@ -31,14 +35,31 @@ const sendOTP = async (req, res) => {
       specialChars: false,
     });
 
-    const msg = await sendSMS(phoneForMSG, `Your OTP code is: ${otp}`);
-    // console.log(msg);
-    if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
-
     const findByPhone = await User.findOne({
       where: { phone: phoneWithSufix },
     });
     if (findByPhone) {
+      if (findByPhone.dataValues.isActive === APPROVED) {
+        return res.status(406).json({
+          msg: 'User is already registred with this phone number',
+        });
+      }
+
+      if (
+        // eslint-disable-next-line prettier/prettier
+        findByPhone.dataValues.isVerified === true
+        // eslint-disable-next-line prettier/prettier
+        && findByPhone.dataValues.password
+      ) {
+        // show them that they are already registered
+        return res.status(406).json({
+          msg: 'You already registered yourself with this phone number',
+        });
+      }
+      // let them register
+      const msg = await sendSMS(phoneForMSG, `Your OTP code is: ${otp}`);
+      // console.log(msg);
+      if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
       // update code from database
       await User.update({ otp }, { where: { id: findByPhone.dataValues.id } });
       return res.status(208).json({
@@ -50,6 +71,7 @@ const sendOTP = async (req, res) => {
       cc,
       otp,
       isActive: PENDING,
+      isVerified: false,
     });
 
     return res.status(201).json({
@@ -67,6 +89,7 @@ const verifyUser = async (req, res) => {
     return res.status(406).json({ error: errors.array() });
   }
 
+  // console.log({phone: req.body.phone });
   const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
   if (!findByPhone) {
     return res
@@ -178,7 +201,7 @@ const rejectUser = async (req, res) => {
 
     await User.update(
       { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
@@ -210,7 +233,7 @@ const acceptUser = async (req, res) => {
 
     await User.update(
       { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
@@ -245,14 +268,14 @@ const login = async (req, res) => {
     if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
 
     if (
-      userExist.dataValues.role !== TEACHER
-      && userExist.dataValues.role !== STUDENT
+      userExist.dataValues.role !== TEACHER &&
+      userExist.dataValues.role !== STUDENT
     ) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password
+      userExist.dataValues.password,
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -315,11 +338,11 @@ const resendOTP = async (req, res) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
+    `Your OTP code is: ${otp}`,
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -473,7 +496,7 @@ const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update(
       { viewed: true },
-      { where: { userId: req.userId } }
+      { where: { userId: req.userId } },
     );
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
@@ -590,8 +613,8 @@ const seedUsers = async (req, res) => {
         .substring(10, 5),
       password,
       phone:
-        Math.floor(100000000 + Math.random() * 900000000).toString() +
-        i.toString(),
+        Math.floor(100000000 + Math.random() * 900000000).toString()
+        + i.toString(),
       cc: '+880',
       email: `${Buffer.from(Math.random().toString())
         .toString('base64')

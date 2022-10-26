@@ -46,11 +46,9 @@ function VerifyCode() {
         dispatch(resetVerifyCode());
       }
     } catch (error) {
-      if (error?.response?.status === 406) {
+      if (error?.response?.data?.msg) {
         // console.log(error.response);
         dispatch(setErrorList([error.response.data.msg]));
-      } else {
-        dispatch(setErrorList(['Request unsuccessfull']));
       }
     }finally{
       dispatch(toggleLoading(false));

@@ -62,6 +62,10 @@
    - Give feedback ✅ 
 
   - **Modification**
+    - User should not regester twice
+    - User will have diffrent education level
+    - Multiple class and subjects of a teacher
+    - Search with google place API
     - Start imiddeate action after start class, accept, reject, finish class, review etc
     - select default subject and class of teacher if search has none of it
     - select item background in Calender
