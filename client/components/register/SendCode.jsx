@@ -9,6 +9,7 @@ import {
   setUserFormsType,
   setVerifyCode,
   setHasPhone,
+  resetSendOTP,
 } from '../../redux/reducers/userReducer';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
 import {
@@ -46,6 +47,7 @@ function SendCode() {
         dispatch(setVerifyCode({ phone: phoneWithSuffix, otp: '' }));
         dispatch(setHasPhone(true));
         dispatch(setUserFormsType(VERIFY_CODE));
+        dispatch(resetSendOTP());
       }
       dispatch(setSuccessMessageList([response.data.msg]));
     } catch (error) {

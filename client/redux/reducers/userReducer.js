@@ -151,6 +151,9 @@ const initialDegreeList = [
   },
 ];
 
+
+const initialGroupList = ['SCIENCE', 'ARTS', 'COMMERCE', 'OTHERS'];
+
 const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/user/single/${userId}`);
@@ -258,12 +261,14 @@ export const userSlice = createSlice({
     degreeList: initialDegreeList,
     userNotifications: [],
     userUnseenNotifications: [],
+    groupList: initialGroupList,
 
     /**
      * @dynamic all those connected to backend and databases
      */
     currentUser: initialCurrentUser, // The user who logged in
     userSubjects: [],
+    userExamList: [],
     userClassTypes: [],
     selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
     selectedUserRole: TEACHER, // the user whose detail will be shown
@@ -290,6 +295,7 @@ export const userSlice = createSlice({
     updatePart: 1,
     // cts = class types subjects
     updateUser: {},
+    updateUserExam: [],
   },
   reducers: {
     /**
@@ -335,6 +341,9 @@ export const userSlice = createSlice({
     setSendOTP: (state, action) => {
       state.sendOTP = { ...state.sendOTP, ...action.payload };
     },
+    resetSendOTP: (state) => {
+      state.sendOTP = initialSendOTP;
+    },
 
     toggleAuthUser: (state, action) => {
       state.authenticatedUser = action.payload;
@@ -358,6 +367,22 @@ export const userSlice = createSlice({
     resetUpdateUser: (state) => {
       state.updateUser = {};
     },
+    setUpdateUserExam: (state, action) => {
+      const examExist = state.updateUserExam.find(
+        (uue) => uue.level === action.payload.level
+      );
+      if (examExist) {
+        const restOfTheItems = state.updateUserExam.filter(
+          (uue) => uue.level !== action.payload.level
+        );
+        state.updateUserExam = [...restOfTheItems, action.payload];
+      } else {
+        state.updateUserExam = [...state.updateUserExam, action.payload];
+      }
+    },
+    resetUpdateUserExam: (state) => {
+      state.updateUserExam = [];
+    },
   },
   extraReducers(builder) {
     // builder.addCase(addNewPost.fulfilled, (state, action) => {
@@ -366,11 +391,14 @@ export const userSlice = createSlice({
     // })
     builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
-      state.userUnseenNotifications = action.payload.notifications.filter((n)=> n.viewed === false);
+      state.userUnseenNotifications = action.payload.notifications.filter(
+        (n) => n.viewed === false
+      );
       state.userNotifications = action.payload.notifications;
       state.currentUser = action.payload.user;
       state.userClassTypes = action.payload.classTypes;
       state.userSubjects = action.payload.subjects;
+      state.userExamList = action.payload.educations;
     });
     builder.addCase(fetchCurrentSingleUser.rejected, (state) => {
       // console.log(action.payload, state);
@@ -416,6 +444,7 @@ export const {
   setSelectedStep,
   setUserFormsType,
   setSendOTP,
+  resetSendOTP,
   resetVerifyCode,
   setHasPhone,
   toggleAuthUser,
@@ -426,6 +455,8 @@ export const {
   setUpdatePart,
   setUpdateUser,
   resetUpdateUser,
+  setUpdateUserExam,
+  resetUpdateUserExam,
 } = userSlice.actions;
 
 export default userSlice.reducer;

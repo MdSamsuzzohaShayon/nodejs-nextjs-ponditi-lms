@@ -33,8 +33,9 @@ module.exports = (sequelize, DataTypes) => {
         as: 'Reviewtaker',
       });
 
-      User.hasMany(models.Review);
+      // User.hasMany(models.Review);
       User.hasMany(models.Notification);
+      User.hasMany(models.Education);
     }
   }
 
@@ -118,6 +119,8 @@ module.exports = (sequelize, DataTypes) => {
       /**
        * @education data fields
        */
+      /*
+      // Made a new model for it and making relationship
       //  result instifute group
       degree: {
         type: new DataTypes.STRING(100),
@@ -137,6 +140,7 @@ module.exports = (sequelize, DataTypes) => {
       cgpa: {
         type: new DataTypes.STRING(80),
       },
+      */
 
       /**
        * @additional

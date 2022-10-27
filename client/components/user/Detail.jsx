@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ const { PENDING } = scheduledclassStatus;
 function Detail({ userDetail, update }) {
   const dispatch = useDispatch();
   const userSubjects = useSelector((state) => state.user.userSubjects);
+  const userExamList = useSelector((state) => state.user.userExamList);
   const userClassTypes = useSelector((state) => state.user.userClassTypes);
 
   const sendRequesthandler = (sre) => {
@@ -121,7 +123,8 @@ function Detail({ userDetail, update }) {
                 </div>
               </div>
             )}
-            {userDetail.degree && (
+
+            {/* {userDetail.degree && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
                   <img
@@ -135,12 +138,9 @@ function Detail({ userDetail, update }) {
                   <p>Completed</p>
                 </div>
               </div>
-            )}
-            <br />
-            <br />
-            <br />
-            Class type subject review
+            )} */}
           </div>
+          <hr />
 
           {/* Subject and class start  */}
           {update && (
@@ -286,36 +286,25 @@ function Detail({ userDetail, update }) {
             </div>
             <hr />
             <div className="body-content row">
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Exam Name</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.degree}</p>
-                </div>
-              </div>              
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Institution</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.institution}</p>
-                </div>
-              </div>
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Group</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.group}</p>
-                </div>
-              </div>
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Result (CGPA / GPA)</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.cgpa}</p>
-                </div>
-              </div>
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Passing Year</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.passing_year}</p>
-                </div>
-              </div>
+              {userExamList.length > 0 &&
+                userExamList.map((uel, idx) => (
+                  <div key={idx} className="col-md-4 mb-3">
+                    <div className="card rounded-1">
+                      <div className="card-header">{uel.level}</div>
+                      <div className="card-body">
+                        <p className="card-text">Group: {uel?.group}</p>
+                        <p className="card-text">
+                          Institution: {uel?.institution}
+                        </p>
+                        <p className="card-text">Grade: {uel?.grade}</p>
+                        <p className="card-text">CGPA: {uel?.cgpa}</p>
+                        <p className="card-text">
+                          Passing Year: {uel?.passing_year}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
           {/* Exam detail end  */}

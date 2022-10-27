@@ -15,6 +15,7 @@ const {
   logout,
   notificationSeen,
   seedUsers,
+  updateExamUser,
 } = require('../controllers/user.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
 
@@ -25,7 +26,7 @@ router.post(
   '/sendotp',
   check('phone').notEmpty(),
   check('cc').notEmpty(),
-  sendOTP,
+  sendOTP
 );
 
 /**
@@ -41,7 +42,7 @@ router.put(
   '/verifyotp',
   check('otp').notEmpty(),
   check('phone').notEmpty(),
-  verifyUser,
+  verifyUser
 );
 
 /**
@@ -63,7 +64,7 @@ router.put(
   // Relational
   // check('classTypeId').notEmpty(), // In update section
   // check('subjectId').notEmpty(), // In update section
-  registerUser,
+  registerUser
 );
 
 /**
@@ -73,6 +74,12 @@ router.put('/reject/:userId', ensureAdmin, rejectUser);
 router.put('/accept/:userId', ensureAdmin, acceptUser);
 
 router.put('/update/:id', ensureAuth, updateUser);
+router.put(
+  '/updateexam/:id',
+  ensureAuth,
+  check('examlist').isArray(),
+  updateExamUser,
+);
 
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);

@@ -12,6 +12,7 @@ import {
   resetUpdateUser,
   setUpdatePart,
   setUpdateUser,
+  resetUpdateUserExam,
 } from '../../../redux/reducers/userReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
@@ -30,6 +31,7 @@ function index() {
 
   const updatePart = useSelector((state) => state.user.updatePart);
   const updateUser = useSelector((state) => state.user.updateUser);
+  const updateUserExam = useSelector((state) => state.user.updateUserExam);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const isLoading = useSelector((state) => state.elements.isLoading);
 
@@ -51,8 +53,8 @@ function index() {
         );
       case 3:
         return <TutionDetail inputChangeHandler={inputChangeHandler} />;
-      case 4:
-        return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
+      // case 4: // Direct from return
+      //   return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
 
       default:
         return <ClassSubjectForm />;
@@ -121,6 +123,70 @@ function index() {
     }
   };
 
+  const userExamChangeHandler = async (uce) => {
+    uce.preventDefault();
+    try {
+      dispatch(toggleLoading(true));
+      const controller = new AbortController();
+      const options = {
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+      };
+
+      const newObj = updateUserExam.filter((uel) => {
+        if (
+          uel.cgpa &&
+          uel.cgpa !== '' &&
+          uel.passing_year &&
+          uel.passing_year !== ''
+        ) {
+          // console.log(uel);
+          return uel;
+        }
+        return null;
+      });
+
+      if (newObj.length > 0) {
+        // console.log(newObj);
+        //   console.log(currentUser);
+        const response = await axios.put(
+          `/user/updateexam/${authUserInfo.id}`,
+          { examlist: newObj },
+          options
+        );
+        controller.abort();
+        if (
+          response.status === 202 ||
+          response.status === 201 ||
+          response.status === 200
+        ) {
+          // console.log(response);
+          window.localStorage.removeItem('updatePart');
+          dispatch(resetUpdateUserExam());
+          dispatch(resetErrorList());
+          router.push('/user/dashboard');
+        }
+      } else {
+        dispatch(
+          setErrorList([
+            'Make sure to put result and passing year in order to update',
+          ])
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        router.push('/user/login');
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
   const cancelBtnHandler = (cbe) => {
     cbe.preventDefault();
     router.push('/user/dashboard');
@@ -135,24 +201,45 @@ function index() {
           <section className="section section-1">
             <div className="container">
               <h1>Update user</h1>
-              <form onSubmit={userChangeHandler}>
-                {/* // Update - classtype and subject  */}
-                {displayContentPartwise()}
-                <div className="row mx-0 mb-3">
-                  <div className="col-md-12 d-flex">
-                    <button className="btn btn-primary w-fit" type="submit">
-                      Update
-                    </button>
-                    <button
-                      className="btn btn-danger w-fit"
-                      onClick={cancelBtnHandler}
-                      type="button"
-                    >
-                      Cancel
-                    </button>
+              {updatePart === 4 ? (
+                // Update exam detail start
+                <form onSubmit={userExamChangeHandler}>
+                  <ExamDetailForm inputChangeHandler={inputChangeHandler} />
+                  <div className="row mx-0 mb-3">
+                    <div className="col-md-12 d-flex">
+                      <button className="btn btn-primary w-fit" type="submit">
+                        Update
+                      </button>
+                      <button
+                        className="btn btn-danger w-fit"
+                        onClick={cancelBtnHandler}
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              ) : (
+                <form onSubmit={userChangeHandler}>
+                  {/* // Update - classtype and subject  */}
+                  {displayContentPartwise()}
+                  <div className="row mx-0 mb-3">
+                    <div className="col-md-12 d-flex">
+                      <button className="btn btn-primary w-fit" type="submit">
+                        Update
+                      </button>
+                      <button
+                        className="btn btn-danger w-fit"
+                        onClick={cancelBtnHandler}
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
             </div>
           </section>
         )}

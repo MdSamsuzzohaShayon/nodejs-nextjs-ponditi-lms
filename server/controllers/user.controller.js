@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
@@ -10,9 +11,7 @@ const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
 
-const {
- User, ClassType, Subject, Notification 
-} = db;
+const { User, ClassType, Subject, Notification, Education } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
 
@@ -106,7 +105,7 @@ const verifyUser = async (req, res) => {
   }
   await User.update(
     { isVerified: true },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -201,7 +200,7 @@ const rejectUser = async (req, res) => {
 
     await User.update(
       { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } }
+      { where: { id: findByPhone.dataValues.id } },
     ); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
@@ -233,7 +232,7 @@ const acceptUser = async (req, res) => {
 
     await User.update(
       { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } }
+      { where: { id: findByPhone.dataValues.id } },
     ); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
@@ -275,7 +274,7 @@ const login = async (req, res) => {
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password,
+      userExist.dataValues.password
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -338,11 +337,11 @@ const resendOTP = async (req, res) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`,
+    `Your OTP code is: ${otp}`
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -412,6 +411,7 @@ const getSingleUser = async (req, res) => {
     const classTypes = await userExist.getClassTypes();
     const subjects = await userExist.getSubjects();
     const notifications = await userExist.getNotifications();
+    const educations = await userExist.getEducation();
     // console.log(notifications);
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
@@ -421,6 +421,7 @@ const getSingleUser = async (req, res) => {
       classTypes,
       subjects,
       notifications,
+      educations,
     });
   } catch (error) {
     console.log(error);
@@ -492,11 +493,84 @@ const updateUser = async (req, res) => {
   return res.status(500).json({ msg: 'Something went wrong' });
 };
 
+const updateExamUser = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+  const { id } = req.params;
+  const pId = parseInt(id, 10);
+  // console.log(req.body);
+  if (pId !== req.userId) {
+    return res
+      .status(406)
+      .json({ msg: 'You can not update someonelse detail' });
+  }
+  try {
+    const findUser = await User.findOne({
+      where: { id: req.userId },
+      include: [{ model: Education }],
+    });
+    // console.log(findUser.Education.map((ue)=> ue.dataValues));
+    if (findUser.role === ADMIN) {
+      return res.status(406).json({ msg: "Admin can't be updated" });
+    }
+    if (findUser === null) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    const updatedExamList = req.body.examlist;
+    // console.log(updatedExamList);
+    const examList = [];
+    for (let i = 0; i < updatedExamList.length; i += 1) {
+      const newExamObj = { ...updatedExamList[i] };
+      if (
+        newExamObj.level &&
+        newExamObj.group &&
+        newExamObj.cgpa &&
+        newExamObj.passing_year &&
+        newExamObj.level !== null &&
+        newExamObj.group !== null &&
+        newExamObj.cgpa !== null &&
+        newExamObj.passing_year !== null
+      ) {
+        newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
+        const existingEducation = findUser.Education.find(
+          (fue) => fue.level === newExamObj.level
+        );
+        if (existingEducation) {
+          // console.log(existingEducation);
+          const newUpdatedEducation = existingEducation.update(newExamObj);
+          examList.push(newUpdatedEducation);
+        } else {
+          const newEducationLevel = Education.create(newExamObj); // Create or update
+          examList.push(newEducationLevel);
+        }
+      }
+    }
+    if (examList.length === 0) {
+      return res.status(406).json({
+        msg: 'No item to update, make sure to put level, group, cgpa, and passing year',
+      });
+    }
+    const allUpdatedExam = await Promise.all(examList);
+    const updatedUserExam = await findUser.setEducation(allUpdatedExam);
+    // Get all exam - array
+    // console.log(updatedUserExam);
+    // console.log(allUpdatedExam);
+    return res
+      .status(202)
+      .json({ msg: 'A user exam updated', examlist: allUpdatedExam });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
+};
+
 const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update(
       { viewed: true },
-      { where: { userId: req.userId } },
+      { where: { userId: req.userId } }
     );
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
@@ -613,8 +687,8 @@ const seedUsers = async (req, res) => {
         .substring(10, 5),
       password,
       phone:
-        Math.floor(100000000 + Math.random() * 900000000).toString()
-        + i.toString(),
+        Math.floor(100000000 + Math.random() * 900000000).toString() +
+        i.toString(),
       cc: '+880',
       email: `${Buffer.from(Math.random().toString())
         .toString('base64')
@@ -654,6 +728,7 @@ module.exports = {
   sendOTP,
   getSingleUser,
   updateUser,
+  updateExamUser,
   logout,
   notificationSeen,
   seedUsers,
