@@ -13,6 +13,7 @@ const { PENDING } = scheduledclassStatus;
 function Detail({ userDetail, update }) {
   const dispatch = useDispatch();
   const userSubjects = useSelector((state) => state.user.userSubjects);
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const userExamList = useSelector((state) => state.user.userExamList);
   const userClassTypes = useSelector((state) => state.user.userClassTypes);
 
@@ -143,17 +144,19 @@ function Detail({ userDetail, update }) {
           <hr />
 
           {/* Subject and class start  */}
-          {update && (
+          {(authUserInfo.id !== null || userSubjects.length > 0) && (
             <div className="row mx-0 mb-3 bg-secondary py-3">
               <div className="heading d-flex justify-content-between row align-items-center my-3">
                 <h3 className="h5 w-fit">Preffered Subjects</h3>
-                <button
-                  className="btn btn-primary w-fit"
-                  type="button"
-                  onClick={(epse) => editPartToUpdateHandler(epse, 1)}
-                >
-                  Edit
-                </button>
+                {update && (
+                  <button
+                    className="btn btn-primary w-fit"
+                    type="button"
+                    onClick={(epse) => editPartToUpdateHandler(epse, 1)}
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
               <hr />
               <div className="body-content row">
@@ -271,23 +274,23 @@ function Detail({ userDetail, update }) {
           {/* tution detail end  */}
 
           {/* Exam detail start  */}
-          <div className="row mx-0 mb-3 bg-secondary py-3">
-            <div className="heading d-flex justify-content-between align-items-center row py-3">
-              <h3 className="h5 w-fit">Exam Detail</h3>
-              {update && (
-                <button
-                  className="btn btn-primary w-fit"
-                  type="button"
-                  onClick={(epse) => editPartToUpdateHandler(epse, 4)}
-                >
-                  Edit
-                </button>
-              )}
-            </div>
-            <hr />
-            <div className="body-content row">
-              {userExamList.length > 0 &&
-                userExamList.map((uel, idx) => (
+          {(authUserInfo.id !== null || userExamList.length > 0) && (
+            <div className="row mx-0 mb-3 bg-secondary py-3">
+              <div className="heading d-flex justify-content-between align-items-center row py-3">
+                <h3 className="h5 w-fit">Educational Qualification</h3>
+                {update && (
+                  <button
+                    className="btn btn-primary w-fit"
+                    type="button"
+                    onClick={(epse) => editPartToUpdateHandler(epse, 4)}
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+              <hr />
+              <div className="body-content row">
+                {userExamList.map((uel, idx) => (
                   <div key={idx} className="col-md-4 mb-3">
                     <div className="card rounded-1">
                       <div className="card-header">{uel.level}</div>
@@ -305,8 +308,10 @@ function Detail({ userDetail, update }) {
                     </div>
                   </div>
                 ))}
+              </div>
             </div>
-          </div>
+          )}
+
           {/* Exam detail end  */}
         </>
       )}

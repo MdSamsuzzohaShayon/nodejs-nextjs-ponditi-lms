@@ -97,6 +97,7 @@ function search() {
 
 
   return (
+    
     <Layout>
       <div className="search">
         <section className="bg-secondary search-form">

@@ -84,13 +84,15 @@ router.put(
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);
 
-router.get('/temp/all', getAllUsersTemp);
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);
 
 // Notification seen
 router.put('/notification/seen', ensureAuth, notificationSeen);
+
+
 // disable on production
+router.get('/temp/all', getAllUsersTemp);
 router.post('/seed', seedUsers);
 
 module.exports = router;

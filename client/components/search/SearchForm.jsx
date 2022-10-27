@@ -4,8 +4,15 @@
 /* eslint-disable @next/next/no-img-element */
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
+import Script from 'next/script';
+import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import { useState } from 'react';
 import axios from '../../config/axios';
-import { setErrorList, toggleLoading, resetErrorList} from '../../redux/reducers/elementsSlice';
+import {
+  setErrorList,
+  toggleLoading,
+  resetErrorList,
+} from '../../redux/reducers/elementsSlice';
 import {
   setSearchParams,
   setSearchAllUserList,
@@ -17,24 +24,32 @@ import {
 } from '../../redux/reducers/searchReducer';
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import { types } from '../../config/keys';
-
+import Loader from '../elements/Loader';
 
 const { ANY } = types;
 
 function SearchForm() {
-  
+  /**
+   * @api for google places
+   */
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: 'AIzaSyCWBnoKU419-HeM13wFWsQwumSU24pzveg',
+    libraries: ['places'],
+  });
+
+  const [autocomplete, setAutocomplete] = useState(null);
+
   const dispatch = useDispatch();
-  
-  
+
   const searchParams = useSelector((state) => state.search.searchParams);
   const searchTypeList = useSelector((state) => state.search.searchTypeList);
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
-  
+
   const subjectList = useSelector((state) => state.subject.subjectList);
   const subjectListCopy = useSelector((state) => state.subject.subjectListCopy);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
-  
+
   /**
    * @fetch all data on component mounted
    */
@@ -68,7 +83,7 @@ function SearchForm() {
       if (error?.response?.status === 404) {
         dispatch(resetSearchUserList());
       }
-    }finally{
+    } finally {
       dispatch(toggleLoading(false));
     }
   };
@@ -108,9 +123,35 @@ function SearchForm() {
     Router.push('/search');
   };
 
+  if (!isLoaded) {
+    return <Loader />;
+  }
+  const onLoadHandler = (ace) => {
+    setAutocomplete(ace);
+  };
+
+  const placeChangedHandler = () => {
+    const lat = autocomplete.getPlace().geometry.location.lat();
+    const lng = autocomplete.getPlace().geometry.location.lng();
+    console.log({ lat, lng });
+  };
+
   return (
     <div className="SearchForm">
+      {/* <Script src='https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&key=YOUR_API_KEY' /> */}
       <form className="py-4" onSubmit={searchSubmitHandler}>
+        {/* google places api start  */}
+        {/* <div className="row mx-0 mb-3">
+          <div className="col-md-6">
+            <Autocomplete
+              onLoad={onLoadHandler}
+              onPlaceChanged={placeChangedHandler}
+            >
+              <input type="text" placeholder="Location" />
+            </Autocomplete>
+          </div>
+        </div> */}
+        {/* google places api end  */}
         <div className="row mx-0 mb-3">
           <div className="col-md-6">
             <label htmlFor="location">Location</label>

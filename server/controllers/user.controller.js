@@ -697,7 +697,7 @@ const seedUsers = async (req, res) => {
       role: i % 2 === 0 ? TEACHER : STUDENT,
       age: total + i,
       isVerified: true,
-      isActive: PENDING,
+      isActive: APPROVED,
       profession: profession[i],
       institution: institution[i],
       experience: 2 + i,
