@@ -103,8 +103,8 @@
 
 ### Deployment process(server)
 - Disable add admin route and seed route from admin router and get all users from user route
-- make npm start script in package.json for **heroku** deployment
-- Remove dotend requirement from server.js for **heroku** deployment
+- make `npm start` script in package.json for **heroku** deployment
+- Remove `dotenv` requirement from server.js for **heroku** deployment
 
 
 ### Nest.js entities
