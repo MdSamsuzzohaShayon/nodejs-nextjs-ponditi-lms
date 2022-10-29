@@ -62,6 +62,7 @@
    - Give feedback ✅ 
 
   - **Modification**
+    - Making class and subjects without reload the admin dashboard page (To make relationship it needs id of subject and classtype)
     - User should not regester twice
     - User will have diffrent education level
     - Multiple class and subjects of a teacher
@@ -139,3 +140,5 @@
  npx sequelize-cli db:migrate:undo:all --to 20220215110049-migration-skeleton.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
  npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```
+### Challenges
+ - [Cross domain cookie](https://stackoverflow.com/questions/3342140/cross-domain-cookies/74231202#74231202)

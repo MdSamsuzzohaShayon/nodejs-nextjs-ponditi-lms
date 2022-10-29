@@ -5,6 +5,7 @@ const options = {
 };
 if (process.env.NODE_ENV !== 'development') {
   options.sameSite = 'none';
+  options.secure = true;
   // options.secure = true;
 }
 
