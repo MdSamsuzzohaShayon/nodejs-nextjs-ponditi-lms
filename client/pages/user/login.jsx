@@ -9,7 +9,7 @@ import axios from '../../config/axios';
 import {
   setErrorList,
   resetErrorList,
-  toggleLoading
+  toggleLoading,
 } from '../../redux/reducers/elementsSlice';
 import { setLoginInfo, resetLoginInfo } from '../../redux/reducers/userReducer';
 import Layout from '../../components/layouts/Layout';
@@ -55,8 +55,9 @@ function login() {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
+        dispatch(resetLoginInfo());
       }
-    }finally{
+    } finally {
       dispatch(toggleLoading(false));
     }
   };
@@ -66,7 +67,7 @@ function login() {
     dispatch(setLoginInfo({ [iche.target.name]: iche.target.value }));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(resetErrorList());
   }, []);
 
@@ -89,48 +90,54 @@ function login() {
               <ErrorMessages />
               <form onSubmit={loginHandler}>
                 <div className="row mb-3 mx-0">
-                  <label htmlFor="phoneoremail">Phone or Email</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="phoneoremail"
-                    id="phoneoremail"
-                    defaultValue={loginInfo.phoneoremail}
-                    onChange={inputChangeHandler}
-                    placeholder="phone or email"
-                  />
+                  <div className="col-md-12">
+                    <label htmlFor="phoneoremail">Phone or Email</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="phoneoremail"
+                      id="phoneoremail"
+                      defaultValue={loginInfo.phoneoremail}
+                      onChange={inputChangeHandler}
+                    />
+                  </div>
                 </div>
 
                 <div className="row mb-3 mx-0">
-                  <label htmlFor="password">Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    name="password"
-                    id="password"
-                    placeholder="*******"
-                    defaultValue={loginInfo.password}
-                    onChange={inputChangeHandler}
-                  />
+                  <div className="col-md-12">
+                    <label htmlFor="password">Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      name="password"
+                      id="password"
+                      defaultValue={loginInfo.password}
+                      onChange={inputChangeHandler}
+                    />
+                  </div>
                 </div>
                 <div className="row mb-3 mx-0">
-                  <button type="submit" className="btn btn-primary w-fit">
-                    Login
-                  </button>
+                  <div className="col">
+                    <button type="submit" className="btn btn-primary w-fit">
+                      Login
+                    </button>
+                  </div>
                 </div>
                 <div className="row mb-3 mx-0">
-                  <a
-                    href="#"
-                    className="text-decoration-underline text-capitalize text-dark"
-                  >
-                    Password forgotten?
-                  </a>
-                  <a
-                    href="#"
-                    className="text-decoration-underline text-capitalize text-dark"
-                  >
-                    Don&apos;t have an account?
-                  </a>
+                  <div className="col d-flex flex-column">
+                    <a
+                      href="#"
+                      className="text-decoration-underline text-capitalize text-dark"
+                    >
+                      Password forgotten?
+                    </a>
+                    <a
+                      href="#"
+                      className="text-decoration-underline text-capitalize text-dark"
+                    >
+                      Don&apos;t have an account?
+                    </a>
+                  </div>
                 </div>
               </form>
             </div>

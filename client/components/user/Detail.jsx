@@ -7,7 +7,7 @@ import { roles, scheduledclassStatus } from '../../config/keys';
 import { setUpdatePart } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 
-const { STUDENT } = roles;
+const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
 
 function Detail({ userDetail, update }) {
@@ -47,7 +47,7 @@ function Detail({ userDetail, update }) {
             <div className="col-md-9">
               {userDetail.firstname && (
                 <div className="name-edit-profile-wrapper d-flex justify-content-between align-items-center">
-                  <h1 className="h1">
+                  <h1 className="h1 text-uppercase">
                     {`${userDetail.firstname} ${userDetail.lastname}`}
                   </h1>
 
@@ -92,7 +92,7 @@ function Detail({ userDetail, update }) {
             </div>
           </div>
           <div className="row mx-0 mb-5">
-            {userDetail.experience && (
+            {userDetail?.role === TEACHER && userDetail.experience && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
                   <img
@@ -266,7 +266,15 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Tution Place</div>
                 <div className="col-md-6">
-                  <p>{locationSelection(userDetail.tutionplace)}</p>
+                  <p>
+                    {locationSelection(userDetail.tutionplace).map(
+                      (loc, locI) =>
+                        locI + 1 !==
+                        locationSelection(userDetail.tutionplace).length
+                          ? `${loc}, `
+                          : loc
+                    )}
+                  </p>
                 </div>
               </div>
             </div>

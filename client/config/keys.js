@@ -1,6 +1,8 @@
 export const BACKEND_URL = 'http://localhost:9000';
 // export const BACKEND_URL = 'https://ponditi-backend.herokuapp.com';
 export const APP_NAME = 'Ponditi';
+export const GOOGLE_PLACE_API_KEY = 'AIzaSyAF8GtQJ6sD_O731EUBO3ATruUYjObZYdg';
+export const libraries = ['places'];
 
 export const SEND_CODE = 'SEND_CODE';
 export const VERIFY_CODE = 'VERIFY_CODE';
@@ -26,7 +28,6 @@ export const userDashboardSidebarList = {
   REJECTED: 'REJECTED',
 };
 
-
 export const types = {
   ANY: 'ANY',
   ONLINE: 'ONLINE',
@@ -40,5 +41,5 @@ export const scheduledclassStatus = {
   REJECTED: 'REJECTED',
   START_CLASS: 'START_CLASS',
   ANY: 'ANY',
-  FINISH_CLASS: 'FINISH_CLASS'
-}
+  FINISH_CLASS: 'FINISH_CLASS',
+};

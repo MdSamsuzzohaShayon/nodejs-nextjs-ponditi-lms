@@ -200,7 +200,11 @@ function index() {
         ) : (
           <section className="section section-1">
             <div className="container">
-              <h1>Update user</h1>
+              <div className="row mx-0 mb-3">
+                <div className="col">
+                  <h1 className="h1">Update user</h1>
+                </div>
+              </div>
               {updatePart === 4 ? (
                 // Update exam detail start
                 <form onSubmit={userExamChangeHandler}>

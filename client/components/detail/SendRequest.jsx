@@ -23,14 +23,6 @@ function SendRequest() {
   const [selectedAmpm, setSelectedAmpm] = useState(null);
   const dispatch = useDispatch();
 
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const selectedClassTypesSU = useSelector(
-    (state) => state.scheduledclass.selectedClassTypesSU
-  );
-
-  const selectedSubjectsSU = useSelector(
-    (state) => state.scheduledclass.selectedSubjectsSU
-  );
   const selectedSearchUser = useSelector(
     (state) => state.scheduledclass.selectedSearchUser
   );
@@ -63,6 +55,9 @@ function SendRequest() {
     if (!initializeSchedule.time) {
       return dispatch(setErrorList(['You must select a slot']));
     }
+    if (!initializeSchedule.tutionplace) {
+      return dispatch(setErrorList(['You must select a tution place']));
+    }
     const startDateTime = new Date([
       initializeSchedule.date,
       initializeSchedule.time,
@@ -73,6 +68,7 @@ function SendRequest() {
     if (!initializeSchedule.receverId) {
       return dispatch(setErrorList(['You must have a recever']));
     }
+    
     if (!initializeSchedule.ClassTypeId) {
       return dispatch(setErrorList(['You must have a class type']));
     }
@@ -134,27 +130,31 @@ function SendRequest() {
 
   return (
     <div className="SendRequest">
-      <h1>Send Request</h1>
+      <div className="row mx-0 mb-3">
+        <h1 className="h1">Send Request</h1>
+      </div>
       <form onSubmit={initializeScheduledClassHandler}>
         <div className="row mb-3 mx-0">
-          <div className="my-2 week-calendar">
+          <div className="my-2 week-calendar col-md-12">
             <Calendar onDateChange={dateChangeHandler} />
           </div>
-          <div className="time-slot d-flex w-full justify-content-between align-items-start flex-wrap">
-            {slotList.map((sl) => (
-              <button
-                className={
-                  sl.slot === selectedSlot && sl.ampm === selectedAmpm
-                    ? 'btn btn-primary'
-                    : 'btn btn-outline-primary'
-                }
-                type="button"
-                key={sl.id}
-                onClick={(sse) => selectSlotHandler(sse, sl.slot, sl.ampm)}
-              >
-                {`${sl.slotName} ${sl.ampm}`}{' '}
-              </button>
-            ))}
+          <div className="col-md-12">
+            <div className="time-slot d-flex w-full justify-content-between align-items-start flex-wrap">
+              {slotList.map((sl) => (
+                <button
+                  className={
+                    sl.slot === selectedSlot && sl.ampm === selectedAmpm
+                      ? 'btn btn-primary'
+                      : 'btn btn-outline-primary'
+                  }
+                  type="button"
+                  key={sl.id}
+                  onClick={(sse) => selectSlotHandler(sse, sl.slot, sl.ampm)}
+                >
+                  {`${sl.slotName} ${sl.ampm}`}{' '}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="row mb-3 mx-0">

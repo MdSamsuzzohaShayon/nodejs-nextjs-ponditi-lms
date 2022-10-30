@@ -9,7 +9,10 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-  }
+  },
+  env: {
+    customKey: '.env.local',
+  },
 };
 
 module.exports = nextConfig;

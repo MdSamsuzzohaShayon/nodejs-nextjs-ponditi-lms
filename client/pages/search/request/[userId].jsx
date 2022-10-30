@@ -41,6 +41,7 @@ function index() {
             receverId: parseInt(receverId, 10),
             SubjectId: parseInt(searchData.SubjectId, 10),
             ClassTypeId: parseInt(searchData.ClassTypeId, 10),
+            tutionplace: searchData.tutionplace,
           })
         );
       } else {

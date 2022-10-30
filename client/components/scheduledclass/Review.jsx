@@ -25,7 +25,7 @@ function Review(props) {
     props.singleScheduledClass.Reviews
   );
   const [reviewerIds, setReviewerIds] = useState([
-    ...props.singleScheduledClass.Reviews.map((r)=> r.reviewerId),
+    ...props.singleScheduledClass.Reviews.map((r) => r.reviewerId),
   ]);
 
   const leaveAReview = useSelector(
@@ -52,6 +52,20 @@ function Review(props) {
       // make star
       const singleComment = (
         <div className="alert alert-primary rounded-1 row" key={i}>
+          <div className="col-md-2">
+            <div className="rounded-circle bg-danger text-uppercase comment-maker text-white d-flex align-items-center justify-content-center">
+              <p className="m-0">
+                {reviewList[i].reviewerId ===
+                props.singleScheduledClass.Sender.id
+                  ? props.singleScheduledClass.Sender.firstname[0] +
+                    props.singleScheduledClass.Sender.lastname[0]
+                  : props.singleScheduledClass.Recever.firstname[0] +
+                    props.singleScheduledClass.Recever.lastname[0]}
+              </p>
+            </div>
+            {/* {reviewList[i].reviewerId === authUserInfo.id && (
+            )} */}
+          </div>
           <div className="col-md-8">{reviewList[i].comment} </div>
           <div className="col-md 2">
             <MakeStar limit={reviewList[i].stars} />
@@ -115,35 +129,41 @@ function Review(props) {
   const reviewForm = () => (
     <form className="form">
       <div className="row mx-0 mb-3">
-        <MakeStar limit={leaveAReview.stars} setStars={setStarsReview} />
+        <div className="col">
+          <MakeStar limit={leaveAReview.stars} setStars={setStarsReview} />
+        </div>
       </div>
       <div className="row mx-0 mb-3">
-        <label htmlFor="comment" className="comment">
-          Comment
-        </label>
-        <textarea
-          rows={2}
-          type="text"
-          name="comment"
-          onChange={inputChangeHandler}
-          className="form-control rounded-1"
-        />
+        <div className="col">
+          <label htmlFor="comment" className="comment">
+            Comment
+          </label>
+          <textarea
+            rows={2}
+            type="text"
+            name="comment"
+            onChange={inputChangeHandler}
+            className="form-control rounded-1"
+          />
+        </div>
       </div>
       <div className="row mx-0 mb-3">
-        <button
-          type="button"
-          className="btn btn-primary w-fit"
-          onClick={leaveAReviewHandler}
-        >
-          Review
-        </button>
-        <button
-          type="button"
-          className="btn btn-danger w-fit mx-2"
-          onClick={cancelSCHandler}
-        >
-          Cancel
-        </button>
+        <div className="col">
+          <button
+            type="button"
+            className="btn btn-primary w-fit"
+            onClick={leaveAReviewHandler}
+          >
+            Review
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger w-fit mx-2"
+            onClick={cancelSCHandler}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </form>
   );

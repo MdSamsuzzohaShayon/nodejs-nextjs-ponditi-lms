@@ -84,9 +84,9 @@ function Header() {
                     ))}
                   </ul>
                 </div>
-                <div className="auth py-1 py-md-0 py-2">
+                <div className="auth py-md-0 py-2">
                   {authenticatedUser ? (
-                    <ul className="list-unstyled d-flex justify-content-center align-items-center flex-direction-column flex-md-direction-row">
+                    <ul className="list-unstyled d-flex justify-content-center align-items-center flex-direction-column flex-md-direction-row m-0">
                       {authUserInfo.role === ADMIN && (
                         <li className="mx-2">
                           <Link href="/admin">Dashboard</Link>
@@ -112,7 +112,7 @@ function Header() {
                           </li>
                         </>
                       ) : null}
-                      <li className="mx-2">
+                      <li className="">
                         <button
                           className="btn btn-primary small-btn mx-2"
                           type="button"
@@ -123,10 +123,10 @@ function Header() {
                       </li>
                     </ul>
                   ) : (
-                    <>
+                    <div className="mx-2">
                       <Link
                         href="/user/login"
-                        className="btn btn-outline-primary small-btn mx-2"
+                        className="btn btn-outline-primary small-btn"
                       >
                         Login
                       </Link>
@@ -136,7 +136,7 @@ function Header() {
                       >
                         <Link href="/user/register">Register</Link>
                       </button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>

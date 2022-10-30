@@ -7,8 +7,7 @@ const { CLASS_TYPE, SUBJECT, USERS} = adminSidebarList;
 const { APPROVED, PENDING, REJECTED, ANY} = scheduledclassStatus;
 
 const initialLoginAdmin = {
-  phone: '',
-  email: '',
+  emailorpass: '',
   password: '',
 };
 
@@ -67,7 +66,6 @@ export const adminSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     loginAdmin: initialLoginAdmin,
-    useEmailToLogin: true,
   },
   reducers: {
     setSelectedTabElement: (state, action)=>{
@@ -79,9 +77,6 @@ export const adminSlice = createSlice({
     resetAdmin: (state) => {
       state.loginAdmin = initialLoginAdmin;
     },
-    toggleEmailAndPhone: (state) => {
-      state.useEmailToLogin = !state.useEmailToLogin;
-    },
     setSelectedContent: (state, action) => {
       state.selectedContent = action.payload;
     },
@@ -92,7 +87,6 @@ export const {
   setSelectedTabElement,
   setLoginAdmin,
   resetAdmin,
-  toggleEmailAndPhone,
   setSelectedContent,
 } = adminSlice.actions;
 

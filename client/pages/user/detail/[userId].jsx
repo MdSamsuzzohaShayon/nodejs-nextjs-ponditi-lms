@@ -28,8 +28,10 @@ function index() {
   }, [router.isReady]);
   return (
     <Layout>
-      <div className="container">
-        <Detail userDetail={selectedUser} update={false} />
+      <div className="detail">
+        <div className="container">
+          <Detail userDetail={selectedUser} update={false} />
+        </div>
       </div>
     </Layout>
   );

@@ -1,37 +1,40 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
-import { setSubjectList } from '../../../redux/reducers/subjectReducer';
+// import { setSubjectList } from '../../../redux/reducers/subjectReducer';
 
 function TutionDetail(props) {
-  const isMounted = true;
+  // const isMounted = true;
+
+  const [placeItems, setPlaceItems] = useState([]);
+
   const dispatch = useDispatch();
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
+  // const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const currentUser = useSelector((state) => state.user.currentUser);
   const updateUser = useSelector((state) => state.user.updateUser);
   const tutionPlaces = useSelector((state) => state.search.searchTypeList);
   // const [available, setAvailable] = useState(currentUser.isAvailable);
 
-  const classtypeInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    // console.log({val});
-    // ClassTypeId
-    dispatch(setUpdateUser({ ClassTypeId: [val] }));
-    const newSubjectList = classtypeList.find((ctl) => ctl.id === val).Subjects;
-    if (newSubjectList.length === 1) {
-      dispatch(setUpdateUser({ SubjectId: [newSubjectList[0].id] }));
-      dispatch(setSubjectList(newSubjectList));
-    } else {
-      dispatch(setSubjectList(newSubjectList));
-    }
-  };
-  const subjectInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    // ClassTypeId
-    dispatch(setUpdateUser({ SubjectId: [val] }));
-  };
+  // const classtypeInputChangeHandler = (iche) => {
+  //   const val = parseInt(iche.target.value, 10);
+  //   // console.log({val});
+  //   // ClassTypeId
+  //   dispatch(setUpdateUser({ ClassTypeId: [val] }));
+  //   const newSubjectList = classtypeList.find((ctl) => ctl.id === val).Subjects;
+  //   if (newSubjectList.length === 1) {
+  //     dispatch(setUpdateUser({ SubjectId: [newSubjectList[0].id] }));
+  //     dispatch(setSubjectList(newSubjectList));
+  //   } else {
+  //     dispatch(setSubjectList(newSubjectList));
+  //   }
+  // };
+  // const subjectInputChangeHandler = (iche) => {
+  //   const val = parseInt(iche.target.value, 10);
+  //   // ClassTypeId
+  //   dispatch(setUpdateUser({ SubjectId: [val] }));
+  // };
   // Set default values with use effect
   // useEffect(() => {
   //   dispatch(
@@ -48,6 +51,19 @@ function TutionDetail(props) {
   const availablityChangeHandler = (ace, isAvailable) => {
     // console.log(ace.target.checked);
     dispatch(setUpdateUser({ isAvailable }));
+  };
+
+  const tutionPlaceChangeHandler = (tpce, tutionPlace) => {
+    // console.log(tpce.target.checked);
+    if (tpce.target.checked) {
+      const newPlaceItems = [...placeItems, tutionPlace];
+      setPlaceItems(newPlaceItems);
+      dispatch(setUpdateUser({ tutionplace: newPlaceItems }));
+    } else {
+      const newItems = placeItems.filter((pi) => pi !== tutionPlace);
+      setPlaceItems(newItems);
+      dispatch(setUpdateUser({ tutionplace: newItems }));
+    }
   };
 
   return (
@@ -99,20 +115,30 @@ function TutionDetail(props) {
       </div>
       <div className="row mb-3 mx-0">
         <div className="col-sm-12 col-md-6">
-          <label htmlFor="tutionplace">Tution Place</label>
-          <select
-            name="tutionplace"
-            id="tutionplace"
-            className="form-control"
-            defaultValue={currentUser?.tutionplace}
-            onChange={props.inputChangeHandler}
-          >
+          <label htmlFor="tutionplace">Tution Places</label>
+          <div className="input-checkbox d-flex align-items-center">
             {tutionPlaces
               .filter((tp) => tp.id !== 0)
-              .map((tpm) => (
-                <option value={tpm.type}>{tpm.text}</option>
+              .map((tpm, tmpI) => (
+                <div
+                  className="input-checkbox-item d-flex align-items-center"
+                  key={tmpI}
+                >
+                  {/* <option value={tpm.type}>{tpm.text}</option> */}
+                  <input
+                    type="checkbox"
+                    className="tution-place-checkbox"
+                    name={tpm.type}
+                    onChange={(tpce) =>
+                      tutionPlaceChangeHandler(tpce, tpm.type)
+                    }
+                  />
+                  <label htmlFor={tpm.type} className="m-2">
+                    {tpm.text}
+                  </label>
+                </div>
               ))}
-          </select>
+          </div>
         </div>
       </div>
     </div>

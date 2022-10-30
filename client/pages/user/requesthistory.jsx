@@ -192,27 +192,33 @@ function requesthistory() {
       <section className="section">
         <div className="container">
           <div className="requesthistory">
-            <div className="list-of-filter-menu">
-              <ul className="nav nav-tabs">
-                {tabElements.map((te, idx) => (
-                  <li className="nav-item" key={idx}>
-                    <a
-                      className={
-                        selectedContent === te.name
-                          ? 'nav-link rounded-1 active'
-                          : 'nav-link rounded-1'
-                      }
-                      aria-current="page"
-                      href="#"
-                      onClick={(tece) => tabElementChangeHandler(tece, te.name)}
-                    >
-                      {te.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className="card">
+              <div className="card-header">
+                <ul className="nav nav-tabs">
+                  {tabElements.map((te, idx) => (
+                    <li className="nav-item" key={idx}>
+                      <a
+                        className={
+                          selectedContent === te.name
+                            ? 'nav-link rounded-1 active'
+                            : 'nav-link rounded-1'
+                        }
+                        aria-current="page"
+                        href="#"
+                        onClick={(tece) =>
+                          tabElementChangeHandler(tece, te.name)
+                        }
+                      >
+                        {te.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="card-body">
+                <div className="content-for-classlist">{showContent()}</div>
+              </div>
             </div>
-            <div className="content-for-classlist">{showContent()}</div>
           </div>
         </div>
       </section>

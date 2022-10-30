@@ -11,6 +11,7 @@ const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
 
+// eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
@@ -105,7 +106,7 @@ const verifyUser = async (req, res) => {
   }
   await User.update(
     { isVerified: true },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -200,7 +201,7 @@ const rejectUser = async (req, res) => {
 
     await User.update(
       { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
@@ -232,7 +233,7 @@ const acceptUser = async (req, res) => {
 
     await User.update(
       { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } },
+      { where: { id: findByPhone.dataValues.id } }
     ); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
@@ -274,7 +275,7 @@ const login = async (req, res) => {
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password
+      userExist.dataValues.password,
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -295,12 +296,13 @@ const login = async (req, res) => {
     //   id: userExist.id,
     // };
     res.cookie('token', token, cookieOptions);
-    res
+    return res
       .status(200)
       .json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
-    res.status(500).json({ msg: 'Something went wrong' });
+    console.log(err);
   }
+  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const logout = async (req, res) => {
@@ -337,11 +339,11 @@ const resendOTP = async (req, res) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } }
+    { where: { id: findByPhone.dataValues.id } },
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
+    `Your OTP code is: ${otp}`,
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -433,6 +435,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
   // console.log(req.body);
+
   if (pId !== req.userId) {
     return res
       .status(406)
@@ -446,7 +449,23 @@ const updateUser = async (req, res) => {
     if (previousUser === null) {
       return res.status(404).json({ msg: 'User not found' });
     }
-    const updatedObj = Object.assign(req.body);
+    const updatedObj = { ...req.body };
+    // console.log(updatedObj);
+
+    if (updatedObj.tutionplace) {
+      if (typeof updatedObj.tutionplace !== 'object') {
+        return res.status(406).json({ msg: 'Tution place must be an array' });
+      }
+      let newTutionplace = '';
+      let i = 0;
+      while (i < updatedObj.tutionplace.length) {
+        let sep = '';
+        if (i + 1 !== updatedObj.tutionplace.length) sep = '_';
+        newTutionplace = `${newTutionplace + updatedObj.tutionplace[i]}${sep}`;
+        i += 1;
+      }
+      if (newTutionplace !== '') updatedObj.tutionplace = newTutionplace;
+    }
     // console.log(updatedObj);
 
     // check password,
@@ -535,7 +554,7 @@ const updateExamUser = async (req, res) => {
       ) {
         newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
         const existingEducation = findUser.Education.find(
-          (fue) => fue.level === newExamObj.level
+          (fue) => fue.level === newExamObj.level,
         );
         if (existingEducation) {
           // console.log(existingEducation);
@@ -570,7 +589,7 @@ const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update(
       { viewed: true },
-      { where: { userId: req.userId } }
+      { where: { userId: req.userId } },
     );
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });

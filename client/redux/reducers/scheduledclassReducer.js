@@ -5,11 +5,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Router from 'next/router';
 import { setErrorList } from './elementsSlice';
 import axios from '../../config/axios';
-import { scheduledclassStatus } from '../../config/keys';
+import { scheduledclassStatus, types } from '../../config/keys';
 import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
 
 const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } =
   scheduledclassStatus;
+const { ONLINE } = types;
 
 const initicalAddScheduledClass = {
   name: '',
@@ -26,6 +27,7 @@ const initialAScheduledClass = {
   desc: 'This is description',
   date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
   time: null,
+  tutionplace: ONLINE,
   // start: iscStart,
   // hours: iscHours,
 };

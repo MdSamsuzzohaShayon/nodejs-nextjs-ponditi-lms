@@ -12,7 +12,7 @@ import {
 import {
   setAddClassType,
   setClasstypeList,
-  resetAddClassType
+  resetAddClassType,
 } from '../../redux/reducers/classtypeReducer';
 
 function ClassTypeAdd(props) {
@@ -79,19 +79,25 @@ function ClassTypeAdd(props) {
   };
   return (
     <div className="ClassTypeAdd">
-      <h1>Add Class Type</h1>
+      <div className="row mx-0 mb-3">
+        <div className="col">
+          <h1 className="h1">Add Class Type</h1>
+        </div>
+      </div>
       <form className="mb-5" onSubmit={addClassTypeHandler}>
         <div className="row mx-0 mb-3">
-          <label htmlFor="name">Class Name</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="E.G. Class 1"
-            name="name"
-            aria-label="Recipient's username"
-            aria-describedby="classtype-addon"
-            onChange={inputChangeHandler}
-          />
+          <div className="col">
+            <label htmlFor="name">Class Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="E.G. Class 1"
+              name="name"
+              aria-label="Recipient's username"
+              aria-describedby="classtype-addon"
+              onChange={inputChangeHandler}
+            />
+          </div>
         </div>
         <div className="row mx-0 mb-3">
           {subjectList &&
@@ -114,21 +120,23 @@ function ClassTypeAdd(props) {
             ))}
         </div>
         <div className="row mb-3 mx-0 d-flex">
-          <button
-            className="btn btn-primary w-fit"
-            type="submit"
-            id="classtype-addon"
-          >
-            Add Class Type
-          </button>
-          <a
-            href="#"
-            className="btn btn-secondary w-fit"
-            onClick={props.togglePartHandler}
-            role="button"
-          >
-            See class list
-          </a>
+          <div className="col">
+            <button
+              className="btn btn-primary w-fit"
+              type="submit"
+              id="classtype-addon"
+            >
+              Add Class Type
+            </button>
+            <a
+              href="#"
+              className="btn btn-secondary w-fit"
+              onClick={props.togglePartHandler}
+              role="button"
+            >
+              See class list
+            </a>
+          </div>
         </div>
       </form>
     </div>

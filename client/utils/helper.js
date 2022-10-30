@@ -15,17 +15,26 @@ export function removeEmpty(obj) {
 }
 
 export const locationSelection = (loc) => {
-  switch (loc) {
-    case ONLINE:
-      return 'Online';
-    case TL:
-      return "Teacher's Location";
-    case SL:
-      return "Student's Location";
-
-    default:
-      return null;
+  const locAbr = [];
+  if (loc){
+    const locArr = loc.split('_');
+    for (let i = 0; i < locArr.length; i += 1) {
+      switch (locArr[i]) {
+        case ONLINE:
+          locAbr.push('Online');
+          break;
+        case TL:
+          locAbr.push("Teacher's Location");
+          break;
+        case SL:
+          locAbr.push("Student's Location");
+          break;
+        default:
+          break;
+      }
+    }
   }
+  return locAbr;
 };
 
 export async function getStudioAndStaff(token, axios) {

@@ -4,14 +4,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
-import Script from 'next/script';
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import { useJsApiLoader, Autocomplete} from '@react-google-maps/api';
 import { useState } from 'react';
 import axios from '../../config/axios';
 import {
   setErrorList,
   toggleLoading,
-  resetErrorList,
 } from '../../redux/reducers/elementsSlice';
 import {
   setSearchParams,
@@ -23,7 +21,7 @@ import {
   resetSearchUserList,
 } from '../../redux/reducers/searchReducer';
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
-import { types } from '../../config/keys';
+import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 
 const { ANY } = types;
@@ -33,8 +31,9 @@ function SearchForm() {
    * @api for google places
    */
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyCWBnoKU419-HeM13wFWsQwumSU24pzveg',
-    libraries: ['places'],
+    // googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_PLACE_API_KEY,
+    googleMapsApiKey: GOOGLE_PLACE_API_KEY,
+    libraries,
   });
 
   const [autocomplete, setAutocomplete] = useState(null);
@@ -131,53 +130,62 @@ function SearchForm() {
   };
 
   const placeChangedHandler = () => {
-    const lat = autocomplete.getPlace().geometry.location.lat();
-    const lng = autocomplete.getPlace().geometry.location.lng();
-    console.log({ lat, lng });
+    try {
+      
+          // console.log(process.env.NEXT_PUBLIC_GOOGLE_PLACE_API_KEY);
+          // const lat = autocomplete.getPlace().geometry.location.lat();
+          // const lng = autocomplete.getPlace().geometry.location.lng();
+          // console.log({ lat, lng });
+          // console.log({ name: autocomplete.getPlace().name });
+          // console.log(autocomplete.getPlace().formatted_address);
+          dispatch(setSearchParams({ location: autocomplete.getPlace().name }));
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+
 
   return (
     <div className="SearchForm">
       {/* <Script src='https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&key=YOUR_API_KEY' /> */}
       <form className="py-4" onSubmit={searchSubmitHandler}>
-        {/* google places api start  */}
-        {/* <div className="row mx-0 mb-3">
-          <div className="col-md-6">
-            <Autocomplete
-              onLoad={onLoadHandler}
-              onPlaceChanged={placeChangedHandler}
-            >
-              <input type="text" placeholder="Location" />
-            </Autocomplete>
-          </div>
-        </div> */}
-        {/* google places api end  */}
         <div className="row mx-0 mb-3">
+          {/* google places api start  */}
           <div className="col-md-6">
             <label htmlFor="location">Location</label>
             <div className="input-group mb-3">
-              <span className="input-group-text bg-white" id="basic-addon1">
-                <img src="/icons/location.svg" alt="" />
+              <span className="input-group-text bg-white">
+                <img src="/icons/location.svg" alt="" className="h-fit" />
               </span>
-              <input
-                type="text"
-                className="form-control border-0 shadow-none"
-                name="location"
-                defaultValue={searchParams.location}
-                onChange={inputChangeHandler}
-              />
+              <Autocomplete
+                onLoad={onLoadHandler}
+                onPlaceChanged={placeChangedHandler}
+                className="form-control p-0"
+              >
+                <input
+                  type="text"
+                  className="form-control"
+                  id="location"
+                  placeholder="location"
+                  name="location"
+                  defaultValue={searchParams.location}
+                  onChange={inputChangeHandler}
+                />
+              </Autocomplete>
             </div>
           </div>
+          {/* google places api end  */}
           <div className="col-md-6">
             <label htmlFor="ClassTypeId">Class</label>
             <div className="input-group mb-3">
-              <span className="input-group-text bg-white" id="basic-addon1">
-                <img src="/icons/classtype.svg" alt="" />
+              <span className="input-group-text bg-white">
+                <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
               <select
                 name="ClassTypeId"
                 id="ClassTypeId"
-                className="form-control border-0 shadow-none"
+                className="form-control"
                 onChange={classtypeInputChangeHandler}
                 defaultValue={searchParams.ClassTypeId}
               >
@@ -198,13 +206,13 @@ function SearchForm() {
           <div className="col-md-6">
             <label htmlFor="SubjectId">Subject</label>
             <div className="input-group mb-3">
-              <span className="input-group-text bg-white" id="subject-addon">
-                <img src="/icons/subject.svg" alt="" />
+              <span className="input-group-text bg-white">
+                <img src="/icons/subject.svg" alt="" className="h-fit" />
               </span>
               <select
                 name="SubjectId"
                 id="SubjectId"
-                className="form-control border-0 shadow-none"
+                className="form-control"
                 onChange={inputChangeHandler}
                 defaultValue={searchParams.SubjectId}
               >
@@ -223,13 +231,13 @@ function SearchForm() {
           <div className="col-md-6">
             <label htmlFor="classtype">Tution Location</label>
             <div className="input-group mb-3">
-              <span className="input-group-text bg-white" id="subject-addon">
-                <img src="/icons/classtype.svg" alt="" />
+              <span className="input-group-text bg-white">
+                <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
               <select
                 name="tutionplace"
                 id="classtype"
-                className="form-control border-0 shadow-none"
+                className="form-control"
                 defaultValue={searchParams.tutionplace}
                 onChange={inputChangeHandler}
               >
@@ -244,18 +252,22 @@ function SearchForm() {
           </div>
         </div>
         <div className="row mx-0 mb-3">
-          <button
-            className="btn btn-primary w-fit text-uppercase mx-3s"
-            role="button"
-            onClick={searchTeacherHandler}
-          >
-            Search Teacher
-          </button>
+          <div className="col d-flex justify-content-end">
+            <button
+              className="btn btn-primary w-fit text-uppercase mx-3s"
+              role="button"
+              onClick={searchTeacherHandler}
+            >
+              Search Teacher
+            </button>
+          </div>
         </div>
         <div className="row mx-0 mb-3">
-          <a href="#" className="text-danger">
-            Advanced search
-          </a>
+          <div className="col d-flex justify-content-end">
+            <a href="#" className="text-danger">
+              Advanced search
+            </a>
+          </div>
         </div>
       </form>
     </div>

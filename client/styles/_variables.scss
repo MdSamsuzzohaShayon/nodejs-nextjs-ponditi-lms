@@ -1,3 +1,45 @@
+// Login
+$half-width: 50%;
+$wrapper-width: 70%;
+$wrapper-margin: 30%;
+$section-min-height: 72vh;
+$section-padding: 3rem 0;
+
+// Layout
+$danger-color: #852b3a;
+$danger-deep: #5f1d28;
+$white: rgb(255, 255, 255);
+$primary-color: #215971;
+$dark-color: #201f1f;
+$secondary-color: #e0e2db;
+
+$br-xxl: 1400px;
+$br-md: 768px;
+
+$logo-column-w: 8%;
+
+$header-height: 5.5rem;
+$bh-height: 3rem;
+
+$h-wrapper: 83%;
+
+$slim-border: rgba(255, 255, 255, 0.3) 1px solid;
+
+
+// Bootstrap
+$border-radius: 2px;
+$btn-line-height: 1rem;
+$btn-padding-y: 0.8rem;
+$btn-padding-x: 1.5rem;
+$input-padding-y: 0.6rem;
+
 $primaryColor: #add8e6; // Light blue
 $secondaryColor: #34344b; // Dark gray
 $errorColor: rgb(121, 47, 47); // Error color
+
+$theme-colors: (
+  'danger': $danger-color,
+  'primary': $primary-color,
+  'dark': $dark-color,
+  'secondary': $secondary-color,
+);

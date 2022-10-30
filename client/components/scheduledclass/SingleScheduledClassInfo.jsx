@@ -53,10 +53,10 @@ function SingleScheduledClassInfo(props) {
             {props.authUserInfo.role === STUDENT && (
               <div className="card-body">
                 <h5 className="card-title">Teacher&apos;s Detail</h5>
-                <h6 className="card-subtitle mb-2 text-muted">
-                  {props.singleScheduledClass?.Recever?.lastname}
-                  &nbsp;
+                <h6 className="card-subtitle mb-2 text-muted text-uppercase">
                   {props.singleScheduledClass?.Recever?.firstname}
+                  &nbsp;
+                  {props.singleScheduledClass?.Recever?.lastname}
                 </h6>
                 <p className="card-text">
                   District: {props.singleScheduledClass?.Recever?.district}

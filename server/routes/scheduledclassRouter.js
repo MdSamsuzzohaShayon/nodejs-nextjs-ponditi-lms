@@ -35,6 +35,7 @@ router.post(
   check('ClassTypeId').notEmpty().isDecimal(),
   check('SubjectId').notEmpty().isDecimal(),
   check('start').notEmpty().isISO8601().toDate(),
+  check('tutionplace').notEmpty().isString(),
   // check('hours').notEmpty().isDecimal(),
   initiateScheduledClass,
 );

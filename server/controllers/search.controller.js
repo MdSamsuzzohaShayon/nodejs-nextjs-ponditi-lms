@@ -82,7 +82,7 @@ const searchTeacher = async (req, res, next) => {
       searchParams.tutionplace !== '' &&
       searchParams.tutionplace !== '0'
     ) {
-      where.tutionplace = searchParams.tutionplace;
+      where.tutionplace = { [Op.like]: `%${searchParams.tutionplace}%` };
     }
 
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);

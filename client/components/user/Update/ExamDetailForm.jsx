@@ -119,7 +119,7 @@ function ExamDetailForm(props) {
   };
 
   return (
-    <div className="ExamDetailForm row">
+    <div className="ExamDetailForm row mx-0 mb-3">
       {/* SSC start  */}
       <div className="col-md-6 ssc-o-level shadow p-3 mb-5 bg-body">
         <div className="row mb-3 mx-0">

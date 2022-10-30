@@ -12,7 +12,7 @@ import {
 import {
   setAddSubject,
   resetAddSubject,
-  setSubjectList
+  setSubjectList,
 } from '../../redux/reducers/subjectReducer';
 
 function SubjectAdd(props) {
@@ -35,7 +35,7 @@ function SubjectAdd(props) {
       if (response.status === 201) {
         dispatch(resetErrorList());
         // add subject to the list
-        dispatch(setSubjectList([addSubject, ...props.subjectList]))
+        dispatch(setSubjectList([addSubject, ...props.subjectList]));
         // reset subject
         dispatch(resetAddSubject);
       }
@@ -59,8 +59,6 @@ function SubjectAdd(props) {
     dispatch(setAddSubject({ [iche.target.name]: iche.target.value }));
   };
 
-
-
   const classTypeSelectionHandler = (sshe) => {
     // sshe.preventDefault();
     const classTypeIdList = [...addSubject.classTypeId];
@@ -79,23 +77,29 @@ function SubjectAdd(props) {
 
   return (
     <div className="SubjectAdd">
-      <h1>Add Subject</h1>
+      <div className="row mx-0 mb-3">
+        <div className="col">
+          <h1 className="h1">Add Subject</h1>
+        </div>
+      </div>
       <form className="mb-5" onSubmit={addSubjectHandler}>
         <div className="row mx-0 mb-3">
-          <label htmlFor="name">Subject Name</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="E.G. Subject 1"
-            name="name"
-            aria-label="Recipient's username"
-            aria-describedby="classtype-addon"
-            onChange={inputChangeHandler}
-          />
+          <div className="col">
+            <label htmlFor="name">Subject Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="E.G. Subject 1"
+              name="name"
+              aria-label="Recipient's username"
+              aria-describedby="classtype-addon"
+              onChange={inputChangeHandler}
+            />
+          </div>
         </div>
         <div className="row mx-0 mb-3">
           {props.classtypeList &&
-            props.classtypeList.map((sl, slIdx) => (
+            props.classtypeList.map((sl) => (
               <div className="col-md-3" key={sl.id}>
                 <div className="form-check form-check-inline">
                   <input
@@ -114,21 +118,23 @@ function SubjectAdd(props) {
             ))}
         </div>
         <div className="row mb-3 mx-0 d-flex">
-          <button
-            className="btn btn-primary w-fit"
-            type="submit"
-            id="classtype-addon"
-          >
-            Add Subject
-          </button>
-          <a
-            href="#"
-            className="btn btn-secondary w-fit"
-            onClick={props.togglePartHandler}
-            role="button"
-          >
-            See subject list
-          </a>
+          <div className="col">
+            <button
+              className="btn btn-primary w-fit"
+              type="submit"
+              id="classtype-addon"
+            >
+              Add Subject
+            </button>
+            <a
+              href="#"
+              className="btn btn-secondary w-fit"
+              onClick={props.togglePartHandler}
+              role="button"
+            >
+              See subject list
+            </a>
+          </div>
         </div>
       </form>
     </div>

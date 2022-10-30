@@ -1,199 +1,31 @@
 @import './variables';
 @import './mixins';
 
-// Login
-$half-width: 50%;
-$wrapper-width: 70%;
-$wrapper-margin: 30%;
-$section-min-height: 72vh;
-$section-padding: 3rem 0;
 
-// Layout
-$danger-color: #852b3a;
-$danger-deep: #5f1d28;
-$white: rgb(255, 255, 255);
-$primary-color: #215971;
-$dark-color: #201f1f;
-$secondary-color: #e0e2db;
-
-$br-xxl: 1400px;
-$br-md: 768px;
-
-$logo-column-w: 8%;
-
-$header-height: 7rem;
-$bh-height: 4.8rem;
-
-$h-wrapper: 83%;
-
-$slim-border: rgba(255, 255, 255, 0.3) 1px solid;
-
-$theme-colors: (
-  'danger': $danger-color,
-  'primary': $primary-color,
-  'dark': $dark-color,
-  'secondary': $secondary-color,
-);
-
-// Bootstrap
-$border-radius: 2rem;
-$btn-line-height: 1rem;
-$btn-padding-y: 0.8rem;
-$btn-padding-x: 1.5rem;
-$input-padding-y: 0.6rem;
 
 @import '../bootstrap/scss/bootstrap.scss';
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  // background: #add8e6; // primary
-  // color: #83838b; // secondary
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  text-transform: capitalize;
-  text-decoration: none;
-  color: $white;
-}
-a:hover {
-  color: $danger-color;
-}
-label{
-  margin-left: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.w-full {
-  width: 100% !important;
-}
-.h-full {
-  height: 100% !important;
-}
-
-.small-btn {
-  font-size: 0.8rem;
-  padding: 0.3rem 0.5rem !important;
-}
-
-.bg-danger-deep {
-  background: $danger-deep !important;
-}
-.border-right-slim {
-  border-right: $slim-border;
-}
-
-.h-fit {
-  height: fit-content;
-}
-.w-fit {
-  width: fit-content;
-}
-
-.vertical-center {
-  // bg-danger d-flex justify-content-center flex-column align-items-center
-  @include vertical_center();
-}
-
-.section{
-  min-height: $section-min-height;
-  padding: $section-padding;
-}
-.spinner-wrapper {
-  min-height: 70vh;
-}
-.spinner-grow {
-  min-height: 6rem;
-  min-width: 6rem;
-}
+@import './utilities.scss';
 
 @import './Header.scss';
 
-// Home
-#home-section {
-  .caption {
-    width: 50%;
-  }
-  .learner {
-    width: 50%;
-    .learner-img{
-      width: 70%;
-    }
-  }
-}
+@import './Home.scss';
 
 @import './Register.scss';
 
 // Admin
-.Admin {
-  .Dashboard {
-    min-height: $section-min-height;
-    .sidebar {
-      min-height: $section-min-height;
-      width: 15%;
-      li {
-        border-bottom: $slim-border;
-      }
-    }
-    .content {
-      min-height: $section-min-height;
-      width: 85%;
-    }
-  }
-}
+@import './Admin.scss';
 
 
-.user-dashboard {
-  min-height: $section-min-height;
-    .sidebar {
-      min-height: $section-min-height;
-      width: 15%;
-      li {
-        border-bottom: $slim-border;
-      }
-    }
-    .content {
-      min-height: $section-min-height;
-      width: 85%;
-    }
-    .Profile{
-      .profile-img{
-        height: 10rem;
-        width: 10rem;
-        object-fit: cover;
-        object-position: center;
-      }
-      .explain-icon{
-        width: 3rem;
-      }
-    }
-}
+@import './UserDashboard.scss';
 
-.ClassSubjectForm{
-  .class-subject-checkbox{
-    width: 1.4rem;
-    height: 1.4rem;
-  }
-}
+@import './UserUpdate.scss';
 
+@import './Search.scss';
 
-.search {
-  .request-details{
-    min-width: 10rem;
-  }
-}
+@import './UserDetail.scss';
 
-.detail{
-  min-height: $section-min-height;
-  padding: $section-padding;
-}
+@import "./ScheduledClass.scss";
 
 @import './Login.scss';
 @import './Footer.scss';

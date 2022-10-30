@@ -191,13 +191,15 @@ function detail() {
                               'You must pay and teacher will finish the task afterword you will be available to send another request'}
                           </footer>
                         </blockquote>
-                        <button
-                          type="button"
-                          className="btn btn-primary w-fit"
-                          onClick={finishClassHandler}
-                        >
-                          Finish
-                        </button>
+                        {authUserInfo.role === TEACHER && (
+                          <button
+                            type="button"
+                            className="btn btn-primary w-fit"
+                            onClick={finishClassHandler}
+                          >
+                            Finish
+                          </button>
+                        )}
                       </div>
                     </div>
 

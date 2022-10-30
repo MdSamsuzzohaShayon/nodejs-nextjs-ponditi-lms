@@ -14,11 +14,12 @@ import {
   showRequest,
   setInitializeSchedule,
 } from '../../redux/reducers/scheduledclassReducer';
-import { roles, scheduledclassStatus } from '../../config/keys';
+import { roles, scheduledclassStatus, types } from '../../config/keys';
 import MakeStar from '../elements/MakeStar';
 
 const { STUDENT } = roles;
 const { ANY } = scheduledclassStatus;
+const { ONLINE } = types;
 
 function SearchResult() {
   const dispatch = useDispatch();
@@ -97,8 +98,12 @@ function SearchResult() {
     } else {
       classAndSubject.SubjectId = parseInt(searchParams.SubjectId, 10);
     }
+    let tutionplace = ONLINE;
+    if (searchParams.tutionplace !== '' && searchParams.tutionplace !== ANY) {
+      tutionplace = searchParams.tutionplace;
+    }
     // console.log(classAndSubject);
-    dispatch(setInitializeSchedule(classAndSubject));
+    dispatch(setInitializeSchedule({ ...classAndSubject, tutionplace }));
     // console.log(classAndSubject);
     // console.log(subjectList);
     // Set localstorage

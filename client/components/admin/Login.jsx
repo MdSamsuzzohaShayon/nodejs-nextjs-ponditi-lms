@@ -1,10 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
-import {
-  setLoginAdmin,
-  toggleEmailAndPhone,
-} from '../../redux/reducers/adminReducer';
+import { setLoginAdmin } from '../../redux/reducers/adminReducer';
 import {
   resetErrorList,
   setErrorList,
@@ -19,24 +16,37 @@ function Login() {
   const dispatch = useDispatch();
 
   const loginAdmin = useSelector((state) => state.admin.loginAdmin);
-  const useEmailToLogin = useSelector((state) => state.admin.useEmailToLogin);
 
   const loginSubmitHandler = async (lshe) => {
     lshe.preventDefault();
-    if (loginAdmin.email === '' && loginAdmin.phone) {
-      dispatch(setErrorList(['You must use email or phone number to login']));
+    if (loginAdmin.emailorpass === '') {
+      return dispatch(
+        setErrorList(['You must use email or phone number to login'])
+      );
     }
 
     if (loginAdmin.password.length < 6) {
-      dispatch(
+      return dispatch(
         setErrorList(['Password must be more than or equal 6 charecter long'])
       );
     }
-    const loginObj = { password: loginAdmin.password };
-    if (useEmailToLogin) {
-      loginObj.email = loginAdmin.email;
+    const loginObj = { ...loginAdmin };
+    const pattern = /\d+/;
+    if (
+      loginObj.emailorpass.includes('@') &&
+      loginObj.emailorpass.includes('.')
+    ) {
+      loginObj.email = loginObj.emailorpass;
+      delete loginObj.emailorpass;
+      delete loginObj.phone;
+    } else if (pattern.test(loginObj.emailorpass)) {
+      loginObj.phone = loginObj.emailorpass;
+      // check all numbers
+      delete loginObj.email;
+      delete loginObj.emailorpass;
     } else {
-      loginObj.phone = loginAdmin.phone;
+      // Invalid input
+      return dispatch(setErrorList(['Put a valid phone number or email']));
     }
 
     try {
@@ -69,70 +79,46 @@ function Login() {
     dispatch(setLoginAdmin({ [iche.target.name]: iche.target.value }));
   };
 
-  const togglePhoneEmailHandler = (tpehe) => {
-    tpehe.preventDefault();
-    dispatch(toggleEmailAndPhone());
-  };
   return (
     <div className="Login">
-      <h1>Login as Admin</h1>
+      <div className="row mx-0 mb-3">
+        <h1>Login as Admin</h1>
+      </div>
       <ErrorMessages />
       <form onSubmit={loginSubmitHandler}>
-        {useEmailToLogin === true ? (
-          <div className="row mb-3 mx-0">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              id="email"
-              defaultValue={loginAdmin.email}
-              onChange={inputChangeHandler}
-              placeholder="email"
-            />
-          </div>
-        ) : (
-          <div className="row mb-3 mx-0">
-            <label htmlFor="phone">Phone</label>
+        <div className="row mb-3 mx-0">
+          <div className="col">
+            <label htmlFor="emailorpass">Email or Phone</label>
             <input
               type="text"
               className="form-control"
-              name="phone"
-              id="phone"
-              defaultValue={loginAdmin.phone}
+              name="emailorpass"
+              id="emailorpass"
+              defaultValue={loginAdmin.emailorpass}
               onChange={inputChangeHandler}
-              placeholder="phone"
             />
           </div>
-        )}
+        </div>
 
         <div className="row mb-3 mx-0">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            name="password"
-            id="password"
-            defaultValue={loginAdmin.password}
-            onChange={inputChangeHandler}
-            placeholder="password"
-          />
+          <div className="col">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              name="password"
+              id="password"
+              defaultValue={loginAdmin.password}
+              onChange={inputChangeHandler}
+            />
+          </div>
         </div>
         <div className="row mb-3 mx-0">
-          <button type="submit" className="btn btn-primary w-fit">
-            Login
-          </button>
-        </div>
-        <div className="row mb-3 mx-0">
-          <a
-            href="#"
-            className="text-dark text-capitalize"
-            onClick={togglePhoneEmailHandler}
-          >
-            {useEmailToLogin === true
-              ? 'Use phone instead'
-              : 'Use email instead'}
-          </a>
+          <div className="col">
+            <button type="submit" className="btn btn-primary w-fit">
+              Login
+            </button>
+          </div>
         </div>
       </form>
     </div>

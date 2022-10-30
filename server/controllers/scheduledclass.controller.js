@@ -1,3 +1,4 @@
+/* eslint-disable prefer-object-spread */
 /* eslint-disable object-curly-newline */
 /* eslint-disable operator-linebreak */
 const { validationResult } = require('express-validator');
@@ -21,7 +22,7 @@ const {
   PAYMENT_DUE,
   FINISH_CLASS,
 } = scheduledClassStatus;
-const { ONLINE } = types;
+const { ONLINE, TL, SL } = types;
 const { INITIATED_CLASS } = notificationTypes;
 
 const { ScheduledClass, User, ClassType, Subject, Review, Notification } = db;
@@ -32,11 +33,26 @@ const initiateScheduledClass = async (req, res) => {
     return res.status(406).json({ error: errors.array() });
   }
   // if sender is teacher reciver must be student elsewhere sender is student and reciver is student
-  const scObj = Object.assign(req.body);
+  const scObj = Object.assign({}, req.body);
   let studentSender = false;
   // console.log(req.userId);
 
   try {
+    switch (scObj.tutionplace.toUpperCase()) {
+      case ONLINE:
+        scObj.tutionplace = ONLINE;
+        break;
+      case TL:
+        scObj.tutionplace = TL;
+        break;
+      case SL:
+        scObj.tutionplace = SL;
+        break;
+      default:
+        scObj.tutionplace = ONLINE;
+        break;
+    }
+    // console.log(scObj);
     const findSender = await User.findOne({
       where: { id: req.userId },
     });
@@ -106,7 +122,7 @@ const initiateScheduledClass = async (req, res) => {
     // findRecever.dataValues.rate * scObj.hours = total costs
     const scObjToCreate = {
       status: PENDING,
-      types: ONLINE,
+      types: scObj.tutionplace,
       start: scObj.start,
       // hours: scObj.hours,
       perHourRate: findRecever.dataValues.rate,
@@ -366,11 +382,11 @@ const startScheduledClass = async (req, res) => {
     await Promise.all([
       User.update(
         { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.senderId } }
+        { where: { id: findScheduledClass.senderId } },
       ),
       User.update(
         { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.receverId } }
+        { where: { id: findScheduledClass.receverId } },
       ),
     ]);
     return res
@@ -430,11 +446,11 @@ const completeRequestedScheduledClass = async (req, res) => {
       }),
       User.update(
         { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.senderId } }
+        { where: { id: findScheduledClass.dataValues.senderId } },
       ),
       User.update(
         { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.receverId } }
+        { where: { id: findScheduledClass.dataValues.receverId } },
       ),
     ]);
     return res.status(202).json({
@@ -447,8 +463,6 @@ const completeRequestedScheduledClass = async (req, res) => {
 
   return res.status(500).json({ msg: 'server error' });
 };
-
-
 module.exports = {
   initiateScheduledClass,
   getAllScheduledClass,

@@ -92,8 +92,12 @@ function ClassSubjectForm(props) {
   };
   // Set default values with use effect
   return (
-    <div className="row mx-0 mb-3 ClassSubjectForm">
-      <h4>Preffered Classes</h4>
+    <div className="ClassSubjectForm">
+      <div className="row mx-0 mb-3">
+        <div className="col">
+          <h4 className="h4">Preffered Classes</h4>
+        </div>
+      </div>
       <div className="row mx-0 mb-3">
         {classtypeList.map((ctl, idx) => (
           <div
@@ -111,7 +115,11 @@ function ClassSubjectForm(props) {
           </div>
         ))}
       </div>
-      <h4>Preffered Subjects</h4>
+      <div className="row mx-0 mb-3">
+        <div className="col">
+          <h4 className="h4">Preffered Subjects</h4>
+        </div>
+      </div>
       <div className="row mx-0 mb-3">
         {vlsiableSubjectList().map((sub, idx) => (
           <div

@@ -61,19 +61,26 @@
    - Mark as paid (Student can not send request until they pay their dues) ✅ 
    - Give feedback ✅ 
 
-  - **Modification**
-    - Making class and subjects without reload the admin dashboard page (To make relationship it needs id of subject and classtype)
-    - User should not regester twice
-    - User will have diffrent education level
-    - Multiple class and subjects of a teacher
-    - Search with google place API
-    - Start imiddeate action after start class, accept, reject, finish class, review etc
-    - select default subject and class of teacher if search has none of it
-    - select item background in Calender
+  - **Modification-1**
+    - Making class and subjects without reload the admin dashboard page (To make relationship it needs id of subject and classtype) ✅ 
+    - User should not regester twice ✅ 
+    - User will have different education level ✅ 
+    - Multiple class and subjects of a teacher ✅ 
+    - Start imiddeate action after start class, accept, reject, finish class, review etc ✅ 
+    - select default subject and class of teacher if search has none of it ✅ 
+    - select item background in Calender ✅ 
     - Make responsive
-    - All class are online for now. Fix in server initiate class 
-    - Show slot time
-
+    - All class are online for now. Fix in server initiate class ✅ 
+    - Show slot time ✅ 
+  
+  - **Modification-2**
+    - Make google place api work
+    - Make navbar smaller ✅ 
+    - No scrolling for searching teacher ✅ 
+    - Search button on the right ✅ 
+    - Logout button doesn't work on production
+    - Option for selecting multiple option for tution location - online, tl, sl
+    - Need to work with Calender
 
 
  - **Requirement-1**
