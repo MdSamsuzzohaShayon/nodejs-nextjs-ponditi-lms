@@ -33,7 +33,7 @@ function ClassTypeAdd(props) {
     try {
       dispatch(toggleLoading(true));
       const response = await axios.post('/classtype/add', addClassType);
-      //   console.log(response);
+        // console.log(response);
       if (response.status === 201) {
         // response.data.classType
         dispatch(

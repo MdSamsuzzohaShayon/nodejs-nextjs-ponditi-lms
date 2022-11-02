@@ -1,15 +1,27 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { roles } from '../../config/keys';
+import { roles, scheduledclassStatus } from '../../config/keys';
 import axios from '../../config/axios';
-import { toggleAuthUser } from '../../redux/reducers/userReducer';
+import {
+  toggleAuthUser,
+  setSelectedContent,
+} from '../../redux/reducers/userReducer';
+import {
+  INITIATED_CLASS,
+  ACCEPT_REQUEST,
+  REJECTED_REQUEST,
+  START_CLASS,
+  FINISH_CLASS,
+} from '../../utils/types';
 
 const { ADMIN, STUDENT, TEACHER } = roles;
+const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
 
 function Header() {
   const dispatch = useDispatch();
@@ -19,11 +31,19 @@ function Header() {
   const userUnseenNotifications = useSelector(
     (state) => state.user.userUnseenNotifications
   );
+  const userNotifications = useSelector(
+    (state) => state.user.userNotifications
+  );
   const authenticatedUser = useSelector(
     (state) => state.user.authenticatedUser
   );
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
+
   const [dashboardUrl, setDashboardUrl] = useState('/initial');
+  const [showNotificationBar, setShowNotificationBar] = useState(false);
+  const [notificationOffset, setNotificationOffset] = useState(38);
+  const notificationMenuItem = useRef(null);
+
   // () => {
   //   console.log({authUserInfo});
   //   if (authUserInfo.role === 'ADMIN') {
@@ -62,6 +82,80 @@ function Header() {
     }
   };
 
+  const notificationBarHandler = (nbe) => {
+    nbe.preventDefault();
+    // console.log(nbe);
+    // console.log({
+    //   rect: notificationMenuItem.current.getBoundingClientRect(),
+    //   offsettop: notificationMenuItem.current.offsetTop,
+    //   w_height: window.innerHeight,
+    //   w_width: window.innerWidth,
+    // });
+    setShowNotificationBar((prevState) => !prevState);
+    // const topOffset = `${30 + notificationMenuItem.current.offsetTop}px`;
+    setNotificationOffset(30 + notificationMenuItem.current.offsetTop);
+  };
+
+  const natificationBarCloseHandler = (nbce) => {
+    nbce.preventDefault();
+    setShowNotificationBar(false);
+  };
+
+  const linkRedirectHandler = (lre, notification) => {
+    lre.preventDefault();
+    const baseUrl = window.location.origin;
+    let newUrl = window.location.origin;
+    // console.log(window.location);
+    // console.log(notification);
+    let scheduledClassId = null;
+    if (notification.comment.includes('(')) {
+      scheduledClassId = parseInt(
+        notification.comment.substring(
+          notification.comment.indexOf('(') + 1,
+          notification.comment.indexOf(')')
+        ),
+        10
+      );
+    }
+
+    // http://localhost:3000/scheduledclass/detail/2
+    switch (notification.type) {
+      case INITIATED_CLASS:
+        dispatch(setSelectedContent(PENDING));
+        newUrl = scheduledClassId
+          ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}`
+          : `${baseUrl}/user/requesthistory`;
+        break;
+      // 'ACCEPT_REQUEST REJECTED_REQUEST START_CLASS',
+      case ACCEPT_REQUEST:
+        dispatch(setSelectedContent(APPROVED));
+        newUrl = scheduledClassId
+          ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}`
+          : `${baseUrl}/user/requesthistory`;
+        break;
+      case REJECTED_REQUEST:
+        dispatch(setSelectedContent(REJECTED));
+        newUrl = scheduledClassId
+          ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}`
+          : `${baseUrl}/user/requesthistory`;
+        break;
+      case START_CLASS:
+        newUrl = scheduledClassId
+          ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}`
+          : `${baseUrl}/user/requesthistory`;
+        break;
+      case FINISH_CLASS:
+        newUrl = scheduledClassId
+          ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}`
+          : `${baseUrl}/user/requesthistory`;
+        break;
+      default:
+        break;
+    }
+    // console.log({newUrl, scheduledClassId});
+    router.push(newUrl);
+  };
+
   return (
     <>
       {/* Desktop Menu Start  */}
@@ -95,14 +189,44 @@ function Header() {
                       {authUserInfo.role === STUDENT ||
                       authUserInfo.role === TEACHER ? (
                         <>
-                          <li className="mx-2">
-                            <Link href={dashboardUrl}>Profile</Link>
+                          <li className="mx-2 text-lowercase">
+                            <Link
+                              href={dashboardUrl}
+                            >{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
                           </li>
                           <li className="mx-2 d-flex">
                             <div className="p-1">
                               <Link href="/user/requesthistory">
                                 Request history
                               </Link>
+                            </div>
+                            {userUnseenNotifications.length > 0 && (
+                              <div className="bg-primary text-white p-1 w-fit rounded-3">
+                                {userUnseenNotifications.length}
+                              </div>
+                            )}
+                          </li>
+                          <li
+                            className="mx-2 d-flex"
+                            role="button"
+                            onClick={notificationBarHandler}
+                            aria-hidden="true"
+                            ref={notificationMenuItem}
+                          >
+                            <div className="p-1">
+                              {userUnseenNotifications.length > 0 ? (
+                                <img
+                                  src="/icons/notification-dot.svg"
+                                  alt="notification"
+                                  height={25}
+                                />
+                              ) : (
+                                <img
+                                  height={25}
+                                  src="/icons/notification.svg"
+                                  alt="notification"
+                                />
+                              )}
                             </div>
                             {userUnseenNotifications.length > 0 && (
                               <div className="bg-primary text-white p-1 w-fit rounded-3">
@@ -138,6 +262,50 @@ function Header() {
                       </button>
                     </div>
                   )}
+
+                  <div
+                    className={
+                      showNotificationBar
+                        ? `notification-bar card position-absolute`
+                        : `notification-bar card position-absolute d-none`
+                    }
+                  >
+                    <div className="card-body">
+                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
+                        <h5 className="card-title text-dark">Notifications</h5>
+                        <img
+                          src="/icons/close.svg"
+                          width={30}
+                          alt="close"
+                          aria-hidden="true"
+                          onClick={natificationBarCloseHandler}
+                        />
+                      </div>
+                      <ul className="list-group">
+                        {userNotifications.length > 0 ? (
+                          userNotifications.map((un, unI) => (
+                            <li
+                              className={
+                                un.viewed
+                                  ? 'list-group-item'
+                                  : 'list-group-item bg-secondary'
+                              }
+                              key={unI}
+                              onClick={(lre) => linkRedirectHandler(lre, un)}
+                              role="button"
+                              aria-hidden="true"
+                            >
+                              {un.comment}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="list-group-item">
+                            No notification found
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -173,6 +341,12 @@ function Header() {
         <style jsx>{`
           .menu-item {
             width: ${100 / menuItemList.length} %;
+          }
+          .notification-bar {
+            top: ${notificationOffset}px;
+          }
+          .notification-bar a {
+            color: black !important;
           }
         `}</style>
       </div>

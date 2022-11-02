@@ -18,6 +18,9 @@ import {
   toggleLoading,
 } from '../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
+import { roles } from '../../config/keys';
+
+const { TEACHER, STUDENT } = roles;
 
 function Review(props) {
   const dispatch = useDispatch();
@@ -90,6 +93,14 @@ function Review(props) {
     }
     if (leaveAReview.comment === '') {
       return dispatch(setErrorList(['You must write something']));
+    }
+    if (leaveAReview.comment.length < 10) {
+      return dispatch(
+        setErrorList([
+          'You must write something',
+          'Comment must be more than 10 character long',
+        ])
+      );
     }
     try {
       dispatch(toggleLoading(true));
@@ -172,10 +183,14 @@ function Review(props) {
     // console.log(reviewerIds.length === 1, reviewerIds, authUserInfo.id);
     // console.log("Working");
     // console.log(props.singleScheduledClass.Reviews);
-    if (reviewerIds.length === 0) {
+    // console.log(reviewerIds);
+    if (authUserInfo.role === TEACHER && reviewerIds.length === 0) {
+      return null;
+    }
+    if (reviewerIds.length === 0 && authUserInfo.role === STUDENT) {
       return reviewForm();
     }
-    if (reviewerIds.length === 1 && reviewerIds[0] !== authUserInfo.id) {
+    if (reviewerIds.length === 1 && authUserInfo.role === TEACHER) {
       return reviewForm();
     }
 

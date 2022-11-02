@@ -35,7 +35,7 @@ function SubjectAdd(props) {
       if (response.status === 201) {
         dispatch(resetErrorList());
         // add subject to the list
-        dispatch(setSubjectList([addSubject, ...props.subjectList]));
+        dispatch(setSubjectList([response.data.subject, ...props.subjectList]));
         // reset subject
         dispatch(resetAddSubject);
       }

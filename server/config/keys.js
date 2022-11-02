@@ -23,6 +23,9 @@ module.exports = {
   },
   notificationTypes: {
     INITIATED_CLASS: 'INITIATED_CLASS',
+    ACCEPT_REQUEST: 'ACCEPT_REQUEST',
+    REJECTED_REQUEST: 'REJECTED_REQUEST',
+    START_CLASS: 'START_CLASS',
     COMPLETE: 'COMPLETE',
   },
 };

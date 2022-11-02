@@ -25,6 +25,7 @@ app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL}));
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('uploads'));
 
 app.use((req, res, next) => {
   console.log('\x1b[33m%s\x1b[0m', `${req.method} - ${req.url}`);

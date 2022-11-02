@@ -1,25 +1,31 @@
 /* eslint-disable react/destructuring-assignment */
 import { locationSelection } from '../../utils/helper';
 import { roles } from '../../config/keys';
-import { convertISOToReadableTime, formatAsDate, makeSlot} from '../../utils/timeFunction';
+import {
+  convertISOToReadableTime,
+  formatAsDate,
+  makeSlot,
+} from '../../utils/timeFunction';
 
 const { TEACHER, STUDENT } = roles;
 
 function SingleScheduledClassInfo(props) {
   return (
     <div className="SingleScheduledClassInfo">
-
       {/* Basic info start  */}
       <div className="row mb-3">
         <div className="col-md-6">
           <div className="icon-img">
             <img src="/icons/location.svg" alt="" />
           </div>
-          <h4>Tution Place</h4>
-          <p>{locationSelection(props.singleScheduledClass?.types)}</p>
+          <h4>Tuition Place</h4>
+          <p>
+            {props.singleScheduledClass?.tuitionlocation ||
+              locationSelection(props.singleScheduledClass?.types)}
+          </p>
         </div>
         <div className="col-md-6">
-        <div className="icon-img">
+          <div className="icon-img">
             <img src="/icons/status.svg" alt="" />
           </div>
           <h4>Status</h4>

@@ -48,6 +48,10 @@ function requesthistory() {
     (state) => state.scheduledclass.rejectedSCOU
   );
 
+  const userUnseenNotifications = useSelector(
+    (state) => state.user.userUnseenNotifications
+  );
+
   const tabElementChangeHandler = (tece, tabName) => {
     tece.preventDefault();
     dispatch(setSelectedContent(tabName));
@@ -180,8 +184,10 @@ function requesthistory() {
         await Promise.all([
           dispatch(fetchAllRequestedSCOU(authUserInfo.id)),
           dispatch(fetchCurrentSingleUser(authUserInfo.id)),
-          dispatch(requestHistorySeen(null)),
         ]);
+        if (userUnseenNotifications.length > 0) {
+          await dispatch(requestHistorySeen(null));
+        }
       })();
       // seen request history
     }

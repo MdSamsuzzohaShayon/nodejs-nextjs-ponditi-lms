@@ -3,7 +3,7 @@
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { showRequest } from '../../redux/reducers/scheduledclassReducer';
-import { roles, scheduledclassStatus } from '../../config/keys';
+import { roles, scheduledclassStatus, BACKEND_URL } from '../../config/keys';
 import { setUpdatePart } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 
@@ -17,10 +17,10 @@ function Detail({ userDetail, update }) {
   const userExamList = useSelector((state) => state.user.userExamList);
   const userClassTypes = useSelector((state) => state.user.userClassTypes);
 
-  const sendRequesthandler = (sre) => {
-    sre.preventDefault();
-    dispatch(showRequest(true));
-  };
+  // const sendRequesthandler = (sre) => {
+  //   sre.preventDefault();
+  //   dispatch(showRequest(true));
+  // };
   // console.log(userDetail);
 
   const editPartToUpdateHandler = (epse, partNum) => {
@@ -33,16 +33,31 @@ function Detail({ userDetail, update }) {
   };
 
   return (
-    <div className="Detail">
+    <div className="Detail my-4">
       {userDetail && (
         <>
           <div className="row mx-0 mb-5">
             <div className="col-md-3">
-              <img
-                src={userDetail.img ? userDetail.img : '/img/default-img.jpg'}
-                className="profile-img img-fluid rounded-circle"
-                alt=""
-              />
+              <div className="image-wrapper p-2 shadow mb-5 bg-body rounded">
+                <img
+                  src={
+                    userDetail.image
+                      ? `${BACKEND_URL}/${userDetail.image}`
+                      : '/img/default-img.jpg'
+                  }
+                  className="profile-img mb-2"
+                  alt=""
+                />
+              </div>
+              {update && userDetail.id === authUserInfo.id && (
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={(epse) => editPartToUpdateHandler(epse, 5)}
+                >
+                  Upload
+                </button>
+              )}
             </div>
             <div className="col-md-9">
               {userDetail.firstname && (
@@ -51,16 +66,15 @@ function Detail({ userDetail, update }) {
                     {`${userDetail.firstname} ${userDetail.lastname}`}
                   </h1>
 
-                  {userDetail?.id !== userDetail.id &&
-                    userDetail?.role === STUDENT && (
-                      <button
-                        className="btn btn-primary"
-                        type="button"
-                        onClick={sendRequesthandler}
-                      >
-                        Send Request
-                      </button>
-                    )}
+                  {/* {authUserInfo.id && userDetail?.role === STUDENT && (
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={sendRequesthandler}
+                    >
+                      Send Request
+                    </button>
+                  )} */}
                 </div>
               )}
               {userDetail.location && (
@@ -249,12 +263,14 @@ function Detail({ userDetail, update }) {
             </div>
             <hr />
             <div className="body-content row">
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Per Hour Rate</div>
-                <div className="col-md-6">
-                  <p>{userDetail.rate} TK</p>
+              {userDetail?.role === TEACHER && (
+                <div className="row mx-0 mb-1">
+                  <div className="col-md-6">Per Hour Rate</div>
+                  <div className="col-md-6">
+                    <p>{userDetail.rate} TK</p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Available Status</div>
                 <div className="col-md-6">

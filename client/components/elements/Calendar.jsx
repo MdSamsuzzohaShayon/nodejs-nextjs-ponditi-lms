@@ -225,11 +225,12 @@ function Calendar(props) {
   };
 
   const setClassForSelectedItem = (itemDateNum) => {
-    if (itemDateNum === selectedDate) {
-      return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day';
-    }
+    // console.log(itemDateNum, selectedDate, clickedDate);
     if (itemDateNum === clickedDate) {
       return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center active-day';
+    }
+    if (itemDateNum === selectedDate) {
+      return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day';
     }
     return 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center';
   };
@@ -263,7 +264,11 @@ function Calendar(props) {
             }
           >
             <span>{daysOfMonthList[i].num}</span>
-            <span>{daysOfMonthList[i].day}</span>
+            {/* Day is not working properly  */}
+            {/* <span>{daysOfMonthList[i].day}</span> */}
+            <span className="text-capitalize">
+              {initialMonthList.find((m) => m.id === selectedMonth).short}
+            </span>
             <style jsx>{itemStyle}</style>
           </li>
         );

@@ -16,8 +16,10 @@ const {
   notificationSeen,
   seedUsers,
   updateExamUser,
+  updateImageUser,
 } = require('../controllers/user.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
+const upload = require('../config/multer-config');
 
 /**
  * @step 1 - regestration process
@@ -26,7 +28,7 @@ router.post(
   '/sendotp',
   check('phone').notEmpty(),
   check('cc').notEmpty(),
-  sendOTP
+  sendOTP,
 );
 
 /**
@@ -42,7 +44,7 @@ router.put(
   '/verifyotp',
   check('otp').notEmpty(),
   check('phone').notEmpty(),
-  verifyUser
+  verifyUser,
 );
 
 /**
@@ -64,7 +66,7 @@ router.put(
   // Relational
   // check('classTypeId').notEmpty(), // In update section
   // check('subjectId').notEmpty(), // In update section
-  registerUser
+  registerUser,
 );
 
 /**
@@ -78,7 +80,13 @@ router.put(
   '/updateexam/:id',
   ensureAuth,
   check('examlist').isArray(),
-  updateExamUser,
+  updateExamUser
+);
+router.put(
+  '/updateimage/:id',
+  ensureAuth,
+  upload.single('image'),
+  updateImageUser
 );
 
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
@@ -89,8 +97,6 @@ router.get('/single/:id', getSingleUser);
 
 // Notification seen
 router.put('/notification/seen', ensureAuth, notificationSeen);
-
-
 // disable on production
 router.get('/temp/all', getAllUsersTemp);
 router.post('/seed', seedUsers);

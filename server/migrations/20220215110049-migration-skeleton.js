@@ -46,7 +46,7 @@ module.exports = {
           { transaction: t },
         ),
         */
-       /*
+        /*
         queryInterface.addColumn(
           'User',
           'isActive',
@@ -58,7 +58,7 @@ module.exports = {
           { transaction: t }
         ),
         */
-       /*
+        /*
         queryInterface.addColumn(
           'User',
           'district',
@@ -76,7 +76,6 @@ module.exports = {
           { transaction: t }
         ),
         */
-
         /*
         queryInterface.addColumn(
           'User',
@@ -94,8 +93,8 @@ module.exports = {
           },
           { transaction: t }
         ),   
-        */ 
-       /*
+        */
+        /*
         queryInterface.addColumn(
           'User',
           'cgpa',
@@ -104,8 +103,8 @@ module.exports = {
           },
           { transaction: t }
         ), 
-        */   
-       /*
+        */
+        /*
         queryInterface.addColumn(
           'ScheduledClass',
           'startprocess',
@@ -114,7 +113,17 @@ module.exports = {
           },
           { transaction: t }
         ), 
-        */ 
+        */
+       /*
+       queryInterface.addColumn(
+          'User',
+          'image',
+          {
+            type: Sequelize.DataTypes.STRING,
+          },
+          { transaction: t }
+        ),
+        */
       ])
     );
   },

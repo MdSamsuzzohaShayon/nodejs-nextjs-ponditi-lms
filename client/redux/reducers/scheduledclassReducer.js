@@ -28,6 +28,7 @@ const initialAScheduledClass = {
   date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
   time: null,
   tutionplace: ONLINE,
+  tuitionlocation: '',
   // start: iscStart,
   // hours: iscHours,
 };

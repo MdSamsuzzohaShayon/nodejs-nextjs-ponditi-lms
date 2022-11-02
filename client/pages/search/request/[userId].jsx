@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
+import {
+  fetchCurrentSingleUser,
+  fetchSelectedSingleUser,
+} from '../../../redux/reducers/userReducer';
 import SendRequest from '../../../components/detail/SendRequest';
 import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
@@ -58,9 +61,11 @@ function index() {
       }
       (async () => {
         // console.log({ userId, authUserInfo });
-        await dispatch(fetchSelectedSingleUser(userId));
-        await initializeScheduleValue(userId);
-        // console.log(selectedUser);
+        await Promise.all([
+          dispatch(fetchSelectedSingleUser(userId)),
+          dispatch(fetchCurrentSingleUser(authUserInfo.id)),
+          initializeScheduleValue(userId),
+        ]);
       })();
       isMounted = false;
     }
@@ -75,7 +80,7 @@ function index() {
 
   return (
     <Layout>
-      <div className="container">
+      <div className="container request">
         {isLoading ? (
           <Loader />
         ) : (

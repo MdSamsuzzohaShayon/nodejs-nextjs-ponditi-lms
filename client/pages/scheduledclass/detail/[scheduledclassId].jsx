@@ -4,16 +4,21 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
 import {
-  setSingleScheduledClass,
   fetchSingleScheduledClass,
-  setShowReviewFields,
   setUpdateScheduledClass,
+  setAcceptedSCOU,
+  setRequestedSCOU,
+  setRejectedSCOU,
 } from '../../../redux/reducers/scheduledclassReducer';
 import {
   resetErrorList,
   setErrorList,
+  toggleLoading,
 } from '../../../redux/reducers/elementsSlice';
-import { resetAuthUserInfo } from '../../../redux/reducers/userReducer';
+import {
+  resetAuthUserInfo,
+  requestHistorySeen,
+} from '../../../redux/reducers/userReducer';
 import { scheduledclassStatus, roles } from '../../../config/keys';
 import axios from '../../../config/axios';
 import Review from '../../../components/scheduledclass/Review';
@@ -22,7 +27,7 @@ import StopWatch from '../../../components/elements/StopWatch';
 import Loader from '../../../components/elements/Loader';
 import ErrorMessages from '../../../components/elements/ErrorMessages';
 
-const { START_CLASS, APPROVED, FINISH_CLASS } = scheduledclassStatus;
+const { START_CLASS, APPROVED, FINISH_CLASS, PENDING } = scheduledclassStatus;
 const { TEACHER, STUDENT } = roles;
 
 function detail() {
@@ -36,12 +41,23 @@ function detail() {
   const updateScheduledClass = useSelector(
     (state) => state.scheduledclass.updateScheduledClass
   );
-  const showReviewFields = useSelector(
-    (state) => state.scheduledclass.showReviewFields
+
+  const requestedSCOU = useSelector(
+    (state) => state.scheduledclass.requestedSCOU
   );
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+  const acceptedSCOU = useSelector(
+    (state) => state.scheduledclass.acceptedSCOU
+  );
+  const rejectedSCOU = useSelector(
+    (state) => state.scheduledclass.rejectedSCOU
+  );
   const generateBill = useSelector(
     (state) => state.scheduledclass.generateBill
+  );
+
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+  const userUnseenNotifications = useSelector(
+    (state) => state.user.userUnseenNotifications
   );
 
   const isLoading = useSelector((state) => state.elements.isLoading);
@@ -52,7 +68,9 @@ function detail() {
     (async () => {
       if (scheduledclassId) {
         await dispatch(fetchSingleScheduledClass(scheduledclassId));
-        // console.log(scheduledclassId);
+        if (userUnseenNotifications.length > 0) {
+          await dispatch(requestHistorySeen(null));
+        }
       }
     })();
   }, [router.isReady]);
@@ -92,6 +110,73 @@ function detail() {
   const inputChangeHandler = (ice) => {
     dispatch(setUpdateScheduledClass({ meetlink: ice.target.value }));
     // updateScheduledClass
+  };
+
+  /**
+   * @action handler
+   */
+  const acceptRequestHandler = async (are) => {
+    are.preventDefault();
+    try {
+      dispatch(toggleLoading());
+      // check recever id and current user id
+      const response = await axios.put(
+        `/scheduledclass/accept/${scheduledclassId}`
+      );
+      if (response.status === 200 || response.status === 202) {
+        // find Item and move from  requestedSCOU to acceptedSCOU
+        const newAcceptedSCOU = requestedSCOU.find(
+          (rs) => rs.id === scheduledclassId
+        );
+        const newRequestedSCOU = requestedSCOU.filter(
+          (rs) => rs.id !== scheduledclassId
+        );
+        dispatch(setAcceptedSCOU([...acceptedSCOU, newAcceptedSCOU]));
+        dispatch(setRequestedSCOU(newRequestedSCOU));
+        router.push('/user/requesthistory');
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        dispatch(resetAuthUserInfo());
+        router.push('/user/login');
+      }
+    } finally {
+      dispatch(toggleLoading());
+    }
+  };
+
+  const rejectRequestHandler = async (are) => {
+    are.preventDefault();
+    try {
+      dispatch(toggleLoading());
+      // check recever id and current user id
+      const response = await axios.put(
+        `/scheduledclass/reject/${scheduledclassId}`
+      );
+      if (response.status === 200 || response.status === 202) {
+        const newRejectedSCOU = requestedSCOU.find(
+          (rs) => rs.id === scheduledclassId
+        );
+        const newRequestedSCOU = requestedSCOU.filter(
+          (rs) => rs.id !== scheduledclassId
+        );
+        dispatch(setRejectedSCOU([...rejectedSCOU, newRejectedSCOU]));
+        dispatch(setRequestedSCOU(newRequestedSCOU));
+        router.push('/user/requesthistory');
+      }
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+    } finally {
+      dispatch(toggleLoading());
+    }
   };
 
   const addMeetLinkHandler = async (amle) => {
@@ -167,6 +252,29 @@ function detail() {
                   >
                     Start Class
                   </button>
+                )}
+              {singleScheduledClass.status === PENDING &&
+                authUserInfo.role === TEACHER && (
+                  <div
+                    className="btn-group"
+                    role="group"
+                    aria-label="Basic example"
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={acceptRequestHandler}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={rejectRequestHandler}
+                    >
+                      Reject
+                    </button>
+                  </div>
                 )}
 
               {singleScheduledClass.startedat &&

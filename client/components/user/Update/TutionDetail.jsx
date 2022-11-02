@@ -1,14 +1,18 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
 // import { setSubjectList } from '../../../redux/reducers/subjectReducer';
+import { roles } from '../../../config/keys';
+
+const { TEACHER } = roles;
 
 function TutionDetail(props) {
   // const isMounted = true;
 
   const [placeItems, setPlaceItems] = useState([]);
+  const [isUserAvailable, setIsUserAvailable] = useState(false);
 
   const dispatch = useDispatch();
   // const classtypeList = useSelector((state) => state.classtype.classtypeList);
@@ -16,6 +20,12 @@ function TutionDetail(props) {
   const updateUser = useSelector((state) => state.user.updateUser);
   const tutionPlaces = useSelector((state) => state.search.searchTypeList);
   // const [available, setAvailable] = useState(currentUser.isAvailable);
+
+  useEffect(() => {
+    if (currentUser.isAvailable) {
+      setIsUserAvailable(currentUser.isAvailable);
+    }
+  }, [currentUser]);
 
   // const classtypeInputChangeHandler = (iche) => {
   //   const val = parseInt(iche.target.value, 10);
@@ -49,9 +59,12 @@ function TutionDetail(props) {
   // }, []);
 
   const availablityChangeHandler = (ace, isAvailable) => {
-    // console.log(ace.target.checked);
+    console.log(ace.target.checked);
     dispatch(setUpdateUser({ isAvailable }));
+    setIsUserAvailable(isAvailable);
+    // console.log(isAvailable);
   };
+
 
   const tutionPlaceChangeHandler = (tpce, tutionPlace) => {
     // console.log(tpce.target.checked);
@@ -69,18 +82,20 @@ function TutionDetail(props) {
   return (
     <div className="TutionDetail">
       <div className="row mb-3 mx-0">
-        <div className="col-sm-12 col-md-6">
-          <label htmlFor="rate">Per Hour Rate (TK)</label>
-          <input
-            type="number"
-            className="form-control"
-            name="rate"
-            id="rate"
-            defaultValue={currentUser?.rate}
-            onChange={props.inputChangeHandler}
-            placeholder="E.G. 300"
-          />
-        </div>
+        {currentUser.role === TEACHER && (
+          <div className="col-sm-12 col-md-6">
+            <label htmlFor="rate">Per Hour Rate (TK)</label>
+            <input
+              type="number"
+              className="form-control"
+              name="rate"
+              id="rate"
+              defaultValue={currentUser?.rate}
+              onChange={props.inputChangeHandler}
+              placeholder="E.G. 300"
+            />
+          </div>
+        )}
         <div className="col-sm-12 col-md-6">
           <label htmlFor="isAvailable">Available Status</label>
           <div className="toggle d-flex">
@@ -91,7 +106,7 @@ function TutionDetail(props) {
                 name="available"
                 id="available"
                 onChange={(ace) => availablityChangeHandler(ace, true)}
-                checked={!updateUser.isAvailable}
+                checked={isUserAvailable === true}
               />
               <label className="form-check-label" htmlFor="available">
                 Available
@@ -103,7 +118,7 @@ function TutionDetail(props) {
                 type="radio"
                 name="notavailable"
                 id="notavailable"
-                checked={!!updateUser.isAvailable}
+                checked={isUserAvailable !== true}
                 onChange={(ace) => availablityChangeHandler(ace, false)}
               />
               <label className="form-check-label" htmlFor="notavailable">

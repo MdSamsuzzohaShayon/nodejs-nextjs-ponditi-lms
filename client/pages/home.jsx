@@ -12,6 +12,7 @@ export default function home() {
   const dispatch = useDispatch();
 
   useEffect(()=> {
+    window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
         await Promise.all([

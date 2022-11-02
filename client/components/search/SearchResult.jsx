@@ -4,6 +4,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import Router from 'next/router';
+import Image from 'next/image';
 import {
   setRPCurrentPage,
   setRPStart,
@@ -14,7 +15,12 @@ import {
   showRequest,
   setInitializeSchedule,
 } from '../../redux/reducers/scheduledclassReducer';
-import { roles, scheduledclassStatus, types } from '../../config/keys';
+import {
+  roles,
+  scheduledclassStatus,
+  types,
+  BACKEND_URL,
+} from '../../config/keys';
 import MakeStar from '../elements/MakeStar';
 
 const { STUDENT } = roles;
@@ -129,6 +135,8 @@ function SearchResult() {
     return limit;
   };
 
+  const makeTheUrl = (userImage) => `${BACKEND_URL}/${userImage}`;
+
   return (
     <div className="SearchResult">
       {searchUserList && (
@@ -137,13 +145,21 @@ function SearchResult() {
             <>
               {searchUserList.map((sul) => (
                 <div className="card my-3" key={sul.id}>
-                  <div className="row g-0">
+                  <div className="search-card-row row g-0">
                     <div className="col-md-3">
-                      <img
-                        src="/img/default-img.jpg"
-                        className="img-fluid rounded-start"
-                        alt={`${sul?.firstname} ${sul?.lastname}`}
-                      />
+                      {sul?.image ? (
+                        <img
+                          src={makeTheUrl(sul.image)}
+                          className="rounded-start"
+                          alt={`${sul?.firstname} ${sul?.lastname}`}
+                        />
+                      ) : (
+                        <img
+                          src="/img/default-img.jpg"
+                          className="rounded-start"
+                          alt={`${sul?.firstname} ${sul?.lastname}`}
+                        />
+                      )}
                     </div>
                     <div className="col-md-6">
                       <div className="card-body">

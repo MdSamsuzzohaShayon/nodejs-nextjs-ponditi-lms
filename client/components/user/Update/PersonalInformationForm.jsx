@@ -83,9 +83,9 @@ function PersonalInformationForm(props) {
   //   }
   // };
 
-  const inputChangeHandler =(ice)=>{
+  const inputChangeHandler = (ice) => {
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
-  }
+  };
 
   return (
     <div className="PersonalInformationForm">
@@ -131,7 +131,7 @@ function PersonalInformationForm(props) {
         {/* google places api start  */}
         <div className="col-md-6">
           <label htmlFor="district">district</label>
-          <Autocomplete
+          {/* <Autocomplete
             onLoad={onLoadHandler}
             onPlaceChanged={() => placeChangedHandler(DISTRICT)}
             className="form-control p-0"
@@ -146,7 +146,17 @@ function PersonalInformationForm(props) {
               onChange={inputChangeHandler}
               placeholder="E.G. Dhaka"
             />
-          </Autocomplete>
+          </Autocomplete> */}
+          <input
+            type="text"
+            className="form-control"
+            name="district"
+            id="district"
+            defaultValue={currentUser?.district}
+            // onChange={(piee) => placeInputEmptyHandler(piee, DISTRICT)}
+            onChange={inputChangeHandler}
+            placeholder="E.G. Dhaka"
+          />
         </div>
         {/* google places api end  */}
       </div>

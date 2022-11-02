@@ -24,7 +24,7 @@ import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 
-const { ANY } = types;
+
 
 function SearchForm() {
   /**
@@ -229,7 +229,7 @@ function SearchForm() {
             </div>
           </div>
           <div className="col-md-6">
-            <label htmlFor="classtype">Tution Location</label>
+            <label htmlFor="classtype">Tuition Location</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />

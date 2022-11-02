@@ -1,5 +1,49 @@
 .search {
-    .request-details{
-      min-width: 10rem;
+  .request-details {
+    min-width: 10rem;
+  }
+  // xxl - 238, xl-204, lg-170, md-144
+
+  .search-card-row {
+    height: 238px;
+    .col-md-3 {
+      height: 100%;
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
     }
   }
+  @media (max-width: $br-xxl){
+    .search-card-row {
+      height: 204px;
+    }
+  }
+  @media (max-width: $br-xl){
+    .search-card-row{
+      height: 170px;
+    }
+  }
+  @media (max-width: $br-lg){
+    .search-card-row{
+      height: 144px;
+    }
+  }
+  @media (max-width: $br-md){
+    .search-card-row{
+      height: 500px;
+      .col-md-3{
+        height: 250px;
+      }
+      .vertical-center{
+        height: fit-content !important;
+      }
+    }
+  }
+}
+
+
+.request {
+}

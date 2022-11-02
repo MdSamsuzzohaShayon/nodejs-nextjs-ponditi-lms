@@ -13,17 +13,10 @@ const {
 } = require('../config/keys');
 
 const { STUDENT, TEACHER } = roles;
-const {
-  PENDING,
-  APPROVED,
-  REJECTED,
-  COMPLETE_REQUESTED,
-  START_CLASS,
-  PAYMENT_DUE,
-  FINISH_CLASS,
-} = scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, START_CLASS, PAYMENT_DUE, FINISH_CLASS } =
+  scheduledClassStatus;
 const { ONLINE, TL, SL } = types;
-const { INITIATED_CLASS } = notificationTypes;
+const { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST } = notificationTypes;
 
 const { ScheduledClass, User, ClassType, Subject, Review, Notification } = db;
 
@@ -126,6 +119,7 @@ const initiateScheduledClass = async (req, res) => {
       start: scObj.start,
       // hours: scObj.hours,
       perHourRate: findRecever.dataValues.rate,
+      tuitionlocation: scObj.tuitionlocation,
     };
     if (scObj.desc) {
       scObjToCreate.desc = scObj.desc;
@@ -141,7 +135,7 @@ const initiateScheduledClass = async (req, res) => {
 
     const notification = await Notification.create({
       type: INITIATED_CLASS,
-      comment: 'A scheduled calss is been initialized',
+      comment: `A scheduled calss is been initialized (${newScheduledClass.id})`,
     });
     // console.log(notification);
     await notification.setUser(findRecever);
@@ -323,7 +317,16 @@ const acceptRequestedScheduledClass = async (req, res) => {
     const updatedScheduledClass = await findScheduledClass.update({
       status: APPROVED,
     });
+    const findSender = await User.findOne({
+      where: { id: findScheduledClass.dataValues.senderId },
+    });
     // console.log(findScheduledClass);
+    const notification = await Notification.create({
+      type: ACCEPT_REQUEST,
+      comment: `A scheduled calss request is accepted (${findScheduledClass.dataValues.id})`,
+    });
+    // console.log(notification);
+    await notification.setUser(findSender);
     return res
       .status(202)
       .json({ msg: 'Request accepted successfully', updatedScheduledClass });
@@ -350,6 +353,16 @@ const rejectRequestedScheduledClass = async (req, res) => {
       status: REJECTED,
     });
     // console.log(findScheduledClass);
+    const findSender = await User.findOne({
+      where: { id: findScheduledClass.dataValues.senderId },
+    });
+    // console.log(findScheduledClass);
+    const notification = await Notification.create({
+      type: REJECTED_REQUEST,
+      comment: `A scheduled calss request is rejected (${findScheduledClass.dataValues.id})`,
+    });
+    // console.log(notification);
+    await notification.setUser(findSender);
     return res
       .status(202)
       .json({ msg: 'Request rejected successfully', updatedScheduledClass });
@@ -382,13 +395,23 @@ const startScheduledClass = async (req, res) => {
     await Promise.all([
       User.update(
         { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.senderId } },
+        { where: { id: findScheduledClass.senderId } }
       ),
       User.update(
         { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.receverId } },
+        { where: { id: findScheduledClass.receverId } }
       ),
     ]);
+    const findSender = await User.findOne({
+      where: { id: findScheduledClass.dataValues.senderId },
+    });
+    // console.log(findScheduledClass);
+    const notification = await Notification.create({
+      type: START_CLASS,
+      comment: `You class is started (${findScheduledClass.dataValues.id})`,
+    });
+    // console.log(notification);
+    await notification.setUser(findSender);
     return res
       .status(202)
       .json({ msg: 'Sarted class successfully', updatedScheduledClass });
@@ -433,7 +456,7 @@ const completeRequestedScheduledClass = async (req, res) => {
     const findScheduledClass = await ScheduledClass.findOne({
       where: { id: req.params.scheduledclassId, status: START_CLASS },
     });
-    console.log(findScheduledClass);
+    // console.log(findScheduledClass);
     if (!findScheduledClass) {
       return res
         .status(406)
@@ -446,13 +469,22 @@ const completeRequestedScheduledClass = async (req, res) => {
       }),
       User.update(
         { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.senderId } },
+        { where: { id: findScheduledClass.dataValues.senderId } }
       ),
       User.update(
         { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.receverId } },
+        { where: { id: findScheduledClass.dataValues.receverId } }
       ),
     ]);
+
+    const findSender = await User.findOne({
+      where: { id: findScheduledClass.dataValues.senderId },
+    });
+    const notification = await Notification.create({
+      type: FINISH_CLASS,
+      comment: `Your class is finished (${findScheduledClass.dataValues.id})`,
+    });
+    await notification.setUser(findSender);
     return res.status(202).json({
       msg: 'Finish class successfully',
       // updatedScheduledClass,

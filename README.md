@@ -69,18 +69,27 @@
     - Start imiddeate action after start class, accept, reject, finish class, review etc ✅ 
     - select default subject and class of teacher if search has none of it ✅ 
     - select item background in Calender ✅ 
-    - Make responsive
     - All class are online for now. Fix in server initiate class ✅ 
     - Show slot time ✅ 
   
   - **Modification-2**
-    - Make google place api work
+    - Make google place api work ✅ 
     - Make navbar smaller ✅ 
     - No scrolling for searching teacher ✅ 
     - Search button on the right ✅ 
-    - Logout button doesn't work on production
-    - Option for selecting multiple option for tution location - online, tl, sl
-    - Need to work with Calender
+    - Logout button doesn't work on production ✅ 
+    - Option for selecting multiple option for tution location - online, tl, sl ✅ 
+
+  - **Modification-3**
+    - No tution fee for student - Available status is not changing on production ✅ 
+    - Show role on top bar ✅ 
+    - Need to work with Calender - Select current date, add 7 days, work next and previous  ✅ 
+    - Align time slot  ✅
+    - Add profile picture  ✅ 
+    - Add address in order to initialize scheduled class  ✅ 
+    - Notification bar ✅ 
+    - Make More responsive
+    - Approve button on detail page of scheduled class ✅ 
 
 
  - **Requirement-1**

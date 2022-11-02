@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { roles, scheduledclassStatus } from '../../config/keys';
@@ -141,11 +142,11 @@ function ScheduledClassList({
               </tr>
             </thead>
             <tbody className="text-lowercase">
-              {scheduledClassList.map((src) => (
-                <tr key={src.id}>
-                  <td>{src.id}</td>
+              {scheduledClassList.map((src, srcI) => (
+                <tr key={srcI}>
+                  <td>{src?.id}</td>
                   <td>{locationSelection(src?.types)}</td>
-                  <td>{convertISOToReadableTime(src.start)}</td>
+                  <td>{convertISOToReadableTime(src?.start)}</td>
                   <td>{src?.Subject?.name}</td>
                   <td>{src?.ClassType?.name}</td>
                   {/* handler content start  */}

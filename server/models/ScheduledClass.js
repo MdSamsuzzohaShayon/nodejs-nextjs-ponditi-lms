@@ -75,6 +75,10 @@ module.exports = (sequelize, DataTypes) => {
         // class started at
         type: new DataTypes.DATE(),
       },
+      tuitionlocation: {
+        // class started at
+        type: new DataTypes.STRING(255),
+      },
       // not necessary
       perHourRate: {
         type: DataTypes.INTEGER,

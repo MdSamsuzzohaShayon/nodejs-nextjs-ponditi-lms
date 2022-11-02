@@ -2,6 +2,7 @@
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
+const fsPromise = require('fs/promises');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
@@ -47,9 +48,9 @@ const sendOTP = async (req, res) => {
 
       if (
         // eslint-disable-next-line prettier/prettier
-        findByPhone.dataValues.isVerified === true
+        findByPhone.dataValues.isVerified === true &&
         // eslint-disable-next-line prettier/prettier
-        && findByPhone.dataValues.password
+        findByPhone.dataValues.password
       ) {
         // show them that they are already registered
         return res.status(406).json({
@@ -275,7 +276,7 @@ const login = async (req, res) => {
     }
     const isPasswordCorrect = await bcrypt.compare(
       req.body.password,
-      userExist.dataValues.password,
+      userExist.dataValues.password
     );
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
@@ -339,11 +340,11 @@ const resendOTP = async (req, res) => {
   });
   const updateOtp = await User.update(
     { otp },
-    { where: { id: findByPhone.dataValues.id } },
+    { where: { id: findByPhone.dataValues.id } }
   ); // isActive
   const sms = await sendSMS(
     findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`,
+    `Your OTP code is: ${otp}`
   );
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -466,6 +467,20 @@ const updateUser = async (req, res) => {
       }
       if (newTutionplace !== '') updatedObj.tutionplace = newTutionplace;
     }
+
+    // Set user rate per hour
+    if (updatedObj.rate) {
+      if (req.userRole === STUDENT) {
+        delete updatedObj.rate;
+      } else if (req.userRole === TEACHER) {
+        updatedObj.rate = parseInt(updatedObj.rate, 10);
+      }
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (req.userRole === TEACHER) {
+        updatedObj.rate = parseInt(150, 10);
+      }
+    }
     // console.log(updatedObj);
 
     // check password,
@@ -554,7 +569,7 @@ const updateExamUser = async (req, res) => {
       ) {
         newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
         const existingEducation = findUser.Education.find(
-          (fue) => fue.level === newExamObj.level,
+          (fue) => fue.level === newExamObj.level
         );
         if (existingEducation) {
           // console.log(existingEducation);
@@ -585,11 +600,59 @@ const updateExamUser = async (req, res) => {
   return res.status(500).json({ msg: 'Something went wrong' });
 };
 
+const updateImageUser = async (req, res) => {
+  const { id } = req.params;
+  const pId = parseInt(id, 10);
+  if (pId !== req.userId) {
+    return res
+      .status(406)
+      .json({ msg: 'You can not update someonelse detail' });
+  }
+  try {
+    if (!req?.file) {
+      return res.status(406).json({ msg: 'No image to update' });
+    }
+    const findUser = await User.findOne({
+      where: { id: req.userId },
+      include: [{ model: Education }],
+    });
+    // console.log(findUser.Education.map((ue)=> ue.dataValues));
+    if (findUser.role === ADMIN) {
+      return res.status(406).json({ msg: "Admin can't be updated" });
+    }
+    if (findUser === null) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // If there is a file already delete that file first
+    if (findUser.dataValues.image) {
+      const fileAbsPath = `${__dirname}/../uploads/${findUser.dataValues.image}`;
+      // console.log({ existingFile: findUser.dataValues.image, fileAbsPath });
+      try {
+        const openFile = await fsPromise.open(fileAbsPath);
+        if (openFile) {
+          await fsPromise.unlink(fileAbsPath);
+        }
+        // console.log(openFile);
+      } catch (fileUnlinkErr) {
+        console.log(fileUnlinkErr);
+      }
+    }
+
+    await User.update({ image: req.file.filename }, { where: { id } });
+
+    return res.status(202).json({ msg: 'A user image updated' });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
+};
+
 const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update(
       { viewed: true },
-      { where: { userId: req.userId } },
+      { where: { userId: req.userId } }
     );
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
@@ -748,6 +811,7 @@ module.exports = {
   getSingleUser,
   updateUser,
   updateExamUser,
+  updateImageUser,
   logout,
   notificationSeen,
   seedUsers,

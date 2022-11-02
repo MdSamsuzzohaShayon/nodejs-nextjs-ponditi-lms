@@ -63,6 +63,9 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(100),
         // unique: true,
       },
+      image: {
+        type: new DataTypes.STRING(255),
+      },
       // cc = country code
       cc: {
         type: new DataTypes.STRING(100),
@@ -157,7 +160,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       rate: {
         type: DataTypes.INTEGER,
-        defaultValue: 150, // per hour
+        // defaultValue: 150, // per hour
       },
       totalHours: {
         type: DataTypes.INTEGER,

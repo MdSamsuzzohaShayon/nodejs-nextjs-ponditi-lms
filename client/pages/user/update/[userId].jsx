@@ -7,6 +7,7 @@ import Loader from '../../../components/elements/Loader';
 import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
+import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
 import {
   fetchCurrentSingleUser,
   resetUpdateUser,
@@ -42,24 +43,6 @@ function index() {
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
   };
 
-  const displayContentPartwise = () => {
-    // updatePart
-    switch (updatePart) {
-      case 1:
-        return <ClassSubjectForm />;
-      case 2:
-        return (
-          <PersonalInformationForm inputChangeHandler={inputChangeHandler} />
-        );
-      case 3:
-        return <TutionDetail inputChangeHandler={inputChangeHandler} />;
-      // case 4: // Direct from return
-      //   return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
-
-      default:
-        return <ClassSubjectForm />;
-    }
-  };
   useEffect(() => {
     if (userId) {
       const userIdInt = parseInt(userId, 10);
@@ -123,7 +106,7 @@ function index() {
     }
   };
 
-  const userExamChangeHandler = async (uce) => {
+  const userExamSubmitHandler = async (uce) => {
     uce.preventDefault();
     try {
       dispatch(toggleLoading(true));
@@ -191,6 +174,74 @@ function index() {
     cbe.preventDefault();
     router.push('/user/dashboard');
   };
+
+  const displayContentPartwise = () => {
+    // updatePart
+    switch (updatePart) {
+      case 1:
+        return <ClassSubjectForm />;
+      case 2:
+        return (
+          <PersonalInformationForm inputChangeHandler={inputChangeHandler} />
+        );
+      case 3:
+        return <TutionDetail inputChangeHandler={inputChangeHandler} />;
+      // case 4: // Direct from return
+      //   return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
+
+      default:
+        return <ClassSubjectForm cancelBtnHandler={cancelBtnHandler} />;
+    }
+  };
+
+  const changeWholeForm = () => {
+    switch (updatePart) {
+      case 4:
+        return (
+          <form onSubmit={userExamSubmitHandler}>
+            <ExamDetailForm inputChangeHandler={inputChangeHandler} />
+            <div className="row mx-0 mb-3">
+              <div className="col-md-12 d-flex">
+                <button className="btn btn-primary w-fit" type="submit">
+                  Update
+                </button>
+                <button
+                  className="btn btn-danger w-fit"
+                  onClick={cancelBtnHandler}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        );
+      case 5:
+        return <ImageUpdateForm />;
+      default:
+        return (
+          <form onSubmit={userChangeHandler}>
+            {/* // Update - classtype and subject  */}
+            {displayContentPartwise()}
+            <div className="row mx-0 mb-3">
+              <div className="col-md-12 d-flex">
+                <button className="btn btn-primary w-fit" type="submit">
+                  Update
+                </button>
+                <button
+                  className="btn btn-danger w-fit"
+                  onClick={cancelBtnHandler}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        );
+    }
+  };
+
   return (
     <Layout>
       <div className="user-update">
@@ -205,45 +256,7 @@ function index() {
                   <h1 className="h1">Update user</h1>
                 </div>
               </div>
-              {updatePart === 4 ? (
-                // Update exam detail start
-                <form onSubmit={userExamChangeHandler}>
-                  <ExamDetailForm inputChangeHandler={inputChangeHandler} />
-                  <div className="row mx-0 mb-3">
-                    <div className="col-md-12 d-flex">
-                      <button className="btn btn-primary w-fit" type="submit">
-                        Update
-                      </button>
-                      <button
-                        className="btn btn-danger w-fit"
-                        onClick={cancelBtnHandler}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              ) : (
-                <form onSubmit={userChangeHandler}>
-                  {/* // Update - classtype and subject  */}
-                  {displayContentPartwise()}
-                  <div className="row mx-0 mb-3">
-                    <div className="col-md-12 d-flex">
-                      <button className="btn btn-primary w-fit" type="submit">
-                        Update
-                      </button>
-                      <button
-                        className="btn btn-danger w-fit"
-                        onClick={cancelBtnHandler}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              )}
+              {changeWholeForm()}
             </div>
           </section>
         )}

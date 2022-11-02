@@ -40,6 +40,14 @@
       }
     }
 
+    .notification-bar{
+      width: 20rem;
+      z-index: 1;
+      a{
+        color: black !important;
+      }
+    }
+
     .border-of-header{
       height: 0.5rem;
     }
