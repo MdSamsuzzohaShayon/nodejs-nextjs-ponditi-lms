@@ -8,20 +8,10 @@ import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
 import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
-import {
-  fetchCurrentSingleUser,
-  resetUpdateUser,
-  setUpdatePart,
-  setUpdateUser,
-  resetUpdateUserExam,
-} from '../../../redux/reducers/userReducer';
+import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser, resetUpdateUserExam } from '../../../redux/reducers/userReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
-import {
-  toggleLoading,
-  setErrorList,
-  resetErrorList,
-} from '../../../redux/reducers/elementsSlice';
+import { toggleLoading, setErrorList, resetErrorList } from '../../../redux/reducers/elementsSlice';
 import axios from '../../../config/axios';
 import TutionDetail from '../../../components/user/Update/TutionDetail';
 
@@ -56,11 +46,7 @@ function index() {
           //   console.log({ userId, updatePart });
           // get subjects  / class types / user
           dispatch(resetErrorList());
-          await Promise.all([
-            dispatch(fetchCurrentSingleUser(userId)),
-            dispatch(fetchAllClassTypes(null)),
-            dispatch(fetchAllSubjects(null)),
-          ]);
+          await Promise.all([dispatch(fetchCurrentSingleUser(userId)), dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null))]);
         })();
       }
       isMounted = false;
@@ -76,16 +62,8 @@ function index() {
       };
 
       //   console.log(currentUser);
-      const response = await axios.put(
-        `/user/update/${authUserInfo.id}`,
-        updateUser,
-        options
-      );
-      if (
-        response.status === 202 ||
-        response.status === 201 ||
-        response.status === 200
-      ) {
+      const response = await axios.put(`/user/update/${authUserInfo.id}`, updateUser, options);
+      if (response.status === 202 || response.status === 201 || response.status === 200) {
         // console.log(response);
         window.localStorage.removeItem('updatePart');
         dispatch(resetUpdateUser());
@@ -117,12 +95,7 @@ function index() {
       };
 
       const newObj = updateUserExam.filter((uel) => {
-        if (
-          uel.cgpa &&
-          uel.cgpa !== '' &&
-          uel.passing_year &&
-          uel.passing_year !== ''
-        ) {
+        if (uel.cgpa && uel.cgpa !== '' && uel.passing_year && uel.passing_year !== '') {
           // console.log(uel);
           return uel;
         }
@@ -132,17 +105,9 @@ function index() {
       if (newObj.length > 0) {
         // console.log(newObj);
         //   console.log(currentUser);
-        const response = await axios.put(
-          `/user/updateexam/${authUserInfo.id}`,
-          { examlist: newObj },
-          options
-        );
+        const response = await axios.put(`/user/updateexam/${authUserInfo.id}`, { examlist: newObj }, options);
         controller.abort();
-        if (
-          response.status === 202 ||
-          response.status === 201 ||
-          response.status === 200
-        ) {
+        if (response.status === 202 || response.status === 201 || response.status === 200) {
           // console.log(response);
           window.localStorage.removeItem('updatePart');
           dispatch(resetUpdateUserExam());
@@ -150,11 +115,7 @@ function index() {
           router.push('/user/dashboard');
         }
       } else {
-        dispatch(
-          setErrorList([
-            'Make sure to put result and passing year in order to update',
-          ])
-        );
+        dispatch(setErrorList(['Make sure to put result and passing year in order to update']));
       }
     } catch (error) {
       console.log(error);
@@ -181,9 +142,7 @@ function index() {
       case 1:
         return <ClassSubjectForm />;
       case 2:
-        return (
-          <PersonalInformationForm inputChangeHandler={inputChangeHandler} />
-        );
+        return <PersonalInformationForm inputChangeHandler={inputChangeHandler} />;
       case 3:
         return <TutionDetail inputChangeHandler={inputChangeHandler} />;
       // case 4: // Direct from return
@@ -205,11 +164,7 @@ function index() {
                 <button className="btn btn-primary w-fit" type="submit">
                   Update
                 </button>
-                <button
-                  className="btn btn-danger w-fit"
-                  onClick={cancelBtnHandler}
-                  type="button"
-                >
+                <button className="btn btn-danger w-fit" onClick={cancelBtnHandler} type="button">
                   Cancel
                 </button>
               </div>
@@ -228,11 +183,7 @@ function index() {
                 <button className="btn btn-primary w-fit" type="submit">
                   Update
                 </button>
-                <button
-                  className="btn btn-danger w-fit"
-                  onClick={cancelBtnHandler}
-                  type="button"
-                >
+                <button className="btn btn-danger w-fit" onClick={cancelBtnHandler} type="button">
                   Cancel
                 </button>
               </div>

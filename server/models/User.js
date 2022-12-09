@@ -49,12 +49,8 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      firstname: {
-        type: new DataTypes.STRING(100),
-      },
-
-      lastname: {
-        type: new DataTypes.STRING(100),
+      name: {
+        type: new DataTypes.STRING(100)
       },
       password: {
         type: new DataTypes.STRING(255),
@@ -101,6 +97,11 @@ module.exports = (sequelize, DataTypes) => {
 
       experience: {
         type: new DataTypes.STRING(100),
+      },
+      running_study: {
+        type: new DataTypes.BOOLEAN(),
+        defaultValue: false,
+        allowNull: true,
       },
       /**
        * @auth data fields

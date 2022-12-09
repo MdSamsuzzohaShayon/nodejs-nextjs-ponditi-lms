@@ -19,11 +19,7 @@ const leaveAReview = async (req, res) => {
     // finishclass
     // console.log(req.params.scheduledclassId);
     const findScheduledClass = await ScheduledClass.findOne({
-      include: [
-        { model: User, as: 'Sender' },
-        { model: User, as: 'Recever' },
-        { model: Review },
-      ],
+      include: [{ model: User, as: 'Sender' }, { model: User, as: 'Recever' }, { model: Review }],
       where: { id: req.params.scheduledclassId, status: FINISH_CLASS },
     });
     if (!findScheduledClass) {
@@ -42,10 +38,7 @@ const leaveAReview = async (req, res) => {
     const reviewIds = [...findScheduledClass.Reviews.map((r) => r.id)];
     // Has one review but that review not on me
     // console.log(findScheduledClass.Reviews[0].dataValues.reviewerId, req.userId);
-    if (
-      findScheduledClass.Reviews.length === 1 &&
-      findScheduledClass.Reviews[0].dataValues.reviewerId === req.userId
-    ) {
+    if (findScheduledClass.Reviews.length === 1 && findScheduledClass.Reviews[0].dataValues.reviewerId === req.userId) {
       return res.status(406).json({
         msg: 'You already given the review',
       });
@@ -54,18 +47,10 @@ const leaveAReview = async (req, res) => {
 
     if (req.userId === findScheduledClass.Sender.id) {
       const review = await Review.create(reviewObj);
-      await Promise.all([
-        review.setReviewer(findScheduledClass.Sender),
-        review.setReviewtaker(findScheduledClass.Recever),
-        review.setScheduledClass(findScheduledClass),
-      ]);
+      await Promise.all([review.setReviewer(findScheduledClass.Sender), review.setReviewtaker(findScheduledClass.Recever), review.setScheduledClass(findScheduledClass)]);
     } else if (req.userId === findScheduledClass.Recever.id) {
       const review = await Review.create(reviewObj);
-      await Promise.all([
-        review.setReviewer(findScheduledClass.Recever),
-        review.setReviewtaker(findScheduledClass.Sender),
-        review.setScheduledClass(findScheduledClass),
-      ]);
+      await Promise.all([review.setReviewer(findScheduledClass.Recever), review.setReviewtaker(findScheduledClass.Sender), review.setScheduledClass(findScheduledClass)]);
     } else {
       return res.status(406).json({
         msg: 'Your are not member of this class',

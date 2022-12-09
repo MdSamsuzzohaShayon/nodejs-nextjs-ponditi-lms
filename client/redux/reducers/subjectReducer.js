@@ -24,15 +24,9 @@ const fetchSubjects = async (args, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchAllSubjects = createAsyncThunk(
-  'scheduledclass/getAllSubjects',
-  fetchSubjects
-);
+export const fetchAllSubjects = createAsyncThunk('scheduledclass/getAllSubjects', fetchSubjects);
 
-export const fetchAllSubjectsSearch = createAsyncThunk(
-  'scheduledclass/getAllSubjectsSearch',
-  fetchSubjects
-);
+export const fetchAllSubjectsSearch = createAsyncThunk('scheduledclass/getAllSubjectsSearch', fetchSubjects);
 
 export const subjectSlice = createSlice({
   name: 'subject',
@@ -42,6 +36,7 @@ export const subjectSlice = createSlice({
      */
     subjectList: [],
     subjectListCopy: [], // Unchangable
+    selectedSubjectList: [],
     addSubject: initialAddSubject,
   },
   reducers: {
@@ -50,6 +45,12 @@ export const subjectSlice = createSlice({
     },
     resetSubjectList: (state, action) => {
       state.subjectList = action.payload;
+    },
+    setSelectedSubject: (state, action) => {
+      state.selectedSubjectList = action.payload;
+    },
+    resetSelectedSubject: (state, action) => {
+      state.selectedSubjectList = action.payload;
     },
     setAddSubject: (state, action) => {
       state.addSubject = { ...state.addSubject, ...action.payload };
@@ -72,11 +73,6 @@ export const subjectSlice = createSlice({
   },
 });
 
-export const {
-  setSubjectList,
-  resetSubjectList,
-  setAddSubject,
-  resetAddSubject,
-} = subjectSlice.actions;
+export const { setSubjectList, resetSubjectList, setAddSubject, resetAddSubject, setSelectedSubject, resetSelectedSubject } = subjectSlice.actions;
 
 export default subjectSlice.reducer;

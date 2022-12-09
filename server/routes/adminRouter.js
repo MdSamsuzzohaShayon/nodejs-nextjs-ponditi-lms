@@ -1,25 +1,15 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
-const {
-  addAdmin,
-  addClassType,
-  addSubject,
-  loginAdmin,
-} = require('../controllers/admin.controller');
+const { addAdmin, loginAdmin } = require('../controllers/admin.controller');
 
-const {
-  ensureGuest,
-  ensureTeacher,
-  ensureAdmin,
-} = require('../middleware/auth');
+// const { ensureGuest, ensureTeacher, ensureAdmin } = require('../middleware/auth');
 /**
  * @route
  * Register an admin, later for production this route will be disabled
  */
 router.post(
   '/add',
-  check('firstname').notEmpty(),
-  check('lastname').notEmpty(),
+  check('name').notEmpty(),
   check('phone').notEmpty(),
   check('email').isEmail().notEmpty(),
   check('age').notEmpty(),
@@ -36,8 +26,6 @@ router.post(
  * Login as admin
  */
 router.post('/login', check('password').notEmpty(), loginAdmin);
-
-
 // make relationship with class and subjects [many-to-many]
 
 // make relationship with admin and subjects [one-to-many ]

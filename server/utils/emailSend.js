@@ -4,7 +4,7 @@ async function sendEmail(sendTo, subject, text, html) {
   try {
     // console.log({email: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD});
     // create reusable transporter object using the default SMTP transport
-    console.log({email: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD, host: process.env.ADMIN_EMAIL_HOST});
+    // console.log({email: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD, host: process.env.ADMIN_EMAIL_HOST});
     const transporter = nodemailer.createTransport({
       host: process.env.ADMIN_EMAIL_HOST,
       port: 465,
@@ -22,7 +22,7 @@ async function sendEmail(sendTo, subject, text, html) {
 
     // send mail with defined transport object
     const info = await transporter.sendMail({
-      from: `"Kinoverse: " <${process.env.ADMIN_EMAIL}>`, // sender address
+      from: `"Ponditi: " <${process.env.ADMIN_EMAIL}>`, // sender address
       to, // list of receivers
       subject, // Subject line
       text, // plain text body

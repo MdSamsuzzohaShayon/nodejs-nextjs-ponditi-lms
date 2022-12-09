@@ -7,15 +7,7 @@ function Step2({ inputChangeHandler, nextStepHandler, update }) {
       <div className="row mb-3 mx-0">
         <div className="col-sm-12 col-md-6">
           <label htmlFor="firstname">Age</label>
-          <input
-            type="number"
-            className="form-control"
-            name="age"
-            id="age"
-            defaultValue={userInfo.age}
-            onChange={inputChangeHandler}
-            placeholder="E.G. 25"
-          />
+          <input type="number" className="form-control" name="age" id="age" defaultValue={userInfo.age} onChange={inputChangeHandler} placeholder="E.G. 25" />
         </div>
         <div className="col-sm-12 col-md-6">
           <label htmlFor="profession">Profession</label>
@@ -73,15 +65,11 @@ function Step2({ inputChangeHandler, nextStepHandler, update }) {
       </div>
 
       {update === false && (
-      <div className="row mb-3 mx-0 d-flex w-full justify-content-end">
-        <button
-          className="btn btn-primary w-fit"
-          type="button"
-          onClick={nextStepHandler}
-        >
-          Next
-        </button>
-      </div>
+        <div className="row mb-3 mx-0 d-flex w-full justify-content-end">
+          <button className="btn btn-primary w-fit" type="button" onClick={nextStepHandler}>
+            Next
+          </button>
+        </div>
       )}
     </>
   );

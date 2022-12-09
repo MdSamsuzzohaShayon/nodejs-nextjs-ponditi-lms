@@ -14,6 +14,7 @@ module.exports = {
   },
   scheduledClassStatus: {
     PAYMENT_DUE: 'PAYMENT_DUE',
+    REQUEST_REGISTER: 'REQUEST_REGISTER',
     PENDING: 'PENDING',
     APPROVED: 'APPROVED',
     REJECTED: 'REJECTED',

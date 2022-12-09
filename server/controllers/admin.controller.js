@@ -22,9 +22,7 @@ const { ADMIN, TEACHER } = keys.roles;
 const addAdmin = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(406)
-      .json({ msg: 'Input validation error', error: errors.array() });
+    return res.status(406).json({ msg: 'Input validation error', error: errors.array() });
   }
 
   const userObj = Object.assign(req.body);
@@ -76,9 +74,7 @@ const loginAdmin = async (req, res, next) => {
     } else if (req.body.phone) {
       userExist = await User.findOne({ where: { phone: req.body.phone } });
     } else {
-      return res
-        .status(406)
-        .json({ msg: 'Email and phone both can not be empty' });
+      return res.status(406).json({ msg: 'Email and phone both can not be empty' });
     }
 
     // console.log({userExist});
@@ -87,10 +83,7 @@ const loginAdmin = async (req, res, next) => {
     if (userExist.dataValues.role !== ADMIN) {
       return res.status(406).json({ msg: 'You are not teacher or admin' });
     }
-    const isPasswordCorrect = await bcrypt.compare(
-      req.body.password,
-      userExist.dataValues.password,
-    );
+    const isPasswordCorrect = await bcrypt.compare(req.body.password, userExist.dataValues.password);
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
     }
@@ -104,12 +97,11 @@ const loginAdmin = async (req, res, next) => {
       expiresIn: '1h',
     });
     res.cookie('token', token, cookieOptions);
-    res
-      .status(200)
-      .json({ msg: 'Logged in successfully', user: userDetailResponse });
+    return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
-    res.status(500).json({ msg: 'Something went wrong' });
+    console.log(err);
   }
+  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 module.exports = {

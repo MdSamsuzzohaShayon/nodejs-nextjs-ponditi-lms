@@ -5,27 +5,13 @@ import Router from 'next/router';
 import { useEffect } from 'react';
 import Layout from '../../components/layouts/Layout';
 import { scheduledclassStatus } from '../../config/keys';
-import {
-  fetchAllRequestedSCOU,
-  setAcceptedSCOU,
-  setRejectedSCOU,
-  setRequestedSCOU,
-} from '../../redux/reducers/scheduledclassReducer';
-import {
-  fetchCurrentSingleUser,
-  setSelectedContent,
-  requestHistorySeen,
-  resetAuthUserInfo,
-} from '../../redux/reducers/userReducer';
+import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
+import { fetchCurrentSingleUser, setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../redux/reducers/userReducer';
 import ScheduledClassList from '../../components/scheduledclass/ScheduledClassList';
-import {
-  toggleLoading,
-  setErrorList,
-} from '../../redux/reducers/elementsSlice';
+import { toggleLoading, setErrorList } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 
-const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } =
-  scheduledclassStatus;
+const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 
 function requesthistory() {
   const dispatch = useDispatch();
@@ -34,23 +20,13 @@ function requesthistory() {
 
   const tabElements = useSelector((state) => state.scheduledclass.tabElements);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const requestedSCOU = useSelector(
-    (state) => state.scheduledclass.requestedSCOU
-  );
+  const requestedSCOU = useSelector((state) => state.scheduledclass.requestedSCOU);
   const runningSCOU = useSelector((state) => state.scheduledclass.runningSCOU);
-  const completedSCOU = useSelector(
-    (state) => state.scheduledclass.completedSCOU
-  );
-  const acceptedSCOU = useSelector(
-    (state) => state.scheduledclass.acceptedSCOU
-  );
-  const rejectedSCOU = useSelector(
-    (state) => state.scheduledclass.rejectedSCOU
-  );
+  const completedSCOU = useSelector((state) => state.scheduledclass.completedSCOU);
+  const acceptedSCOU = useSelector((state) => state.scheduledclass.acceptedSCOU);
+  const rejectedSCOU = useSelector((state) => state.scheduledclass.rejectedSCOU);
 
-  const userUnseenNotifications = useSelector(
-    (state) => state.user.userUnseenNotifications
-  );
+  const userUnseenNotifications = useSelector((state) => state.user.userUnseenNotifications);
 
   const tabElementChangeHandler = (tece, tabName) => {
     tece.preventDefault();
@@ -66,17 +42,11 @@ function requesthistory() {
     try {
       dispatch(toggleLoading());
       // check recever id and current user id
-      const response = await axios.put(
-        `/scheduledclass/accept/${scheduledclassId}`
-      );
+      const response = await axios.put(`/scheduledclass/accept/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
         // find Item and move from  requestedSCOU to acceptedSCOU
-        const newAcceptedSCOU = requestedSCOU.find(
-          (rs) => rs.id === scheduledclassId
-        );
-        const newRequestedSCOU = requestedSCOU.filter(
-          (rs) => rs.id !== scheduledclassId
-        );
+        const newAcceptedSCOU = requestedSCOU.find((rs) => rs.id === scheduledclassId);
+        const newRequestedSCOU = requestedSCOU.filter((rs) => rs.id !== scheduledclassId);
         dispatch(setAcceptedSCOU([...acceptedSCOU, newAcceptedSCOU]));
         dispatch(setRequestedSCOU(newRequestedSCOU));
       }
@@ -100,16 +70,10 @@ function requesthistory() {
     try {
       dispatch(toggleLoading());
       // check recever id and current user id
-      const response = await axios.put(
-        `/scheduledclass/reject/${scheduledclassId}`
-      );
+      const response = await axios.put(`/scheduledclass/reject/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
-        const newRejectedSCOU = requestedSCOU.find(
-          (rs) => rs.id === scheduledclassId
-        );
-        const newRequestedSCOU = requestedSCOU.filter(
-          (rs) => rs.id !== scheduledclassId
-        );
+        const newRejectedSCOU = requestedSCOU.find((rs) => rs.id === scheduledclassId);
+        const newRequestedSCOU = requestedSCOU.filter((rs) => rs.id !== scheduledclassId);
         dispatch(setRejectedSCOU([...rejectedSCOU, newRejectedSCOU]));
         dispatch(setRequestedSCOU(newRequestedSCOU));
       }
@@ -126,65 +90,26 @@ function requesthistory() {
   const showContent = () => {
     switch (selectedContent) {
       case APPROVED:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={acceptedSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={acceptedSCOU} />;
       case PENDING:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={requestedSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={requestedSCOU} />;
       case REJECTED:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={rejectedSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={rejectedSCOU} />;
 
       case START_CLASS:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={runningSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={runningSCOU} />;
       case FINISH_CLASS:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={completedSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={completedSCOU} />;
 
       default:
-        return (
-          <ScheduledClassList
-            acceptRequestHandler={acceptRequestHandler}
-            rejectRequestHandler={rejectRequestHandler}
-            scheduledClassList={acceptedSCOU}
-          />
-        );
+        return <ScheduledClassList acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} scheduledClassList={acceptedSCOU} />;
     }
   };
 
   useEffect(() => {
     if (authUserInfo.id) {
       (async () => {
-        await Promise.all([
-          dispatch(fetchAllRequestedSCOU(authUserInfo.id)),
-          dispatch(fetchCurrentSingleUser(authUserInfo.id)),
-        ]);
+        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id)), dispatch(fetchCurrentSingleUser(authUserInfo.id))]);
         if (userUnseenNotifications.length > 0) {
           await dispatch(requestHistorySeen(null));
         }
@@ -204,16 +129,10 @@ function requesthistory() {
                   {tabElements.map((te, idx) => (
                     <li className="nav-item" key={idx}>
                       <a
-                        className={
-                          selectedContent === te.name
-                            ? 'nav-link rounded-1 active'
-                            : 'nav-link rounded-1'
-                        }
+                        className={selectedContent === te.name ? 'nav-link rounded-1 active' : 'nav-link rounded-1'}
                         aria-current="page"
                         href="#"
-                        onClick={(tece) =>
-                          tabElementChangeHandler(tece, te.name)
-                        }
+                        onClick={(tece) => tabElementChangeHandler(tece, te.name)}
                       >
                         {te.text}
                       </a>

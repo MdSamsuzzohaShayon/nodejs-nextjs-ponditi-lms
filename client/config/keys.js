@@ -7,6 +7,8 @@ export const libraries = ['places'];
 export const SEND_CODE = 'SEND_CODE';
 export const VERIFY_CODE = 'VERIFY_CODE';
 export const REGISTER = 'REGISTER';
+export const TS_SELECT = 'TS_SELECT'; // teacher student selection
+
 
 export const roles = {
   ADMIN: 'ADMIN',

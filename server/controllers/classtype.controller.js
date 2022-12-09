@@ -24,9 +24,7 @@ const addClassType = async (req, res) => {
       where: { name: newName },
     });
     if (classTypeExist) {
-      return res
-        .status(406)
-        .json({ msg: 'this classtype already exist in our database' });
+      return res.status(406).json({ msg: 'this classtype already exist in our database' });
     }
 
     const newClassType = await ClassType.create({ name: newName });
@@ -40,9 +38,7 @@ const addClassType = async (req, res) => {
       }
     }
 
-    return res
-      .status(201)
-      .json({ msg: 'ClassType created successfully', classType: newClassType });
+    return res.status(201).json({ msg: 'ClassType created successfully', classType: newClassType });
   } catch (error) {
     console.log(error);
   }

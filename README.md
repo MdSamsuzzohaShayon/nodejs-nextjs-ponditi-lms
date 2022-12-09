@@ -117,6 +117,29 @@
  - Search by Location - google place api 
  - Remove teacher/student from login page ✅
  - User to feedback (many to many relationship) 
+ 
+ - **Requirement update-3**
+ - No preffered class, subjects, and tuition place
+ - Different page or section for signup as student and reacher
+
+ - User should not be able to register with same phone twice
+ - Confused - 16
+ - Fixing menu
+ - phone change cc - Phone country code ✅
+ - teacher type
+ - arabic, bangla, english in the search
+ - send id and password ✅
+ - We should keep 2 step for regestration  ✅
+ - No age, profesion, cgpa  ✅
+ - passing year, Currently studying option  ✅
+ - Check all functions of update
+ - add educational qualifications not working at the time of registration
+ - Reset password
+
+Ask questions
+
+
+
 
 ### Deployment process(server)
 - Disable add admin route and seed route from admin router and get all users from user route

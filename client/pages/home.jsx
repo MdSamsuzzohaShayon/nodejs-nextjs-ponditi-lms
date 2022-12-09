@@ -11,14 +11,11 @@ export default function home() {
   let isMounted = true;
   const dispatch = useDispatch();
 
-  useEffect(()=> {
+  useEffect(() => {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([
-          dispatch(fetchAllClassTypesSearch()),
-          dispatch(fetchAllSubjectsSearch()),
-        ]);
+        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch())]);
       }
     })();
     isMounted = false;
@@ -26,7 +23,7 @@ export default function home() {
 
   return (
     <Layout>
-      <div className='Home'>
+      <div className="Home">
         <Section1 />
         <section className="section section-2 bg-secondary text-dark">
           <div className="container">

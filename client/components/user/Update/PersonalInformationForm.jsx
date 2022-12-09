@@ -47,9 +47,7 @@ function PersonalInformationForm(props) {
         case PRESENTADDRESS:
           dispatch(
             setUpdateUser({
-              presentaddress: `${autocomplete.getPlace().name}, ${
-                autocomplete.getPlace().formatted_address
-              }, (${lng}, ${lat})`,
+              presentaddress: `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`,
             })
           );
           break;
@@ -90,43 +88,9 @@ function PersonalInformationForm(props) {
   return (
     <div className="PersonalInformationForm">
       <div className="row mb-3 mx-0">
-        <div className="col-sm-12 col-md-6">
-          <label htmlFor="firstname">First Name</label>
-          <input
-            type="text"
-            className="form-control"
-            name="firstname"
-            id="firstname"
-            defaultValue={currentUser?.firstname}
-            onChange={props.inputChangeHandler}
-            placeholder="E.G. Cristiano"
-          />
-        </div>
-        <div className="col-sm-12 col-md-6">
-          <label htmlFor="lastname">Last Name</label>
-          <input
-            type="text"
-            className="form-control"
-            name="lastname"
-            id="lastname"
-            defaultValue={currentUser?.lastname}
-            onChange={props.inputChangeHandler}
-            placeholder="E.G. Ronaldo"
-          />
-        </div>
-      </div>
-      <div className="row mb-3 mx-0">
-        <div className="col-sm-12 col-md-6">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            name="email"
-            id="email"
-            defaultValue={currentUser?.email}
-            onChange={props.inputChangeHandler}
-            placeholder="E.G. ronal@gmail.com"
-          />
+        <div className="col-md-6">
+          <label htmlFor="name">Name</label>
+          <input type="text" className="form-control" name="name" id="name" defaultValue={currentUser?.name} onChange={props.inputChangeHandler} />
         </div>
         {/* google places api start  */}
         <div className="col-md-6">
@@ -162,12 +126,14 @@ function PersonalInformationForm(props) {
       </div>
       <div className="row mb-3 mx-0">
         <div className="col-12">
+          <label htmlFor="email">Email</label>
+          <input type="email" className="form-control" name="email" id="email" defaultValue={currentUser?.email} onChange={props.inputChangeHandler} />
+        </div>
+      </div>
+      <div className="row mb-3 mx-0">
+        <div className="col-12">
           <label htmlFor="presentaddress">Present Address</label>
-          <Autocomplete
-            onLoad={onLoadHandler}
-            onPlaceChanged={() => placeChangedHandler(PRESENTADDRESS)}
-            className="form-control p-0"
-          >
+          <Autocomplete onLoad={onLoadHandler} onPlaceChanged={() => placeChangedHandler(PRESENTADDRESS)} className="form-control p-0">
             <input
               type="text"
               className="form-control"

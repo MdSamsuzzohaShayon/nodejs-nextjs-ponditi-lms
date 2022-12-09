@@ -15,7 +15,7 @@ const cookieOptions = require('../config/cookie-config');
 // eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const { PENDING, APPROVED, REJECTED } = keys.scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 
 // Initialize
 const sendOTP = async (req, res) => {
@@ -28,8 +28,13 @@ const sendOTP = async (req, res) => {
     // isVerified === true
     // isActive === APPROVED
     const { phone, cc } = req.body;
-    const phoneWithSufix = cc.substring(cc.length - 1) + phone;
-    const phoneForMSG = cc + phone;
+    const phoneWithSufix = `+${cc}${phone}`;
+    // if (cc === '88') {
+    //   phoneWithSufix = cc.substring(cc.length - 1) + phone; // Not for bangladesh
+    // } else {
+    //   phoneWithSufix = cc + phone;
+    // }
+    // const phoneForMSG = cc + phone;
     const otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
@@ -37,13 +42,12 @@ const sendOTP = async (req, res) => {
     });
 
     const findByPhone = await User.findOne({
-      where: { phone: phoneWithSufix },
+      where: { phone },
     });
+    // console.log(findByPhone);
     if (findByPhone) {
-      if (findByPhone.dataValues.isActive === APPROVED) {
-        return res.status(406).json({
-          msg: 'User is already registred with this phone number',
-        });
+      if (findByPhone.dataValues.isActive !== REQUEST_REGISTER) {
+        return res.status(406).json({ msg: 'User is already registred with this phone number' });
       }
 
       if (
@@ -53,12 +57,11 @@ const sendOTP = async (req, res) => {
         findByPhone.dataValues.password
       ) {
         // show them that they are already registered
-        return res.status(406).json({
-          msg: 'You already registered yourself with this phone number',
-        });
+        return res.status(406).json({ msg: 'You already registered yourself with this phone number' });
       }
+      // console.log(phoneWithSufix, '+8801785208590');
       // let them register
-      const msg = await sendSMS(phoneForMSG, `Your OTP code is: ${otp}`);
+      const msg = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
       // console.log(msg);
       if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
       // update code from database
@@ -68,16 +71,14 @@ const sendOTP = async (req, res) => {
       });
     }
     await User.create({
-      phone: phoneWithSufix,
+      phone,
       cc,
       otp,
-      isActive: PENDING,
+      isActive: REQUEST_REGISTER,
       isVerified: false,
     });
 
-    return res.status(201).json({
-      msg: 'If the number you is correct a verification OTP code will be sent there',
-    });
+    return res.status(201).json({ msg: 'If the number you is correct a verification OTP code will be sent there' });
   } catch (error) {
     console.log(error);
   }
@@ -90,13 +91,16 @@ const verifyUser = async (req, res) => {
     return res.status(406).json({ error: errors.array() });
   }
 
-  // console.log({phone: req.body.phone });
   const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
   if (!findByPhone) {
-    return res
-      .status(404)
-      .json({ msg: 'No user found, register yourself first' });
+    return res.status(404).json({ msg: 'No user found, register yourself first' });
   }
+
+  if (findByPhone.dataValues.isActive !== REQUEST_REGISTER) {
+    return res.status(406).json({ msg: 'User is already registred with this phone number' });
+  }
+
+  // console.log(findByPhone.dataValues, req.body.otp);
 
   if (findByPhone.dataValues.isVerified === true) {
     return res.status(200).json({ msg: 'Validated OTP successfully' });
@@ -105,10 +109,7 @@ const verifyUser = async (req, res) => {
   if (findByPhone.dataValues.otp !== req.body.otp) {
     return res.status(406).json({ msg: 'Invalid OTP' });
   }
-  await User.update(
-    { isVerified: true },
-    { where: { id: findByPhone.dataValues.id } }
-  ); // isActive
+  await User.update({ isVerified: true }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully' });
 };
@@ -121,9 +122,7 @@ const registerUser = async (req, res) => {
 
   const userObj = { ...req.body };
   if (userObj.isActive) {
-    return res
-      .status(406)
-      .json({ msg: 'You can not change your active status' });
+    return res.status(406).json({ msg: 'You can not change your active status' });
   }
   if (userObj.role === TEACHER) {
     userObj.role = TEACHER;
@@ -147,15 +146,15 @@ const registerUser = async (req, res) => {
       where: { phone: userObj.phone },
     });
     if (userFindByPhone === null) {
-      return res
-        .status(404)
-        .json({ msg: 'This phone number is not validated' });
+      return res.status(404).json({ msg: 'This phone number is not validated' });
     }
     if (userFindByPhone.dataValues.isVerified === false) {
-      return res
-        .status(406)
-        .json({ msg: 'Your phone number is not verified to register' });
+      return res.status(406).json({ msg: 'Your phone number is not verified to register' });
     }
+    if (userFindByPhone.dataValues.isActive !== REQUEST_REGISTER) {
+      return res.status(406).json({ msg: 'User is already registred with this phone number' });
+    }
+    // console.log(userFindByPhone);
 
     // ONLY SUPER USER CAN CREATE A NEW USER
     const userEmailExist = await User.findOne({
@@ -166,11 +165,39 @@ const registerUser = async (req, res) => {
         msg: 'User already exist with this email address, you can now login',
       });
     }
-    // userObj.isActive = false;
-    userObj.password = await bcrypt.hash(userObj.password, 10);
+    userObj.isActive = PENDING;
+    // Create password
+    const genPassword = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+    userObj.password = await bcrypt.hash(genPassword, 10);
+    // console.log(userObj);
+    if (userObj?.SubjectId?.length > 0) {
+      // set subject
+      const findAllSubject = await Subject.findAll({
+        where: { id: userObj.SubjectId },
+      });
+      // console.log('Setting subject');
+      await userFindByPhone.setSubjects(findAllSubject);
+    }
+    if (userObj?.ClassTypeId?.length > 0) {
+      // set classtype
+      const findAllClassType = await ClassType.findAll({
+        where: { id: userObj.ClassTypeId },
+      });
+      await userFindByPhone.setClassTypes(findAllClassType);
+      // console.log('Setting classtype');
+    }
+    delete userObj.SubjectId;
+    delete userObj.ClassTypeId;
+
     await User.update(userObj, {
       where: { phone: req.body.phone },
     });
+    const phoneWithSufix = `+${userFindByPhone.dataValues.cc}${userFindByPhone.dataValues.phone}`;
+    // console.log({phoneWithSufix});
+    await sendSMS(phoneWithSufix, `Login credentials is: \n Phone: ${userFindByPhone.dataValues.phone} \n Password: ${genPassword}`);
     return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });
@@ -186,24 +213,17 @@ const rejectUser = async (req, res) => {
       where: { id: req.params.userId },
     });
     if (!findByPhone) {
-      return res
-        .status(404)
-        .json({ msg: 'No user found, register yourself first' });
+      return res.status(404).json({ msg: 'No user found, register yourself first' });
     }
     if (findByPhone.dataValues.role === ADMIN) {
-      return res
-        .status(404)
-        .json({ msg: 'You can not change admin active status' });
+      return res.status(404).json({ msg: 'You can not change admin active status' });
     }
 
     if (findByPhone.dataValues.isVerified !== true) {
       return res.status(406).json({ msg: 'User is not verified' });
     }
 
-    await User.update(
-      { isActive: REJECTED },
-      { where: { id: findByPhone.dataValues.id } }
-    ); // isActive
+    await User.update({ isActive: REJECTED }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
     return res.status(202).json({ msg: 'Rejected user' });
   } catch (error) {
@@ -218,24 +238,17 @@ const acceptUser = async (req, res) => {
       where: { id: req.params.userId },
     });
     if (!findByPhone) {
-      return res
-        .status(404)
-        .json({ msg: 'No user found, register yourself first' });
+      return res.status(404).json({ msg: 'No user found, register yourself first' });
     }
     if (findByPhone.dataValues.role === ADMIN) {
-      return res
-        .status(404)
-        .json({ msg: 'You can not change admin active status' });
+      return res.status(404).json({ msg: 'You can not change admin active status' });
     }
 
     if (findByPhone.dataValues.isVerified !== true) {
       return res.status(406).json({ msg: 'The user is not verified' });
     }
 
-    await User.update(
-      { isActive: APPROVED },
-      { where: { id: findByPhone.dataValues.id } }
-    ); // isActive
+    await User.update({ isActive: APPROVED }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
   } catch (error) {
@@ -260,24 +273,20 @@ const login = async (req, res) => {
     } else if (req.body.phone) {
       userExist = await User.findOne({ where: { phone: req.body.phone } });
     } else {
-      return res
-        .status(406)
-        .json({ msg: 'Email and phone both can not be empty' });
+      return res.status(406).json({ msg: 'Email and phone both can not be empty' });
     }
 
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
 
-    if (
-      userExist.dataValues.role !== TEACHER &&
-      userExist.dataValues.role !== STUDENT
-    ) {
+    if (userExist.dataValues.role !== TEACHER && userExist.dataValues.role !== STUDENT) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
-    const isPasswordCorrect = await bcrypt.compare(
-      req.body.password,
-      userExist.dataValues.password
-    );
+    // if (userExist.dataValues.isActive !== APPROVED) {
+    //   return res.status(406).json({ msg: 'Admin will review your profile and approve' });
+    // }
+
+    const isPasswordCorrect = await bcrypt.compare(req.body.password, userExist.dataValues.password);
     if (!isPasswordCorrect) {
       return res.status(406).json({ msg: 'Invalid credentials' });
     }
@@ -297,9 +306,7 @@ const login = async (req, res) => {
     //   id: userExist.id,
     // };
     res.cookie('token', token, cookieOptions);
-    return res
-      .status(200)
-      .json({ msg: 'Logged in successfully', user: userDetailResponse });
+    return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
     console.log(err);
   }
@@ -330,22 +337,14 @@ const resendOTP = async (req, res) => {
   // resendotp
   const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
   if (!findByPhone) {
-    return res
-      .status(406)
-      .json({ msg: 'User is not registred with this phone number' });
+    return res.status(406).json({ msg: 'User is not registred with this phone number' });
   }
   const otp = otpGenerator.generate(6, {
     upperCaseAlphabets: false,
     specialChars: false,
   });
-  const updateOtp = await User.update(
-    { otp },
-    { where: { id: findByPhone.dataValues.id } }
-  ); // isActive
-  const sms = await sendSMS(
-    findByPhone.dataValues.phone,
-    `Your OTP code is: ${otp}`
-  );
+  const updateOtp = await User.update({ otp }, { where: { id: findByPhone.dataValues.id } }); // isActive
+  await sendSMS(findByPhone.dataValues.phone, `Your OTP code is: ${otp}`);
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
   });
@@ -438,9 +437,7 @@ const updateUser = async (req, res) => {
   // console.log(req.body);
 
   if (pId !== req.userId) {
-    return res
-      .status(406)
-      .json({ msg: 'You can not update someonelse detail' });
+    return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
   try {
     const previousUser = await User.findOne({ where: { id: req.userId } });
@@ -536,9 +533,7 @@ const updateExamUser = async (req, res) => {
   const pId = parseInt(id, 10);
   // console.log(req.body);
   if (pId !== req.userId) {
-    return res
-      .status(406)
-      .json({ msg: 'You can not update someonelse detail' });
+    return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
   try {
     const findUser = await User.findOne({
@@ -568,9 +563,7 @@ const updateExamUser = async (req, res) => {
         newExamObj.passing_year !== null
       ) {
         newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
-        const existingEducation = findUser.Education.find(
-          (fue) => fue.level === newExamObj.level
-        );
+        const existingEducation = findUser.Education.find((fue) => fue.level === newExamObj.level);
         if (existingEducation) {
           // console.log(existingEducation);
           const newUpdatedEducation = existingEducation.update(newExamObj);
@@ -591,9 +584,7 @@ const updateExamUser = async (req, res) => {
     // Get all exam - array
     // console.log(updatedUserExam);
     // console.log(allUpdatedExam);
-    return res
-      .status(202)
-      .json({ msg: 'A user exam updated', examlist: allUpdatedExam });
+    return res.status(202).json({ msg: 'A user exam updated', examlist: allUpdatedExam });
   } catch (error) {
     console.log(error);
   }
@@ -604,9 +595,7 @@ const updateImageUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
   if (pId !== req.userId) {
-    return res
-      .status(406)
-      .json({ msg: 'You can not update someonelse detail' });
+    return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
   try {
     if (!req?.file) {
@@ -650,10 +639,7 @@ const updateImageUser = async (req, res) => {
 
 const notificationSeen = async (req, res) => {
   try {
-    const seenNotifications = await Notification.update(
-      { viewed: true },
-      { where: { userId: req.userId } }
-    );
+    const seenNotifications = await Notification.update({ viewed: true }, { where: { userId: req.userId } });
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
     }
@@ -761,21 +747,12 @@ const seedUsers = async (req, res) => {
 
   while (i < total) {
     const oneUser = {
-      firstname: Buffer.from(Math.random().toString())
-        .toString('base64')
-        .substring(10, 5),
-      lastname: Buffer.from(Math.random().toString())
-        .toString('base64')
-        .substring(10, 5),
+      name: `${Buffer.from(Math.random().toString()).toString('base64').substring(10, 5)} ${Buffer.from(Math.random().toString()).toString('base64').substring(10, 5)}`,
+      // lastname: Buffer.from(Math.random().toString()).toString('base64').substring(10, 5),
       password,
-      phone:
-        Math.floor(100000000 + Math.random() * 900000000).toString() +
-        i.toString(),
+      phone: Math.floor(100000000 + Math.random() * 900000000).toString() + i.toString(),
       cc: '+880',
-      email: `${Buffer.from(Math.random().toString())
-        .toString('base64')
-        .substring(10, 5)
-        .toLowerCase()}@email.com`,
+      email: `${Buffer.from(Math.random().toString()).toString('base64').substring(10, 5).toLowerCase()}@email.com`,
       role: i % 2 === 0 ? TEACHER : STUDENT,
       age: total + i,
       isVerified: true,
@@ -784,9 +761,7 @@ const seedUsers = async (req, res) => {
       institution: institution[i],
       experience: 2 + i,
       location: location[i],
-      otp: Buffer.from(Math.random().toString())
-        .toString('base64')
-        .substring(6, 3),
+      otp: Buffer.from(Math.random().toString()).toString('base64').substring(6, 3),
       // ClassTypes
       // Subjects
     };

@@ -5,16 +5,10 @@ import Router from 'next/router';
 import { fetchAllClassTypes } from './classtypeReducer';
 import { fetchAllSubjects } from './subjectReducer';
 import { setErrorList } from './elementsSlice';
-import {
-  userDashboardSidebarList,
-  SEND_CODE,
-  scheduledclassStatus,
-  roles,
-} from '../../config/keys';
+import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SELECT, REGISTER } from '../../config/keys';
 import axios from '../../config/axios';
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } =
-  userDashboardSidebarList;
+const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } = userDashboardSidebarList;
 const { ANY, PENDING, APPROVED } = scheduledclassStatus;
 const { TEACHER } = roles;
 
@@ -78,14 +72,17 @@ const initialRegisterStaps = [
 ];
 
 const initialCurrentUser = {
-  // Account
-  ...psobj1,
-
-  // personal info
-  ...psobj2,
-
-  // education
-  ...psobj3,
+  name: '',
+  email: '',
+  institution: '',
+  experience: '',
+  location: '',
+  degree: '',
+  major: '',
+  passing_year: '',
+  cgpa: '',
+  role: TEACHER,
+  running_study: false,
 };
 
 const initialLoginInfo = {
@@ -95,7 +92,7 @@ const initialLoginInfo = {
 
 const initialSendOTP = {
   phone: '',
-  cc: '880',
+  cc: '88',
 };
 
 const initialVerifyCode = {
@@ -151,7 +148,6 @@ const initialDegreeList = [
   },
 ];
 
-
 const initialGroupList = ['SCIENCE', 'ARTS', 'COMMERCE', 'OTHERS'];
 
 const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
@@ -184,68 +180,50 @@ const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchCurrentSingleUser = createAsyncThunk(
-  'user/currentSingleUser',
-  fetchUser
-);
-export const fetchSelectedSingleUser = createAsyncThunk(
-  'user/selectedSingleUser',
-  fetchUser
-);
+export const fetchCurrentSingleUser = createAsyncThunk('user/currentSingleUser', fetchUser);
+export const fetchSelectedSingleUser = createAsyncThunk('user/selectedSingleUser', fetchUser);
 
-export const requestHistorySeen = createAsyncThunk(
-  'user/historySeen',
-  async (args, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.put(`/user/notification/seen`);
-      return response.data;
-    } catch (error) {
-      // console.log(error.response.status);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      if (error?.response?.status === 401 || error?.response?.status === 405) {
-        if (
-          error?.response?.status === 401 ||
-          error?.response?.status === 405
-        ) {
-          window.localStorage.removeItem('user');
-          Router.push('/user');
-        } else if (error?.response?.status === 404) {
-          Router.push('/user');
-        }
-      }
-      return rejectWithValue(error.response.data);
+export const requestHistorySeen = createAsyncThunk('user/historySeen', async (args, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.put(`/user/notification/seen`);
+    return response.data;
+  } catch (error) {
+    // console.log(error.response.status);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
     }
+    if (error?.response?.status === 401 || error?.response?.status === 405) {
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        Router.push('/user');
+      } else if (error?.response?.status === 404) {
+        Router.push('/user');
+      }
+    }
+    return rejectWithValue(error.response.data);
   }
-);
+});
 
-export const fetchAllUsersByAdmin = createAsyncThunk(
-  'user/allUsers',
-  async (props, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.get(`/user/all`);
-      return response.data;
-    } catch (error) {
-      // console.log(error.response.status);
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      if (error?.response?.status === 401 || error?.response?.status === 405) {
-        if (
-          error?.response?.status === 401 ||
-          error?.response?.status === 405
-        ) {
-          window.localStorage.removeItem('user');
-          Router.push('/admin');
-        } else if (error?.response?.status === 404) {
-          Router.push('/admin');
-        }
-      }
-      return rejectWithValue(error.response.data);
+export const fetchAllUsersByAdmin = createAsyncThunk('user/allUsers', async (props, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.get(`/user/all`);
+    return response.data;
+  } catch (error) {
+    // console.log(error.response.status);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
     }
+    if (error?.response?.status === 401 || error?.response?.status === 405) {
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        Router.push('/admin');
+      } else if (error?.response?.status === 404) {
+        Router.push('/admin');
+      }
+    }
+    return rejectWithValue(error.response.data);
   }
-);
+});
 
 // http://www.healthstream.com/hlchelp/Administrator/Classes/HLC_Time_Zone_Abbreviations.htm
 
@@ -368,13 +346,9 @@ export const userSlice = createSlice({
       state.updateUser = {};
     },
     setUpdateUserExam: (state, action) => {
-      const examExist = state.updateUserExam.find(
-        (uue) => uue.level === action.payload.level
-      );
+      const examExist = state.updateUserExam.find((uue) => uue.level === action.payload.level);
       if (examExist) {
-        const restOfTheItems = state.updateUserExam.filter(
-          (uue) => uue.level !== action.payload.level
-        );
+        const restOfTheItems = state.updateUserExam.filter((uue) => uue.level !== action.payload.level);
         state.updateUserExam = [...restOfTheItems, action.payload];
       } else {
         state.updateUserExam = [...state.updateUserExam, action.payload];
@@ -391,9 +365,7 @@ export const userSlice = createSlice({
     // })
     builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
-      state.userUnseenNotifications = action.payload.notifications.filter(
-        (n) => n.viewed === false
-      );
+      state.userUnseenNotifications = action.payload.notifications.filter((n) => n.viewed === false);
       state.userNotifications = action.payload.notifications;
       state.currentUser = action.payload.user;
       state.userClassTypes = action.payload.classTypes;
@@ -417,15 +389,9 @@ export const userSlice = createSlice({
 
     builder.addCase(fetchAllUsersByAdmin.fulfilled, (state, action) => {
       state.allUserList = action.payload.users;
-      state.allPendingUserList = action.payload.users.filter(
-        (user) => user.isActive === PENDING
-      );
-      state.allRejectedUserList = action.payload.users.filter(
-        (user) => user.isActive === REJECTED
-      );
-      state.allApprovedUserList = action.payload.users.filter(
-        (user) => user.isActive === APPROVED
-      );
+      state.allPendingUserList = action.payload.users.filter((user) => user.isActive === PENDING);
+      state.allRejectedUserList = action.payload.users.filter((user) => user.isActive === REJECTED);
+      state.allApprovedUserList = action.payload.users.filter((user) => user.isActive === APPROVED);
     });
     builder.addCase(fetchAllUsersByAdmin.rejected, (state) => {
       state.allUserList = [];

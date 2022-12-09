@@ -24,12 +24,7 @@ const upload = require('../config/multer-config');
 /**
  * @step 1 - regestration process
  */
-router.post(
-  '/sendotp',
-  check('phone').notEmpty(),
-  check('cc').notEmpty(),
-  sendOTP,
-);
+router.post('/sendotp', check('phone').notEmpty(), check('cc').notEmpty(), sendOTP);
 
 /**
  * @step 1 - regestration process
@@ -40,33 +35,27 @@ router.put('/resendotp', check('phone').notEmpty(), resendOTP);
 /**
  * @step 2 - regestration process
  */
-router.put(
-  '/verifyotp',
-  check('otp').notEmpty(),
-  check('phone').notEmpty(),
-  verifyUser,
-);
+router.put('/verifyotp', check('otp').notEmpty(), check('phone').notEmpty(), verifyUser);
 
 /**
  * @step 3 - regestration process
  */
 router.put(
   '/register',
-  check('firstname').notEmpty(),
-  check('lastname').notEmpty(),
+  check('name').notEmpty(),
   check('phone').notEmpty(),
   check('email').isEmail().notEmpty(),
-  check('age').notEmpty(),
-  check('profession').notEmpty(),
+  // check('age').notEmpty(),
+  // check('profession').notEmpty(),
   check('institution').notEmpty(),
   // check('subjects').notEmpty(), // In update section
   check('experience').notEmpty(),
   check('location').notEmpty(),
-  check('password').notEmpty().isLength({ min: 6 }),
+  // check('password').notEmpty().isLength({ min: 6 }),
   // Relational
   // check('classTypeId').notEmpty(), // In update section
   // check('subjectId').notEmpty(), // In update section
-  registerUser,
+  registerUser
 );
 
 /**
@@ -76,18 +65,8 @@ router.put('/reject/:userId', ensureAdmin, rejectUser);
 router.put('/accept/:userId', ensureAdmin, acceptUser);
 
 router.put('/update/:id', ensureAuth, updateUser);
-router.put(
-  '/updateexam/:id',
-  ensureAuth,
-  check('examlist').isArray(),
-  updateExamUser
-);
-router.put(
-  '/updateimage/:id',
-  ensureAuth,
-  upload.single('image'),
-  updateImageUser
-);
+router.put('/updateexam/:id', ensureAuth, check('examlist').isArray(), updateExamUser);
+router.put('/updateimage/:id', ensureAuth, upload.single('image'), updateImageUser);
 
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);

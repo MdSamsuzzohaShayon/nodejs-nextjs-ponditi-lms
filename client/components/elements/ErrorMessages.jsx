@@ -8,7 +8,9 @@ function ErrorMessages() {
       <div className="alert alert-danger">
         <ul>
           {errorList.map((el, idx) => (
-            <li key={idx}>{el}</li>
+            <li key={idx} className="list-unstyled">
+              <img src="/icons/exclamination.svg" alt="" width="25px" /> {el}
+            </li>
           ))}
         </ul>
       </div>

@@ -25,15 +25,9 @@ const fetchClassTypes = async (args, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchAllClassTypes = createAsyncThunk(
-  'scheduledclass/getClassTypes',
-  fetchClassTypes
-);
+export const fetchAllClassTypes = createAsyncThunk('scheduledclass/getClassTypes', fetchClassTypes);
 
-export const fetchAllClassTypesSearch = createAsyncThunk(
-  'scheduledclass/getClassTypesSearch',
-  fetchClassTypes
-);
+export const fetchAllClassTypesSearch = createAsyncThunk('scheduledclass/getClassTypesSearch', fetchClassTypes);
 
 export const classtypeSlice = createSlice({
   name: 'classtype',
@@ -42,6 +36,7 @@ export const classtypeSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     classtypeList: [],
+    selectedClasstypeList: [],
     addClassType: initialAddClassType,
   },
   reducers: {
@@ -50,6 +45,12 @@ export const classtypeSlice = createSlice({
     },
     resetClasstypeList: (state, action) => {
       state.classtypeList = action.payload;
+    },
+    setSelectedClasstype: (state, action) => {
+      state.selectedClasstypeList = action.payload;
+    },
+    resetSelectedClasstype: (state) => {
+      state.selectedClasstypeList = [];
     },
     setAddClassType: (state, action) => {
       state.addClassType = { ...state.addClassType, ...action.payload };
@@ -71,11 +72,6 @@ export const classtypeSlice = createSlice({
   },
 });
 
-export const {
-  setClasstypeList,
-  resetClasstypeList,
-  setAddClassType,
-  resetAddClassType,
-} = classtypeSlice.actions;
+export const { setClasstypeList, resetClasstypeList, setAddClassType, resetAddClassType, setSelectedClasstype, resetSelectedClasstype } = classtypeSlice.actions;
 
 export default classtypeSlice.reducer;

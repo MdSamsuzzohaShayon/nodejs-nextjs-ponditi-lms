@@ -7,19 +7,18 @@ import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 
-export default function index() {
+export default function home() {
   let isMounted = true;
   const dispatch = useDispatch();
 
-  useEffect(()=> {
+  useEffect(() => {
+    window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([
-          dispatch(fetchAllClassTypesSearch()),
-          dispatch(fetchAllSubjectsSearch()),
-        ]);
+        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch())]);
       }
     })();
+    console.log("Working");
     isMounted = false;
   }, []);
 

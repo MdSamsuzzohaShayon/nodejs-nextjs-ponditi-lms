@@ -39,22 +39,10 @@ function Detail({ userDetail, update }) {
           <div className="row mx-0 mb-5">
             <div className="col-md-3">
               <div className="image-wrapper p-2 shadow mb-5 bg-body rounded">
-                <img
-                  src={
-                    userDetail.image
-                      ? `${BACKEND_URL}/${userDetail.image}`
-                      : '/img/default-img.jpg'
-                  }
-                  className="profile-img mb-2"
-                  alt=""
-                />
+                <img src={userDetail.image ? `${BACKEND_URL}/${userDetail.image}` : '/img/default-img.jpg'} className="profile-img mb-2" alt="" />
               </div>
               {update && userDetail.id === authUserInfo.id && (
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={(epse) => editPartToUpdateHandler(epse, 5)}
-                >
+                <button className="btn btn-primary" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 5)}>
                   Upload
                 </button>
               )}
@@ -62,9 +50,7 @@ function Detail({ userDetail, update }) {
             <div className="col-md-9">
               {userDetail.firstname && (
                 <div className="name-edit-profile-wrapper d-flex justify-content-between align-items-center">
-                  <h1 className="h1 text-uppercase">
-                    {`${userDetail.firstname} ${userDetail.lastname}`}
-                  </h1>
+                  <h1 className="h1 text-uppercase">{`${userDetail.firstname} ${userDetail.lastname}`}</h1>
 
                   {/* {authUserInfo.id && userDetail?.role === STUDENT && (
                     <button
@@ -89,19 +75,16 @@ function Detail({ userDetail, update }) {
                   <p>
                     {userDetail?.role && userDetail.isActive === PENDING && (
                       <div className="alert alert-danger">
-                        This profile is under survullence. If your informations
-                        assure that all informations is currect you will be
-                        verified and available in search result
+                        This profile is under survullence. If your informations assure that all informations is currect you will be verified and available in search
+                        result
                       </div>
                     )}
                   </p>
                 </>
               )}
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores
-                earum minus et ipsam suscipit in animi consectetur cupiditate
-                accusamus, corrupti, repellendus similique consequuntur eius
-                vero veritatis vel id tenetur
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores earum minus et ipsam suscipit in animi consectetur cupiditate accusamus, corrupti,
+                repellendus similique consequuntur eius vero veritatis vel id tenetur
               </p>
             </div>
           </div>
@@ -109,11 +92,7 @@ function Detail({ userDetail, update }) {
             {userDetail?.role === TEACHER && userDetail.experience && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
-                  <img
-                    src="/icons/experience.svg"
-                    className="img-fluid explain-icon"
-                    alt=""
-                  />
+                  <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
                 </div>
                 <div className="info">
                   <h2>{userDetail.experience} years</h2>
@@ -124,11 +103,7 @@ function Detail({ userDetail, update }) {
             {userDetail.degree && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
-                  <img
-                    src="/icons/experience.svg"
-                    className="img-fluid explain-icon"
-                    alt=""
-                  />
+                  <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
                 </div>
                 <div className="info">
                   <h2>
@@ -163,11 +138,7 @@ function Detail({ userDetail, update }) {
               <div className="heading d-flex justify-content-between row align-items-center my-3">
                 <h3 className="h5 w-fit">Preffered Subjects</h3>
                 {update && (
-                  <button
-                    className="btn btn-primary w-fit"
-                    type="button"
-                    onClick={(epse) => editPartToUpdateHandler(epse, 1)}
-                  >
+                  <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 1)}>
                     Edit
                   </button>
                 )}
@@ -208,11 +179,7 @@ function Detail({ userDetail, update }) {
             <div className="heading d-flex justify-content-between align-items-center row py-3">
               <h3 className="h5 w-fit">Personal Detail</h3>
               {update && (
-                <button
-                  className="btn btn-primary w-fit"
-                  type="button"
-                  onClick={(epse) => editPartToUpdateHandler(epse, 2)}
-                >
+                <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 2)}>
                   Edit
                 </button>
               )}
@@ -222,7 +189,7 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Name</div>
                 <div className="col-md-6">
-                  <p>{`${userDetail.firstname} ${userDetail.lastname}`}</p>
+                  <p>{userDetail.name}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
@@ -252,11 +219,7 @@ function Detail({ userDetail, update }) {
             <div className="heading d-flex justify-content-between align-items-center row py-3">
               <h3 className="h5 w-fit">Tution Detail</h3>
               {update && (
-                <button
-                  className="btn btn-primary w-fit"
-                  type="button"
-                  onClick={(epse) => editPartToUpdateHandler(epse, 3)}
-                >
+                <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 3)}>
                   Edit
                 </button>
               )}
@@ -274,22 +237,14 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Available Status</div>
                 <div className="col-md-6">
-                  <p>
-                    {userDetail?.isAvailable ? 'Available' : 'Not Available'}
-                  </p>
+                  <p>{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Tution Place</div>
                 <div className="col-md-6">
                   <p>
-                    {locationSelection(userDetail.tutionplace).map(
-                      (loc, locI) =>
-                        locI + 1 !==
-                        locationSelection(userDetail.tutionplace).length
-                          ? `${loc}, `
-                          : loc
-                    )}
+                    {locationSelection(userDetail.tutionplace).map((loc, locI) => (locI + 1 !== locationSelection(userDetail.tutionplace).length ? `${loc}, ` : loc))}
                   </p>
                 </div>
               </div>
@@ -303,11 +258,7 @@ function Detail({ userDetail, update }) {
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Educational Qualification</h3>
                 {update && (
-                  <button
-                    className="btn btn-primary w-fit"
-                    type="button"
-                    onClick={(epse) => editPartToUpdateHandler(epse, 4)}
-                  >
+                  <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 4)}>
                     Edit
                   </button>
                 )}
@@ -320,14 +271,10 @@ function Detail({ userDetail, update }) {
                       <div className="card-header">{uel.level}</div>
                       <div className="card-body">
                         <p className="card-text">Group: {uel?.group}</p>
-                        <p className="card-text">
-                          Institution: {uel?.institution}
-                        </p>
+                        <p className="card-text">Institution: {uel?.institution}</p>
                         <p className="card-text">Grade: {uel?.grade}</p>
                         <p className="card-text">CGPA: {uel?.cgpa}</p>
-                        <p className="card-text">
-                          Passing Year: {uel?.passing_year}
-                        </p>
+                        <p className="card-text">Passing Year: {uel?.passing_year}</p>
                       </div>
                     </div>
                   </div>

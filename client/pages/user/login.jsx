@@ -4,13 +4,10 @@
 // import cookieCutter from 'cookie-cutter';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import router from 'next/router';
+import Router from 'next/router';
+import Link from 'next/link';
 import axios from '../../config/axios';
-import {
-  setErrorList,
-  resetErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
+import { setErrorList, resetErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { setLoginInfo, resetLoginInfo } from '../../redux/reducers/userReducer';
 import Layout from '../../components/layouts/Layout';
 import ErrorMessages from '../../components/elements/ErrorMessages';
@@ -49,7 +46,7 @@ function login() {
         dispatch(resetLoginInfo());
         dispatch(resetErrorList());
         window.localStorage.setItem('user', JSON.stringify(response.data.user));
-        router.push('/user/dashboard');
+        Router.push('/user/dashboard');
       }
     } catch (error) {
       console.log(error);
@@ -106,14 +103,7 @@ function login() {
                 <div className="row mb-3 mx-0">
                   <div className="col-md-12">
                     <label htmlFor="password">Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password"
-                      id="password"
-                      defaultValue={loginInfo.password}
-                      onChange={inputChangeHandler}
-                    />
+                    <input type="password" className="form-control" name="password" id="password" defaultValue={loginInfo.password} onChange={inputChangeHandler} />
                   </div>
                 </div>
                 <div className="row mb-3 mx-0">
@@ -125,18 +115,12 @@ function login() {
                 </div>
                 <div className="row mb-3 mx-0">
                   <div className="col d-flex flex-column">
-                    <a
-                      href="#"
-                      className="text-decoration-underline text-capitalize text-dark"
-                    >
-                      Password forgotten?
-                    </a>
-                    <a
-                      href="#"
-                      className="text-decoration-underline text-capitalize text-dark"
-                    >
-                      Don&apos;t have an account?
-                    </a>
+                    <Link href="/user/passwordrecover">
+                      <a className="text-decoration-underline text-capitalize text-dark">Password forgotten?</a>
+                    </Link>
+                    <Link href="/user/register">
+                      <a className="text-decoration-underline text-capitalize text-dark">Don&apos;t have an account?</a>
+                    </Link>
                   </div>
                 </div>
               </form>

@@ -114,12 +114,32 @@ module.exports = {
           { transaction: t }
         ), 
         */
-       /*
+        /*
        queryInterface.addColumn(
           'User',
           'image',
           {
             type: Sequelize.DataTypes.STRING,
+          },
+          { transaction: t }
+        ),
+        */
+       /*
+        queryInterface.addColumn(
+          'User',
+          'name',
+          {
+            type: Sequelize.DataTypes.STRING,
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'User',
+          'running_study',
+          {
+            type: Sequelize.DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false,
           },
           { transaction: t }
         ),
@@ -144,6 +164,8 @@ module.exports = {
         // queryInterface.removeColumn('User', 'major', { transaction: t }),
         // queryInterface.removeColumn('User', 'cgpa', { transaction: t }),
         // queryInterface.removeColumn('ScheduledClass', 'processstart', { transaction: t }),
+        // queryInterface.removeColumn('User', 'firstname', { transaction: t }),
+        // queryInterface.removeColumn('User', 'lastname', { transaction: t }),
       ])
     ),
 };

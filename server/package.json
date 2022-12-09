@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "env NODE_ENV=development nodemon server.js",
-    "start": "env NODE_ENV=production node server.js"
+    "start": "env NODE_ENV=production node server.js",
+    "swagger-autogen": "node swagger.js"
   },
   "keywords": [
     "node",
@@ -37,8 +38,12 @@
     "mssql": "^9.0.1",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.2.10",
+    "nodemailer": "^6.8.0",
     "otp-generator": "^4.0.0",
     "sequelize": "^6.23.0",
+    "swagger-autogen": "^2.22.0",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.6.0",
     "tedious": "^15.1.0"
   }
 }

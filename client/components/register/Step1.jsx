@@ -14,26 +14,10 @@ function Step1({ inputChangeHandler, nextStepHandler, update }) {
       {update === false && (
         <div className="row mb-3 mx-0 text-center">
           <div className="buttons">
-            <button
-              type="button"
-              onClick={(e) => toggleRole(e, 'TEACHER')}
-              className={
-                userInfo.role === 'TEACHER'
-                  ? 'btn btn-primary'
-                  : 'btn btn-primary-outline'
-              }
-            >
+            <button type="button" onClick={(e) => toggleRole(e, 'TEACHER')} className={userInfo.role === 'TEACHER' ? 'btn btn-primary' : 'btn btn-primary-outline'}>
               Register as teacher
             </button>
-            <button
-              type="button"
-              className={
-                userInfo.role === 'STUDENT'
-                  ? 'btn btn-primary'
-                  : 'btn btn-primary-outline'
-              }
-              onClick={(e) => toggleRole(e, 'STUDENT')}
-            >
+            <button type="button" className={userInfo.role === 'STUDENT' ? 'btn btn-primary' : 'btn btn-primary-outline'} onClick={(e) => toggleRole(e, 'STUDENT')}>
               Register as student
             </button>
           </div>
@@ -124,11 +108,7 @@ function Step1({ inputChangeHandler, nextStepHandler, update }) {
             </div>
           </div>
           <div className="row mb-3 mx-0 d-flex w-full justify-content-end">
-            <button
-              className="btn btn-primary w-fit"
-              type="button"
-              onClick={nextStepHandler}
-            >
+            <button className="btn btn-primary w-fit" type="button" onClick={nextStepHandler}>
               Next
             </button>
           </div>

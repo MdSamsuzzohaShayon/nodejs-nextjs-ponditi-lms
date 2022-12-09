@@ -5,20 +5,15 @@ const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const db = require('../models');
 
-const {
-  roles,
-  scheduledClassStatus,
-  types,
-  notificationTypes,
-} = require('../config/keys');
+const { roles, scheduledClassStatus, types, notificationTypes } = require('../config/keys');
 
 const { STUDENT, TEACHER } = roles;
-const { PENDING, APPROVED, REJECTED, START_CLASS, PAYMENT_DUE, FINISH_CLASS } =
-  scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, START_CLASS, PAYMENT_DUE, FINISH_CLASS } = scheduledClassStatus;
 const { ONLINE, TL, SL } = types;
 const { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST } = notificationTypes;
 
 const { ScheduledClass, User, ClassType, Subject, Review, Notification } = db;
+
 
 const initiateScheduledClass = async (req, res) => {
   const errors = validationResult(req);
@@ -62,9 +57,7 @@ const initiateScheduledClass = async (req, res) => {
     } else if (findSender.role === TEACHER) {
       studentSender = false;
     } else {
-      return res
-        .status(406)
-        .json({ msg: 'Only student and teacher can send request' });
+      return res.status(406).json({ msg: 'Only student and teacher can send request' });
     }
     const findRecever = await User.findOne({
       where: { id: scObj.receverId },
@@ -102,9 +95,7 @@ const initiateScheduledClass = async (req, res) => {
     });
     // set class type
     if (!findClassType) {
-      return res
-        .status(406)
-        .json({ msg: 'There is no classtype with this ID' });
+      return res.status(406).json({ msg: 'There is no classtype with this ID' });
     }
     if (!findSubject) {
       return res.status(406).json({ msg: 'There is no Subject with this ID' });
@@ -147,18 +138,13 @@ const initiateScheduledClass = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+  return res.status(500).json({ msg: 'server error' });
 };
 
 const getAllScheduledClass = async (req, res) => {
   try {
     const allScheduledClass = await ScheduledClass.findAll({
-      include: [
-        { model: User, as: 'Sender' },
-        { model: User, as: 'Recever' },
-        { model: ClassType },
-        { model: Subject },
-        { model: Review },
-      ],
+      include: [{ model: User, as: 'Sender' }, { model: User, as: 'Recever' }, { model: ClassType }, { model: Subject }, { model: Review }],
     });
     return res.json(allScheduledClass);
   } catch (error) {
@@ -175,13 +161,7 @@ const getSingleScheduledClass = async (req, res) => {
   };
   try {
     const singleScheduledClass = await ScheduledClass.findOne({
-      include: [
-        { model: User, as: 'Sender' },
-        { model: User, as: 'Recever' },
-        { model: ClassType },
-        { model: Subject },
-        { model: Review },
-      ],
+      include: [{ model: User, as: 'Sender' }, { model: User, as: 'Recever' }, { model: ClassType }, { model: Subject }, { model: Review }],
       where,
     });
     if (singleScheduledClass === null) {
@@ -211,6 +191,7 @@ const getSingleScheduledClass = async (req, res) => {
   }
   return res.status(500).json({ msg: 'server error' });
 };
+
 /**
  * @Get all scheduled classes of a member
  */
@@ -235,12 +216,7 @@ const getAllScheduledClassofAMember = async (req, res) => {
     }
 
     const allScheduledClass = await ScheduledClass.findAll({
-      include: [
-        { model: User, as: 'Sender' },
-        { model: User, as: 'Recever' },
-        { model: ClassType },
-        { model: Subject },
-      ],
+      include: [{ model: User, as: 'Sender' }, { model: User, as: 'Recever' }, { model: ClassType }, { model: Subject }],
       where,
     });
     // console.log(allScheduledClass.length);
@@ -264,20 +240,17 @@ const getAllScheduledClassofAMember = async (req, res) => {
       };
       // console.log('-------------------------');
       if (newScheduledClass[i].Sender) {
-        const { password, otp, cc, ...newSender } =
-          newScheduledClass[i].Sender.dataValues;
+        const { password, otp, cc, ...newSender } = newScheduledClass[i].Sender.dataValues;
         singleScheduledClass.Sender = newSender;
         // console.log(newSender);
       }
       if (newScheduledClass[i].Recever) {
-        const { password, otp, cc, ...newRecever } =
-          newScheduledClass[i].Recever.dataValues;
+        const { password, otp, cc, ...newRecever } = newScheduledClass[i].Recever.dataValues;
         singleScheduledClass.Recever = newRecever;
         // console.log(newRecever);
       }
       if (newScheduledClass[i].ClassType) {
-        singleScheduledClass.ClassType =
-          newScheduledClass[i].ClassType.dataValues;
+        singleScheduledClass.ClassType = newScheduledClass[i].ClassType.dataValues;
         // console.log(newClassType);
       }
       if (newScheduledClass[i].Subject) {
@@ -327,9 +300,7 @@ const acceptRequestedScheduledClass = async (req, res) => {
     });
     // console.log(notification);
     await notification.setUser(findSender);
-    return res
-      .status(202)
-      .json({ msg: 'Request accepted successfully', updatedScheduledClass });
+    return res.status(202).json({ msg: 'Request accepted successfully', updatedScheduledClass });
   } catch (error) {
     console.log(error);
   }
@@ -363,9 +334,7 @@ const rejectRequestedScheduledClass = async (req, res) => {
     });
     // console.log(notification);
     await notification.setUser(findSender);
-    return res
-      .status(202)
-      .json({ msg: 'Request rejected successfully', updatedScheduledClass });
+    return res.status(202).json({ msg: 'Request rejected successfully', updatedScheduledClass });
   } catch (error) {
     console.log(error);
   }
@@ -379,9 +348,7 @@ const startScheduledClass = async (req, res) => {
       where: { id: req.params.scheduledclassId, status: APPROVED },
     });
     if (!findScheduledClass) {
-      return res
-        .status(406)
-        .json({ msg: 'No class found to reject or class may not approved' });
+      return res.status(406).json({ msg: 'No class found to reject or class may not approved' });
     }
 
     if (findScheduledClass.dataValues.receverId !== req.userId) {
@@ -393,14 +360,8 @@ const startScheduledClass = async (req, res) => {
     });
 
     await Promise.all([
-      User.update(
-        { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.senderId } }
-      ),
-      User.update(
-        { isActive: PAYMENT_DUE },
-        { where: { id: findScheduledClass.receverId } }
-      ),
+      User.update({ isActive: PAYMENT_DUE }, { where: { id: findScheduledClass.senderId } }),
+      User.update({ isActive: PAYMENT_DUE }, { where: { id: findScheduledClass.receverId } }),
     ]);
     const findSender = await User.findOne({
       where: { id: findScheduledClass.dataValues.senderId },
@@ -412,9 +373,7 @@ const startScheduledClass = async (req, res) => {
     });
     // console.log(notification);
     await notification.setUser(findSender);
-    return res
-      .status(202)
-      .json({ msg: 'Sarted class successfully', updatedScheduledClass });
+    return res.status(202).json({ msg: 'Sarted class successfully', updatedScheduledClass });
   } catch (error) {
     console.log(error);
   }
@@ -435,9 +394,7 @@ const updateScheduledClass = async (req, res) => {
     await findScheduledClass.update({
       meetlink: req.body.meetlink,
     });
-    return res
-      .status(202)
-      .json({ msg: 'Updated class successfully', meetlink: req.body.meetlink });
+    return res.status(202).json({ msg: 'Updated class successfully', meetlink: req.body.meetlink });
   } catch (error) {
     console.log(error);
   }
@@ -458,23 +415,15 @@ const completeRequestedScheduledClass = async (req, res) => {
     });
     // console.log(findScheduledClass);
     if (!findScheduledClass) {
-      return res
-        .status(406)
-        .json({ msg: 'No class found to reject or class may not started' });
+      return res.status(406).json({ msg: 'No class found to reject or class may not started' });
     }
     await Promise.all([
       findScheduledClass.update({
         status: FINISH_CLASS,
         terminatedat: new Date().toISOString(),
       }),
-      User.update(
-        { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.senderId } }
-      ),
-      User.update(
-        { isActive: APPROVED },
-        { where: { id: findScheduledClass.dataValues.receverId } }
-      ),
+      User.update({ isActive: APPROVED }, { where: { id: findScheduledClass.dataValues.senderId } }),
+      User.update({ isActive: APPROVED }, { where: { id: findScheduledClass.dataValues.receverId } }),
     ]);
 
     const findSender = await User.findOne({
@@ -495,6 +444,7 @@ const completeRequestedScheduledClass = async (req, res) => {
 
   return res.status(500).json({ msg: 'server error' });
 };
+
 module.exports = {
   initiateScheduledClass,
   getAllScheduledClass,

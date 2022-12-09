@@ -2,6 +2,8 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
+import { setSelectedClasstype } from '../../../redux/reducers/classtypeReducer';
+import { setSelectedSubject } from '../../../redux/reducers/subjectReducer';
 
 function ClassSubjectForm(props) {
   const [userClassTypeIds, setUserClassTypeIds] = useState([]);
@@ -28,25 +30,19 @@ function ClassSubjectForm(props) {
     if (cce.target.checked === true) {
       // add to subject list
       setUserClassTypeIds((prevState) => [...prevState, classTypeId]);
-      dispatch(
-        setUpdateUser({ ClassTypeId: [...userClassTypeIds, classTypeId] })
-      );
-      const newSubjectList = classtypeList.find(
-        (ctl) => ctl.id === classTypeId
-      ).Subjects;
+      dispatch(setUpdateUser({ ClassTypeId: [...userClassTypeIds, classTypeId] }));
+      dispatch(setSelectedClasstype([...userClassTypeIds, classTypeId]));
+      const newSubjectList = classtypeList.find((ctl) => ctl.id === classTypeId).Subjects;
       const newSubjectIds = newSubjectList.map((sub) => sub.id);
       const subjectIds = [...userSubjectIdList, ...newSubjectIds];
       setUserSubjectIdList(subjectIds);
     } else {
       // remove from subject list
-      const newClassTypeList = userClassTypeIds.filter(
-        (ucid) => ucid !== classTypeId
-      );
+      const newClassTypeList = userClassTypeIds.filter((ucid) => ucid !== classTypeId);
       setUserClassTypeIds(newClassTypeList);
       dispatch(setUpdateUser({ ClassTypeId: newClassTypeList }));
-      const newSubjectList = classtypeList.find(
-        (ctl) => ctl.id === classTypeId
-      ).Subjects;
+      dispatch(setSelectedClasstype(newClassTypeList));
+      const newSubjectList = classtypeList.find((ctl) => ctl.id === classTypeId).Subjects;
       const newSubjectIds = newSubjectList.map((sub) => sub.id);
       const updatedSubjectIds = [];
       for (let i = 0; i < userSubjectIdList.length; i += 1) {
@@ -65,13 +61,13 @@ function ClassSubjectForm(props) {
       // add to subject list
       setUserSubjectIds((prevState) => [...prevState, subjectId]);
       dispatch(setUpdateUser({ SubjectId: [...userSubjectIds, subjectId] }));
+      dispatch(setSelectedSubject([...userSubjectIds, subjectId]));
     } else {
       // remove from subject list
-      const newSubjectList = userSubjectIds.filter(
-        (ucid) => ucid !== subjectId
-      );
+      const newSubjectList = userSubjectIds.filter((ucid) => ucid !== subjectId);
       setUserSubjectIds(newSubjectList);
       dispatch(setUpdateUser({ SubjectId: newSubjectList }));
+      dispatch(setSelectedSubject(newSubjectList));
     }
   };
 
@@ -100,10 +96,7 @@ function ClassSubjectForm(props) {
       </div>
       <div className="row mx-0 mb-3">
         {classtypeList.map((ctl, idx) => (
-          <div
-            className="col-md-3 d-flex justify-content-start align-items-center"
-            key={idx}
-          >
+          <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
             <label htmlFor={ctl.id}>{ctl.name}</label>
             <input
               name={ctl.id}
@@ -122,10 +115,7 @@ function ClassSubjectForm(props) {
       </div>
       <div className="row mx-0 mb-3">
         {vlsiableSubjectList().map((sub, idx) => (
-          <div
-            className="col-md-3 d-flex justify-content-start align-items-center"
-            key={idx}
-          >
+          <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
             <label htmlFor={sub.id}>{sub.name}</label>
             <input
               name={sub.id}
