@@ -124,10 +124,9 @@
 
  - User should not be able to register with same phone twice
  - Confused - 16
- - Fixing menu
+ - Fixing menu ✅
  - phone change cc - Phone country code ✅
- - teacher type
- - arabic, bangla, english in the search
+ - teacher type - arabic, bangla, english in the search
  - send id and password ✅
  - We should keep 2 step for regestration  ✅
  - No age, profesion, cgpa  ✅

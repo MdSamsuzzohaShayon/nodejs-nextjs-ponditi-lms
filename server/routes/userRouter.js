@@ -17,12 +17,22 @@ const {
   seedUsers,
   updateExamUser,
   updateImageUser,
+  forgetPassword,
+  resetPassword,
 } = require('../controllers/user.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
 const upload = require('../config/multer-config');
 
 /**
- * @step 1 - regestration process
+ * @openapi
+ * /api/user/sendotp:
+ *   get:
+ *     description: Official documentation of ponditi API
+ *     responses:
+ *       200:
+ *         description: Just for testing perpuse that API is working or not
+ *       406:
+ *         description: Not acceptable
  */
 router.post('/sendotp', check('phone').notEmpty(), check('cc').notEmpty(), sendOTP);
 
@@ -70,6 +80,8 @@ router.put('/updateimage/:id', ensureAuth, upload.single('image'), updateImageUs
 
 router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);
+router.post('/forgetpassword', forgetPassword);
+router.put('/resetpassword', check('otp').notEmpty(), check('password').notEmpty().isLength({ min: 6 }), resetPassword);
 
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);

@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
@@ -30,6 +33,7 @@ function Header() {
   const [dashboardUrl, setDashboardUrl] = useState('/initial');
   const [showNotificationBar, setShowNotificationBar] = useState(false);
   const [notificationOffset, setNotificationOffset] = useState(38);
+  const [expandMenu, setExpandMenu] = useState(false);
   const notificationMenuItem = useRef(null);
 
   // () => {
@@ -133,12 +137,121 @@ function Header() {
 
   return (
     <>
-      {/* Desktop Menu Start  */}
+      {/* Menu Start  */}
       <div className="Header bg-danger text-white p-0 m-0">
         {isBreakpoint ? (
-          <div>Full Menu</div>
+          <div className="d-md-none container">
+            {/* Mobile menu start  */}
+            <div className="w-full d-flex justify-content-between">
+              <img src="/logo.png" className="img-logo" alt="" />
+              {expandMenu ? (
+                <img src="/icons/close-contradicts.svg" alt="" onClick={(e) => setExpandMenu(false)} />
+              ) : (
+                <img src="/icons/menu-contradict.svg" alt="" onClick={(e) => setExpandMenu(true)} />
+              )}
+            </div>
+            {/* Expanded content start  */}
+            {expandMenu && (
+              <>
+                <div className="d-flex align-items-start w-full h-full flex-column flex-md-row">
+                  {menuItemList.map((mil, milIdx) => {
+                    if (milIdx === menuItemList.length - 1) {
+                      return (
+                        <div key={mil.id} className="d-flex flex-column justify-content-start">
+                          <Link href={mil.link}>{mil.name}</Link>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={mil.id} className="d-flex flex-column justify-content-start">
+                        <Link href={mil.link}>{mil.name}</Link>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="auth py-md-0 py-2">
+                  {authenticatedUser ? (
+                    <ul className="list-unstyled d-flex justify-content-start align-items-center flex-column">
+                      {authUserInfo.role === ADMIN && (
+                        <li>
+                          <Link href="/admin">Dashboard</Link>
+                        </li>
+                      )}
+                      {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
+                        <>
+                          <li className="text-lowercase">
+                            <Link href={dashboardUrl}>{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
+                          </li>
+                          <li className="d-flex">
+                            <div className="p-1">
+                              <Link href="/user/requesthistory">Request history</Link>
+                            </div>
+                            {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                          </li>
+                          <li className="d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
+                            <div className="p-1">
+                              {userUnseenNotifications.length > 0 ? (
+                                <img src="/icons/notification-dot.svg" alt="notification" height={25} />
+                              ) : (
+                                <img height={25} src="/icons/notification.svg" alt="notification" />
+                              )}
+                            </div>
+                            {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                          </li>
+                        </>
+                      ) : null}
+                      <li className="">
+                        <button className="btn btn-primary small-btn mx-2" type="button" onClick={logoutHandler}>
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  ) : (
+                    <div className="d-flex justify-content-start align-items-start flex-column">
+                      <Link href="/user/login" className="btn btn-outline-primary small-btn">
+                        Login
+                      </Link>
+                      <button className="btn btn-primary small-btn" type="button">
+                        <Link href="/user/register">Register</Link>
+                      </button>
+                    </div>
+                  )}
+
+                  <div className={showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`}>
+                    <div className="card-body">
+                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
+                        <h5 className="card-title text-dark">Notifications</h5>
+                        <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
+                      </div>
+                      <ul className="list-group">
+                        {userNotifications.length > 0 ? (
+                          userNotifications.map((un, unI) => (
+                            <li
+                              className={un.viewed ? 'list-group-item' : 'list-group-item bg-secondary'}
+                              key={unI}
+                              onClick={(lre) => linkRedirectHandler(lre, un)}
+                              role="button"
+                              aria-hidden="true"
+                            >
+                              {un.comment}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="list-group-item">No notification found</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Expanded content end  */}
+            {/* Mobile menu end  */}
+          </div>
         ) : (
           <>
+            {/* Desktop menu start  */}
             <div className="row m-0 d-flex flex-column flex-md-row">
               <div className="logo-column p-0 text-center">
                 <img src="/logo.png" className="img-logo" alt="" />
@@ -256,6 +369,7 @@ function Header() {
               </div>
             </div>
             <div className="border-of-header w-full bg-danger-deep" />
+            {/* Desktop menu end  */}
           </>
         )}
 
@@ -271,7 +385,7 @@ function Header() {
           }
         `}</style>
       </div>
-      {/* Desktop Menu Ends  */}
+      {/* Menu Ends  */}
     </>
   );
 }

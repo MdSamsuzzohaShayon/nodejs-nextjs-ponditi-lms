@@ -86,7 +86,7 @@ function login() {
               <h1 className="login">Login</h1>
               <ErrorMessages />
               <form onSubmit={loginHandler}>
-                <div className="row mb-3 mx-0">
+                <div className="row mb-3">
                   <div className="col-md-12">
                     <label htmlFor="phoneoremail">Phone or Email</label>
                     <input
@@ -100,20 +100,20 @@ function login() {
                   </div>
                 </div>
 
-                <div className="row mb-3 mx-0">
+                <div className="row mb-3">
                   <div className="col-md-12">
                     <label htmlFor="password">Password</label>
                     <input type="password" className="form-control" name="password" id="password" defaultValue={loginInfo.password} onChange={inputChangeHandler} />
                   </div>
                 </div>
-                <div className="row mb-3 mx-0">
+                <div className="row mb-3">
                   <div className="col">
                     <button type="submit" className="btn btn-primary w-fit">
                       Login
                     </button>
                   </div>
                 </div>
-                <div className="row mb-3 mx-0">
+                <div className="row mb-3">
                   <div className="col d-flex flex-column">
                     <Link href="/user/passwordrecover">
                       <a className="text-decoration-underline text-capitalize text-dark">Password forgotten?</a>

@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { adminSidebarList, scheduledclassStatus } from '../../config/keys';
 
-const { CLASS_TYPE, SUBJECT, USERS} = adminSidebarList;
-const { APPROVED, PENDING, REJECTED, ANY} = scheduledclassStatus;
+const { CLASS_TYPE, SUBJECT, USERS } = adminSidebarList;
+const { APPROVED, PENDING, REJECTED, ANY } = scheduledclassStatus;
 
 const initialLoginAdmin = {
   emailorpass: '',
@@ -50,7 +50,7 @@ const initialAdminUserTabElement = [
     name: PENDING,
     text: 'Pending User',
   },
-]
+];
 
 export const adminSlice = createSlice({
   name: 'admin',
@@ -60,7 +60,7 @@ export const adminSlice = createSlice({
      */
     adminSidebarElements: initialAdminSidebarElements,
     selectedContent: CLASS_TYPE,
-    adminUserTabElement : initialAdminUserTabElement,
+    adminUserTabElement: initialAdminUserTabElement,
     selectedTabElement: ANY,
     /**
      * @dynamic or changable elements of the website
@@ -68,7 +68,7 @@ export const adminSlice = createSlice({
     loginAdmin: initialLoginAdmin,
   },
   reducers: {
-    setSelectedTabElement: (state, action)=>{
+    setSelectedTabElement: (state, action) => {
       state.selectedTabElement = action.payload;
     },
     setLoginAdmin: (state, action) => {
@@ -83,11 +83,6 @@ export const adminSlice = createSlice({
   },
 });
 
-export const {
-  setSelectedTabElement,
-  setLoginAdmin,
-  resetAdmin,
-  setSelectedContent,
-} = adminSlice.actions;
+export const { setSelectedTabElement, setLoginAdmin, resetAdmin, setSelectedContent } = adminSlice.actions;
 
 export default adminSlice.reducer;

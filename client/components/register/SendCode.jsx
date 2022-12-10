@@ -78,15 +78,16 @@ function SendCode() {
   };
 
   const phnNumInputErr = (phnNum) => {
+    const commonCls = 'fs-6 fw-light text-danger';
     if (phnNum.length !== 11) {
       validationPassed = false;
       // console.log(validationPassed, 'phn num len err - ', render);
-      return <p className={noValidate === false ? 'text-danger' : 'text-danger d-none'}>Number must be 11 charecter long</p>;
+      return <p className={noValidate === false ? commonCls : `${commonCls} d-none`}>Number must be 11 charecter long</p>;
     }
     if (phnNum[0] !== '0') {
       validationPassed = false;
       // console.log(validationPassed, 'phn num cc err - ', render);
-      return <p className={noValidate === false ? 'text-danger' : 'text-danger d-none'}>Number must start with 0</p>;
+      return <p className={noValidate === false ? commonCls : `${commonCls} d-none`}>Number must start with 0</p>;
     }
     // console.log(validationPassed, 'phn num no err - ', render);
     // validationPassed = true;

@@ -90,6 +90,8 @@ const initialLoginInfo = {
   password: '',
 };
 
+const initialResetPassReq = { emailorpassword: '', otp: '', password: '', password2: '' };
+
 const initialSendOTP = {
   phone: '',
   cc: '88',
@@ -253,6 +255,8 @@ export const userSlice = createSlice({
 
     userFormsType: SEND_CODE,
     loginInfo: initialLoginInfo,
+    resetPassReq: initialResetPassReq,
+    resetPassStep: 1,
 
     sendOTP: initialSendOTP,
     hasPhone: false,
@@ -298,7 +302,15 @@ export const userSlice = createSlice({
     setLoginInfo: (state, action) => {
       state.loginInfo = { ...state.loginInfo, ...action.payload };
     },
-
+    setChangeResetPassReq: (state, action) =>{
+      state.resetPassReq = { ...state.resetPassReq, ...action.payload };
+    },
+    resetChangeResetPassReq: (state) =>{
+      state.resetPassReq = initialResetPassReq;
+    },
+    setResetPassStep: (state, action)=>{
+      state.resetPassStep = action.payload;
+    },
     setVerifyCode: (state, action) => {
       state.verifyCode = { ...state.verifyCode, ...action.payload };
     },
@@ -423,6 +435,9 @@ export const {
   resetUpdateUser,
   setUpdateUserExam,
   resetUpdateUserExam,
+  setChangeResetPassReq,
+  resetChangeResetPassReq,
+  setResetPassStep,
 } = userSlice.actions;
 
 export default userSlice.reducer;

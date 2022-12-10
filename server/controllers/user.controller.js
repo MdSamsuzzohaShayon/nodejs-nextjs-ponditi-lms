@@ -17,7 +17,11 @@ const { User, ClassType, Subject, Notification, Education } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 
-// Initialize
+/**
+ * @param {type} req phone          raw phone number without any country code
+ * @param {type} req cc             country code without plus
+ * @returns response 201            If the number you is correct a verification OTP code will be sent there
+ */
 const sendOTP = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -85,6 +89,12 @@ const sendOTP = async (req, res) => {
   return res.status(500).json({ msg: 'server error' });
 };
 
+/**
+ *
+ * @param {type} req phone          raw phone number without any country code
+ * @param {type} req otp            Validate otp
+ * @returns response 200            Validated OTP successfully
+ */
 const verifyUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -323,6 +333,102 @@ const logout = async (req, res) => {
   // }
   res.cookie('token', '', options); // Remove cookie
   return res.status(200).json({ msg: 'Logout success' });
+};
+
+/**
+ *
+ * @param {type} req phone          raw phone number without any country code
+ * @returns response 200            If the number you is correct a verification OTP code will be sent there
+ */
+const forgetPassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+
+  try {
+    let userExist = null;
+    if (req.body.email) {
+      userExist = await User.findOne({ where: { email: req.body.email } });
+    } else if (req.body.phone) {
+      userExist = await User.findOne({ where: { phone: req.body.phone } });
+    } else {
+      return res.status(406).json({ msg: 'Email and phone both can not be empty' });
+    }
+
+    if (!userExist) {
+      return res.status(406).json({ msg: 'User is not registered yet with this phone number' });
+    }
+
+    if (userExist.dataValues.isActive !== APPROVED && userExist.dataValues.isVerified !== true) {
+      return res.status(406).json({ msg: 'User is not registered yet with this phone number' });
+    }
+
+    const phoneWithSufix = `+${userExist.dataValues.cc}${userExist.dataValues.phone}`;
+
+    const otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const msg = await sendSMS(phoneWithSufix, `Your reset password OTP code is: ${otp}`);
+    console.log({ phoneWithSufix, phone: userExist.dataValues.phone, otp, msg });
+    // console.log(msg);
+    if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
+    // update code from database
+    await User.update({ otp }, { where: { id: userExist.dataValues.id } });
+
+    return res.status(201).json({ msg: 'If the number you is correct a verification OTP code will be sent there' });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'server error' });
+};
+
+/**
+ *
+ * @param {type} req phone          raw phone number without any country code
+ * @param {type} req otp            A new otp will be needed which was sended by /user/forgetpassword request
+ * @param {type} req password       password must be equal or more than 6 charecter long
+ * @returns response 200            If the number you is correct a verification OTP code will be sent there
+ */
+const resetPassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+
+  let userExist = null;
+  if (req.body.email) {
+    userExist = await User.findOne({ where: { email: req.body.email } });
+  } else if (req.body.phone) {
+    userExist = await User.findOne({ where: { phone: req.body.phone } });
+  } else {
+    return res.status(406).json({ msg: 'Email and phone both can not be empty' });
+  }
+
+  if (!userExist) {
+    return res.status(406).json({ msg: 'User is not registered yet with this phone number' });
+  }
+
+  if (userExist.dataValues.isActive !== APPROVED && userExist.dataValues.isVerified !== true) {
+    return res.status(406).json({ msg: 'User is not registered yet with this phone number' });
+  }
+
+  if (userExist.dataValues.otp !== req.body.otp) {
+    return res.status(406).json({ msg: 'Invalid OTP' });
+  }
+
+  const updateObj = {};
+  updateObj.otp = null;
+  updateObj.password = await bcrypt.hash(req.body.password, 10);
+
+  await User.update(updateObj, { where: { id: userExist.dataValues.id } }); // isActive
+
+  // send message
+
+  return res.status(200).json({ msg: 'Your password has been updated successfully' });
 };
 
 const resendOTP = async (req, res) => {
@@ -788,6 +894,8 @@ module.exports = {
   updateExamUser,
   updateImageUser,
   logout,
+  forgetPassword,
+  resetPassword,
   notificationSeen,
   seedUsers,
 };
