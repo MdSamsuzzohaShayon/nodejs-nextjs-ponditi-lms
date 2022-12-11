@@ -52,15 +52,16 @@ router.put('/verifyotp', check('otp').notEmpty(), check('phone').notEmpty(), ver
  */
 router.put(
   '/register',
-  check('name').notEmpty(),
-  check('phone').notEmpty(),
+  check('name').notEmpty().isString(),
+  check('phone').notEmpty().isString(),
   check('email').isEmail().notEmpty(),
   // check('age').notEmpty(),
   // check('profession').notEmpty(),
-  check('institution').notEmpty(),
+  check('institution').notEmpty().isString(),
   // check('subjects').notEmpty(), // In update section
   check('experience').notEmpty(),
-  check('location').notEmpty(),
+  check('location').notEmpty().isString(),
+  check('tuitionmedium').notEmpty().isArray(),
   // check('password').notEmpty().isLength({ min: 6 }),
   // Relational
   // check('classTypeId').notEmpty(), // In update section

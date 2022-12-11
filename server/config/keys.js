@@ -6,6 +6,11 @@ module.exports = {
     TEACHER: 'TEACHER',
     STUDENT: 'STUDENT',
   },
+  tuitionmedums: {
+    BANGLA: 'BANGLA',
+    ENGLISH: 'ENGLISH',
+    ARABIC: 'ARABIC',
+  },
   types: {
     ANY: 'ANY',
     TL: 'TL',

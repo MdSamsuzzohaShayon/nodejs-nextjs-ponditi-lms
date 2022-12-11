@@ -15,7 +15,10 @@ const cookieOptions = require('../config/cookie-config');
 // eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
+const {
+ PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
+} = keys.scheduledClassStatus;
+const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 
 /**
  * @param {type} req phone          raw phone number without any country code
@@ -45,9 +48,14 @@ const sendOTP = async (req, res) => {
       specialChars: false,
     });
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log({ otp });
+    }
+
     const findByPhone = await User.findOne({
       where: { phone },
     });
+    // console.log({otp});
     // console.log(findByPhone);
     if (findByPhone) {
       if (findByPhone.dataValues.isActive !== REQUEST_REGISTER) {
@@ -115,7 +123,6 @@ const verifyUser = async (req, res) => {
   if (findByPhone.dataValues.isVerified === true) {
     return res.status(200).json({ msg: 'Validated OTP successfully' });
   }
-
   if (findByPhone.dataValues.otp !== req.body.otp) {
     return res.status(406).json({ msg: 'Invalid OTP' });
   }
@@ -131,9 +138,9 @@ const registerUser = async (req, res) => {
   }
 
   const userObj = { ...req.body };
-  if (userObj.isActive) {
-    return res.status(406).json({ msg: 'You can not change your active status' });
-  }
+  // if (userObj.isActive) {
+  //   return res.status(406).json({ msg: 'You can not change your active status' });
+  // }
   if (userObj.role === TEACHER) {
     userObj.role = TEACHER;
   } else {
@@ -201,6 +208,26 @@ const registerUser = async (req, res) => {
     }
     delete userObj.SubjectId;
     delete userObj.ClassTypeId;
+
+    let newTuitionMedium = '';
+    let i = 0;
+    while (i < userObj.tuitionmedium.length) {
+      let tmNew = userObj.tuitionmedium[i].toUpperCase();
+      if (tmNew !== BANGLA || tmNew !== ENGLISH || tmNew !== ARABIC) {
+        tmNew = BANGLA;
+      }
+      let sep = '';
+      if (i + 1 !== userObj.tuitionmedium.length) sep = '_';
+      newTuitionMedium = `${newTuitionMedium + tmNew}${sep}`;
+      i += 1;
+    }
+    userObj.tuitionmedium = newTuitionMedium;
+
+    if (process.env.NODE_ENV === 'development') {
+      const newUserObj = { ...userObj };
+      newUserObj.password = genPassword;
+      console.log(newUserObj);
+    }
 
     await User.update(userObj, {
       where: { phone: req.body.phone },
@@ -288,7 +315,11 @@ const login = async (req, res) => {
 
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
-
+    // console.log(userExist);
+    if (userExist.dataValues.isActive === REQUEST_REGISTER) {
+      await User.destroy({ where: { id: userExist.dataValues.id }, force: true });
+      return res.status(406).json({ msg: "User doesn't exist" });
+    }
     if (userExist.dataValues.role !== TEACHER && userExist.dataValues.role !== STUDENT) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
     }
@@ -373,7 +404,14 @@ const forgetPassword = async (req, res) => {
     });
 
     const msg = await sendSMS(phoneWithSufix, `Your reset password OTP code is: ${otp}`);
-    console.log({ phoneWithSufix, phone: userExist.dataValues.phone, otp, msg });
+    if (process.env.NODE_ENV === 'development') {
+      console.log({
+        phoneWithSufix,
+        phone: userExist.dataValues.phone,
+        otp,
+        msg,
+      });
+    }
     // console.log(msg);
     if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
     // update code from database
@@ -518,8 +556,11 @@ const getSingleUser = async (req, res) => {
     }
     const classTypes = await userExist.getClassTypes();
     const subjects = await userExist.getSubjects();
+    // console.log('Find subjects working============================================================================');
     const notifications = await userExist.getNotifications();
+    // console.log('Find notifications working============================================================================');
     const educations = await userExist.getEducation();
+    // console.log('Find educations working============================================================================');
     // console.log(notifications);
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);

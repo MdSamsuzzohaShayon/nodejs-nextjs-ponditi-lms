@@ -10,9 +10,7 @@ const sequelize = require('sequelize');
 const { Op } = sequelize;
 const db = require('../models');
 
-const {
- User, Subject, ClassType, Review 
-} = db;
+const { User, Subject, ClassType, Review } = db;
 const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
@@ -37,11 +35,7 @@ const searchTeacher = async (req, res, next) => {
      * @search by location, role, classtypes, subjects
      * Later we need to use google place api
      */
-    if (
-      searchParams.location &&
-      searchParams.location !== ANY &&
-      searchParams.location !== ''
-    ) {
+    if (searchParams.location && searchParams.location !== ANY && searchParams.location !== '') {
       // console.log({location: searchParams.location});
       // [Op.notILike]
       /*
@@ -51,10 +45,7 @@ const searchTeacher = async (req, res, next) => {
         `%${searchParams.location.toLowerCase()}%`,
       );
       */
-      where[Op.or] = [
-        { district: searchParams.location },
-        { presentaddress: { [Op.substring]: searchParams.location } },
-      ];
+      where[Op.or] = [{ district: searchParams.location }, { presentaddress: { [Op.substring]: searchParams.location } }];
       // where.presentaddress = {[Op.substring]: searchParams.location};
       // making case insensative
     }
@@ -76,22 +67,17 @@ const searchTeacher = async (req, res, next) => {
     }
     */
     // Search by location
-    if (
-      searchParams.tutionplace &&
-      searchParams.tutionplace !== ANY &&
-      searchParams.tutionplace !== '' &&
-      searchParams.tutionplace !== '0'
-    ) {
+    if (searchParams.tutionplace && searchParams.tutionplace !== ANY && searchParams.tutionplace !== '' && searchParams.tutionplace !== '0') {
       where.tutionplace = { [Op.like]: `%${searchParams.tutionplace}%` };
     }
 
+    // Search by medium
+    if (searchParams.tuitionmedium && searchParams.tuitionmedium !== ANY && searchParams.tuitionmedium !== '' && searchParams.tuitionmedium !== '0') {
+      where.tuitionmedium = { [Op.like]: `%${searchParams.tuitionmedium}%` };
+    }
+
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);
-    if (
-      searchParams.SubjectId &&
-      searchParams.SubjectId !== ANY &&
-      searchParams.SubjectId !== '' &&
-      searchParams.SubjectId !== '0'
-    ) {
+    if (searchParams.SubjectId && searchParams.SubjectId !== ANY && searchParams.SubjectId !== '' && searchParams.SubjectId !== '0') {
       // console.log({ SubjectId: searchParams.SubjectId });
       // && searchParams.SubjectId[0] !== 0
       const newSIArrInt = [];
@@ -112,12 +98,7 @@ const searchTeacher = async (req, res, next) => {
       where = { ...where, '$Subjects.id$': newSIArrInt };
     }
 
-    if (
-      searchParams.ClassTypeId &&
-      searchParams.ClassTypeId !== ANY &&
-      searchParams.ClassTypeId !== '' &&
-      searchParams.ClassTypeId !== '0'
-    ) {
+    if (searchParams.ClassTypeId && searchParams.ClassTypeId !== ANY && searchParams.ClassTypeId !== '' && searchParams.ClassTypeId !== '0') {
       // console.log({ ClassTypeId: searchParams.ClassTypeId });
       // && searchParams.ClassTypeId[0] !== 0
       const newCTIArrInt = [];
@@ -160,6 +141,7 @@ const searchTeacher = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
+  return res.status(500).json({ msg: 'Internal server error' });
 };
 
 module.exports = { searchTeacher };

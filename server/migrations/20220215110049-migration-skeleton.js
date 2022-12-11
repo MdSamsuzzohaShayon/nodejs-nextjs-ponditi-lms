@@ -21,8 +21,7 @@ module.exports = {
     );
     */
 
-    return queryInterface.sequelize.transaction((t) =>
-      Promise.all([
+    return queryInterface.sequelize.transaction((t) => Promise.all([
         /*
         queryInterface.addColumn(
           'Review',
@@ -84,7 +83,7 @@ module.exports = {
             type: new Sequelize.DataTypes.STRING(255)
           },
           { transaction: t }
-        ), 
+        ),
         queryInterface.addColumn(
           'User',
           'group',
@@ -92,7 +91,7 @@ module.exports = {
             type: new Sequelize.DataTypes.STRING(100)
           },
           { transaction: t }
-        ),   
+        ),
         */
         /*
         queryInterface.addColumn(
@@ -102,7 +101,7 @@ module.exports = {
             type: new Sequelize.DataTypes.STRING(80)
           },
           { transaction: t }
-        ), 
+        ),
         */
         /*
         queryInterface.addColumn(
@@ -112,7 +111,7 @@ module.exports = {
             type: new Sequelize.DataTypes.DATE(),
           },
           { transaction: t }
-        ), 
+        ),
         */
         /*
        queryInterface.addColumn(
@@ -124,7 +123,7 @@ module.exports = {
           { transaction: t }
         ),
         */
-       /*
+        /*
         queryInterface.addColumn(
           'User',
           'name',
@@ -144,13 +143,21 @@ module.exports = {
           { transaction: t }
         ),
         */
-      ])
+       /*
+        queryInterface.addColumn(
+          'User',
+          'tuitionmedium',
+          {
+            type: Sequelize.DataTypes.STRING(70),
+          defaultValue: 'BANGLA',
+          },
+          { transaction: t },
+        ),
+      ]),
     );
   },
 
-  down: (queryInterface, Sequelize) =>
-    queryInterface.sequelize.transaction((t) =>
-      Promise.all([
+  down: (queryInterface, Sequelize) => queryInterface.sequelize.transaction((t) => Promise.all([
         /**
          * Add reverting commands here.
          *
@@ -166,6 +173,6 @@ module.exports = {
         // queryInterface.removeColumn('ScheduledClass', 'processstart', { transaction: t }),
         // queryInterface.removeColumn('User', 'firstname', { transaction: t }),
         // queryInterface.removeColumn('User', 'lastname', { transaction: t }),
-      ])
+      ]),
     ),
 };

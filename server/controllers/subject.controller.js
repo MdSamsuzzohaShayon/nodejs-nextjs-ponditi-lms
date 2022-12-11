@@ -20,9 +20,7 @@ const addSubject = async (req, res) => {
     const newName = name.toUpperCase();
     const subjectExist = await Subject.findOne({ where: { name: newName } });
     if (subjectExist) {
-      return res
-        .status(406)
-        .json({ msg: 'this subject already exist in our database' });
+      return res.status(406).json({ msg: 'this subject already exist in our database' });
     }
 
     const newSubject = await Subject.create({ name: newName });
@@ -38,9 +36,7 @@ const addSubject = async (req, res) => {
     // await Promise.all([findClassType, newSubject]);
     // console.log(newSubject);
 
-    return res
-      .status(201)
-      .json({ msg: 'Subject created successfully', subject: newSubject });
+    return res.status(201).json({ msg: 'Subject created successfully', subject: newSubject });
   } catch (error) {
     console.log(error);
   }
