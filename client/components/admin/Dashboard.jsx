@@ -8,15 +8,16 @@ import SubjectContent from './SubjectContent';
 import UserContent from './UserContent';
 import { adminSidebarList } from '../../config/keys';
 import { setSelectedContent } from '../../redux/reducers/adminReducer';
+import useMediaQuery from '../../hooks/useMediaQuery';
+import TuitionmContent from './TuitionmContent';
 
-const { CLASS_TYPE, SUBJECT, USERS} = adminSidebarList;
+const { CLASS_TYPE, SUBJECT, USERS, MEDIUM } = adminSidebarList;
 
 function Dashboard() {
-  let isMounted = false;
+  const isMounted = false;
   const dispatch = useDispatch();
-  const adminSidebarElements = useSelector(
-    (state) => state.admin.adminSidebarElements
-  );
+  const isMobileBr = useMediaQuery(768);
+  const adminSidebarElements = useSelector((state) => state.admin.adminSidebarElements);
   const selectedContent = useSelector((state) => state.admin.selectedContent);
 
   const selectSidebarElement = (ssee, selectedElement) => {
@@ -24,9 +25,10 @@ function Dashboard() {
     dispatch(setSelectedContent(selectedElement));
   };
 
-
   const showContent = () => {
     switch (selectedContent) {
+      case MEDIUM:
+        return <TuitionmContent />;
       case CLASS_TYPE:
         return <ClassTypeContent />;
       case SUBJECT:
@@ -39,25 +41,13 @@ function Dashboard() {
     }
   };
 
-
   return (
-    <div className="Dashboard d-flex">
+    <div className="Dashboard d-flex flex-column flex-md-row">
       <div className="sidebar bg-danger text-secondary">
-        <ul className="d-flex flex-column list-unstyled">
+        <ul className="d-flex list-unstyled flex-row flex-md-column">
           {adminSidebarElements.map((ase) => (
-            <li
-              className={
-                selectedContent === ase.name
-                  ? 'px-4 py-2 menu-item bg-primary'
-                  : 'px-4 py-2 menu-item '
-              }
-              key={ase.id}
-            >
-              <a
-                href="#"
-                role="button"
-                onClick={(e) => selectSidebarElement(e, ase.name)}
-              >
+            <li className={selectedContent === ase.name ? 'px-4 py-2 menu-item bg-primary' : 'px-4 py-2 menu-item '} key={ase.id}>
+              <a href="#" role="button" onClick={(e) => selectSidebarElement(e, ase.name)}>
                 {ase.text}
               </a>
             </li>

@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import Router from 'next/router';
 import { setCurrentUser, setUserFormsType, setVerifyCode, resetVerifyCode, setHasPhone } from '../../redux/reducers/userReducer';
 import axios from '../../config/axios';
 import { SEND_CODE, TS_SELECT, VERIFY_CODE } from '../../config/keys';
@@ -28,11 +29,9 @@ function VerifyCode() {
       });
 
       if (response.status === 200) {
-        // dispatch(resetUser());
-        // Router.push('/user/login');
         dispatch(resetErrorList());
         dispatch(setCurrentUser({ phone: verifyCode.phone }));
-        dispatch(setUserFormsType(TS_SELECT));
+        Router.push(`/user/register/form/${response.data.userId}`);
         dispatch(resetVerifyCode());
       }
     } catch (error) {

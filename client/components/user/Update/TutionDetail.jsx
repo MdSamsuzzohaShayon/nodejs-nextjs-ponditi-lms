@@ -65,7 +65,6 @@ function TutionDetail(props) {
     // console.log(isAvailable);
   };
 
-
   const tutionPlaceChangeHandler = (tpce, tutionPlace) => {
     // console.log(tpce.target.checked);
     if (tpce.target.checked) {
@@ -135,19 +134,9 @@ function TutionDetail(props) {
             {tutionPlaces
               .filter((tp) => tp.id !== 0)
               .map((tpm, tmpI) => (
-                <div
-                  className="input-checkbox-item d-flex align-items-center"
-                  key={tmpI}
-                >
+                <div className="input-checkbox-item d-flex align-items-center" key={tmpI}>
                   {/* <option value={tpm.type}>{tpm.text}</option> */}
-                  <input
-                    type="checkbox"
-                    className="tution-place-checkbox"
-                    name={tpm.type}
-                    onChange={(tpce) =>
-                      tutionPlaceChangeHandler(tpce, tpm.type)
-                    }
-                  />
+                  <input type="checkbox" className="tution-place-checkbox" name={tpm.type} onChange={(tpce) => tutionPlaceChangeHandler(tpce, tpm.type)} />
                   <label htmlFor={tpm.type} className="m-2">
                     {tpm.text}
                   </label>

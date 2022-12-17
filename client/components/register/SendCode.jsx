@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import axios from '../../config/axios';
-import { setSendOTP, setUserFormsType, setVerifyCode, setHasPhone, resetSendOTP } from '../../redux/reducers/userReducer';
+import { setSendOTP, setVerifyCode, setHasPhone, setUserSendVerifyStep } from '../../redux/reducers/userReducer';
 import { toggleLoading, setErrorList, setSuccessMessageList, resetErrorList } from '../../redux/reducers/elementsSlice';
 import countryPhoneCodes from '../../data/countryPhoneCode.json';
 import { VERIFY_CODE } from '../../config/keys';
@@ -47,7 +47,7 @@ function SendCode() {
         // const phoneWithSuffix = otpObj.cc[otpObj.cc.length - 1] + otpObj.phone;
         dispatch(setVerifyCode({ phone: otpObj.phone, otp: '' }));
         dispatch(setHasPhone(true));
-        dispatch(setUserFormsType(VERIFY_CODE));
+        dispatch(setUserSendVerifyStep(VERIFY_CODE));
         // dispatch(resetSendOTP());
         dispatch(resetErrorList());
       }

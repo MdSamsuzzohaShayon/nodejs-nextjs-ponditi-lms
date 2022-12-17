@@ -6,12 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import Router from 'next/router';
 import Link from 'next/link';
-import axios from '../../config/axios';
-import { setErrorList, resetErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
-import { setLoginInfo, resetLoginInfo } from '../../redux/reducers/userReducer';
-import Layout from '../../components/layouts/Layout';
-import ErrorMessages from '../../components/elements/ErrorMessages';
-import Loader from '../../components/elements/Loader';
+import axios from '../../../config/axios';
+import { setErrorList, resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
+import { setLoginInfo, resetLoginInfo } from '../../../redux/reducers/userReducer';
+import Layout from '../../../components/layouts/Layout';
+import ErrorMessages from '../../../components/elements/ErrorMessages';
+import Loader from '../../../components/elements/Loader';
 
 function login() {
   const dispatch = useDispatch();

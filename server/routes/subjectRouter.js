@@ -9,7 +9,7 @@ const { ensureGuest, ensureTeacher, ensureAdmin } = require('../middleware/auth'
  * Check admin before this
  * after adding subject make relationship with classtype
  */
-router.post('/add', ensureAdmin, check('name').notEmpty(), check('classTypeId').notEmpty(), addSubject);
+router.post('/add', ensureAdmin, check('name').notEmpty(), addSubject);
 /**
  * @route to get all subjects along with relational class type
  */

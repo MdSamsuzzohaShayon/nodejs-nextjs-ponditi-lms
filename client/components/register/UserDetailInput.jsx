@@ -1,7 +1,20 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
+import { useRef } from 'react';
 
 function UserDetailInput(props) {
-    console.log(props);
+  const pyInputEl = useRef(null);
+
+  const currentlyStudyHandler = (cse) => {
+    // cse.preventDefault();
+    props.inputRSChangeHandler(cse);
+    if (cse.target.checked) {
+      pyInputEl.current.disabled = true;
+    } else {
+      pyInputEl.current.disabled = false;
+    }
+  };
+
   return (
     <div>
       <div className="row mb-3">
@@ -15,7 +28,18 @@ function UserDetailInput(props) {
         </div>
       </div>
       <div className="row mb-3">
-        <div className="col-12">
+        <div className="col-md-6">
+          <label htmlFor="profession">Profession</label>
+          <input
+            type="profession"
+            className="form-control"
+            name="profession"
+            id="profession"
+            defaultValue={props.userInfo?.profession}
+            onChange={props.inputChangeHandler}
+          />
+        </div>
+        <div className="col-md-6">
           <label htmlFor="institution">Institution</label>
           <input
             type="institution"
@@ -27,14 +51,16 @@ function UserDetailInput(props) {
           />
         </div>
       </div>
+
       <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="experience">Experience(years)</label>
           <input type="number" className="form-control" name="experience" id="experience" defaultValue={props.userInfo?.experience} onChange={props.inputChangeHandler} />
         </div>
         <div className="col-md-6">
-          <label htmlFor="location">Location</label>
-          <input type="text" className="form-control" name="location" id="location" defaultValue={props.userInfo?.location} onChange={props.inputChangeHandler} />
+          {/* Replace this with present address and use google map api  */}
+          <label htmlFor="district">Location</label>
+          <input type="text" className="form-control" name="district" id="district" defaultValue={props.userInfo?.district} onChange={props.inputChangeHandler} />
         </div>
       </div>
 
@@ -56,19 +82,14 @@ function UserDetailInput(props) {
             className="form-control"
             name="passing_year"
             id="passing_year"
+            ref={pyInputEl}
             defaultValue={props.userInfo?.passing_year}
             onChange={props.inputChangeHandler}
           />
         </div>
-        <div className="col-md-6">
-          <label htmlFor="cgpa">CGPA</label>
-          <input type="text" className="form-control" name="cgpa" id="cgpa" defaultValue={props.userInfo?.cgpa} onChange={props.inputChangeHandler} />
-        </div>
-      </div>
-      <div className="row mb-3">
-        <div className="col-md-6 d-flex flex-row-reverse justify-content-end">
+        <div className="col-md-6 d-flex flex-row-reverse justify-content-end align-items-center">
           <label htmlFor="running_study">Currently running study</label>
-          <input type="checkbox" name="running_study" className="mx-2" id="running_study" onChange={props.inputRSChangeHandler} />
+          <input type="checkbox" name="running_study" className="mx-2" id="running_study" onChange={currentlyStudyHandler} />
         </div>
       </div>
     </div>

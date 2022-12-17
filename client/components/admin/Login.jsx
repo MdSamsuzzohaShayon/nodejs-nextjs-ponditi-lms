@@ -2,11 +2,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { setLoginAdmin } from '../../redux/reducers/adminReducer';
-import {
-  resetErrorList,
-  setErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
+import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { toggleAuthUser } from '../../redux/reducers/userReducer';
 import axios from '../../config/axios';
 import ErrorMessages from '../elements/ErrorMessages';
@@ -20,22 +16,15 @@ function Login() {
   const loginSubmitHandler = async (lshe) => {
     lshe.preventDefault();
     if (loginAdmin.emailorpass === '') {
-      return dispatch(
-        setErrorList(['You must use email or phone number to login'])
-      );
+      return dispatch(setErrorList(['You must use email or phone number to login']));
     }
 
     if (loginAdmin.password.length < 6) {
-      return dispatch(
-        setErrorList(['Password must be more than or equal 6 charecter long'])
-      );
+      return dispatch(setErrorList(['Password must be more than or equal 6 charecter long']));
     }
     const loginObj = { ...loginAdmin };
     const pattern = /\d+/;
-    if (
-      loginObj.emailorpass.includes('@') &&
-      loginObj.emailorpass.includes('.')
-    ) {
+    if (loginObj.emailorpass.includes('@') && loginObj.emailorpass.includes('.')) {
       loginObj.email = loginObj.emailorpass;
       delete loginObj.emailorpass;
       delete loginObj.phone;
@@ -89,28 +78,14 @@ function Login() {
         <div className="row mb-3 mx-0">
           <div className="col">
             <label htmlFor="emailorpass">Email or Phone</label>
-            <input
-              type="text"
-              className="form-control"
-              name="emailorpass"
-              id="emailorpass"
-              defaultValue={loginAdmin.emailorpass}
-              onChange={inputChangeHandler}
-            />
+            <input type="text" className="form-control" name="emailorpass" id="emailorpass" defaultValue={loginAdmin.emailorpass} onChange={inputChangeHandler} />
           </div>
         </div>
 
         <div className="row mb-3 mx-0">
           <div className="col">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              id="password"
-              defaultValue={loginAdmin.password}
-              onChange={inputChangeHandler}
-            />
+            <input type="password" className="form-control" name="password" id="password" defaultValue={loginAdmin.password} onChange={inputChangeHandler} />
           </div>
         </div>
         <div className="row mb-3 mx-0">

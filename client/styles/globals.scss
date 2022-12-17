@@ -1,9 +1,12 @@
 @import './variables';
 @import './mixins';
 
-
-
 @import '../bootstrap/scss/bootstrap.scss';
+
+html,
+body {
+  overflow: initial !important;
+}
 
 @import './utilities.scss';
 
@@ -16,7 +19,6 @@
 // Admin
 @import './Admin.scss';
 
-
 @import './UserDashboard.scss';
 
 @import './UserUpdate.scss';
@@ -25,7 +27,7 @@
 
 @import './UserDetail.scss';
 
-@import "./ScheduledClass.scss";
+@import './ScheduledClass.scss';
 
 @import './Login.scss';
 @import './Footer.scss';

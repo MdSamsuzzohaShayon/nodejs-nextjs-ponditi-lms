@@ -51,17 +51,16 @@ router.put('/verifyotp', check('otp').notEmpty(), check('phone').notEmpty(), ver
  * @step 3 - regestration process
  */
 router.put(
-  '/register',
-  check('name').notEmpty().isString(),
-  check('phone').notEmpty().isString(),
+  '/register/:userId',
+  check('name').notEmpty().isString().isLength({ min: 2 }),
+  // check('phone').notEmpty().isString(),
   check('email').isEmail().notEmpty(),
   // check('age').notEmpty(),
-  // check('profession').notEmpty(),
+  check('profession').notEmpty().isString(),
   check('institution').notEmpty().isString(),
   // check('subjects').notEmpty(), // In update section
   check('experience').notEmpty(),
-  check('location').notEmpty().isString(),
-  check('tuitionmedium').notEmpty().isArray(),
+  check('district').notEmpty().isString(),
   // check('password').notEmpty().isLength({ min: 6 }),
   // Relational
   // check('classTypeId').notEmpty(), // In update section

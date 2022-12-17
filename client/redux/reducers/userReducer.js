@@ -74,13 +74,13 @@ const initialRegisterStaps = [
 const initialCurrentUser = {
   name: '',
   email: '',
+  profession: '',
   institution: '',
   experience: '',
-  location: '',
+  district: '',
   degree: '',
   major: '',
   passing_year: '',
-  cgpa: '',
   role: TEACHER,
   running_study: false,
 };
@@ -253,7 +253,10 @@ export const userSlice = createSlice({
     selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
     selectedUserRole: TEACHER, // the user whose detail will be shown
 
-    userFormsType: SEND_CODE,
+    userSendVerifyStep: SEND_CODE,
+    userFormsType: TS_SELECT,
+    // userFormsType: REGISTER,
+
     loginInfo: initialLoginInfo,
     resetPassReq: initialResetPassReq,
     resetPassStep: 1,
@@ -262,7 +265,7 @@ export const userSlice = createSlice({
     hasPhone: false,
     verifyCode: initialVerifyCode,
 
-    selectedStep: 1,
+    selectedStep: 1, // change it to 1
     registerSteps: initialRegisterStaps,
 
     authenticatedUser: false,
@@ -302,13 +305,13 @@ export const userSlice = createSlice({
     setLoginInfo: (state, action) => {
       state.loginInfo = { ...state.loginInfo, ...action.payload };
     },
-    setChangeResetPassReq: (state, action) =>{
+    setChangeResetPassReq: (state, action) => {
       state.resetPassReq = { ...state.resetPassReq, ...action.payload };
     },
-    resetChangeResetPassReq: (state) =>{
+    resetChangeResetPassReq: (state) => {
       state.resetPassReq = initialResetPassReq;
     },
-    setResetPassStep: (state, action)=>{
+    setResetPassStep: (state, action) => {
       state.resetPassStep = action.payload;
     },
     setVerifyCode: (state, action) => {
@@ -326,6 +329,9 @@ export const userSlice = createSlice({
     },
     setUserFormsType: (state, action) => {
       state.userFormsType = action.payload;
+    },
+    setUserSendVerifyStep: (state, action) => {
+      state.userSendVerifyStep = action.payload;
     },
 
     setSendOTP: (state, action) => {
@@ -421,6 +427,7 @@ export const {
   resetLoginInfo,
   setSelectedStep,
   setUserFormsType,
+  setUserSendVerifyStep,
   setSendOTP,
   resetSendOTP,
   resetVerifyCode,

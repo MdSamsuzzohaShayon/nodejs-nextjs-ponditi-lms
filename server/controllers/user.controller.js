@@ -13,11 +13,9 @@ const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
 
 // eslint-disable-next-line object-curly-newline
-const { User, ClassType, Subject, Notification, Education } = db;
+const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const {
- PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
-} = keys.scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 
 /**
@@ -48,6 +46,7 @@ const sendOTP = async (req, res) => {
       specialChars: false,
     });
 
+    // It is not loging out everytime we register
     if (process.env.NODE_ENV === 'development') {
       console.log({ otp });
     }
@@ -73,15 +72,17 @@ const sendOTP = async (req, res) => {
       }
       // console.log(phoneWithSufix, '+8801785208590');
       // let them register
-      const msg = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
-      // console.log(msg);
-      if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
+      const response = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
+      if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
+
       // update code from database
       await User.update({ otp }, { where: { id: findByPhone.dataValues.id } });
       return res.status(208).json({
-        msg: 'User is already registred with this phone number, we are sending code once again',
+        msg: 'Already sent an OTP, however, we are sending code once again',
       });
     }
+    const response = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
+    if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     await User.create({
       phone,
       cc,
@@ -121,16 +122,23 @@ const verifyUser = async (req, res) => {
   // console.log(findByPhone.dataValues, req.body.otp);
 
   if (findByPhone.dataValues.isVerified === true) {
-    return res.status(200).json({ msg: 'Validated OTP successfully' });
+    return res.status(200).json({ msg: 'Validated OTP successfully', userId: findByPhone.dataValues.id });
   }
   if (findByPhone.dataValues.otp !== req.body.otp) {
     return res.status(406).json({ msg: 'Invalid OTP' });
   }
   await User.update({ isVerified: true }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
-  return res.status(200).json({ msg: 'Validated OTP successfully' });
+  return res.status(200).json({ msg: 'Validated OTP successfully', userId: findByPhone.dataValues.id });
 };
 
+/**
+ * @param {type} res name           full name
+ * @param {type} res phone          raw phone number without any country code
+ * @param {type} res email          A valid email address later on you can use email to login
+ * @param {type} res institution    A valid email address later on you can use email to login
+ * @returns response 201            Registered user successfully, Now you can login
+ */
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -151,29 +159,25 @@ const registerUser = async (req, res) => {
     userObj.cgpa = parseFloat(userObj.cgpa);
   }
 
-  if (userObj.classes) {
-    userObj.classes = userObj.classes.toLowerCase();
-  }
   userObj.otp = null;
 
   // handle classtype id and subject id (relationship)
 
   try {
-    const userFindByPhone = await User.findOne({
-      where: { phone: userObj.phone },
+    const userFindById = await User.findOne({
+      where: { id: req.params.userId },
     });
-    if (userFindByPhone === null) {
+    if (userFindById === null) {
       return res.status(404).json({ msg: 'This phone number is not validated' });
     }
-    if (userFindByPhone.dataValues.isVerified === false) {
+    if (userFindById.dataValues.isVerified === false) {
       return res.status(406).json({ msg: 'Your phone number is not verified to register' });
     }
-    if (userFindByPhone.dataValues.isActive !== REQUEST_REGISTER) {
+    if (userFindById.dataValues.isActive !== REQUEST_REGISTER) {
       return res.status(406).json({ msg: 'User is already registred with this phone number' });
     }
-    // console.log(userFindByPhone);
+    // console.log(userFindById);
 
-    // ONLY SUPER USER CAN CREATE A NEW USER
     const userEmailExist = await User.findOne({
       where: { email: userObj.email },
     });
@@ -181,6 +185,9 @@ const registerUser = async (req, res) => {
       return res.status(406).json({
         msg: 'User already exist with this email address, you can now login',
       });
+    }
+    if (userObj?.running_study === true) {
+      userObj.passing_year = null;
     }
     userObj.isActive = PENDING;
     // Create password
@@ -196,45 +203,60 @@ const registerUser = async (req, res) => {
         where: { id: userObj.SubjectId },
       });
       // console.log('Setting subject');
-      await userFindByPhone.setSubjects(findAllSubject);
+      await userFindById.setSubjects(findAllSubject);
     }
     if (userObj?.ClassTypeId?.length > 0) {
       // set classtype
       const findAllClassType = await ClassType.findAll({
         where: { id: userObj.ClassTypeId },
       });
-      await userFindByPhone.setClassTypes(findAllClassType);
+      await userFindById.setClassTypes(findAllClassType);
+      // console.log('Setting classtype');
+    }
+    if (userObj?.TuitionmId?.length > 0) {
+      // set classtype
+      const findAllTuitionm = await Tuitionm.findAll({
+        where: { id: userObj.TuitionmId },
+      });
+      // console.log(Tuitionm.Instance.prototype);
+      // console.log(findAllTuitionm);
+      // console.log(Object.getOwnPropertyNames(User.constructor));
+      await userFindById.setTuitionms(findAllTuitionm);
       // console.log('Setting classtype');
     }
     delete userObj.SubjectId;
     delete userObj.ClassTypeId;
+    delete userObj.TuitionmId;
 
-    let newTuitionMedium = '';
+    /*
+    let newTuitionTuitionm = '';
     let i = 0;
-    while (i < userObj.tuitionmedium.length) {
-      let tmNew = userObj.tuitionmedium[i].toUpperCase();
+    while (i < userObj.tuitiontuitionm.length) {
+      let tmNew = userObj.tuitiontuitionm[i].toUpperCase();
       if (tmNew !== BANGLA || tmNew !== ENGLISH || tmNew !== ARABIC) {
         tmNew = BANGLA;
       }
       let sep = '';
-      if (i + 1 !== userObj.tuitionmedium.length) sep = '_';
-      newTuitionMedium = `${newTuitionMedium + tmNew}${sep}`;
+      if (i + 1 !== userObj.tuitiontuitionm.length) sep = '_';
+      newTuitionTuitionm = `${newTuitionTuitionm + tmNew}${sep}`;
       i += 1;
     }
-    userObj.tuitionmedium = newTuitionMedium;
+    userObj.tuitiontuitionm = newTuitionTuitionm;
+    */
 
     if (process.env.NODE_ENV === 'development') {
       const newUserObj = { ...userObj };
       newUserObj.password = genPassword;
+      newUserObj.phone = userFindById.dataValues.phone;
       console.log(newUserObj);
     }
 
     await User.update(userObj, {
-      where: { phone: req.body.phone },
+      where: { id: req.params.userId },
     });
-    const phoneWithSufix = `+${userFindByPhone.dataValues.cc}${userFindByPhone.dataValues.phone}`;
+    const phoneWithSufix = `+${userFindById.dataValues.cc}${userFindById.dataValues.phone}`;
     // console.log({phoneWithSufix});
-    await sendSMS(phoneWithSufix, `Login credentials is: \n Phone: ${userFindByPhone.dataValues.phone} \n Password: ${genPassword}`);
+    await sendSMS(phoneWithSufix, `Login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
     return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });
@@ -314,11 +336,11 @@ const login = async (req, res) => {
     }
 
     // console.log({userExist});
-    if (!userExist) return res.status(404).json({ msg: "User doesn't exist" });
+    if (!userExist) return res.status(404).json({ msg: 'Invalid credentials' });
     // console.log(userExist);
     if (userExist.dataValues.isActive === REQUEST_REGISTER) {
       await User.destroy({ where: { id: userExist.dataValues.id }, force: true });
-      return res.status(406).json({ msg: "User doesn't exist" });
+      return res.status(406).json({ msg: 'Invalid credentials' });
     }
     if (userExist.dataValues.role !== TEACHER && userExist.dataValues.role !== STUDENT) {
       return res.status(406).json({ msg: 'You are not teacher or student' });
@@ -403,17 +425,17 @@ const forgetPassword = async (req, res) => {
       specialChars: false,
     });
 
-    const msg = await sendSMS(phoneWithSufix, `Your reset password OTP code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your reset password OTP code is: ${otp}`);
     if (process.env.NODE_ENV === 'development') {
       console.log({
         phoneWithSufix,
         phone: userExist.dataValues.phone,
         otp,
-        msg,
+        msgStatus: response.status,
       });
     }
     // console.log(msg);
-    if (!msg) return res.status(406).json({ msg: 'Invalid phone number' });
+    if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     // update code from database
     await User.update({ otp }, { where: { id: userExist.dataValues.id } });
 
@@ -506,6 +528,10 @@ const getAllUsersTemp = async (req, res) => {
         model: ClassType,
         attributes: ['id', 'name'],
       },
+      {
+        model: Tuitionm,
+        attributes: ['id', 'name'],
+      },
     ],
   });
   res.status(200).json({ msg: 'Getting all users', users });
@@ -522,6 +548,10 @@ const getAllUsers = async (req, res) => {
         },
         {
           model: ClassType,
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Tuitionm,
           attributes: ['id', 'name'],
         },
       ],
@@ -555,18 +585,16 @@ const getSingleUser = async (req, res) => {
       return res.status(404).json({ msg: 'user not found' });
     }
     const classTypes = await userExist.getClassTypes();
+    const tuitionms = await userExist.getTuitionms();
     const subjects = await userExist.getSubjects();
-    // console.log('Find subjects working============================================================================');
     const notifications = await userExist.getNotifications();
-    // console.log('Find notifications working============================================================================');
     const educations = await userExist.getEducation();
-    // console.log('Find educations working============================================================================');
-    // console.log(notifications);
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
     return res.status(200).json({
       msg: 'Single user found',
       user,
+      tuitionms,
       classTypes,
       subjects,
       notifications,

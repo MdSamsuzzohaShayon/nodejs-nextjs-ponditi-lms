@@ -7,6 +7,7 @@ import axios from '../../config/axios';
 const initialAddClassType = {
   name: '',
   subjectId: [],
+  tuitionmId: [],
 };
 
 const fetchClassTypes = async (args, { dispatch, rejectWithValue }) => {
@@ -36,7 +37,8 @@ export const classtypeSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     classtypeList: [],
-    selectedClasstypeList: [],
+    classtypeListCopy: [], // Unchangable
+    selectedClasstypeList: [], // list of ids 
     addClassType: initialAddClassType,
   },
   reducers: {
@@ -68,6 +70,7 @@ export const classtypeSlice = createSlice({
     builder.addCase(fetchAllClassTypesSearch.fulfilled, (state, action) => {
       const defaultItem = { id: 0, name: 'Any Class' };
       state.classtypeList = [defaultItem, ...action.payload.classTypes];
+      state.classtypeListCopy = action.payload.classTypes;
     });
   },
 });

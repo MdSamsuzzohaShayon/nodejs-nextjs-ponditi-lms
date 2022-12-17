@@ -68,7 +68,7 @@ export const subjectSlice = createSlice({
     builder.addCase(fetchAllSubjectsSearch.fulfilled, (state, action) => {
       const defaultItem = { id: 0, name: 'Any Subject' };
       state.subjectList = [defaultItem, ...action.payload.subjects];
-      state.subjectListCopy = [defaultItem, ...action.payload.subjects];
+      state.subjectListCopy = action.payload.subjects;
     });
   },
 });

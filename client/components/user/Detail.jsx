@@ -48,9 +48,9 @@ function Detail({ userDetail, update }) {
               )}
             </div>
             <div className="col-md-9">
-              {userDetail.firstname && (
+              {userDetail.name && (
                 <div className="name-edit-profile-wrapper d-flex justify-content-between align-items-center">
-                  <h1 className="h1 text-uppercase">{`${userDetail.firstname} ${userDetail.lastname}`}</h1>
+                  <h1 className="h1 text-uppercase">{userDetail.name}</h1>
 
                   {/* {authUserInfo.id && userDetail?.role === STUDENT && (
                     <button

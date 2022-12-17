@@ -44,6 +44,7 @@
     "swagger-autogen": "^2.22.0",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0",
-    "tedious": "^15.1.0"
+    "tedious": "^15.1.0",
+    "unirest": "^0.6.0"
   }
 }

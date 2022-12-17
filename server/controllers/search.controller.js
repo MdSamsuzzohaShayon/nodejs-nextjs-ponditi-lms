@@ -10,14 +10,14 @@ const sequelize = require('sequelize');
 const { Op } = sequelize;
 const db = require('../models');
 
-const { User, Subject, ClassType, Review } = db;
+const { User, Subject, ClassType, Review, Tuitionm } = db;
 const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
 const { ANY, ONLINE, TL, SL } = types;
 const { APPROVED } = scheduledClassStatus;
 
-const searchTeacher = async (req, res, next) => {
+const searchTeacher = async (req, res) => {
   try {
     const searchQuery = {};
     let where = { isActive: APPROVED, role: TEACHER, isAvailable: true };
@@ -71,9 +71,23 @@ const searchTeacher = async (req, res, next) => {
       where.tutionplace = { [Op.like]: `%${searchParams.tutionplace}%` };
     }
 
-    // Search by medium
-    if (searchParams.tuitionmedium && searchParams.tuitionmedium !== ANY && searchParams.tuitionmedium !== '' && searchParams.tuitionmedium !== '0') {
-      where.tuitionmedium = { [Op.like]: `%${searchParams.tuitionmedium}%` };
+    // Search by Tuition Medium
+    if (searchParams.TuitionmId && searchParams.TuitionmId !== ANY && searchParams.TuitionmId !== '' && searchParams.TuitionmId !== '0') {
+      const newTMArrInt = [];
+      if (searchParams.TuitionmId.includes(',')) {
+        const newCTIArr = searchParams.TuitionmId.split(',');
+        for (let ctiIdx = 0; ctiIdx < newCTIArr.length; ctiIdx += 1) {
+          newTMArrInt.push(parseInt(newCTIArr[ctiIdx], 10));
+        }
+      } else {
+        newTMArrInt.push(parseInt(searchParams.TuitionmId, 10));
+      }
+      include.push({
+        model: Tuitionm,
+        attributes: [],
+        require: true,
+      });
+      where = { ...where, '$Tuitionms.id$': newTMArrInt };
     }
 
     // console.log(searchParams.SubjectId, searchParams.ClassTypeId);
@@ -137,7 +151,7 @@ const searchTeacher = async (req, res, next) => {
     if (teachers.length > 0) {
       return res.status(200).json({ msg: 'teacher found', teachers });
     }
-    return res.status(404).json({ msg: 'No teacher found' });
+    return res.status(204).json({ msg: 'No teacher found' });
   } catch (error) {
     console.log(error);
   }

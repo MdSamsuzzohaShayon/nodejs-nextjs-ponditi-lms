@@ -7,8 +7,8 @@ export const libraries = ['places'];
 export const SEND_CODE = 'SEND_CODE';
 export const VERIFY_CODE = 'VERIFY_CODE';
 export const REGISTER = 'REGISTER';
+export const CLASS_SUB = 'CLASS_SUB';
 export const TS_SELECT = 'TS_SELECT'; // teacher student selection
-
 
 export const roles = {
   ADMIN: 'ADMIN',
@@ -17,6 +17,7 @@ export const roles = {
 };
 
 export const adminSidebarList = {
+  MEDIUM: 'MEDIUM',
   CLASS_TYPE: 'CLASS_TYPE',
   SUBJECT: 'SUBJECT',
   STUDENT: 'STUDENT',
@@ -35,6 +36,12 @@ export const types = {
   ONLINE: 'ONLINE',
   TL: 'TL', // teacher's location
   SL: 'SL', // student's location
+};
+
+export const tuitionmediums = {
+  BANGLA: 'BANGLA',
+  ENGLISH: 'ENGLISH',
+  ARABIC: 'ARABIC',
 };
 
 export const scheduledclassStatus = {

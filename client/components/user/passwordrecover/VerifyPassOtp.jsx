@@ -37,7 +37,7 @@ function VerifyPassOtp(props) {
           'Content-Type': 'application/json',
         },
       });
-      if (response.status === 201) {
+      if (response.status === 200 || response.status === 201) {
         dispatch(resetChangeResetPassReq());
         dispatch(resetErrorList());
         // navigate to next step

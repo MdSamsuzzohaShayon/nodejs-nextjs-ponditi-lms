@@ -4,20 +4,13 @@
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../config/axios';
-import {
-  resetErrorList,
-  setErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
-import {
-  setAddClassType,
-  setClasstypeList,
-  resetAddClassType,
-} from '../../redux/reducers/classtypeReducer';
+import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
+import { setAddClassType, setClasstypeList, resetAddClassType } from '../../redux/reducers/classtypeReducer';
 
 function ClassTypeAdd(props) {
   const dispatch = useDispatch();
   const subjectList = useSelector((state) => state.subject.subjectList);
+  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
   const addClassType = useSelector((state) => state.classtype.addClassType);
 
   const addClassTypeHandler = async (acthe) => {
@@ -25,20 +18,17 @@ function ClassTypeAdd(props) {
     if (addClassType.name === '') {
       return dispatch(setErrorList(['You must put classtype name']));
     }
-    if (addClassType.subjectId.length <= 0) {
-      return dispatch(
-        setErrorList(['You must put select atleast one subject'])
-      );
-    }
+
+    // if (addClassType.subjectId.length <= 0) {
+    //   return dispatch(setErrorList(['You must put select atleast one subject']));
+    // }
     try {
       dispatch(toggleLoading(true));
       const response = await axios.post('/classtype/add', addClassType);
-        // console.log(response);
+      // console.log(response);
       if (response.status === 201) {
         // response.data.classType
-        dispatch(
-          setClasstypeList([response.data.classType, ...props.classtypeList])
-        );
+        dispatch(setClasstypeList([response.data.classType, ...props.classtypeList]));
         dispatch(resetAddClassType());
         dispatch(resetErrorList());
       }
@@ -55,6 +45,7 @@ function ClassTypeAdd(props) {
       // console.log('finally');
       dispatch(toggleLoading(false));
     }
+    return null;
   };
 
   const inputChangeHandler = (iche) => {
@@ -77,6 +68,22 @@ function ClassTypeAdd(props) {
       dispatch(setAddClassType({ subjectId: subjectIdList }));
     }
   };
+
+  const tuitionMediumSelectionHandler = (tmse) => {
+    // tmse.preventDefault();
+    const tuitionmIdList = [...addClassType.tuitionmId];
+    const targetedId = parseInt(tmse.target.value, 10);
+    // add
+    if (tmse.target.checked === true) {
+      tuitionmIdList.push(targetedId);
+      dispatch(setAddClassType({ tuitionmId: tuitionmIdList }));
+    } else {
+      // remove
+      const targetedIdIndex = tuitionmIdList.indexOf(targetedId);
+      tuitionmIdList.splice(targetedIdIndex, 1);
+      dispatch(setAddClassType({ tuitionmId: tuitionmIdList }));
+    }
+  };
   return (
     <div className="ClassTypeAdd">
       <div className="row mx-0 mb-3">
@@ -87,7 +94,7 @@ function ClassTypeAdd(props) {
       <form className="mb-5" onSubmit={addClassTypeHandler}>
         <div className="row mx-0 mb-3">
           <div className="col">
-            <label htmlFor="name">Class Name</label>
+            <label htmlFor="name fs-4">Class Name</label>
             <input
               type="text"
               className="form-control"
@@ -100,18 +107,26 @@ function ClassTypeAdd(props) {
           </div>
         </div>
         <div className="row mx-0 mb-3">
+          <p className="fs-4">Tuition Medium</p>
+          {tuitionmList &&
+            tuitionmList.map((tm, tmIdx) => (
+              <div className="col-md-3" key={tmIdx}>
+                <div className="form-check form-check-inline">
+                  <input className="form-check-input" type="checkbox" id={tm.name} name={tm.name} value={tm.id} onChange={tuitionMediumSelectionHandler} />
+                  <label className="form-check-label" htmlFor={tm.name}>
+                    {tm.name}
+                  </label>
+                </div>
+              </div>
+            ))}
+        </div>
+        <div className="row mx-0 mb-3">
+          <p className="fs-4">Subjects</p>
           {subjectList &&
             subjectList.map((sl, slIdx) => (
               <div className="col-md-3" key={slIdx}>
                 <div className="form-check form-check-inline">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id={sl.name}
-                    name={sl.name}
-                    value={sl.id}
-                    onChange={subjectSelectionHandler}
-                  />
+                  <input className="form-check-input" type="checkbox" id={sl.name} name={sl.name} value={sl.id} onChange={subjectSelectionHandler} />
                   <label className="form-check-label" htmlFor={sl.name}>
                     {sl.name}
                   </label>
@@ -121,19 +136,10 @@ function ClassTypeAdd(props) {
         </div>
         <div className="row mb-3 mx-0 d-flex">
           <div className="col">
-            <button
-              className="btn btn-primary w-fit"
-              type="submit"
-              id="classtype-addon"
-            >
+            <button className="btn btn-primary w-fit" type="submit" id="classtype-addon">
               Add Class Type
             </button>
-            <a
-              href="#"
-              className="btn btn-secondary w-fit"
-              onClick={props.togglePartHandler}
-              role="button"
-            >
+            <a href="#" className="btn btn-secondary w-fit" onClick={props.togglePartHandler} role="button">
               See class list
             </a>
           </div>

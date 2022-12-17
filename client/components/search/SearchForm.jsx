@@ -1,16 +1,14 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable @next/next/no-img-element */
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
-import { useJsApiLoader, Autocomplete} from '@react-google-maps/api';
+import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { useState } from 'react';
 import axios from '../../config/axios';
-import {
-  setErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
+import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import {
   setSearchParams,
   setSearchAllUserList,
@@ -23,10 +21,11 @@ import {
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
-
-
+import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
 
 function SearchForm() {
+  const defaultClass = { id: 0, name: 'Any Class' };
+  const defaultSubject = { id: 0, name: 'Any Subject' };
   /**
    * @api for google places
    */
@@ -44,10 +43,12 @@ function SearchForm() {
   const searchTypeList = useSelector((state) => state.search.searchTypeList);
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
+  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
 
   const subjectList = useSelector((state) => state.subject.subjectList);
   const subjectListCopy = useSelector((state) => state.subject.subjectListCopy);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
+  const classtypeListCopy = useSelector((state) => state.classtype.classtypeListCopy);
 
   /**
    * @fetch all data on component mounted
@@ -69,9 +70,7 @@ function SearchForm() {
         const displayableItems = response.data.teachers.slice(rpStart, rpTotal);
         dispatch(setSearchUserList(displayableItems));
         // rpTotalPage: 1,
-        dispatch(
-          setRPTotalPage(Math.ceil(response.data.teachers.length / rpTotal))
-        );
+        dispatch(setRPTotalPage(Math.ceil(response.data.teachers.length / rpTotal)));
       }
     } catch (error) {
       console.log(error);
@@ -79,31 +78,63 @@ function SearchForm() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
-      if (error?.response?.status === 404) {
-        dispatch(resetSearchUserList());
-      }
     } finally {
       dispatch(toggleLoading(false));
     }
   };
 
-  const classtypeInputChangeHandler = (iche) => {
+  const tuitionmInputChangeHandler = (iche) => {
     const val = parseInt(iche.target.value, 10);
-    // console.log(iche.target.value === '0');
-    // ClassTypeId
     dispatch(setSearchParams({ [iche.target.name]: iche.target.value }));
     if (iche.target.value === '0') {
-      dispatch(setSubjectList(subjectListCopy));
+      dispatch(setClasstypeList([defaultClass, ...classtypeListCopy]));
+      dispatch(setSubjectList([defaultSubject, ...subjectListCopy]));
     } else {
-      const newSubjectList = classtypeList.find(
-        (ctl) => ctl.id === val
-      )?.Subjects;
-      if (newSubjectList?.length > 0) {
-        // dispatch(setCurrentUser({ SubjectId: [newSubjectList[0].id] }));
-        dispatch(setSubjectList(newSubjectList));
-        dispatch(
-          setSearchParams({ SubjectId: newSubjectList[0].id.toString() })
-        );
+      const classTypeOfOneTuitionm = tuitionmList.find((ctl) => ctl.id === val)?.ClassTypes;
+      // console.log(newClassTypeList);
+      const classtypeIdList = classTypeOfOneTuitionm.map((c) => c.id);
+      const selectedClassTypes = classtypeListCopy.filter((ctl) => classtypeIdList.includes(ctl.id));
+      // console.log(selectedClassTypes);
+
+      if (selectedClassTypes?.length > 0) {
+        dispatch(setClasstypeList([defaultClass, ...selectedClassTypes]));
+        dispatch(setSearchParams({ ClassTypeId: selectedClassTypes[0].id.toString() }));
+
+        // set subject list
+        const newSubjectIdList = [];
+        for (let i = 0; i < selectedClassTypes.length; i += 1) {
+          for (let j = 0; j < selectedClassTypes[i].Subjects.length; j += 1) {
+            // console.log(selectedClassTypes[i].Subjects[j]);
+            newSubjectIdList.push(selectedClassTypes[i].Subjects[j].id);
+          }
+        }
+        if (newSubjectIdList.length > 0) {
+          const uniqueSubjectIdList = [...new Set(newSubjectIdList)];
+          const newSubjectList = subjectListCopy.filter((sl) => uniqueSubjectIdList.includes(sl.id));
+          dispatch(setSubjectList([defaultSubject, ...newSubjectList]));
+          dispatch(setSearchParams({ SubjectId: newSubjectList[0].id.toString() }));
+        }
+      }
+    }
+  };
+
+  const classtypeInputChangeHandler = (iche) => {
+    const val = parseInt(iche.target.value, 10);
+    dispatch(setSearchParams({ [iche.target.name]: iche.target.value }));
+    if (iche.target.value === '0') {
+      dispatch(setSubjectList([defaultSubject, ...subjectListCopy]));
+      // Need to work here
+    } else {
+      const selectedSubjects = classtypeListCopy.find((ctl) => ctl.id === val)?.Subjects;
+      const newSubjectIdList = [];
+      for (let i = 0; i < selectedSubjects.length; i += 1) {
+        newSubjectIdList.push(selectedSubjects[i].id);
+      }
+      if (newSubjectIdList.length > 0) {
+        const uniqueSubjectIdList = [...new Set(newSubjectIdList)];
+        const newSubjectList = subjectListCopy.filter((sl) => uniqueSubjectIdList.includes(sl.id));
+        dispatch(setSubjectList([defaultSubject, ...newSubjectList]));
+        dispatch(setSearchParams({ SubjectId: newSubjectList[0].id.toString() }));
       }
     }
   };
@@ -131,20 +162,17 @@ function SearchForm() {
 
   const placeChangedHandler = () => {
     try {
-      
-          // console.log(process.env.NEXT_PUBLIC_GOOGLE_PLACE_API_KEY);
-          // const lat = autocomplete.getPlace().geometry.location.lat();
-          // const lng = autocomplete.getPlace().geometry.location.lng();
-          // console.log({ lat, lng });
-          // console.log({ name: autocomplete.getPlace().name });
-          // console.log(autocomplete.getPlace().formatted_address);
-          dispatch(setSearchParams({ location: autocomplete.getPlace().name }));
+      // console.log(process.env.NEXT_PUBLIC_GOOGLE_PLACE_API_KEY);
+      // const lat = autocomplete.getPlace().geometry.location.lat();
+      // const lng = autocomplete.getPlace().geometry.location.lng();
+      // console.log({ lat, lng });
+      // console.log({ name: autocomplete.getPlace().name });
+      // console.log(autocomplete.getPlace().formatted_address);
+      dispatch(setSearchParams({ location: autocomplete.getPlace().name }));
     } catch (error) {
       console.log(error);
     }
   };
-
-
 
   return (
     <div className="SearchForm">
@@ -158,11 +186,7 @@ function SearchForm() {
               <span className="input-group-text bg-white">
                 <img src="/icons/location.svg" alt="" className="h-fit" />
               </span>
-              <Autocomplete
-                onLoad={onLoadHandler}
-                onPlaceChanged={placeChangedHandler}
-                className="form-control p-0"
-              >
+              <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
                 <input
                   type="text"
                   className="form-control"
@@ -177,18 +201,49 @@ function SearchForm() {
           </div>
           {/* google places api end  */}
           <div className="col-md-6">
+            <label htmlFor="tutionplace">Tuition Location</label>
+            <div className="input-group mb-3">
+              <span className="input-group-text bg-white">
+                <img src="/icons/classtype.svg" alt="" className="h-fit" />
+              </span>
+              <select name="tutionplace" id="tutionplace" className="form-control" defaultValue={searchParams.tutionplace} onChange={inputChangeHandler}>
+                {searchTypeList.length > 0 &&
+                  searchTypeList.map((ctl) => (
+                    <option key={ctl.id} value={ctl.type}>
+                      {ctl.text}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className="row mx-0 mb-3">
+          <div className="col-md-4">
+            <label htmlFor="TuitionmId">Tuition Medium</label>
+            <div className="input-group mb-3">
+              <span className="input-group-text bg-white">
+                <img src="/icons/classtype.svg" alt="" className="h-fit" />
+              </span>
+              <select name="TuitionmId" id="TuitionmId" className="form-control" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
+                {tuitionmList !== null ? (
+                  tuitionmList.map((tm) => (
+                    <option key={tm.id} value={tm.id}>
+                      {tm.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Any Class</option>
+                )}
+              </select>
+            </div>
+          </div>
+          <div className="col-md-4">
             <label htmlFor="ClassTypeId">Class</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
-              <select
-                name="ClassTypeId"
-                id="ClassTypeId"
-                className="form-control"
-                onChange={classtypeInputChangeHandler}
-                defaultValue={searchParams.ClassTypeId}
-              >
+              <select name="ClassTypeId" id="ClassTypeId" className="form-control" onChange={classtypeInputChangeHandler} defaultValue={searchParams.ClassTypeId}>
                 {classtypeList !== null ? (
                   classtypeList.map((ctl) => (
                     <option key={ctl.id} value={ctl.id}>
@@ -201,21 +256,13 @@ function SearchForm() {
               </select>
             </div>
           </div>
-        </div>
-        <div className="row mx-0 mb-3">
-          <div className="col-md-6">
+          <div className="col-md-4">
             <label htmlFor="SubjectId">Subject</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/subject.svg" alt="" className="h-fit" />
               </span>
-              <select
-                name="SubjectId"
-                id="SubjectId"
-                className="form-control"
-                onChange={inputChangeHandler}
-                defaultValue={searchParams.SubjectId}
-              >
+              <select name="SubjectId" id="SubjectId" className="form-control" onChange={inputChangeHandler} defaultValue={searchParams.SubjectId}>
                 {subjectList.length > 0 ? (
                   subjectList.map((ctl) => (
                     <option key={ctl.id} value={ctl.id}>
@@ -228,36 +275,10 @@ function SearchForm() {
               </select>
             </div>
           </div>
-          <div className="col-md-6">
-            <label htmlFor="classtype">Tuition Location</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/classtype.svg" alt="" className="h-fit" />
-              </span>
-              <select
-                name="tutionplace"
-                id="classtype"
-                className="form-control"
-                defaultValue={searchParams.tutionplace}
-                onChange={inputChangeHandler}
-              >
-                {searchTypeList.length > 0 &&
-                  searchTypeList.map((ctl) => (
-                    <option key={ctl.id} value={ctl.type}>
-                      {ctl.text}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
         </div>
         <div className="row mx-0 mb-3">
           <div className="col d-flex justify-content-end">
-            <button
-              className="btn btn-primary w-fit text-uppercase mx-3s"
-              role="button"
-              onClick={searchTeacherHandler}
-            >
+            <button className="btn btn-primary w-fit text-uppercase mx-3s" role="button" onClick={searchTeacherHandler}>
               Search Teacher
             </button>
           </div>

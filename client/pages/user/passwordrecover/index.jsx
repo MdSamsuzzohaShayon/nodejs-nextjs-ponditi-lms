@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
-import Layout from '../../components/layouts/Layout';
-import Loader from '../../components/elements/Loader';
-import ErrorMessages from '../../components/elements/ErrorMessages';
-import PassChangeReq from '../../components/user/passwordrecover/PassChangeReq';
-import VerifyPassOtp from '../../components/user/passwordrecover/VerifyPassOtp';
-// import SetNewPass from '../../components/user/passwordrecover/SetNewPass';
-import { setResetPassStep, setChangeResetPassReq } from '../../redux/reducers/userReducer';
+import Layout from '../../../components/layouts/Layout';
+import Loader from '../../../components/elements/Loader';
+import ErrorMessages from '../../../components/elements/ErrorMessages';
+import PassChangeReq from '../../../components/user/passwordrecover/PassChangeReq';
+import VerifyPassOtp from '../../../components/user/passwordrecover/VerifyPassOtp';
+// import SetNewPass from '../../../components/user/passwordrecover/SetNewPass';
+import { setResetPassStep, setChangeResetPassReq } from '../../../redux/reducers/userReducer';
 
 function passwordrecover() {
   const dispatch = useDispatch();

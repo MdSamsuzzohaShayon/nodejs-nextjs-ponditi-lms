@@ -1,14 +1,16 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { types, roles } from '../../config/keys';
+import { types, roles, tuitionmediums } from '../../config/keys';
 
 const { ONLINE, TL, SL, ANY } = types;
+const { BANGLA, ENGLISH, ARABIC } = tuitionmediums;
 
 export const initialSearchParams = {
-  location: '',
-  ClassTypeId: '', // id
-  SubjectId: '', // id
+  location: null,
+  ClassTypeId: null, // id
+  SubjectId: null, // id
   tutionplace: ANY, // Online - tution location
+  TuitionmId: null,
 };
 
 export const searchSlice = createSlice({
@@ -44,7 +46,7 @@ export const searchSlice = createSlice({
 
     /**
      * @function for paginations
-    */
+     */
     searchUserList: [],
     rpStart: 0, // rp = result pagination
     rpTotal: 10,
@@ -58,7 +60,7 @@ export const searchSlice = createSlice({
     setSearchUserList: (state, action) => {
       state.searchUserList = action.payload;
     },
-    resetSearchUserList: (state)=>{
+    resetSearchUserList: (state) => {
       state.searchUserList = [];
     },
     setSearchAllUserList: (state, action) => {
@@ -79,15 +81,7 @@ export const searchSlice = createSlice({
   },
 });
 
-export const {
-  setSearchParams,
-  setSearchUserList,
-  setSearchAllUserList,
-  setRPStart,
-  setRPTotal,
-  setRPTotalPage,
-  setRPCurrentPage,
-  resetSearchUserList,
-} = searchSlice.actions;
+export const { setSearchParams, setSearchUserList, setSearchAllUserList, setRPStart, setRPTotal, setRPTotalPage, setRPCurrentPage, resetSearchUserList } =
+  searchSlice.actions;
 
 export default searchSlice.reducer;

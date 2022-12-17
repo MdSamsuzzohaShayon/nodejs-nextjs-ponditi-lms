@@ -5,22 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import Router from 'next/router';
 import Image from 'next/image';
-import {
-  setRPCurrentPage,
-  setRPStart,
-  setSearchUserList,
-} from '../../redux/reducers/searchReducer';
-import {
-  setSelectedSearchUser,
-  showRequest,
-  setInitializeSchedule,
-} from '../../redux/reducers/scheduledclassReducer';
-import {
-  roles,
-  scheduledclassStatus,
-  types,
-  BACKEND_URL,
-} from '../../config/keys';
+import { setRPCurrentPage, setRPStart, setSearchUserList } from '../../redux/reducers/searchReducer';
+import { setSelectedSearchUser, showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
+import { roles, scheduledclassStatus, types, BACKEND_URL } from '../../config/keys';
 import MakeStar from '../elements/MakeStar';
 
 const { STUDENT } = roles;
@@ -35,9 +22,7 @@ function SearchResult() {
   const searchParams = useSelector((state) => state.search.searchParams);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const subjectList = useSelector((state) => state.subject.subjectList);
-  const searchAllUserList = useSelector(
-    (state) => state.search.searchAllUserList
-  );
+  const searchAllUserList = useSelector((state) => state.search.searchAllUserList);
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
   const rpTotalPage = useSelector((state) => state.search.rpTotalPage);
@@ -47,10 +32,7 @@ function SearchResult() {
     cpe.preventDefault();
     dispatch(setRPStart((selectedPage - 1) * rpTotal));
     dispatch(setRPCurrentPage(selectedPage));
-    const newSearchUserList = searchAllUserList.slice(
-      (selectedPage - 1) * rpTotal,
-      selectedPage * rpTotal
-    );
+    const newSearchUserList = searchAllUserList.slice((selectedPage - 1) * rpTotal, selectedPage * rpTotal);
     dispatch(setSearchUserList(newSearchUserList));
   };
 
@@ -86,20 +68,12 @@ function SearchResult() {
     htsre.preventDefault();
     const classAndSubject = { receverId };
     // console.log(searchParams);
-    if (
-      searchParams.ClassTypeId === '0' ||
-      searchParams.ClassTypeId === '' ||
-      searchParams.ClassTypeId === ANY
-    ) {
+    if (searchParams.ClassTypeId === '0' || searchParams.ClassTypeId === '' || searchParams.ClassTypeId === ANY) {
       classAndSubject.ClassTypeId = classtypeList[1].id;
     } else {
       classAndSubject.ClassTypeId = parseInt(searchParams.ClassTypeId, 10);
     }
-    if (
-      searchParams.SubjectId === '0' ||
-      searchParams.SubjectId === '' ||
-      searchParams.SubjectId === ANY
-    ) {
+    if (searchParams.SubjectId === '0' || searchParams.SubjectId === '' || searchParams.SubjectId === ANY) {
       classAndSubject.SubjectId = subjectList[1].id;
     } else {
       classAndSubject.SubjectId = parseInt(searchParams.SubjectId, 10);
@@ -148,46 +122,26 @@ function SearchResult() {
                   <div className="search-card-row row g-0">
                     <div className="col-md-3">
                       {sul?.image ? (
-                        <img
-                          src={makeTheUrl(sul.image)}
-                          className="rounded-start"
-                          alt={`${sul?.firstname} ${sul?.lastname}`}
-                        />
+                        <img src={makeTheUrl(sul.image)} className="rounded-start" alt={sul?.name} />
                       ) : (
-                        <img
-                          src="/img/default-img.jpg"
-                          className="rounded-start"
-                          alt={`${sul?.firstname} ${sul?.lastname}`}
-                        />
+                        <img src="/img/default-img.jpg" className="rounded-start" alt={sul?.name} />
                       )}
                     </div>
                     <div className="col-md-6">
                       <div className="card-body">
                         <div className="d-flex justify-content-between">
-                          <h5 className="card-title text-capitalize">
-                            {`${sul?.firstname} ${sul?.lastname}`}
-                          </h5>
+                          <h5 className="card-title text-capitalize">{sul?.name}</h5>
                           <h5 className="card-title text-capitalize">
                             <MakeStar limit={findStarLimit(sul)} />
                           </h5>
                         </div>
-                        <p className="card-text">
-                          Experience: {sul?.experience} years
-                        </p>
-                        <p className="card-text">
-                          Fees: {sul?.rate} tk per hour
-                        </p>
+                        <p className="card-text">Experience: {sul?.experience} years</p>
+                        <p className="card-text">Fees: {sul?.rate} tk per hour</p>
                       </div>
                     </div>
                     <div className="col-md-3 vertical-center ">
                       {authUserInfo?.role === STUDENT && (
-                        <button
-                          type="button"
-                          className="btn btn-primary my-2 request-details"
-                          onClick={(htsre) =>
-                            headToSendRequestHandler(htsre, sul.id)
-                          }
-                        >
+                        <button type="button" className="btn btn-primary my-2 request-details" onClick={(htsre) => headToSendRequestHandler(htsre, sul.id)}>
                           Send Request
                         </button>
                       )}
@@ -196,9 +150,7 @@ function SearchResult() {
                         className="btn btn-primary my-2 request-details"
                         // onClick={(vde) => viewDetailHandler(vde, sul.id)}
                       >
-                        <Link href={`/search/detail/${sul.id}`}>
-                          View Details
-                        </Link>
+                        <Link href={`/search/detail/${sul.id}`}>View Details</Link>
                       </button>
                     </div>
                   </div>
@@ -206,13 +158,7 @@ function SearchResult() {
               ))}
               <nav className="w-full">
                 <ul className="pagination justify-content-center">
-                  <li
-                    className={
-                      rpCurrentPage === 1 ? 'page-item disabled' : 'page-item'
-                    }
-                    onClick={changePrevPageHandler}
-                    role="presentation"
-                  >
+                  <li className={rpCurrentPage === 1 ? 'page-item disabled' : 'page-item'} onClick={changePrevPageHandler} role="presentation">
                     <a className="page-link">Previous</a>
                   </li>
                   {rpTotalPage &&
@@ -220,11 +166,7 @@ function SearchResult() {
                       .fill()
                       .map((rpt, idx) => (
                         <li
-                          className={
-                            idx + 1 === rpCurrentPage
-                              ? 'page-item active'
-                              : 'page-item'
-                          }
+                          className={idx + 1 === rpCurrentPage ? 'page-item active' : 'page-item'}
                           key={idx}
                           onClick={(cpe) => changePageHandler(cpe, idx + 1)}
                           role="presentation"
@@ -234,15 +176,7 @@ function SearchResult() {
                           </a>
                         </li>
                       ))}
-                  <li
-                    className={
-                      rpCurrentPage === rpTotalPage
-                        ? 'page-item disable'
-                        : 'page-item'
-                    }
-                    onClick={changeNextPageHandler}
-                    role="presentation"
-                  >
+                  <li className={rpCurrentPage === rpTotalPage ? 'page-item disable' : 'page-item'} onClick={changeNextPageHandler} role="presentation">
                     <a className="page-link" href="#">
                       Next
                     </a>

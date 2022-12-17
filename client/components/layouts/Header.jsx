@@ -60,9 +60,7 @@ function Header() {
     }
     isMounted = true;
   }, []);
-  useEffect(() => {
-    console.log(window.innerWidth);
-  });
+
 
   const logoutHandler = async (lhe) => {
     lhe.preventDefault();

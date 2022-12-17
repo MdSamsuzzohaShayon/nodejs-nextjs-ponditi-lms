@@ -19,6 +19,7 @@ const classtypeRoutes = require('./routes/classtypeRouter');
 const subjectRoutes = require('./routes/subjectRouter');
 const scheduledclassRoutes = require('./routes/scheduledclassRouter');
 const reviewRoutes = require('./routes/reviewRouter');
+const tuitionmRoutes = require('./routes/tuitionmRouter');
 // eslint-disable-next-line no-unused-vars
 const db = require('./models');
 
@@ -54,10 +55,11 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
 app.get('/api', (req, res) => {
   res.send('Hello World');
 });
-// app.use('/api/subscriber', subscriberRoutes);
+
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/tuitionm', tuitionmRoutes);
 app.use('/api/classtype', classtypeRoutes);
 app.use('/api/subject', subjectRoutes);
 app.use('/api/scheduledclass', scheduledclassRoutes);

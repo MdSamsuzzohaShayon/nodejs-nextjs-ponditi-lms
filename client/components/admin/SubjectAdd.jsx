@@ -4,16 +4,8 @@
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../config/axios';
-import {
-  setErrorList,
-  toggleLoading,
-  resetErrorList,
-} from '../../redux/reducers/elementsSlice';
-import {
-  setAddSubject,
-  resetAddSubject,
-  setSubjectList,
-} from '../../redux/reducers/subjectReducer';
+import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
+import { setAddSubject, resetAddSubject, setSubjectList } from '../../redux/reducers/subjectReducer';
 
 function SubjectAdd(props) {
   const dispatch = useDispatch();
@@ -102,14 +94,7 @@ function SubjectAdd(props) {
             props.classtypeList.map((sl) => (
               <div className="col-md-3" key={sl.id}>
                 <div className="form-check form-check-inline">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id={sl.name}
-                    name={sl.name}
-                    value={sl.id}
-                    onChange={classTypeSelectionHandler}
-                  />
+                  <input className="form-check-input" type="checkbox" id={sl.name} name={sl.name} value={sl.id} onChange={classTypeSelectionHandler} />
                   <label className="form-check-label" htmlFor={sl.name}>
                     {sl.name}
                   </label>
@@ -119,19 +104,10 @@ function SubjectAdd(props) {
         </div>
         <div className="row mb-3 mx-0 d-flex">
           <div className="col">
-            <button
-              className="btn btn-primary w-fit"
-              type="submit"
-              id="classtype-addon"
-            >
+            <button className="btn btn-primary w-fit" type="submit" id="classtype-addon">
               Add Subject
             </button>
-            <a
-              href="#"
-              className="btn btn-secondary w-fit"
-              onClick={props.togglePartHandler}
-              role="button"
-            >
+            <a href="#" className="btn btn-secondary w-fit" onClick={props.togglePartHandler} role="button">
               See subject list
             </a>
           </div>

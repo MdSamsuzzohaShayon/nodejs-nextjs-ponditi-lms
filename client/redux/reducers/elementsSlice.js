@@ -68,6 +68,8 @@ const elementsSlice = createSlice({
     isLoading: false,
     errorList: [],
     successMessageList: [],
+    // Form validation
+    noValidate: true,
   },
   reducers: {
     openModal: (state, action) => {
@@ -89,16 +91,12 @@ const elementsSlice = createSlice({
     setSuccessMessageList: (state, action) => {
       state.successMessageList = action.payload;
     },
+    setNoValidate: (state, action) => {
+      state.noValidate = action.payload;
+    },
   },
 });
 
-export const {
-  openModal,
-  closeModal,
-  toggleLoading,
-  setErrorList,
-  setSuccessMessageList,
-  resetErrorList,
-} = elementsSlice.actions;
+export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate } = elementsSlice.actions;
 
 export default elementsSlice.reducer;

@@ -15,107 +15,107 @@
  - **Requirement update-2**
  - Reset all targeted value after making request and mounting a component
  - **Register user**
-   - Only digit for OTP Code ✅
+   - ✅ Only digit for OTP Code 
    - Verify user profile by **admin** (Until they are verified they will be unlisted from search) 
-   - Next button to the right ✅
-   - Use bulk sms bd for sending messages ✅
+   - ✅ Next button to the right 
+   - ✅ Use bulk sms bd for sending messages 
  - **Send request**
-   - Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student ✅
-   - After filtering by default they will select subjects and class (By default no available class and subjects) ✅
-   - No duration or estimated bill - only hourly rate ✅
-   - Select slot (8 to 10) ✅
+   - ✅ Detail of teacher (Any one can see techer detail), Send request visible only if he is logged in as student 
+   - ✅ After filtering by default they will select subjects and class (By default no available class and subjects) 
+   - ✅ No duration or estimated bill - only hourly rate 
+   - ✅ Select slot (8 to 10) 
  - **Update profile**
    1. Educational qualification
-      - Exam name (SSC / HSC / )  ✅
-      - Institution ✅
-      - Group (Science, Arts, & commerce) ✅
-      - Result  ✅
-      - Passing Year  ✅
+      - ✅ Exam name (SSC / HSC / )  
+      - ✅ Institution 
+      - ✅ Group (Science, Arts, & commerce) 
+      - ✅ Result  
+      - ✅ Passing Year  
    2. Personal Detail 
       - Picture (Later)
-      - Name  ✅
-      - Email  ✅
-      - District  ✅
+      - ✅ Name  
+      - ✅ Email  
+      - ✅ District  
       - Present Address (Used to search ) 
    3. Tution Detail 
-      - Rate per hour  ✅
-      - Status (Currenty available to request or not ) ✅
+      - ✅ Rate per hour  
+      - ✅ Status (Currenty available to request or not ) 
       - Tution place multile selection 
    4. Subjects
-      - Tution subjects ✅
-      - Tution class types ✅
+      - ✅ Tution subjects 
+      - ✅ Tution class types 
  - **Scheduled Class detail**
-   - No bill and duration ✅
-   - Detail location of student ✅
-   - Institution name ✅
-   - Scheduled time ✅
-   - Picture, Name, Class & Subject ✅ 
+   - ✅ No bill and duration 
+   - ✅ Detail location of student 
+   - ✅ Institution name 
+   - ✅ Scheduled time 
+   - ✅ Picture, Name, Class & Subject  
  - **Top Bar**
-   - Profile ✅ 
-   - Request histry (Filter by pending requests, rejected requestes) ✅ 
-   - Notifications ✅ 
+   - ✅ Profile  
+   - ✅ Request histry (Filter by pending requests, rejected requestes)  
+   - ✅ Notifications  
  - **Tution process by teacher**
-   - Start tution (No more request acceptable) ✅ 
-   - Minutes counting  ✅ 
-   - Finish tution (bill depends on per minute count) ✅ 
-   - Mark as paid (Student can not send request until they pay their dues) ✅ 
-   - Give feedback ✅ 
+   - ✅ Start tution (No more request acceptable)  
+   - ✅ Minutes counting   
+   - ✅ Finish tution (bill depends on per minute count)  
+   - ✅ Mark as paid (Student can not send request until they pay their dues)  
+   - ✅ Give feedback  
 
   - **Modification-1**
-    - Making class and subjects without reload the admin dashboard page (To make relationship it needs id of subject and classtype) ✅ 
-    - User should not regester twice ✅ 
-    - User will have different education level ✅ 
-    - Multiple class and subjects of a teacher ✅ 
-    - Start imiddeate action after start class, accept, reject, finish class, review etc ✅ 
-    - select default subject and class of teacher if search has none of it ✅ 
-    - select item background in Calender ✅ 
-    - All class are online for now. Fix in server initiate class ✅ 
-    - Show slot time ✅ 
+    - ✅ Making class and subjects without reload the admin dashboard page (To make relationship it needs id of subject and classtype)  
+    - ✅ User should not regester twice  
+    - ✅ User will have different education level  
+    - ✅ Multiple class and subjects of a teacher  
+    - ✅ Start imiddeate action after start class, accept, reject, finish class, review etc  
+    - ✅ select default subject and class of teacher if search has none of it  
+    - ✅ select item background in Calender  
+    - ✅ All class are online for now. Fix in server initiate class  
+    - ✅ Show slot time  
   
   - **Modification-2**
-    - Make google place api work ✅ 
-    - Make navbar smaller ✅ 
-    - No scrolling for searching teacher ✅ 
-    - Search button on the right ✅ 
-    - Logout button doesn't work on production ✅ 
-    - Option for selecting multiple option for tution location - online, tl, sl ✅ 
+    - ✅ Make google place api work  
+    - ✅ Make navbar smaller  
+    - ✅ No scrolling for searching teacher  
+    - ✅ Search button on the right  
+    - ✅ Logout button doesn't work on production  
+    - ✅ Option for selecting multiple option for tution location - online, tl, sl  
 
   - **Modification-3**
-    - No tution fee for student - Available status is not changing on production ✅ 
-    - Show role on top bar ✅ 
-    - Need to work with Calender - Select current date, add 7 days, work next and previous  ✅ 
-    - Align time slot  ✅
-    - Add profile picture  ✅ 
-    - Add address in order to initialize scheduled class  ✅ 
-    - Notification bar ✅ 
+    - ✅ No tution fee for student - Available status is not changing on production  
+    - ✅ Show role on top bar  
+    - ✅ Need to work with Calender - Select current date, add 7 days, work next and previous   
+    - ✅ Align time slot  
+    - ✅ Add profile picture   
+    - ✅ Add address in order to initialize scheduled class   
+    - ✅ Notification bar  
     - Make More responsive
-    - Approve button on detail page of scheduled class ✅ 
+    - ✅ Approve button on detail page of scheduled class  
 
 
  - **Requirement-1**
- - Work with review ✅
+ - ✅ Work with review 
  - Generate link for scheduled class that is online only
  - Send notification for new requests via phone or mobile browser
  - Teacher per hour rate need to update (client's dashboard input fields) 
- - Send request with current time of client to initialize scheduled class ✅
- - List of requested students ✅
- - Validate with express validator in every page ✅
- - Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY) ✅
- - Add users online, TL, SL ✅
- - Add hourly fees if he is teacher ✅
- - Student teacher relationship for send request ✅
- - Remove from signup - subjects, classes ✅
- - Create or seed some random user ✅
- - Profession ✅
- - Make sign out ✅
- - Create tables of classes, subjects ✅
- - Setup eslint for server ✅
+ - ✅ Send request with current time of client to initialize scheduled class 
+ - ✅ List of requested students 
+ - ✅ Validate with express validator in every page 
+ - ✅ Add user types (ONLINE, TL(Student's Location), SL(Student's Location), ANY) 
+ - ✅ Add users online, TL, SL 
+ - ✅ Add hourly fees if he is teacher 
+ - ✅ Student teacher relationship for send request 
+ - ✅ Remove from signup - subjects, classes 
+ - ✅ Create or seed some random user 
+ - ✅ Profession 
+ - ✅ Make sign out 
+ - ✅ Create tables of classes, subjects 
+ - ✅ Setup eslint for server 
  - google place api for location search
- - 1 hour session ✅
- - Search teachers ✅
- - Search category 1, online 2, offline 3, home ✅
+ - ✅ 1 hour session 
+ - ✅ Search teachers 
+ - ✅ Search category 1, online 2, offline 3, home 
  - Search by Location - google place api 
- - Remove teacher/student from login page ✅
+ - ✅ Remove teacher/student from login page 
  - User to feedback (many to many relationship) 
  
  - **Requirement update-3**
@@ -124,18 +124,39 @@
 
  - User should not be able to register with same phone twice
  - Confused - 16
- - Fixing menu ✅
- - phone change cc - Phone country code ✅
+ - ✅ Fixing menu 
+ - ✅ phone change cc - Phone country code 
  - teacher type - arabic, bangla, english in the search
- - send id and password ✅
- - We should keep 2 step for regestration  ✅
- - No age, profesion, cgpa  ✅
- - passing year, Currently studying option  ✅
+ - Location api for user location in regestration,
+ - Set profession by default the role
+ - ✅ send id and password 
+ - ✅ We should keep 2 step for regestration  
+ - ✅ No age, profesion, cgpa  
+ - ✅ passing year, Currently studying option  
+ - Send message on first attempt
  - Check all functions of update
  - add educational qualifications not working at the time of registration
  - Reset password
+ 
+ - **Requirement update-4**
+ - ✅ OTP is not sending properly (register) -> use full code inside router callback (not from sendsms)
+ - ✅ No tabs for classes and account (register)
+ - ✅ Add profession and institution (register)
+ - ✅ if anyone check on currently studying passing year will be disable (register)
+ - ✅ Degree / education -> height education (register)
+ - Medium -> classes -> subjects 
+ - ✅ Search functions need to work
+ - Tuition style (Online, teacher's location, student's location)
+ - Login redict to login page again on production
+ - Rates for different subjects
+ - 
 
 Ask questions
+
+### Advancing
+ - Dockerizing
+ - Using sequelize cli properly to migrate, and undo with associations
+ - Testing
 
 
 

@@ -6,6 +6,7 @@ import SearchForm from '../components/search/SearchForm';
 import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
+import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
 
 export default function home() {
   let isMounted = true;
@@ -15,7 +16,7 @@ export default function home() {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch())]);
+        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch()), dispatch(fetchAllTuitionmsSearch())]);
       }
     })();
     isMounted = false;

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { adminSidebarList, scheduledclassStatus } from '../../config/keys';
 
-const { CLASS_TYPE, SUBJECT, USERS } = adminSidebarList;
+const { CLASS_TYPE, SUBJECT, USERS, MEDIUM } = adminSidebarList;
 const { APPROVED, PENDING, REJECTED, ANY } = scheduledclassStatus;
 
 const initialLoginAdmin = {
@@ -14,16 +14,21 @@ const initialLoginAdmin = {
 const initialAdminSidebarElements = [
   {
     id: 1,
+    name: MEDIUM,
+    text: 'Tuition Medium',
+  },
+  {
+    id: 2,
     name: CLASS_TYPE,
     text: 'Class Type',
   },
   {
-    id: 2,
+    id: 3,
     name: SUBJECT,
     text: 'Subject',
   },
   {
-    id: 3,
+    id: 4,
     name: USERS,
     text: 'Users',
   },

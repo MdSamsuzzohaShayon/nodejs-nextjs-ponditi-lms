@@ -20,10 +20,11 @@ a {
 a:hover {
   color: $danger-color;
 }
-// label{
-//   margin-left: 0.2rem;
-//   margin-bottom: 0.5rem;
-// }
+label{
+  // margin-left: 0.2rem;
+  // margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
 
 .w-full {
   width: 100% !important;

@@ -3,13 +3,13 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import { useEffect } from 'react';
-import Layout from '../../components/layouts/Layout';
-import { scheduledclassStatus } from '../../config/keys';
-import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
-import { fetchCurrentSingleUser, setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../redux/reducers/userReducer';
-import ScheduledClassList from '../../components/scheduledclass/ScheduledClassList';
-import { toggleLoading, setErrorList } from '../../redux/reducers/elementsSlice';
-import axios from '../../config/axios';
+import Layout from '../../../components/layouts/Layout';
+import { scheduledclassStatus } from '../../../config/keys';
+import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
+import { fetchCurrentSingleUser, setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../../redux/reducers/userReducer';
+import ScheduledClassList from '../../../components/scheduledclass/ScheduledClassList';
+import { toggleLoading, setErrorList } from '../../../redux/reducers/elementsSlice';
+import axios from '../../../config/axios';
 
 const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 

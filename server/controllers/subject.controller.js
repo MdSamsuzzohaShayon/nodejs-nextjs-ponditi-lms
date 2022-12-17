@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { validationResult } = require('express-validator');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 // bcryptjs
@@ -14,6 +14,11 @@ const { ADMIN, TEACHER } = keys.roles;
  * @add subject with relation of classtype
  */
 const addSubject = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+
   const { name, classTypeId } = req.body;
 
   try {

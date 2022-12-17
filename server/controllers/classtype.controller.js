@@ -1,10 +1,11 @@
 const { Op } = require('sequelize');
+const { validationResult } = require('express-validator');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 // bcryptjs
 const db = require('../models');
 
-const { ClassType, Subject } = db;
+const { ClassType, Subject, Tuitionm } = db;
 
 const keys = require('../config/keys');
 
@@ -13,7 +14,11 @@ const { ADMIN, TEACHER } = keys.roles;
  * @add class type
  */
 const addClassType = async (req, res) => {
-  const { name, subjectId } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(406).json({ error: errors.array() });
+  }
+  const { name, subjectId, tuitionmId } = req.body;
 
   // console.log(name, subjectId);
   // console.log("Req made");
@@ -37,6 +42,15 @@ const addClassType = async (req, res) => {
         await newClassType.setSubjects(findAllSubject); // working
       }
     }
+    if (tuitionmId && tuitionmId.length > 0) {
+      const findAllTuitionm = await Tuitionm.findAll({
+        where: { id: tuitionmId },
+      });
+      if (findAllTuitionm.length > 0) {
+        // set classes in subjects
+        await newClassType.setTuitionms(findAllTuitionm); // working
+      }
+    }
 
     return res.status(201).json({ msg: 'ClassType created successfully', classType: newClassType });
   } catch (error) {
@@ -52,6 +66,11 @@ const getAllClassWithSubjects = async (req, res) => {
       include: [
         {
           model: Subject,
+          attributes: ['id', 'name'],
+          // through: { where: { amount: 10 } }
+        },
+        {
+          model: Tuitionm,
           attributes: ['id', 'name'],
           // through: { where: { amount: 10 } }
         },

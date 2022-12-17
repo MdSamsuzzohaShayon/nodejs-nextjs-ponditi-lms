@@ -9,21 +9,14 @@ function List(props) {
       {props.list.length > 0 && (
         <ul className="list-group">
           {props.list.map((ctl, idx) => (
-            <li
-              className="list-group-item rounded-1 d-flex justify-content-between"
-              key={idx}
-            >
+            <li className="list-group-item rounded-1 d-flex justify-content-between" key={idx}>
               <span className="text-capitalize props prop-1">{ctl.name}</span>
               <p className="props prop-2 text-center">
                 {ctl?.Subjects && ctl?.Subjects?.length}
                 {ctl?.ClassTypes && ctl?.ClassTypes?.length}
               </p>
               <div className="props prop-3 text-end">
-                <button
-                  className="btn btn-danger w-fit "
-                  type="button"
-                  onClick={(e) => props.deleteHandler(e, ctl.id)}
-                >
+                <button className="btn btn-danger w-fit " type="button" onClick={(e) => props.deleteHandler(e, ctl.id)}>
                   Delete
                 </button>
               </div>

@@ -3,11 +3,7 @@ import Link from 'next/link';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../config/axios';
-import {
-  toggleLoading,
-  setErrorList,
-  resetErrorList,
-} from '../../redux/reducers/elementsSlice';
+import { toggleLoading, setErrorList, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { scheduledclassStatus } from '../../config/keys';
 import { setSelectedTabElement } from '../../redux/reducers/adminReducer';
 import { fetchAllUsersByAdmin } from '../../redux/reducers/userReducer';
@@ -17,10 +13,7 @@ const { APPROVED, REJECTED, PENDING } = scheduledclassStatus;
 function UserList(props) {
   const dispatch = useDispatch();
 
-  const adminUserTabElement = useSelector(
-    (state) => state.admin.adminUserTabElement
-  );
-
+  const adminUserTabElement = useSelector((state) => state.admin.adminUserTabElement);
 
   const rejectedUserHandler = async (rue, userId) => {
     rue.preventDefault();
@@ -87,11 +80,7 @@ function UserList(props) {
           <li key={aut.id} className="nav-item">
             <button
               type="button"
-              className={
-                aut.name === props.selectedTabElement
-                  ? 'nav-link rounded-1 text-capitalize active'
-                  : 'nav-link rounded-1 text-capitalize'
-              }
+              className={aut.name === props.selectedTabElement ? 'nav-link rounded-1 text-capitalize active' : 'nav-link rounded-1 text-capitalize'}
               onClick={(ctie) => changeTabItemHandler(ctie, aut.name)}
             >
               {aut.text}
@@ -103,15 +92,10 @@ function UserList(props) {
       {props.allUserList.length > 0 && (
         <ul className="list-group">
           {props.allUserList.map((aul) => (
-            <li
-              className="list-group-item rounded-1 d-flex justify-content-between"
-              key={aul.id}
-            >
-              <span className="text-capitalize props prop-1">
-                {`${aul?.firstname} ${aul?.lastname}`}{' '}
-              </span>
+            <li className="list-group-item rounded-1 d-flex justify-content-between" key={aul.id}>
+              <span className="text-capitalize props prop-1">{aul?.name} </span>
               <div className="props prop-2 info d-flex flex-wrap justify-content-start">
-                <p className='me-1'>{aul?.phone}</p> &nbsp;
+                <p className="me-1">{aul?.phone}</p> &nbsp;
                 <p>{aul?.email}</p>
               </div>
               <div className="props prop-4 justify-content-end d-flex flex-wrap">
@@ -120,29 +104,17 @@ function UserList(props) {
                 </button>
                 {aul.isActive === PENDING && (
                   <>
-                    <button
-                      className="btn btn-primary w-fit h-fit "
-                      type="button"
-                      onClick={(e) => acceptUserHandler(e, aul.id)}
-                    >
+                    <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
                       Approve
                     </button>
-                    <button
-                      className="btn btn-danger w-fit "
-                      type="button"
-                      onClick={(e) => rejectedUserHandler(e, aul.id)}
-                    >
+                    <button className="btn btn-danger w-fit " type="button" onClick={(e) => rejectedUserHandler(e, aul.id)}>
                       Reject
                     </button>
                   </>
                 )}
 
                 {aul.isActive === REJECTED && (
-                  <button
-                    className="btn btn-primary w-fit h-fit "
-                    type="button"
-                    onClick={(e) => acceptUserHandler(e, aul.id)}
-                  >
+                  <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
                     Approve
                   </button>
                 )}

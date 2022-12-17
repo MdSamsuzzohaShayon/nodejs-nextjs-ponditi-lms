@@ -12,24 +12,19 @@ import Loader from '../../../components/elements/Loader';
 import TsSelect from '../../../components/register/TsSelect';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
+import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 
 function register() {
   let isMounted = true;
   const dispatch = useDispatch();
-  const userFormsType = useSelector((state) => state.user.userFormsType);
+  const userSendVerifyStep = useSelector((state) => state.user.userSendVerifyStep);
   const isLoading = useSelector((state) => state.elements.isLoading);
   // let isLoading = true;
 
   // eslint-disable-next-line consistent-return
 
   const showSelectedForm = () => {
-    if (userFormsType === REGISTER) {
-      return <RegistrationForm />;
-    }
-    if (userFormsType === TS_SELECT) {
-      return <TsSelect />;
-    }
-    if (userFormsType === VERIFY_CODE) {
+    if (userSendVerifyStep === VERIFY_CODE) {
       return <VerifyCode />;
     }
     return <SendCode />;
@@ -40,7 +35,7 @@ function register() {
     if (isMounted) {
       (async () => {
         dispatch(resetErrorList());
-        await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null))]);
+        await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
       })();
     }
     isMounted = false;

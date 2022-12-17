@@ -8,11 +8,7 @@ import { useRouter } from 'next/router';
 import axios from '../../config/axios';
 import ErrorMessages from '../elements/ErrorMessages';
 import Loader from '../elements/Loader';
-import {
-  setErrorList,
-  toggleLoading,
-  resetErrorList,
-} from '../../redux/reducers/elementsSlice';
+import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
 import SubjectAdd from './SubjectAdd';
 import List from './List';
@@ -40,14 +36,12 @@ function SubjectContent() {
     // console.log(subjectId);
     try {
       dispatch(toggleLoading(true));
-      if(!subjectId){
-        return dispatch(setErrorList(["No id found"]));
+      if (!subjectId) {
+        return dispatch(setErrorList(['No id found']));
       }
       const response = await axios.delete(`/subject/delete/${subjectId}`);
       if (response.status === 200) {
-        const newSubjectList = subjectList.filter(
-          (ctl) => ctl.id !== subjectId
-        );
+        const newSubjectList = subjectList.filter((ctl) => ctl.id !== subjectId);
         dispatch(setSubjectList(newSubjectList));
         dispatch(resetErrorList());
       }
@@ -74,25 +68,12 @@ function SubjectContent() {
         <div className="container">
           <ErrorMessages />
           {addContent ? (
-            <SubjectAdd
-              togglePartHandler={togglePartHandler}
-              classtypeList={classtypeList}
-              subjectList={subjectList}
-            />
+            <SubjectAdd togglePartHandler={togglePartHandler} classtypeList={classtypeList} subjectList={subjectList} />
           ) : (
             <>
-              <List
-                list={subjectList}
-                title="Subject List"
-                deleteHandler={deleteSubjectHandler}
-              />
+              <List list={subjectList} title="Subject List" deleteHandler={deleteSubjectHandler} />
               <div className="row my-3 mx-0">
-                <a
-                  href="#"
-                  className="btn btn-primary w-fit"
-                  onClick={togglePartHandler}
-                  role="button"
-                >
+                <a href="#" className="btn btn-primary w-fit" onClick={togglePartHandler} role="button">
                   Add Subject
                 </a>
               </div>

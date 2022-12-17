@@ -15,6 +15,8 @@ module.exports = (sequelize, DataTypes) => {
 
       User.belongsToMany(models.ClassType, { through: 'UserToClasstype' });
       User.belongsToMany(models.Subject, { through: 'UserToSubject' });
+      // User.belongsToMany(models.Medium, { through: 'UserToMedium' });
+      User.belongsToMany(models.Tuitionm, { through: 'UniqueUserTuitionm' });
 
       User.hasMany(models.ScheduledClass, {
         foreignKey: 'senderId',
