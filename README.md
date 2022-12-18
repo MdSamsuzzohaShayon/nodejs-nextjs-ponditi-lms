@@ -146,6 +146,7 @@
  - ✅ Degree / education -> height education (register)
  - Medium -> classes -> subjects 
  - ✅ Search functions need to work
+ - Frontend no result on search
  - Tuition style (Online, teacher's location, student's location)
  - Login redict to login page again on production
  - Rates for different subjects
@@ -201,3 +202,6 @@ Ask questions
  ```
 ### Challenges
  - [Cross domain cookie](https://stackoverflow.com/questions/3342140/cross-domain-cookies/74231202#74231202)
+
+### Docker
+ - [Dockerize Your Full-Stack App](https://www.youtube.com/watch?v=Jo5TVUBjbIs), [Dockerizing Full Stack Web App REACTJS & NODEJS](https://www.youtube.com/watch?v=IDVUy34vlSE)
