@@ -56,7 +56,6 @@ function SearchForm() {
   const searchTeacherHandler = async () => {
     try {
       // console.log(searchParams);
-      dispatch(toggleLoading(true));
       const response = await axios.get('/search/teacher', {
         params: searchParams,
       });
@@ -81,8 +80,6 @@ function SearchForm() {
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
-    } finally {
-      dispatch(toggleLoading(false));
     }
   };
 

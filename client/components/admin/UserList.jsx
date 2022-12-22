@@ -75,7 +75,7 @@ function UserList(props) {
     <div className="UserList">
       <h1>User List</h1>
 
-      <ul className="nav nav-pills">
+      <ul className="nav nav-pills bg-danger">
         {adminUserTabElement.map((aut) => (
           <li key={aut.id} className="nav-item">
             <button
@@ -89,40 +89,37 @@ function UserList(props) {
         ))}
       </ul>
 
-      {props.allUserList.length > 0 && (
-        <ul className="list-group">
-          {props.allUserList.map((aul) => (
-            <li className="list-group-item rounded-1 d-flex justify-content-between" key={aul.id}>
-              <span className="text-capitalize props prop-1">{aul?.name} </span>
-              <div className="props prop-2 info d-flex flex-wrap justify-content-start">
-                <p className="me-1">{aul?.phone}</p> &nbsp;
-                <p>{aul?.email}</p>
-              </div>
-              <div className="props prop-4 justify-content-end d-flex flex-wrap">
-                <button className="btn btn-primary w-fit h-fit " type="button">
-                  <Link href={`/user/detail/${aul.id}`}>Detail</Link>
-                </button>
-                {aul.isActive === PENDING && (
-                  <>
-                    <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
-                      Approve
-                    </button>
-                    <button className="btn btn-danger w-fit " type="button" onClick={(e) => rejectedUserHandler(e, aul.id)}>
-                      Reject
-                    </button>
-                  </>
-                )}
-
-                {aul.isActive === REJECTED && (
+      {props.allUserList.length > 0 &&
+        props.allUserList.map((aul) => (
+          <div className="row mt-2 border-bottom" key={aul.id}>
+            <div className="col-md-4">{aul?.name}</div>
+            <div className="col-md-4">
+              <p>{aul?.phone}</p>
+              <p>{aul?.email}</p>
+            </div>
+            <div className="col-md-4 justify-content-end d-flex flex-wrap">
+              <button className="btn btn-primary w-fit h-fit " type="button">
+                <Link href={`/user/detail/?userId=${aul.id}`}>Detail</Link>
+              </button>
+              {aul.isActive === PENDING && (
+                <>
                   <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
                     Approve
                   </button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                  <button className="btn btn-danger w-fit h-fit" type="button" onClick={(e) => rejectedUserHandler(e, aul.id)}>
+                    Reject
+                  </button>
+                </>
+              )}
+
+              {aul.isActive === REJECTED && (
+                <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
+                  Approve
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       <style jsx>{`
         .props {
           width: 33%;

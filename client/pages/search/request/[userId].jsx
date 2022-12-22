@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  fetchCurrentSingleUser,
-  fetchSelectedSingleUser,
-} from '../../../redux/reducers/userReducer';
+import { fetchCurrentSingleUser, fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
 import SendRequest from '../../../components/detail/SendRequest';
 import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
@@ -23,19 +20,14 @@ function index() {
   const isLoading = useSelector((state) => state.elements.isLoading);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const selectedUser = useSelector((state) => state.user.selectedUser);
-  const initializeSchedule = useSelector(
-    (state) => state.scheduledclass.initializeSchedule
-  );
+  const initializeSchedule = useSelector((state) => state.scheduledclass.initializeSchedule);
 
   const { userId } = router.query;
 
   const initializeScheduleValue = (receverId) => {
     if (authUserInfo.role === TEACHER) {
       router.push('/user/dashboard');
-    } else if (
-      initializeSchedule.SubjectId === null ||
-      initializeSchedule.ClassTypeId === null
-    ) {
+    } else if (initializeSchedule.SubjectId === null || initializeSchedule.ClassTypeId === null) {
       const search = window.localStorage.getItem('search');
       if (search) {
         const searchData = JSON.parse(search);
@@ -61,11 +53,7 @@ function index() {
       }
       (async () => {
         // console.log({ userId, authUserInfo });
-        await Promise.all([
-          dispatch(fetchSelectedSingleUser(userId)),
-          dispatch(fetchCurrentSingleUser(authUserInfo.id)),
-          initializeScheduleValue(userId),
-        ]);
+        await Promise.all([dispatch(fetchSelectedSingleUser(userId)), dispatch(fetchCurrentSingleUser(authUserInfo.id)), initializeScheduleValue(userId)]);
       })();
       isMounted = false;
     }
@@ -81,14 +69,8 @@ function index() {
   return (
     <Layout>
       <div className="container request">
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <>
-            <ErrorMessages />
-            <SendRequest />
-          </>
-        )}
+        <ErrorMessages />
+        <SendRequest />
       </div>
     </Layout>
   );

@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { showRequest } from '../../redux/reducers/scheduledclassReducer';
 import { roles, scheduledclassStatus, BACKEND_URL } from '../../config/keys';
 import { setUpdatePart } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';

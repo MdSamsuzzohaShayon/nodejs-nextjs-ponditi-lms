@@ -9,6 +9,7 @@ import PersonalInformationForm from '../../../components/user/Update/PersonalInf
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
 import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
 import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser, resetUpdateUserExam } from '../../../redux/reducers/userReducer';
+import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { toggleLoading, setErrorList, resetErrorList } from '../../../redux/reducers/elementsSlice';
@@ -46,7 +47,12 @@ function index() {
           //   console.log({ userId, updatePart });
           // get subjects  / class types / user
           dispatch(resetErrorList());
-          await Promise.all([dispatch(fetchCurrentSingleUser(userId)), dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null))]);
+          await Promise.all([
+            dispatch(fetchCurrentSingleUser(userId)),
+            dispatch(fetchAllTuitionms(null)),
+            dispatch(fetchAllClassTypes(null)),
+            dispatch(fetchAllSubjects(null)),
+          ]);
         })();
       }
       isMounted = false;

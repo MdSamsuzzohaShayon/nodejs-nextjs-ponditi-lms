@@ -37,6 +37,7 @@ function login() {
 
     try {
       dispatch(toggleLoading(true));
+      console.log({ isLoading });
       const response = await axios.post('/user/login', newObj, {
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +55,6 @@ function login() {
         dispatch(setErrorList([error.response.data.msg]));
         dispatch(resetLoginInfo());
       }
-    } finally {
       dispatch(toggleLoading(false));
     }
   };
@@ -66,7 +66,13 @@ function login() {
 
   useEffect(() => {
     dispatch(resetErrorList());
+    dispatch(toggleLoading(false));
   }, []);
+
+  // useEffect(() => () => {
+  //   // console.log('Component unmounted');
+  //   dispatch(toggleLoading(false));
+  // });
 
   return (
     <Layout>

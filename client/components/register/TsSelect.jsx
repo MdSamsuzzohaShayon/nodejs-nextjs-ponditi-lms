@@ -19,13 +19,13 @@ function TsSelect() {
         <button
           type="button"
           onClick={(e) => toggleRole(e, TEACHER)}
-          className={userInfo.role === TEACHER ? 'btn btn-primary border  p-5 display-3' : 'btn btn-primary-outline border  p-5 display-3'}
+          className={userInfo.role === TEACHER ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
         >
           Register as teacher
         </button>
         <button
           type="button"
-          className={userInfo.role === STUDENT ? 'btn btn-primary border  p-5 display-3' : 'btn btn-primary-outline border  p-5 display-3'}
+          className={userInfo.role === STUDENT ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
           onClick={(e) => toggleRole(e, 'STUDENT')}
         >
           Register as student

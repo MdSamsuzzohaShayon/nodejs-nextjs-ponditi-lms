@@ -83,7 +83,9 @@ function search() {
           </div>
         </section>
         <section className="section section-2 search-result">
-          <div className="container">{isLoading ? <Loader /> : <SearchResult />}</div>
+          <div className="container">
+            <SearchResult />
+          </div>
         </section>
       </div>
     </Layout>

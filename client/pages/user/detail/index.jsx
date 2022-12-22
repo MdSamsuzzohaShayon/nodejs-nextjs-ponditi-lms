@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
@@ -9,23 +9,30 @@ function index() {
   let isFetched = false;
   const dispatch = useDispatch();
   const router = useRouter();
-  const { userId } = router.query;
+  const [userId, setUserId] = useState(null);
 
   const selectedUser = useSelector((state) => state.user.selectedUser);
 
   useEffect(() => {
-    if (userId) {
+    const params = new URLSearchParams(window.location.search);
+    const newUserId = params.get('userId');
+    // console.log(userId);
+    if (newUserId) {
+      setUserId(newUserId);
       const user = window.localStorage.getItem('user');
       if (isFetched === false && user) {
         (async () => {
           // console.log(userId);
-          await dispatch(fetchSelectedSingleUser(userId));
+          await dispatch(fetchSelectedSingleUser(newUserId));
         })();
         // Check auth
       }
       isFetched = true;
+    } else {
+      router.push('/');
     }
   }, [router.isReady]);
+
   return (
     <Layout>
       <div className="detail">

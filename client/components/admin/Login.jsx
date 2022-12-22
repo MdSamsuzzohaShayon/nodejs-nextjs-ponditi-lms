@@ -59,9 +59,9 @@ function Login() {
         window.localStorage.removeItem('user');
         await axios.post('/user/logout');
       }
-    } finally {
       dispatch(toggleLoading(false));
     }
+    return null;
   };
 
   const inputChangeHandler = (iche) => {

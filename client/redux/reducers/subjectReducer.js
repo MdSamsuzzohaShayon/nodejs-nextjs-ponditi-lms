@@ -38,6 +38,7 @@ export const subjectSlice = createSlice({
     subjectListCopy: [], // Unchangable
     selectedSubjectList: [],
     addSubject: initialAddSubject,
+    displaySubject: false,
   },
   reducers: {
     setSubjectList: (state, action) => {
@@ -58,6 +59,9 @@ export const subjectSlice = createSlice({
     resetAddSubject: (state) => {
       state.addSubject = initialAddSubject;
     },
+    setDisplaySubject: (state, action) => {
+      state.displaySubject = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllSubjects.fulfilled, (state, action) => {
@@ -73,6 +77,6 @@ export const subjectSlice = createSlice({
   },
 });
 
-export const { setSubjectList, resetSubjectList, setAddSubject, resetAddSubject, setSelectedSubject, resetSelectedSubject } = subjectSlice.actions;
+export const { setSubjectList, resetSubjectList, setAddSubject, resetAddSubject, setSelectedSubject, resetSelectedSubject, setDisplaySubject } = subjectSlice.actions;
 
 export default subjectSlice.reducer;

@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ClassTypeContent from './ClassTypeContent';
 import SubjectContent from './SubjectContent';

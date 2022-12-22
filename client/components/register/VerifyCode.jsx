@@ -3,9 +3,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import Router from 'next/router';
-import { setCurrentUser, setUserFormsType, setVerifyCode, resetVerifyCode, setHasPhone } from '../../redux/reducers/userReducer';
+import { setCurrentUser, setUserFormsType, setVerifyCode, resetVerifyCode, setHasPhone, setUserSendVerifyStep } from '../../redux/reducers/userReducer';
 import axios from '../../config/axios';
-import { SEND_CODE, TS_SELECT, VERIFY_CODE } from '../../config/keys';
+import { REGISTER, SEND_CODE, TS_SELECT, VERIFY_CODE } from '../../config/keys';
 import { setErrorList, resetErrorList, toggleLoading, setSuccessMessageList } from '../../redux/reducers/elementsSlice';
 
 function VerifyCode() {
@@ -31,7 +31,9 @@ function VerifyCode() {
       if (response.status === 200) {
         dispatch(resetErrorList());
         dispatch(setCurrentUser({ phone: verifyCode.phone }));
-        Router.push(`/user/register/form/${response.data.userId}`);
+        // Router.push(`/user/register/form/${response.data.userId}`);
+        dispatch(setUserSendVerifyStep(REGISTER));
+        Router.push({ pathname: `/user/register/form`, query: { userId: response.data.userId } });
         dispatch(resetVerifyCode());
       }
     } catch (error) {
@@ -39,7 +41,6 @@ function VerifyCode() {
         // console.log(error.response);
         dispatch(setErrorList([error.response.data.msg]));
       }
-    } finally {
       dispatch(toggleLoading(false));
     }
   };

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -10,7 +11,6 @@ import Loader from '../../components/elements/Loader';
 function login() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.elements.isLoading);
   // get localstorage
   let isMounted = false;
   useEffect(() => {
@@ -32,7 +32,16 @@ function login() {
   return (
     <Layout>
       <section className="section-1 Admin-login">
-        <div className="container">{isLoading ? <Loader /> : <Login />}</div>
+        <div className="container">
+          <div className="row mt-5">
+            <div className="lockicon col-md-6 d-none d-md-block">
+              <img src="/shape/login.svg" alt="" className="img-fluid" />
+            </div>
+            <div className="login-component col-md-6">
+              <Login />
+            </div>
+          </div>
+        </div>
       </section>
     </Layout>
   );

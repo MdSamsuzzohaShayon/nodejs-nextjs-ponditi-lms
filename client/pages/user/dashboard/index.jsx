@@ -5,32 +5,20 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleLoading, resetErrorList } from '../../../redux/reducers/elementsSlice';
-import { setSelectedContent, toggleAuthUser, fetchCurrentSingleUser } from '../../../redux/reducers/userReducer';
+import { toggleAuthUser, fetchCurrentSingleUser } from '../../../redux/reducers/userReducer';
 import Detail from '../../../components/user/Detail';
 import { fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import Layout from '../../../components/layouts/Layout';
-import Profile from '../../../components/user/Profile';
-import SOTRequest from '../../../components/scheduledclass/SOTRequest';
-import ApprovedClass from '../../../components/scheduledclass/ApprovedClass';
-import RejectedClass from '../../../components/scheduledclass/RejectedClass';
-import { userDashboardSidebarList, roles } from '../../../config/keys';
+import { roles } from '../../../config/keys';
 
-const { TEACHER, STUDENT, ADMIN } = roles;
-
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } = userDashboardSidebarList;
+const { ADMIN } = roles;
 
 function dashboard() {
   let isMounted = false;
   const router = useRouter();
   const dispatch = useDispatch();
-  const dashboardSidebarElements = useSelector((state) => state.user.dashboardSidebarElements);
-  const selectedContent = useSelector((state) => state.user.selectedContent);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
-  const selectSidebarElement = (ssee, selectedElement) => {
-    ssee.preventDefault();
-    dispatch(setSelectedContent(selectedElement));
-  };
   const currentUser = useSelector((state) => state.user.currentUser);
 
   useEffect(() => {

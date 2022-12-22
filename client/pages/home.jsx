@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/layouts/Layout';
 import SearchForm from '../components/search/SearchForm';
 import Section1 from '../components/home/Section1';
@@ -11,6 +11,8 @@ import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
 export default function home() {
   let isMounted = true;
   const dispatch = useDispatch();
+
+  const isLoading = useSelector((state)=> state.elements.isLoading);
 
   useEffect(() => {
     window.localStorage.removeItem('search');

@@ -7,7 +7,7 @@ import RegistrationForm from '../../../components/register/RegistrationForm';
 import VerifyCode from '../../../components/register/VerifyCode';
 import SendCode from '../../../components/register/SendCode';
 import ErrorMessages from '../../../components/elements/ErrorMessages';
-import { resetErrorList } from '../../../redux/reducers/elementsSlice';
+import { resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
 import Loader from '../../../components/elements/Loader';
 import TsSelect from '../../../components/register/TsSelect';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
@@ -32,6 +32,7 @@ function register() {
 
   useEffect(() => {
     dispatch(resetErrorList());
+    dispatch(toggleLoading(false));
     if (isMounted) {
       (async () => {
         dispatch(resetErrorList());

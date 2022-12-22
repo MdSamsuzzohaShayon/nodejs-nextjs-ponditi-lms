@@ -38,8 +38,9 @@ export const classtypeSlice = createSlice({
      */
     classtypeList: [],
     classtypeListCopy: [], // Unchangable
-    selectedClasstypeList: [], // list of ids 
+    selectedClasstypeList: [], // list of ids
     addClassType: initialAddClassType,
+    displayClassType: false,
   },
   reducers: {
     setClasstypeList: (state, action) => {
@@ -60,6 +61,9 @@ export const classtypeSlice = createSlice({
     resetAddClassType: (state) => {
       state.addClassType = initialAddClassType;
     },
+    setDisplayClassType: (state, action) => {
+      state.displayClassType = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAllClassTypes.fulfilled, (state, action) => {
@@ -75,6 +79,7 @@ export const classtypeSlice = createSlice({
   },
 });
 
-export const { setClasstypeList, resetClasstypeList, setAddClassType, resetAddClassType, setSelectedClasstype, resetSelectedClasstype } = classtypeSlice.actions;
+export const { setClasstypeList, resetClasstypeList, setAddClassType, resetAddClassType, setSelectedClasstype, resetSelectedClasstype, setDisplayClassType } =
+  classtypeSlice.actions;
 
 export default classtypeSlice.reducer;

@@ -83,6 +83,7 @@ const initialCurrentUser = {
   passing_year: '',
   role: TEACHER,
   running_study: false,
+  rate: 120,
 };
 
 const initialLoginInfo = {
@@ -108,6 +109,7 @@ const initialAuthUserInfo = {
   role: null,
 };
 
+/*
 const initialDashboardSidebarElements = [
   {
     id: 1,
@@ -130,6 +132,7 @@ const initialDashboardSidebarElements = [
     text: 'Rejected Class',
   },
 ];
+*/
 
 const initialDegreeList = [
   {
@@ -236,8 +239,8 @@ export const userSlice = createSlice({
      * @static not connected to backend and databases
      * for only showing correct content in sidebar on user dashboard
      */
-    dashboardSidebarElements: initialDashboardSidebarElements,
-    selectedContent: PROFILE,
+    // dashboardSidebarElements: initialDashboardSidebarElements,
+    // selectedContent: PROFILE,
     degreeList: initialDegreeList,
     userNotifications: [],
     userUnseenNotifications: [],
@@ -286,9 +289,9 @@ export const userSlice = createSlice({
     /**
      * @static not connected to backend and databases
      */
-    setSelectedContent: (state, action) => {
-      state.selectedContent = action.payload;
-    },
+    // setSelectedContent: (state, action) => {
+    //   state.selectedContent = action.payload;
+    // },
 
     /**
      * @dynamic all those connected to backend and databases
@@ -435,7 +438,7 @@ export const {
   toggleAuthUser,
   setAuthUserInfo,
   resetAuthUserInfo,
-  setSelectedContent,
+  // setSelectedContent,
   resetAllUserList,
   setUpdatePart,
   setUpdateUser,

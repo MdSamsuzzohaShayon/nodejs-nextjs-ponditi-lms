@@ -2,8 +2,8 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
-import { setSelectedClasstype } from '../../../redux/reducers/classtypeReducer';
-import { setSelectedSubject } from '../../../redux/reducers/subjectReducer';
+import { setDisplayClassType, setSelectedClasstype } from '../../../redux/reducers/classtypeReducer';
+import { setDisplaySubject, setSelectedSubject } from '../../../redux/reducers/subjectReducer';
 import { setSelectedTuitionm } from '../../../redux/reducers/tuitionmReducer';
 
 function ClassSubjectForm(props) {
@@ -14,7 +14,9 @@ function ClassSubjectForm(props) {
   const dispatch = useDispatch();
   const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
+  const displayClassType = useSelector((state) => state.classtype.displayClassType);
   const subjectList = useSelector((state) => state.subject.subjectList);
+  const displaySubject = useSelector((state) => state.subject.displaySubject);
 
   const selectedClasstypeList = useSelector((state) => state.classtype.selectedClasstypeList);
   const selectedSubjectList = useSelector((state) => state.subject.selectedSubjectList);
@@ -64,6 +66,9 @@ function ClassSubjectForm(props) {
 
   const tuitionmChangeHandler = (mce, tuitionmId) => {
     let newTuitionmIds = [];
+    if (displayClassType === false) {
+      dispatch(setDisplayClassType(true));
+    }
     if (mce.target.checked === true) {
       // add to subject list
       newTuitionmIds = [...userTuitionmIdList, tuitionmId];
@@ -101,6 +106,9 @@ function ClassSubjectForm(props) {
   };
 
   const classtypeChangeHandler = (cce, classTypeId) => {
+    if (displaySubject === false) {
+      dispatch(setDisplaySubject(true));
+    }
     let newClassTypeIds = [];
     if (cce.target.checked === true) {
       // add to subject list
@@ -170,6 +178,7 @@ function ClassSubjectForm(props) {
   // Set default values with use effect
   return (
     <div className="ClassSubjectForm">
+      {/* Class medium input start  */}
       <div className="row mx-0 mb-3">
         <div className="card">
           <div className="card-body">
@@ -193,52 +202,59 @@ function ClassSubjectForm(props) {
           </div>
         </div>
       </div>
-      <div className="row mx-0 mb-3">
-        <div className="card">
-          <div className="card-body">
-            <h4 className="card-title">Preffered Classes</h4>
-            <div className="row my-3">
-              {vlsiableClassTypeList().map((ctl, idx) => (
-                <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
-                  <label className="fs-6 fw-light" htmlFor={ctl.id}>
-                    {ctl.name.substring(0, 1).toUpperCase() + ctl.name.substring(1).toLowerCase()}
-                  </label>
-                  <input
-                    name={ctl.id}
-                    type="checkbox"
-                    className="class-subject-checkbox mx-2"
-                    onChange={(cce) => classtypeChangeHandler(cce, ctl.id)}
-                    defaultChecked={selectClasstypeDefaultCheckbox(ctl.id)}
-                  />
-                </div>
-              ))}
+
+      {displayClassType && (
+        <div className="row mx-0 mb-3">
+          <div className="card">
+            <div className="card-body">
+              <h4 className="card-title">Preffered Classes</h4>
+              <div className="row my-3">
+                {vlsiableClassTypeList().map((ctl, idx) => (
+                  <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
+                    <label className="fs-6 fw-light" htmlFor={ctl.id}>
+                      {ctl.name.substring(0, 1).toUpperCase() + ctl.name.substring(1).toLowerCase()}
+                    </label>
+                    <input
+                      name={ctl.id}
+                      type="checkbox"
+                      className="class-subject-checkbox mx-2"
+                      onChange={(cce) => classtypeChangeHandler(cce, ctl.id)}
+                      defaultChecked={selectClasstypeDefaultCheckbox(ctl.id)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="row mx-0 mb-3">
-        <div className="card">
-          <div className="card-body">
-            <h4 className="card-title">Preffered Subjects</h4>
-            <div className="row py-3">
-              {vlsiableSubjectList().map((sub, idx) => (
-                <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
-                  <label className="fs-6 fw-light" htmlFor={sub.id}>
-                    {sub.name.substring(0, 1).toUpperCase() + sub.name.substring(1).toLowerCase()}
-                  </label>
-                  <input
-                    name={sub.id}
-                    type="checkbox"
-                    className="class-subject-checkbox mx-2"
-                    onChange={(cce) => subjectChangeHandler(cce, sub.id)}
-                    defaultChecked={selectDefaultSubjectCheckbox(sub.id)}
-                  />
-                </div>
-              ))}
+      )}
+
+      {/* Class medium input end  */}
+      {displaySubject && (
+        <div className="row mx-0 mb-3">
+          <div className="card">
+            <div className="card-body">
+              <h4 className="card-title">Preffered Subjects</h4>
+              <div className="row py-3">
+                {vlsiableSubjectList().map((sub, idx) => (
+                  <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
+                    <label className="fs-6 fw-light" htmlFor={sub.id}>
+                      {sub.name.substring(0, 1).toUpperCase() + sub.name.substring(1).toLowerCase()}
+                    </label>
+                    <input
+                      name={sub.id}
+                      type="checkbox"
+                      className="class-subject-checkbox mx-2"
+                      onChange={(cce) => subjectChangeHandler(cce, sub.id)}
+                      defaultChecked={selectDefaultSubjectCheckbox(sub.id)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

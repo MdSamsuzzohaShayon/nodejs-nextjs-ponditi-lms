@@ -150,7 +150,7 @@ function SearchResult() {
                         className="btn btn-primary my-2 request-details"
                         // onClick={(vde) => viewDetailHandler(vde, sul.id)}
                       >
-                        <Link href={`/search/detail/${sul.id}`}>View Details</Link>
+                        <Link href={`/search/detail/?userId=${sul.id}`}>View Details</Link>
                       </button>
                     </div>
                   </div>

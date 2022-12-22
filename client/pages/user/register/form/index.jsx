@@ -1,12 +1,12 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { REGISTER, CLASS_SUB } from '../../../../config/keys';
+import { useEffect, useState } from 'react';
+import { REGISTER, roles } from '../../../../config/keys';
 import { resetErrorList, setErrorList, toggleLoading, setNoValidate } from '../../../../redux/reducers/elementsSlice';
 import { fetchAllClassTypes } from '../../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../../redux/reducers/tuitionmReducer';
-import { resetUser, setSelectedStep } from '../../../../redux/reducers/userReducer';
+import { resetUser, setSelectedStep, setUserSendVerifyStep } from '../../../../redux/reducers/userReducer';
 import Layout from '../../../../components/layouts/Layout';
 import RegistrationForm from '../../../../components/register/RegistrationForm';
 import ClassSubjectForm from '../../../../components/user/Update/ClassSubjectForm';
@@ -15,11 +15,15 @@ import Loader from '../../../../components/elements/Loader';
 import ErrorMessages from '../../../../components/elements/ErrorMessages';
 import axios from '../../../../config/axios';
 
+const { STUDENT } = roles;
+
 function Registration() {
   let isMounted = true;
   let validationPassed = true;
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const [userId, setUserId] = useState(null);
 
   const selectedStep = useSelector((state) => state.user.selectedStep);
   const isLoading = useSelector((state) => state.elements.isLoading);
@@ -31,13 +35,12 @@ function Registration() {
 
   const noValidate = useSelector((state) => state.elements.noValidate);
 
-  const { userId } = router.query;
+  // const { userId } = router.query;
 
   const registerHandler = async (rhe) => {
     rhe.preventDefault();
 
     dispatch(setNoValidate(false));
-    console.log({ validationPassed });
     if (validationPassed === false) return null;
 
     // if (selectedClasstypeList.length === 0 || selectedSubjectList.length === 0) {
@@ -68,9 +71,8 @@ function Registration() {
       } else {
         dispatch(setErrorList([JSON.stringify(error.response.data)]));
       }
-    } finally {
       dispatch(toggleLoading(false));
-    }
+    } 
     return null;
   };
 
@@ -132,6 +134,9 @@ function Registration() {
   };
 
   const nextStepHandler = (nscse) => {
+    if (selectedStep === 2 && userInfo.role === STUDENT) {
+      // Submit register page and return
+    }
     const valPass = stepBtnHandler(nscse, selectedStep);
     if (valPass === null) return null;
     // nscse.preventDefault();
@@ -152,10 +157,20 @@ function Registration() {
   useEffect(() => {
     dispatch(resetErrorList());
     if (isMounted) {
-      (async () => {
-        dispatch(resetErrorList());
-        await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
-      })();
+      const params = new URLSearchParams(window.location.search);
+      const newUserId = params.get('userId');
+      // console.log({ newUserId });
+      if (newUserId) {
+        setUserId(newUserId);
+        (async () => {
+          dispatch(resetErrorList());
+          await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
+        })();
+      } else {
+        dispatch(setUserSendVerifyStep(REGISTER));
+        // Redirect from here
+        router.push('/user/register');
+      }
     }
     isMounted = false;
   }, []);
@@ -168,7 +183,7 @@ function Registration() {
         ) : (
           <section className="section">
             <ErrorMessages />
-            <h1 className="Register">Register</h1>
+            <h1 className="Register text-capitalize">Register ({userInfo.role && userInfo.role})</h1>
             <form onSubmit={registerHandler} noValidate={noValidate}>
               {showSelectedForm()}
               <div className="row mb-3">
@@ -185,16 +200,22 @@ function Registration() {
                     </button>
                   </div>
                 ) : (
-                  <div className="d-flex">
+                  <div className={selectedStep === 1 ? `d-flex w-full justify-content-center` : 'd-flex'}>
                     {selectedStep !== 1 && (
                       <button className="btn btn-secondary w-fit" type="button" onClick={prevStepHandler}>
                         Previous
                       </button>
                     )}
 
-                    <button className="btn btn-primary w-fit mx-3" type="button" onClick={nextStepHandler}>
-                      Next
-                    </button>
+                    {selectedStep === 2 && userInfo.role === STUDENT ? (
+                      <button className="btn btn-primary w-fit mx-3" type="submit">
+                        Register
+                      </button>
+                    ) : (
+                      <button className="btn btn-primary w-fit mx-3" type="button" onClick={nextStepHandler}>
+                        Next
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

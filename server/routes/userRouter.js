@@ -56,11 +56,12 @@ router.put(
   // check('phone').notEmpty().isString(),
   check('email').isEmail().notEmpty(),
   // check('age').notEmpty(),
-  check('profession').notEmpty().isString(),
+  // check('profession').notEmpty().isString(),
   check('institution').notEmpty().isString(),
   // check('subjects').notEmpty(), // In update section
-  check('experience').notEmpty(),
-  check('district').notEmpty().isString(),
+  // check('experience').notEmpty(),
+  check('presentaddress').notEmpty().isString(),
+  // check('district').notEmpty().isString(),
   // check('password').notEmpty().isLength({ min: 6 }),
   // Relational
   // check('classTypeId').notEmpty(), // In update section

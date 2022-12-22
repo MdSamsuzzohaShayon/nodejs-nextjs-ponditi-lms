@@ -153,6 +153,11 @@ const registerUser = async (req, res) => {
     userObj.role = TEACHER;
   } else {
     userObj.role = STUDENT;
+    userObj.profession = STUDENT.toLowerCase();
+    delete userObj.degree;
+    delete userObj.major;
+    delete userObj.padding_year;
+    delete userObj.rate;
   }
 
   if (userObj.cgpa) {

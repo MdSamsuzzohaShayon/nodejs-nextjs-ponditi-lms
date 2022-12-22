@@ -23,7 +23,7 @@ function SendCode() {
     rche.preventDefault();
     setNoValidate(false);
     const otpObj = { ...sendOTP };
-    console.log(otpObj);
+    // console.log(otpObj);
     // if (otpObj.phone.length < 3) {
     //   return dispatch(setErrorList(['Seems this number is not valid']));
     // }

@@ -17,7 +17,6 @@ function index() {
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.elements.isLoading);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
   // get localstorage
   let isMounted = false;
@@ -49,7 +48,9 @@ function index() {
   // otherwise use dashboard component
   return (
     <Layout>
-      <section className="section-1 Admin">{isLoading ? <Loader /> : <Dashboard />}</section>
+      <section className="section-1 Admin">
+        <Dashboard />
+      </section>
     </Layout>
   );
 }

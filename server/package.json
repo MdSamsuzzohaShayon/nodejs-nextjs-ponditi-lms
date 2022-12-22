@@ -1,10 +1,10 @@
 {
-  "name": "kinoverse-marketplace",
+  "name": "ponditi-backend-api",
   "version": "1.0.0",
   "description": "node express crud api with sequelize",
   "main": "server.js",
   "scripts": {
-    "dev": "env NODE_ENV=development nodemon server.js",
+    "dev": "env NODE_ENV=development nodemon -L server.js",
     "start": "env NODE_ENV=production node server.js",
     "swagger-autogen": "node swagger.js"
   },

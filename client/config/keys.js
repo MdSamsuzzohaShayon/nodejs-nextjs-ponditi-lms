@@ -1,5 +1,5 @@
 export const BACKEND_URL = 'http://localhost:9000';
-// export const BACKEND_URL = 'https://ponditi-backend.herokuapp.com';
+// export const BACKEND_URL = 'https://ponditi-api.onrender.com';
 export const APP_NAME = 'Ponditi';
 export const GOOGLE_PLACE_API_KEY = 'AIzaSyAF8GtQJ6sD_O731EUBO3ATruUYjObZYdg';
 export const libraries = ['places'];

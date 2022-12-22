@@ -14,6 +14,7 @@ import axios from '../../config/axios';
 import { toggleAuthUser, setSelectedContent } from '../../redux/reducers/userReducer';
 import { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST, START_CLASS, FINISH_CLASS } from '../../utils/types';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import { toggleLoading } from '../../redux/reducers/elementsSlice';
 
 const { ADMIN, STUDENT, TEACHER } = roles;
 const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
@@ -65,6 +66,7 @@ function Header() {
   const logoutHandler = async (lhe) => {
     lhe.preventDefault();
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.post('/user/logout');
       dispatch(toggleAuthUser());
       router.push('/');
