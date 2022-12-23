@@ -70,6 +70,8 @@ const elementsSlice = createSlice({
     successMessageList: [],
     // Form validation
     noValidate: true,
+
+    openPriceCalc: false, // default false
   },
   reducers: {
     openModal: (state, action) => {
@@ -94,9 +96,12 @@ const elementsSlice = createSlice({
     setNoValidate: (state, action) => {
       state.noValidate = action.payload;
     },
+    setOpenPriceCalc: (state, action) => {
+      state.openPriceCalc = action.payload;
+    },
   },
 });
 
-export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate } = elementsSlice.actions;
+export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate, setOpenPriceCalc } = elementsSlice.actions;
 
 export default elementsSlice.reducer;

@@ -87,8 +87,8 @@ const initialCurrentUser = {
 };
 
 const initialLoginInfo = {
-  phoneoremail: '',
-  password: '',
+  phone: null,
+  password: null,
 };
 
 const initialResetPassReq = { emailorpassword: '', otp: '', password: '', password2: '' };
@@ -268,12 +268,13 @@ export const userSlice = createSlice({
     hasPhone: false,
     verifyCode: initialVerifyCode,
 
-    selectedStep: 1, // change it to 1
+    selectedStep: 2, // default 1
     registerSteps: initialRegisterStaps,
 
     authenticatedUser: false,
 
     authUserInfo: initialAuthUserInfo,
+
     allUserList: [],
     allPendingUserList: [],
     allRejectedUserList: [],
@@ -296,11 +297,11 @@ export const userSlice = createSlice({
     /**
      * @dynamic all those connected to backend and databases
      */
-    resetUser: (state) => {
-      state.currentUser = initialCurrentUser;
-    },
     resetLoginInfo: (state) => {
       state.loginInfo = initialLoginInfo;
+    },
+    resetUser: (state) => {
+      state.currentUser = initialCurrentUser;
     },
     setCurrentUser: (state, action) => {
       state.currentUser = { ...state.currentUser, ...action.payload };

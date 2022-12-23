@@ -79,7 +79,7 @@ router.put('/update/:id', ensureAuth, updateUser);
 router.put('/updateexam/:id', ensureAuth, check('examlist').isArray(), updateExamUser);
 router.put('/updateimage/:id', ensureAuth, upload.single('image'), updateImageUser);
 
-router.post('/login', check('password').notEmpty().isLength({ min: 6 }), login);
+router.post('/login', check('phone').notEmpty().isString(), check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);
 router.post('/forgetpassword', forgetPassword);
 router.put('/resetpassword', check('otp').notEmpty(), check('password').notEmpty().isLength({ min: 6 }), resetPassword);

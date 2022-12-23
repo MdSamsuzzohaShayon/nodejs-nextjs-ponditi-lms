@@ -321,6 +321,10 @@ const acceptUser = async (req, res) => {
   return res.status(500).json({ msg: 'Server error' });
 };
 
+/**
+ * @param {type} req phone          raw phone number without any country code
+ * @returns response 200            Set a token to login and
+ */
 const login = async (req, res) => {
   const errors = validationResult(req);
   // console.log(errors);
@@ -331,14 +335,7 @@ const login = async (req, res) => {
   // const { email, password } = req.body;
 
   try {
-    let userExist = null;
-    if (req.body.email) {
-      userExist = await User.findOne({ where: { email: req.body.email } });
-    } else if (req.body.phone) {
-      userExist = await User.findOne({ where: { phone: req.body.phone } });
-    } else {
-      return res.status(406).json({ msg: 'Email and phone both can not be empty' });
-    }
+    const userExist = await User.findOne({ where: { phone: req.body.phone } });
 
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: 'Invalid credentials' });

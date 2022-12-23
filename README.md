@@ -153,29 +153,29 @@
  - **Requirement update-5**
  - [Page change loading](https://stackoverflow.com/questions/55624695/loading-screen-on-next-js-page-transition)
  - ✅ Add rate for teacher - calculate monthly rate
- - Profession will be student, Full Name, Email, Medium, Class, Institution, Location
+ - ✅ Profession will be student, Full Name, Email, Medium, Class, Institution, Location
  - ✅ No rate,  subject, for students
  - ✅ dashboard -> update user - no any medium
  - Setup sequelize from scretch - association and migrations
  - Rivisions
  - Change favicon.ico 
- - Custom 404 page
+ - ✅ Custom 404 page
  - A function should run in every hour to delete unverified users - setInterval
- - Image optimizations - https://nextjs.org/docs/basic-features/image-optimization - test with lighthouse private window
- - Next.js -> start loading in one page(e.g. login) turn off loading from another page(e.g. dasboard page). if request fails then turn off loading
- - improve the initial loading performance https://nextjs.org/docs/advanced-features/dynamic-import
+ - ✅ Image optimizations - https://nextjs.org/docs/basic-features/image-optimization - test with lighthouse private window
+ - ✅ Next.js -> start loading in one page(e.g. login) turn off loading from another page(e.g. dasboard page). if request fails then turn off loading
+ - ✅ (*no need for our project*)improve the initial loading performance https://nextjs.org/docs/advanced-features/dynamic-import
  - [Deployment guide](https://docs.digitalocean.com/tutorials/app-nextjs-deploy/), [Static HTML Export](https://nextjs.org/docs/advanced-features/static-html-export)
- - Show properly one by one Medium -> classes -> subjects (required field)
+ - Show properly one by one Medium -> classes -> subjects (required field - hide when it unchecked)
  - no education, no tution detail, prefered subject and classes detail for student,
- - No gmail login
+ - ✅ No gmail login
  - Google place api error
- - highest education
- - Model calculating tuition fee
- - tuition style - online / offline
+ - ✅ highest education
+ - Modal calculating tuition fee
+ - tuition style - online / teacher's location / student's location in registration page
  - rate for tuition style -> different rates for student's location teacher's location and online
- - www.ponditi.com add in message
+ - ✅ www.ponditi.com add in message
  - Add education freely
- - Experience below the name
+ - Experience below the name - dashboard page
  - Personal detail and tuition detail to be in one section and at top
  - Second section preffered subject
  - 3rd section education detail

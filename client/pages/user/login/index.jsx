@@ -23,15 +23,15 @@ function login() {
   const loginHandler = async (rhe) => {
     rhe.preventDefault();
     dispatch(resetErrorList());
-    if (loginInfo.phoneoremail === '' && loginInfo.password === '') {
+    if (loginInfo.phone === null && loginInfo.password === null) {
       dispatch(setErrorList(['both field must be filled']));
     }
 
     const newObj = {};
-    if (loginInfo.phoneoremail.toString().includes('@')) {
-      newObj.email = loginInfo.phoneoremail;
+    if (loginInfo.phone.toString().includes('@')) {
+      newObj.email = loginInfo.phone;
     } else {
-      newObj.phone = loginInfo.phoneoremail;
+      newObj.phone = loginInfo.phone;
     }
     newObj.password = loginInfo.password;
 
@@ -44,7 +44,6 @@ function login() {
         },
       });
       if (response.status === 200) {
-        dispatch(resetLoginInfo());
         dispatch(resetErrorList());
         window.localStorage.setItem('user', JSON.stringify(response.data.user));
         Router.push('/user/dashboard');
@@ -53,7 +52,6 @@ function login() {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
-        dispatch(resetLoginInfo());
       }
       dispatch(toggleLoading(false));
     }
@@ -67,6 +65,9 @@ function login() {
   useEffect(() => {
     dispatch(resetErrorList());
     dispatch(toggleLoading(false));
+    return () => {
+      dispatch(resetLoginInfo());
+    };
   }, []);
 
   // useEffect(() => () => {
@@ -94,22 +95,15 @@ function login() {
               <form onSubmit={loginHandler}>
                 <div className="row mb-3">
                   <div className="col-md-12">
-                    <label htmlFor="phoneoremail">Phone or Email</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phoneoremail"
-                      id="phoneoremail"
-                      defaultValue={loginInfo.phoneoremail}
-                      onChange={inputChangeHandler}
-                    />
+                    <label htmlFor="phone">Phone</label>
+                    <input type="number" className="form-control" name="phone" id="phone" onChange={inputChangeHandler} required />
                   </div>
                 </div>
 
                 <div className="row mb-3">
                   <div className="col-md-12">
                     <label htmlFor="password">Password</label>
-                    <input type="password" className="form-control" name="password" id="password" defaultValue={loginInfo.password} onChange={inputChangeHandler} />
+                    <input type="password" className="form-control" name="password" id="password" onChange={inputChangeHandler} required />
                   </div>
                 </div>
                 <div className="row mb-3">

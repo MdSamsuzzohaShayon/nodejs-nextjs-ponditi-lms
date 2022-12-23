@@ -1,3 +1,7 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
+/* eslint-disable no-console */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useRef, useState } from 'react';
@@ -6,14 +10,17 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { setCurrentUser, setUserFormsType, resetUser, setSelectedStep } from '../../redux/reducers/userReducer';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setClasstypeList, setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
+import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
+import PriceCalculator from '../elements/PriceCalculator';
 
 const { TEACHER, STUDENT } = roles;
 
 function RegistrationForm(props) {
   const dispatch = useDispatch();
   const pyInputEl = useRef(null);
+  const rateInputEl = useRef(null);
   /**
    * @api for google places
    */
@@ -31,6 +38,11 @@ function RegistrationForm(props) {
   const [daysOfMonth, setDaysOfMonth] = useState(15);
   const [monthlyEarning, setMonthlyEarning] = useState(3000);
 
+  const openPriceCalcHandler = (opce) => {
+    opce.preventDefault();
+    dispatch(setOpenPriceCalc(true));
+  };
+
   const inputChangeHandler = (iche) => {
     // iche.preventDefault();
     dispatch(setCurrentUser({ [iche.target.name]: iche.target.value }));
@@ -42,6 +54,22 @@ function RegistrationForm(props) {
 
   const classtypeChangeHandler = (tce) => {
     dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
+  };
+  const inputPriceChangeHandler = (ipce) => {
+    // console.log({ [ipce.target.name]: ipce.target.value });
+    if (ipce.target.name === 'monthly_earning') {
+      const earning = parseInt(ipce.target.value, 10);
+      setMonthlyEarning(earning);
+      const rate = (earning / daysOfMonth).toFixed(2);
+      dispatch(setCurrentUser({ rate }));
+      rateInputEl.current.value = rate;
+    } else if (ipce.target.name === 'days_of_month') {
+      const days = parseInt(ipce.target.value, 10);
+      setDaysOfMonth(days);
+      const rate = (monthlyEarning / days).toFixed(2);
+      dispatch(setCurrentUser({ rate }));
+      rateInputEl.current.value = rate;
+    }
   };
 
   const inputChangeDaysOfMonthHandler = (icdme) => {
@@ -194,15 +222,7 @@ function RegistrationForm(props) {
           {/* Replace this with present address and use google map api  */}
           <label htmlFor="district">Location*</label>
           <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
-            <input
-              type="text"
-              className="form-control"
-              id="presentaddress"
-              placeholder="presentaddress"
-              name="presentaddress"
-              defaultValue={userInfo.presentaddress}
-              onChange={inputChangeHandler}
-            />
+            <input type="text" className="form-control" id="presentaddress" name="presentaddress" onChange={inputChangeHandler} />
           </Autocomplete>
           {inputErrLoc(userInfo?.presentaddress)}
         </div>
@@ -212,7 +232,7 @@ function RegistrationForm(props) {
         <>
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="firstname">height Education*</label>
+              <label htmlFor="firstname">highest Education*</label>
               <input type="text" className="form-control" name="degree" id="degree" defaultValue={userInfo?.degree} onChange={inputChangeHandler} />
               {inputErrEdu(userInfo?.degree)}
             </div>
@@ -242,6 +262,27 @@ function RegistrationForm(props) {
             </div>
           </div>
           <div className="row mb-3">
+            <div className="col-md-6">
+              <label htmlFor="monthlyenarning">Per hour rate</label>
+              <div className="input-group mb-3">
+                <div className="form-floating p-0">
+                  <input type="number" className="form-control" ref={rateInputEl} defaultValue={userInfo?.rate} id="rate" name="rate" />
+                </div>
+                <span className="input-group-text">
+                  <img src="/icons/calculator.svg" alt="" onClick={openPriceCalcHandler} role="button" onKeyDown={(e) => console.log('Open price calc')} />
+                </span>
+              </div>
+            </div>
+          </div>
+          <PriceCalculator
+            title="Calculate rate"
+            inputPriceChangeHandler={inputPriceChangeHandler}
+            result={userInfo?.rate}
+            defaultDays={daysOfMonth}
+            defaultEarn={monthlyEarning}
+          />
+
+          {/* <div className="row mb-3">
             <div className="col-md-4">
               <label htmlFor="monthly_earning">Total Monthly Earning</label>
               <input className="rate-inputs form-control" type="number" defaultValue={monthlyEarning} onChange={inputRateChangeHandler} />
@@ -252,10 +293,10 @@ function RegistrationForm(props) {
             </div>
             <div className="col-md-4">
               <label htmlFor="monthlyenarning" className="mt-4">
-                Per hour rate Tk {userInfo?.rate.toFixed(2)}
+                Per hour rate Tk {userInfo?.rate?.toFixed(2)}
               </label>
             </div>
-          </div>
+          </div> */}
         </>
       )}
 

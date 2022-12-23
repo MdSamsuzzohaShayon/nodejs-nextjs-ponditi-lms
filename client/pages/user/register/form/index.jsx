@@ -72,7 +72,7 @@ function Registration() {
         dispatch(setErrorList([JSON.stringify(error.response.data)]));
       }
       dispatch(toggleLoading(false));
-    } 
+    }
     return null;
   };
 
@@ -156,6 +156,7 @@ function Registration() {
 
   useEffect(() => {
     dispatch(resetErrorList());
+    dispatch(resetUser());
     if (isMounted) {
       const params = new URLSearchParams(window.location.search);
       const newUserId = params.get('userId');
