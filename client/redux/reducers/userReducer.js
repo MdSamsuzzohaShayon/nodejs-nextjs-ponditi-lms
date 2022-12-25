@@ -5,11 +5,12 @@ import Router from 'next/router';
 import { fetchAllClassTypes } from './classtypeReducer';
 import { fetchAllSubjects } from './subjectReducer';
 import { setErrorList } from './elementsSlice';
-import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SELECT, REGISTER } from '../../config/keys';
+import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SELECT } from '../../config/keys';
+// import { tuitionplace } from '../../utils/types';
 import axios from '../../config/axios';
 
-const { CLASS_SCHEDULED, PROFILE, STUDENT_OR_TEACHER_REQUESTS, REJECTED } = userDashboardSidebarList;
-const { ANY, PENDING, APPROVED } = scheduledclassStatus;
+const { REJECTED } = userDashboardSidebarList;
+const { PENDING, APPROVED } = scheduledclassStatus;
 const { TEACHER } = roles;
 
 // ps = property step
@@ -83,7 +84,28 @@ const initialCurrentUser = {
   passing_year: '',
   role: TEACHER,
   running_study: false,
-  rate: 120,
+  sl_rate: null,
+  tl_rate: null,
+  ol_rate: null,
+};
+
+const initialRegisterableUser = {
+  name: null,
+  email: null,
+  profession: null,
+  institution: null,
+  experience: null,
+  district: null,
+  degree: null,
+  major: null,
+  passing_year: null,
+  role: TEACHER,
+  running_study: false,
+  tutionplace: [],
+  sl_rate: null,
+  tl_rate: null,
+  ol_rate: null,
+  presentaddress: null,
 };
 
 const initialLoginInfo = {
@@ -109,31 +131,6 @@ const initialAuthUserInfo = {
   role: null,
 };
 
-/*
-const initialDashboardSidebarElements = [
-  {
-    id: 1,
-    name: PROFILE,
-    text: 'Profile',
-  },
-  {
-    id: 2,
-    name: STUDENT_OR_TEACHER_REQUESTS,
-    text: 'SOT Request', // if logged in user is student then use student elsewhere use teacher
-  },
-  {
-    id: 3,
-    name: CLASS_SCHEDULED,
-    text: 'Class Scheduled',
-  },
-  {
-    id: 4,
-    name: REJECTED,
-    text: 'Rejected Class',
-  },
-];
-*/
-
 const initialDegreeList = [
   {
     id: 1,
@@ -153,7 +150,7 @@ const initialDegreeList = [
   },
 ];
 
-const initialGroupList = ['SCIENCE', 'ARTS', 'COMMERCE', 'OTHERS'];
+// const initialTuitionStyles = tuitionplace;
 
 const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
   try {
@@ -244,17 +241,20 @@ export const userSlice = createSlice({
     degreeList: initialDegreeList,
     userNotifications: [],
     userUnseenNotifications: [],
-    groupList: initialGroupList,
 
     /**
      * @dynamic all those connected to backend and databases
      */
     currentUser: initialCurrentUser, // The user who logged in
+    registerableUser: initialRegisterableUser, // The user who is going to register
     userSubjects: [],
     userExamList: [],
+    userTuitionmList: [],
     userClassTypes: [],
     selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
     selectedUserRole: TEACHER, // the user whose detail will be shown
+
+    // tuitionStyles: initialTuitionStyles,
 
     userSendVerifyStep: SEND_CODE,
     userFormsType: TS_SELECT,
@@ -268,7 +268,7 @@ export const userSlice = createSlice({
     hasPhone: false,
     verifyCode: initialVerifyCode,
 
-    selectedStep: 2, // default 1
+    selectedStep: 1, // default 1
     registerSteps: initialRegisterStaps,
 
     authenticatedUser: false,
@@ -284,7 +284,6 @@ export const userSlice = createSlice({
     updatePart: 1,
     // cts = class types subjects
     updateUser: {},
-    updateUserExam: [],
   },
   reducers: {
     /**
@@ -305,6 +304,12 @@ export const userSlice = createSlice({
     },
     setCurrentUser: (state, action) => {
       state.currentUser = { ...state.currentUser, ...action.payload };
+    },
+    setRegisterableUser: (state, action) => {
+      state.registerableUser = { ...state.registerableUser, ...action.payload };
+    },
+    resetRegisterableUser: (state) => {
+      state.registerableUser = initialRegisterableUser;
     },
     setLoginInfo: (state, action) => {
       state.loginInfo = { ...state.loginInfo, ...action.payload };
@@ -367,18 +372,6 @@ export const userSlice = createSlice({
     resetUpdateUser: (state) => {
       state.updateUser = {};
     },
-    setUpdateUserExam: (state, action) => {
-      const examExist = state.updateUserExam.find((uue) => uue.level === action.payload.level);
-      if (examExist) {
-        const restOfTheItems = state.updateUserExam.filter((uue) => uue.level !== action.payload.level);
-        state.updateUserExam = [...restOfTheItems, action.payload];
-      } else {
-        state.updateUserExam = [...state.updateUserExam, action.payload];
-      }
-    },
-    resetUpdateUserExam: (state) => {
-      state.updateUserExam = [];
-    },
   },
   extraReducers(builder) {
     // builder.addCase(addNewPost.fulfilled, (state, action) => {
@@ -390,6 +383,7 @@ export const userSlice = createSlice({
       state.userUnseenNotifications = action.payload.notifications.filter((n) => n.viewed === false);
       state.userNotifications = action.payload.notifications;
       state.currentUser = action.payload.user;
+      state.userTuitionmList = action.payload.tuitionms;
       state.userClassTypes = action.payload.classTypes;
       state.userSubjects = action.payload.subjects;
       state.userExamList = action.payload.educations;
@@ -403,6 +397,10 @@ export const userSlice = createSlice({
     builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
       state.selectedUser = action.payload.user;
+      state.userTuitionmList = action.payload.tuitionms;
+      state.userClassTypes = action.payload.classTypes;
+      state.userSubjects = action.payload.subjects;
+      state.userExamList = action.payload.educations;
     });
     builder.addCase(fetchSelectedSingleUser.rejected, (state) => {
       // console.log(action.payload, state);
@@ -444,11 +442,11 @@ export const {
   setUpdatePart,
   setUpdateUser,
   resetUpdateUser,
-  setUpdateUserExam,
-  resetUpdateUserExam,
   setChangeResetPassReq,
   resetChangeResetPassReq,
   setResetPassStep,
+  setRegisterableUser,
+  resetRegisterableUser,
 } = userSlice.actions;
 
 export default userSlice.reducer;

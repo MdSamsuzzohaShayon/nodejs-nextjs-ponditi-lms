@@ -47,6 +47,9 @@ function PriceCalculator(props) {
             <h2 className="fs-2">Per hour rate {props?.result} Tk</h2>
           </div>
         </div>
+        <div className="w-full btn-wrapper d-flex justify-content-center">
+          <button className="btn btn-primary" type="button" onClick={closePriceCalc} >Ok</button>
+        </div>
       </div>
     </div>
   );

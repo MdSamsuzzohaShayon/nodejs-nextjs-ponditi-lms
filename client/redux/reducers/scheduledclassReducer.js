@@ -8,8 +8,7 @@ import axios from '../../config/axios';
 import { scheduledclassStatus, types } from '../../config/keys';
 import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
 
-const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } =
-  scheduledclassStatus;
+const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 const { ONLINE } = types;
 
 const initicalAddScheduledClass = {
@@ -151,52 +150,44 @@ const initialSlotList = [
 const initialLeaveAReview = { stars: 0, comment: '' };
 
 // scou = Scheduled Class of a User
-export const fetchAllRequestedSCOU = createAsyncThunk(
-  'scheduledclass/allRequestedScheduledClass',
-  async (userId, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.get(`/scheduledclass/member/${userId}`);
-      // console.log(response.data);
-      return response.data;
-    } catch (error) {
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      if (error?.response?.status === 401 || error?.response?.status === 405) {
-        window.localStorage.removeItem('user');
-        dispatch(resetAuthUserInfo());
-        Router.push('/user/login');
-      }
-      return rejectWithValue(error.response.data);
+export const fetchAllRequestedSCOU = createAsyncThunk('scheduledclass/allRequestedScheduledClass', async (userId, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.get(`/scheduledclass/member/${userId}`);
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
     }
+    if (error?.response?.status === 401 || error?.response?.status === 405) {
+      window.localStorage.removeItem('user');
+      dispatch(resetAuthUserInfo());
+      Router.push('/user/login');
+    }
+    return rejectWithValue(error.response.data);
   }
-);
+});
 
 // scou = Scheduled Class of a User
-export const fetchSingleScheduledClass = createAsyncThunk(
-  'scheduledclass/singleScheduledClass',
-  async (scheduledclassId, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.get(
-        `/scheduledclass/single/${scheduledclassId}`
-      );
-      // console.log(response.data);
-      return response.data;
-    } catch (error) {
-      if (error?.response?.data?.msg) {
-        dispatch(setErrorList([error?.response?.data?.msg]));
-      }
-      if (error?.response?.status === 401 || error?.response?.status === 405) {
-        window.localStorage.removeItem('user');
-        dispatch(resetAuthUserInfo());
-        Router.push('/user/login');
-      } else if (error?.response?.status === 404) {
-        Router.push('/user/dashboard');
-      }
-      return rejectWithValue(error.response.data);
+export const fetchSingleScheduledClass = createAsyncThunk('scheduledclass/singleScheduledClass', async (scheduledclassId, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.get(`/scheduledclass/single/${scheduledclassId}`);
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
     }
+    if (error?.response?.status === 401 || error?.response?.status === 405) {
+      window.localStorage.removeItem('user');
+      dispatch(resetAuthUserInfo());
+      Router.push('/user/login');
+    } else if (error?.response?.status === 404) {
+      Router.push('/user/dashboard');
+    }
+    return rejectWithValue(error.response.data);
   }
-);
+});
 
 export const scheduledclassSlice = createSlice({
   name: 'scheduledclass',
@@ -318,21 +309,11 @@ export const scheduledclassSlice = createSlice({
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
       state.allScheduledClassList = action.payload.classScheduledList;
-      state.requestedSCOU = action.payload?.classScheduledList.filter(
-        (csl) => csl.status === PENDING
-      );
-      state.acceptedSCOU = action.payload?.classScheduledList.filter(
-        (csl) => csl.status === APPROVED
-      );
-      state.rejectedSCOU = action.payload?.classScheduledList.filter(
-        (csl) => csl.status === REJECTED
-      );
-      state.runningSCOU = action.payload?.classScheduledList.filter(
-        (csl) => csl.status === START_CLASS
-      );
-      state.completedSCOU = action.payload?.classScheduledList.filter(
-        (csl) => csl.status === FINISH_CLASS
-      );
+      state.requestedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === PENDING);
+      state.acceptedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === APPROVED);
+      state.rejectedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === REJECTED);
+      state.runningSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === START_CLASS);
+      state.completedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === FINISH_CLASS);
     });
 
     builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action) => {

@@ -24,6 +24,7 @@ function index() {
         (async () => {
           // console.log(userId);
           await dispatch(fetchSelectedSingleUser(newUserId));
+          // await Promise.all([dispatch(fetchSelectedSingleUser(newUserId)), dispatch(fetchCurrentSingleUser(newUserId))]);
         })();
         // Check auth
       }
@@ -31,7 +32,7 @@ function index() {
     } else {
       router.push('/');
     }
-  }, [router.isReady]);
+  }, []);
 
   return (
     <Layout>

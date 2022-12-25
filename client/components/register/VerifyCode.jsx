@@ -33,7 +33,8 @@ function VerifyCode() {
         dispatch(setCurrentUser({ phone: verifyCode.phone }));
         // Router.push(`/user/register/form/${response.data.userId}`);
         dispatch(setUserSendVerifyStep(REGISTER));
-        Router.push({ pathname: `/user/register/form`, query: { userId: response.data.userId } });
+        Router.push({ pathname: `/user/register/form`, query: { userId: response.data.userId } }); // Using location replace to get rid of google place api error
+        // window.location.replace(`/user/register/form/?userId=${response.data.userId}`);
         dispatch(resetVerifyCode());
       }
     } catch (error) {

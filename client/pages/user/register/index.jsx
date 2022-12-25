@@ -13,6 +13,8 @@ import TsSelect from '../../../components/register/TsSelect';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
+import { resetRegisterableUser } from '../../../redux/reducers/userReducer';
+
 
 function register() {
   let isMounted = true;
@@ -31,6 +33,7 @@ function register() {
   };
 
   useEffect(() => {
+    dispatch(resetRegisterableUser());
     dispatch(resetErrorList());
     dispatch(toggleLoading(false));
     if (isMounted) {

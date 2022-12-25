@@ -14,6 +14,7 @@ function Detail({ userDetail, update }) {
   const userSubjects = useSelector((state) => state.user.userSubjects);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const userExamList = useSelector((state) => state.user.userExamList);
+  const userTuitionmList = useSelector((state) => state.user.userTuitionmList);
   const userClassTypes = useSelector((state) => state.user.userClassTypes);
 
   // const sendRequesthandler = (sre) => {
@@ -28,7 +29,8 @@ function Detail({ userDetail, update }) {
     dispatch(setUpdatePart(partNum));
     window.localStorage.setItem('updatePart', partNum);
     // redirect
-    Router.push(`/user/update/${userDetail.id}`);
+    // /?userId=${userDetail.id}`
+    Router.push({ pathname: '/user/update', query: { userId: userDetail.id } });
   };
 
   return (
@@ -81,24 +83,20 @@ function Detail({ userDetail, update }) {
                   </p>
                 </>
               )}
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores earum minus et ipsam suscipit in animi consectetur cupiditate accusamus, corrupti,
-                repellendus similique consequuntur eius vero veritatis vel id tenetur
-              </p>
+              {userDetail?.role === TEACHER && userDetail.experience && (
+                <div className="col-md-4 d-flex justify-content-start">
+                  <div className="icon">
+                    <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
+                  </div>
+                  <div className="info">
+                    <h2>{userDetail.experience} years</h2>
+                    <p>Experience</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className="row mx-0 mb-5">
-            {userDetail?.role === TEACHER && userDetail.experience && (
-              <div className="col-md-4 d-flex justify-content-start">
-                <div className="icon">
-                  <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
-                </div>
-                <div className="info">
-                  <h2>{userDetail.experience} years</h2>
-                  <p>Experience</p>
-                </div>
-              </div>
-            )}
             {userDetail.degree && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
@@ -130,48 +128,6 @@ function Detail({ userDetail, update }) {
             )} */}
           </div>
           <hr />
-
-          {/* Subject and class start  */}
-          {(authUserInfo.id !== null || userSubjects.length > 0) && (
-            <div className="row mx-0 mb-3 bg-secondary py-3">
-              <div className="heading d-flex justify-content-between row align-items-center my-3">
-                <h3 className="h5 w-fit">Preffered Subjects</h3>
-                {update && (
-                  <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 1)}>
-                    Edit
-                  </button>
-                )}
-              </div>
-              <hr />
-              <div className="body-content row">
-                {userSubjects.length > 0 && (
-                  <div className="col-md-6">
-                    <h5>Subjects</h5>
-                    <ul className="list-group">
-                      {userSubjects.map((us) => (
-                        <li className="list-group-item rounded-1" key={us.id}>
-                          {us.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {userClassTypes.length > 0 && (
-                  <div className="col-md-6">
-                    <h5>Classes</h5>
-                    <ul className="list-group">
-                      {userClassTypes.map((us) => (
-                        <li className="list-group-item rounded-1" key={us.id}>
-                          {us.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          {/* Subject and class end  */}
 
           {/* personal detail start  */}
           <div className="row mx-0 mb-3 bg-secondary py-3">
@@ -214,45 +170,101 @@ function Detail({ userDetail, update }) {
           {/* personal detail end  */}
 
           {/* tution detail start  */}
-          <div className="row mx-0 mb-3 bg-secondary py-3">
-            <div className="heading d-flex justify-content-between align-items-center row py-3">
-              <h3 className="h5 w-fit">Tution Detail</h3>
-              {update && (
-                <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 3)}>
-                  Edit
-                </button>
-              )}
-            </div>
-            <hr />
-            <div className="body-content row">
-              {userDetail?.role === TEACHER && (
+          {userDetail?.role === TEACHER && (
+            <div className="row mx-0 mb-3 bg-secondary py-3">
+              <div className="heading d-flex justify-content-between align-items-center row py-3">
+                <h3 className="h5 w-fit">Tution Detail</h3>
+                {update && (
+                  <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 3)}>
+                    Edit
+                  </button>
+                )}
+              </div>
+              <hr />
+              <div className="body-content row">
+                {userDetail?.role === TEACHER && (
+                  <div className="row mx-0 mb-1">
+                    <div className="col-md-6">Per Hour Rate</div>
+                    <div className="col-md-6">
+                      <p>{userDetail.rate} TK</p>
+                    </div>
+                  </div>
+                )}
                 <div className="row mx-0 mb-1">
-                  <div className="col-md-6">Per Hour Rate</div>
+                  <div className="col-md-6">Available Status</div>
                   <div className="col-md-6">
-                    <p>{userDetail.rate} TK</p>
+                    <p>{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
                   </div>
                 </div>
-              )}
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Available Status</div>
-                <div className="col-md-6">
-                  <p>{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
-                </div>
-              </div>
-              <div className="row mx-0 mb-1">
-                <div className="col-md-6">Tution Place</div>
-                <div className="col-md-6">
-                  <p>
-                    {locationSelection(userDetail.tutionplace).map((loc, locI) => (locI + 1 !== locationSelection(userDetail.tutionplace).length ? `${loc}, ` : loc))}
-                  </p>
+                <div className="row mx-0 mb-1">
+                  <div className="col-md-6">Tution Place</div>
+                  <div className="col-md-6">
+                    <p>
+                      {locationSelection(userDetail.tutionplace).map((loc, locI) => (locI + 1 !== locationSelection(userDetail.tutionplace).length ? `${loc}, ` : loc))}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           {/* tution detail end  */}
 
+          {/* Subject and class start  */}
+          {(authUserInfo.id !== null || userSubjects.length > 0) && (
+            <div className="row mx-0 mb-3 bg-secondary py-3">
+              <div className="heading d-flex justify-content-between row align-items-center my-3">
+                <h3 className="h5 w-fit">Preffered Mediums, Subjects, & Classes</h3>
+                {update && (
+                  <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 1)}>
+                    Edit
+                  </button>
+                )}
+              </div>
+              <hr />
+              <div className="body-content row">
+                {userTuitionmList.length > 0 && (
+                  <div className="col-md-4">
+                    <h5>Tuition Medium</h5>
+                    <ul className="list-group">
+                      {userTuitionmList.map((us) => (
+                        <li className="list-group-item rounded-1" key={us.id}>
+                          {us.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {userClassTypes.length > 0 && (
+                  <div className="col-md-4">
+                    <h5>Classes</h5>
+                    <ul className="list-group">
+                      {userClassTypes.map((us) => (
+                        <li className="list-group-item rounded-1" key={us.id}>
+                          {us.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {userSubjects.length > 0 && (
+                  <div className="col-md-4">
+                    <h5>Subjects</h5>
+                    <ul className="list-group">
+                      {userSubjects.map((us) => (
+                        <li className="list-group-item rounded-1" key={us.id}>
+                          {us.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {/* Subject and class end  */}
+
           {/* Exam detail start  */}
-          {(authUserInfo.id !== null || userExamList.length > 0) && (
+          {authUserInfo.id !== null && userDetail.role === TEACHER && (
             <div className="row mx-0 mb-3 bg-secondary py-3">
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Educational Qualification</h3>
@@ -268,12 +280,21 @@ function Detail({ userDetail, update }) {
                   <div key={idx} className="col-md-4 mb-3">
                     <div className="card rounded-1">
                       <div className="card-header">{uel.level}</div>
-                      <div className="card-body">
-                        <p className="card-text">Group: {uel?.group}</p>
-                        <p className="card-text">Institution: {uel?.institution}</p>
-                        <p className="card-text">Grade: {uel?.grade}</p>
-                        <p className="card-text">CGPA: {uel?.cgpa}</p>
-                        <p className="card-text">Passing Year: {uel?.passing_year}</p>
+                      <div className="card-body d-flex justify-content-between">
+                        <div className="body-left">
+                          <p className="card-text">Group</p>
+                          <p className="card-text">Institution</p>
+                          <p className="card-text">Grade</p>
+                          <p className="card-text">CGPA</p>
+                          <p className="card-text">Passing Year</p>
+                        </div>
+                        <div className="body-right">
+                          <p className="card-text">: {uel?.group}</p>
+                          <p className="card-text">: {uel?.institution}</p>
+                          <p className="card-text">: {uel?.grade}</p>
+                          <p className="card-text">: {uel?.cgpa}</p>
+                          <p className="card-text">: {uel?.passing_year}</p>
+                        </div>
                       </div>
                     </div>
                   </div>

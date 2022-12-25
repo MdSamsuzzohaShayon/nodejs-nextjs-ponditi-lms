@@ -6,7 +6,7 @@ import { resetErrorList, setErrorList, toggleLoading, setNoValidate } from '../.
 import { fetchAllClassTypes } from '../../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../../redux/reducers/tuitionmReducer';
-import { resetUser, setSelectedStep, setUserSendVerifyStep } from '../../../../redux/reducers/userReducer';
+import { resetRegisterableUser, setSelectedStep, setUserSendVerifyStep } from '../../../../redux/reducers/userReducer';
 import Layout from '../../../../components/layouts/Layout';
 import RegistrationForm from '../../../../components/register/RegistrationForm';
 import ClassSubjectForm from '../../../../components/user/Update/ClassSubjectForm';
@@ -17,6 +17,7 @@ import axios from '../../../../config/axios';
 
 const { STUDENT } = roles;
 
+// tutionplace
 function Registration() {
   let isMounted = true;
   let validationPassed = true;
@@ -28,7 +29,8 @@ function Registration() {
   const selectedStep = useSelector((state) => state.user.selectedStep);
   const isLoading = useSelector((state) => state.elements.isLoading);
 
-  const userInfo = useSelector((state) => state.user.currentUser);
+  // const registerableUser = useSelector((state) => state.user.currentUser);
+  const registerableUser = useSelector((state) => state.user.registerableUser);
   const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
   const selectedClasstypeList = useSelector((state) => state.classtype.selectedClasstypeList);
   const selectedSubjectList = useSelector((state) => state.subject.selectedSubjectList);
@@ -49,7 +51,7 @@ function Registration() {
 
     try {
       dispatch(toggleLoading(true));
-      const userObj = { ...userInfo };
+      const userObj = { ...registerableUser };
       userObj.SubjectId = selectedSubjectList;
       userObj.ClassTypeId = selectedClasstypeList;
       userObj.TuitionmId = selectedTuitionmList;
@@ -61,7 +63,7 @@ function Registration() {
       if (response.status === 202 || response.status === 201 || response.status === 200) {
         dispatch(resetErrorList());
         // dispatch(setUserFormsType(SEND_CODE));
-        dispatch(resetUser());
+        dispatch(resetRegisterableUser());
         router.push('/user/login');
       }
     } catch (error) {
@@ -87,37 +89,6 @@ function Registration() {
       console.log({ validationPassed });
       if (validationPassed === false) return null;
     }
-    /**     
-    if (stepNo === 2) {
-      if (
-        userInfo.firstname === '' ||
-        userInfo.phone === '' ||
-        userInfo.lastname === '' ||
-        userInfo.password === '' ||
-        userInfo.password2 === '' ||
-        userInfo.email === ''
-      ) {
-        return dispatch(setErrorList(['Fill all fields to go to the next step']));
-      }
-      if (userInfo.password !== userInfo.password2) {
-        return dispatch(setErrorList(['Password did not patch']));
-      }
-      dispatch(resetErrorList());
-
-      // const filter =
-      //   /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-      // if (filter.test(userInfo.email)) {
-      //   // Yay! valid
-      //   return dispatch(setErrorList(['Invalid email address']));
-      // }
-    }
-
-    if (stepNo === 3) {
-      if (userInfo.age === '' || userInfo.profession === '' || userInfo.institution === '' || userInfo.experience === '' || userInfo.location === '') {
-        return dispatch(setErrorList(['Fill all fields to go to the next step']));
-      }
-    }
-     */
     dispatch(resetErrorList());
     return dispatch(setSelectedStep(stepNo));
   };
@@ -134,7 +105,7 @@ function Registration() {
   };
 
   const nextStepHandler = (nscse) => {
-    if (selectedStep === 2 && userInfo.role === STUDENT) {
+    if (selectedStep === 2 && registerableUser.role === STUDENT) {
       // Submit register page and return
     }
     const valPass = stepBtnHandler(nscse, selectedStep);
@@ -149,14 +120,14 @@ function Registration() {
       return <RegistrationForm changeValidationPassed={changeValidationPassed} noValidate={noValidate} userId={userId} />;
     }
     if (selectedStep === 3) {
-      return <ClassSubjectForm userInfo={userInfo} />;
+      return <ClassSubjectForm registerableUser={registerableUser} />;
     }
     return <TsSelect />;
   };
 
   useEffect(() => {
     dispatch(resetErrorList());
-    dispatch(resetUser());
+    dispatch(resetRegisterableUser());
     if (isMounted) {
       const params = new URLSearchParams(window.location.search);
       const newUserId = params.get('userId');
@@ -184,7 +155,7 @@ function Registration() {
         ) : (
           <section className="section">
             <ErrorMessages />
-            <h1 className="Register text-capitalize">Register ({userInfo.role && userInfo.role})</h1>
+            <h1 className="Register text-capitalize">Register ({registerableUser.role && registerableUser.role})</h1>
             <form onSubmit={registerHandler} noValidate={noValidate}>
               {showSelectedForm()}
               <div className="row mb-3">
@@ -208,7 +179,7 @@ function Registration() {
                       </button>
                     )}
 
-                    {selectedStep === 2 && userInfo.role === STUDENT ? (
+                    {selectedStep === 2 && registerableUser.role === STUDENT ? (
                       <button className="btn btn-primary w-fit mx-3" type="submit">
                         Register
                       </button>

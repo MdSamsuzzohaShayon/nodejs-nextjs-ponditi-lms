@@ -21,7 +21,8 @@ module.exports = {
     );
     */
 
-    return queryInterface.sequelize.transaction((t) => Promise.all([
+    return queryInterface.sequelize.transaction((t) =>
+      Promise.all([
         /*
         queryInterface.addColumn(
           'Review',
@@ -143,7 +144,7 @@ module.exports = {
           { transaction: t }
         ),
         */
-       /*
+        /*
         queryInterface.addColumn(
           'User',
           'tuitionmedium',
@@ -153,11 +154,41 @@ module.exports = {
           },
           { transaction: t },
         ),
-      ]),
+        */
+       
+        /*
+        queryInterface.addColumn(
+          'User',
+          'tl_rate',
+          {
+            type: Sequelize.DataTypes.INTEGER,
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'User',
+          'sl_rate',
+          {
+            type: Sequelize.DataTypes.INTEGER,
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'User',
+          'ol_rate',
+          {
+            type: Sequelize.DataTypes.INTEGER,
+          },
+          { transaction: t }
+        ),
+        */
+      ])
     );
   },
 
-  down: (queryInterface, Sequelize) => queryInterface.sequelize.transaction((t) => Promise.all([
+  down: (queryInterface, Sequelize) =>
+    queryInterface.sequelize.transaction((t) =>
+      Promise.all([
         /**
          * Add reverting commands here.
          *
@@ -173,6 +204,7 @@ module.exports = {
         // queryInterface.removeColumn('ScheduledClass', 'processstart', { transaction: t }),
         // queryInterface.removeColumn('User', 'firstname', { transaction: t }),
         // queryInterface.removeColumn('User', 'lastname', { transaction: t }),
-      ]),
+        queryInterface.removeColumn('User', 'rate', { transaction: t }),
+      ])
     ),
 };

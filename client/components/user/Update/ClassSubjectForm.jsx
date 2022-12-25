@@ -66,9 +66,6 @@ function ClassSubjectForm(props) {
 
   const tuitionmChangeHandler = (mce, tuitionmId) => {
     let newTuitionmIds = [];
-    if (displayClassType === false) {
-      dispatch(setDisplayClassType(true));
-    }
     if (mce.target.checked === true) {
       // add to subject list
       newTuitionmIds = [...userTuitionmIdList, tuitionmId];
@@ -103,12 +100,16 @@ function ClassSubjectForm(props) {
 
     // Any Subject that is not inside selected will be removed
     removeHiddenSubFromSelection(uniqueSubjectIds);
+
+    if (uniqueClassTypeIds.length > 0) {
+      dispatch(setDisplayClassType(true));
+    } else {
+      dispatch(setDisplayClassType(false));
+      dispatch(setDisplaySubject(false));
+    }
   };
 
   const classtypeChangeHandler = (cce, classTypeId) => {
-    if (displaySubject === false) {
-      dispatch(setDisplaySubject(true));
-    }
     let newClassTypeIds = [];
     if (cce.target.checked === true) {
       // add to subject list
@@ -127,6 +128,12 @@ function ClassSubjectForm(props) {
 
     // Any Subject that is not inside selected will be removed
     removeHiddenSubFromSelection(uniqueSubjectIds);
+
+    if (newClassTypeIds.length > 0) {
+      dispatch(setDisplaySubject(true));
+    } else {
+      dispatch(setDisplaySubject(false));
+    }
   };
 
   const subjectChangeHandler = (sce, subjectId) => {

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
 import ErrorMessages from '../../../components/elements/ErrorMessages';
@@ -8,7 +8,7 @@ import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
 import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
-import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser, resetUpdateUserExam } from '../../../redux/reducers/userReducer';
+import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
@@ -21,13 +21,15 @@ function index() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const [userId, setUserId] = useState(null);
+
   const updatePart = useSelector((state) => state.user.updatePart);
   const updateUser = useSelector((state) => state.user.updateUser);
-  const updateUserExam = useSelector((state) => state.user.updateUserExam);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const isLoading = useSelector((state) => state.elements.isLoading);
+  const educationUpdateList = useSelector((state) => state.education.educationUpdateList);
 
-  const { userId } = router.query;
+  // const { userId } = router.query;
 
   const inputChangeHandler = (ice) => {
     ice.preventDefault();
@@ -35,8 +37,12 @@ function index() {
   };
 
   useEffect(() => {
-    if (userId) {
-      const userIdInt = parseInt(userId, 10);
+    const params = new URLSearchParams(window.location.search);
+    const newUserId = params.get('userId');
+    // console.log({ newUserId });
+    if (newUserId !== null) {
+      const userIdInt = parseInt(newUserId, 10);
+      setUserId(newUserId);
       if (userIdInt !== authUserInfo.id) {
         router.push('/user/dashboard');
       } else {
@@ -48,7 +54,7 @@ function index() {
           // get subjects  / class types / user
           dispatch(resetErrorList());
           await Promise.all([
-            dispatch(fetchCurrentSingleUser(userId)),
+            dispatch(fetchCurrentSingleUser(newUserId)),
             dispatch(fetchAllTuitionms(null)),
             dispatch(fetchAllClassTypes(null)),
             dispatch(fetchAllSubjects(null)),
@@ -56,8 +62,11 @@ function index() {
         })();
       }
       isMounted = false;
+    } else {
+      // console.log({ newUserId });
+      // router.push('/user/dashboard');
     }
-  }, [router.isReady]);
+  }, []);
 
   const userChangeHandler = async (uce) => {
     uce.preventDefault();
@@ -99,9 +108,9 @@ function index() {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
       };
-
-      const newObj = updateUserExam.filter((uel) => {
-        if (uel.cgpa && uel.cgpa !== '' && uel.passing_year && uel.passing_year !== '') {
+      // Remove updateUserExam
+      const newObj = educationUpdateList.filter((uel) => {
+        if (uel.level && uel.level !== '' && uel.cgpa && uel.cgpa !== '' && uel.passing_year && uel.passing_year !== '') {
           // console.log(uel);
           return uel;
         }
@@ -116,7 +125,6 @@ function index() {
         if (response.status === 202 || response.status === 201 || response.status === 200) {
           // console.log(response);
           window.localStorage.removeItem('updatePart');
-          dispatch(resetUpdateUserExam());
           dispatch(resetErrorList());
           router.push('/user/dashboard');
         }
@@ -139,7 +147,7 @@ function index() {
 
   const cancelBtnHandler = (cbe) => {
     cbe.preventDefault();
-    router.push('/user/dashboard');
+    // router.push('/user/dashboard'); // Solve this later
   };
 
   const displayContentPartwise = () => {
@@ -151,7 +159,7 @@ function index() {
         return <PersonalInformationForm inputChangeHandler={inputChangeHandler} />;
       case 3:
         return <TutionDetail inputChangeHandler={inputChangeHandler} />;
-      // case 4: // Direct from return
+      // case 4: // Direct from return because it is using diffrent form element
       //   return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
 
       default:

@@ -168,9 +168,15 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.BOOLEAN(),
         defaultValue: true,
       },
-      rate: {
+      // Different rates for differet tuition styles
+      tl_rate: {
         type: DataTypes.INTEGER,
-        // defaultValue: 150, // per hour
+      },
+      sl_rate: {
+        type: DataTypes.INTEGER,
+      },
+      ol_rate: {
+        type: DataTypes.INTEGER,
       },
       totalHours: {
         type: DataTypes.INTEGER,

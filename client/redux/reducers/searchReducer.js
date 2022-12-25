@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { types, roles, tuitionmediums } from '../../config/keys';
+import { tuitionplace } from '../../utils/types';
 
 const { ONLINE, TL, SL, ANY } = types;
 const { BANGLA, ENGLISH, ARABIC } = tuitionmediums;
@@ -22,21 +23,7 @@ export const searchSlice = createSlice({
         type: ANY,
         text: 'Any types',
       },
-      {
-        id: 1,
-        type: ONLINE,
-        text: 'Online',
-      },
-      {
-        id: 2,
-        type: TL,
-        text: "Teacher's Location",
-      },
-      {
-        id: 3,
-        type: SL,
-        text: "Student's Location",
-      },
+      ...tuitionplace,
     ],
     /**
      * @dynamic or changable elements of the website

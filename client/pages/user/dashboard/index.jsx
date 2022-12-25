@@ -6,8 +6,9 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleLoading, resetErrorList } from '../../../redux/reducers/elementsSlice';
 import { toggleAuthUser, fetchCurrentSingleUser } from '../../../redux/reducers/userReducer';
-import Detail from '../../../components/user/Detail';
 import { fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
+import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
+import Detail from '../../../components/user/Detail';
 import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
 
@@ -18,7 +19,6 @@ function dashboard() {
   const router = useRouter();
   const dispatch = useDispatch();
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
-
   const currentUser = useSelector((state) => state.user.currentUser);
 
   useEffect(() => {
@@ -44,8 +44,9 @@ function dashboard() {
 
   useEffect(() => {
     if (authUserInfo.id) {
-      dispatch(fetchAllRequestedSCOU(authUserInfo.id));
-      dispatch(fetchCurrentSingleUser(authUserInfo.id));
+      (async () => {
+        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id)), dispatch(fetchCurrentSingleUser(authUserInfo.id))]);
+      })();
     }
   }, [authUserInfo]);
 

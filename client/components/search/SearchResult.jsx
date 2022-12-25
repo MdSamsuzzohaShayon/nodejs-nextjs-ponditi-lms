@@ -111,6 +111,14 @@ function SearchResult() {
 
   const makeTheUrl = (userImage) => `${BACKEND_URL}/${userImage}`;
 
+  const displayRates = (sul) => (
+    <div className="hstack gap-3">
+      {sul.ol_rate && <p className="alert alert-primary w-fit">Online - {sul.ol_rate} tk</p>}
+      {sul.tl_rate && <p className="alert alert-primary w-fit">Teacher&apos;s Location - {sul.tl_rate} tk</p>}
+      {sul.sl_rate && <p className="alert alert-primary w-fit">Student&apos;s Location - {sul.sl_rate} tk </p>}
+    </div>
+  );
+
   return (
     <div className="SearchResult">
       {searchUserList && (
@@ -136,7 +144,8 @@ function SearchResult() {
                           </h5>
                         </div>
                         <p className="card-text">Experience: {sul?.experience} years</p>
-                        <p className="card-text">Fees: {sul?.rate} tk per hour</p>
+                        {/* <p className="card-text">Fees: {sul?.rate} tk per hour</p> */}
+                        {displayRates(sul)}
                       </div>
                     </div>
                     <div className="col-md-3 vertical-center ">

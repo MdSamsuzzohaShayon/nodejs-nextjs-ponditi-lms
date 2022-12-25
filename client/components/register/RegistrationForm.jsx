@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
 /* eslint-disable no-console */
@@ -7,9 +8,9 @@
 import { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import { setCurrentUser, setUserFormsType, resetUser, setSelectedStep } from '../../redux/reducers/userReducer';
+import { setRegisterableUser } from '../../redux/reducers/userReducer';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
-import { setClasstypeList, setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
+import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
 import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
@@ -17,10 +18,17 @@ import PriceCalculator from '../elements/PriceCalculator';
 
 const { TEACHER, STUDENT } = roles;
 
+const online = 'online';
+const tl = 'tl';
+const sl = 'sl';
+
 function RegistrationForm(props) {
   const dispatch = useDispatch();
+
   const pyInputEl = useRef(null);
-  const rateInputEl = useRef(null);
+  const rateInputOlEl = useRef(null);
+  const rateInputTlEl = useRef(null);
+  const rateInputSlEl = useRef(null);
   /**
    * @api for google places
    */
@@ -30,22 +38,99 @@ function RegistrationForm(props) {
     libraries,
   });
 
-  const userInfo = useSelector((state) => state.user.currentUser);
+  // const registerableUser = useSelector((state) => state.user.currentUser);
+  const registerableUser = useSelector((state) => state.user.registerableUser);
   const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
 
+  /**
+   * Using states because we are not going to need this in another component
+   */
   const [autocomplete, setAutocomplete] = useState(null);
-  const [daysOfMonth, setDaysOfMonth] = useState(15);
-  const [monthlyEarning, setMonthlyEarning] = useState(3000);
 
-  const openPriceCalcHandler = (opce) => {
+  // For calculating price
+  const [selectedStyleItem, setSelectedStyleItem] = useState(online);
+  const [calculatorTitle, setCalculatorTitle] = useState('untitled');
+  const initialDaysOfMonth = 15;
+  const initialMonthlyEarning = 3000;
+  const [daysOfMonth, setDaysOfMonth] = useState(initialDaysOfMonth);
+  const [daysOfMonthOl, setDaysOfMonthOl] = useState(initialDaysOfMonth);
+  const [daysOfMonthSl, setDaysOfMonthSl] = useState(initialDaysOfMonth);
+  const [daysOfMonthTl, setDaysOfMonthTl] = useState(initialDaysOfMonth);
+  const [monthlyEarning, setMonthlyEarning] = useState(initialMonthlyEarning);
+  const [monthlyEarningOl, setMonthlyEarningOl] = useState(initialMonthlyEarning);
+  const [monthlyEarningSl, setMonthlyEarningSl] = useState(initialMonthlyEarning);
+  const [monthlyEarningTl, setMonthlyEarningTl] = useState(initialMonthlyEarning);
+  const [calculateRate, setCalculateRate] = useState(null);
+
+  // Display tuition styles input field
+  const [displayTuitionOl, setDisplayTuitionOl] = useState(false);
+  const [displayTuitionSl, setDisplayTuitionSl] = useState(false);
+  const [displayTuitionTl, setDisplayTuitionTl] = useState(false);
+
+  const inputTuitionStyleHandler = (itse) => {
+    switch (itse.target.name) {
+      case online:
+        setDisplayTuitionOl((prevState) => !prevState);
+        break;
+      case tl:
+        setDisplayTuitionTl((prevState) => !prevState);
+        break;
+      case sl:
+        setDisplayTuitionSl((prevState) => !prevState);
+        break;
+
+      default:
+        break;
+    }
+    if (itse.target.checked) {
+      // add new item
+      dispatch(setRegisterableUser({ tutionplace: [...registerableUser.tutionplace, itse.target.name.toUpperCase()] }));
+    } else {
+      // Remove deselected item
+      const newRegisterableUser = registerableUser.tutionplace.filter((ru) => ru.toUpperCase() !== itse.target.name.toUpperCase());
+      dispatch(setRegisterableUser({ tutionplace: newRegisterableUser }));
+    }
+    // (e) => setDisplayTuitionOl((prevState) => !prevState)
+  };
+
+  const openPriceCalcHandler = (opce, inputName) => {
     opce.preventDefault();
+    setSelectedStyleItem(inputName);
+    switch (inputName) {
+      case online:
+        setCalculatorTitle('Online rate');
+        setCalculateRate(registerableUser.ol_rate);
+        setMonthlyEarning(monthlyEarningOl);
+        setDaysOfMonth(daysOfMonthOl);
+        break;
+      case tl:
+        setCalculatorTitle("Teacher's location rate");
+        setCalculateRate(registerableUser.tl_rate);
+        setMonthlyEarning(monthlyEarningTl);
+        setDaysOfMonth(daysOfMonthTl);
+        break;
+      case sl:
+        setCalculatorTitle("Student's Location rate");
+        setCalculateRate(registerableUser.sl_rate);
+        setMonthlyEarning(monthlyEarningSl);
+        setDaysOfMonth(daysOfMonthSl);
+        break;
+
+      default:
+        break;
+    }
     dispatch(setOpenPriceCalc(true));
   };
 
   const inputChangeHandler = (iche) => {
     // iche.preventDefault();
-    dispatch(setCurrentUser({ [iche.target.name]: iche.target.value }));
+    dispatch(setRegisterableUser({ [iche.target.name]: iche.target.value }));
+  };
+
+  const inputRateChangeHandler = (irce) => {
+    // console.log({ [irce.target.name]: parseInt(irce.target.value, 10) });
+    dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
   };
 
   const tuitionmChangeHandler = (tce) => {
@@ -57,37 +142,50 @@ function RegistrationForm(props) {
   };
   const inputPriceChangeHandler = (ipce) => {
     // console.log({ [ipce.target.name]: ipce.target.value });
+    let rate = 120;
+    let earning = null;
+    let days = null;
     if (ipce.target.name === 'monthly_earning') {
-      const earning = parseInt(ipce.target.value, 10);
-      setMonthlyEarning(earning);
-      const rate = (earning / daysOfMonth).toFixed(2);
-      dispatch(setCurrentUser({ rate }));
-      rateInputEl.current.value = rate;
+      earning = parseInt(ipce.target.value, 10);
+      days = daysOfMonth;
+      rate = (earning / daysOfMonth).toFixed(2);
     } else if (ipce.target.name === 'days_of_month') {
-      const days = parseInt(ipce.target.value, 10);
-      setDaysOfMonth(days);
-      const rate = (monthlyEarning / days).toFixed(2);
-      dispatch(setCurrentUser({ rate }));
-      rateInputEl.current.value = rate;
+      earning = monthlyEarning;
+      days = parseInt(ipce.target.value, 10);
+      rate = (monthlyEarning / days).toFixed(2);
     }
-  };
+    setCalculateRate(rate);
+    switch (selectedStyleItem) {
+      case online: {
+        dispatch(setRegisterableUser({ ol_rate: parseInt(rate, 10) }));
+        rateInputOlEl.current.value = rate;
+        setMonthlyEarningOl(earning);
+        setDaysOfMonthOl(days);
+        break;
+      }
+      case sl: {
+        dispatch(setRegisterableUser({ sl_rate: parseInt(rate, 10) }));
+        rateInputSlEl.current.value = rate;
+        setMonthlyEarningSl(earning);
+        setDaysOfMonthSl(days);
+        break;
+      }
+      case tl: {
+        dispatch(setRegisterableUser({ tl_rate: parseInt(rate, 10) }));
+        rateInputTlEl.current.value = rate;
+        setMonthlyEarningTl(earning);
+        setDaysOfMonthTl(days);
+        break;
+      }
 
-  const inputChangeDaysOfMonthHandler = (icdme) => {
-    // icdme.preventDefault();
-    const totalDays = parseInt(icdme.target.value, 10);
-    setDaysOfMonth(totalDays);
-    dispatch(setCurrentUser({ rate: monthlyEarning / totalDays }));
-  };
-
-  const inputRateChangeHandler = (irce) => {
-    const monthlyEarningVal = parseInt(irce.target.value, 10);
-    setMonthlyEarning(monthlyEarningVal);
-    dispatch(setCurrentUser({ rate: monthlyEarningVal / daysOfMonth }));
+      default:
+        break;
+    }
   };
 
   const inputRSChangeHandler = (irse) => {
     // console.log(irse.target.checked)
-    dispatch(setCurrentUser({ [irse.target.name]: irse.target.checked }));
+    dispatch(setRegisterableUser({ [irse.target.name]: irse.target.checked }));
   };
 
   const currentlyStudyHandler = (cse) => {
@@ -101,56 +199,44 @@ function RegistrationForm(props) {
     }
   };
 
-  const inputErrName = (userName) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userName.length < 2) {
+  const commonCls = 'fs-6 fw-light text-danger';
+  const inputEmptyPrevent = (userProp, text) => {
+    if (userProp === '' || userProp === null) {
       props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Name must be more than 1 charecter long</p>;
+      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>{text} can not be empty</p>;
     }
     return null;
   };
 
-  const inputErrEmail = (userEmail) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userEmail === '' || userEmail === null || !userEmail.includes('@')) {
+  const inputTuitionStyleErr = () => {
+    if (registerableUser.tutionplace.length < 1) {
       props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Invalid email address</p>;
+      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>You must select atleast one style</p>;
     }
-    return null;
-  };
-
-  const inputErrProfession = (userProfession) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userProfession === '' || userProfession === null) {
+    if (registerableUser.tutionplace.length > 0) {
+      let errStr = '';
+      let passed = true;
+      if (displayTuitionOl) {
+        if (registerableUser.ol_rate === null || registerableUser.ol_rate === '') {
+          passed = false;
+          errStr += 'Online, ';
+        }
+      }
+      if (displayTuitionSl) {
+        if (registerableUser.sl_rate === null || registerableUser.sl_rate === '') {
+          passed = false;
+          errStr += "Student's Location, ";
+        }
+      }
+      if (displayTuitionTl) {
+        if (registerableUser.tl_rate === null || registerableUser.tl_rate === '') {
+          passed = false;
+          errStr += "Teacher's Location ";
+        }
+      }
+      if (passed) return null;
       props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Profession can not be empty</p>;
-    }
-    return null;
-  };
-
-  const inputErrInstitution = (userInstitution) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userInstitution === '' || userInstitution === null) {
-      props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Institution can not be empty</p>;
-    }
-    return null;
-  };
-
-  const inputErrLoc = (userLoc) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userLoc === '' || userLoc === null) {
-      props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Location can not be empty</p>;
-    }
-    return null;
-  };
-
-  const inputErrEdu = (userEdu) => {
-    const commonCls = 'fs-6 fw-light text-danger';
-    if (userEdu === '' || userEdu === null) {
-      props.changeValidationPassed(false);
-      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Education can not be empty</p>;
+      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Rates can not be empty for {errStr}</p>;
     }
     return null;
   };
@@ -159,7 +245,7 @@ function RegistrationForm(props) {
     const lat = autocomplete.getPlace().geometry.location.lat();
     const lng = autocomplete.getPlace().geometry.location.lng();
     try {
-      dispatch(setCurrentUser({ presentaddress: `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})` }));
+      dispatch(setRegisterableUser({ presentaddress: `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})` }));
     } catch (error) {
       console.log(error);
     }
@@ -177,68 +263,77 @@ function RegistrationForm(props) {
       <div className="row mb-3">
         <div className="col-md-6">
           <label htmlFor="firstname">Name*</label>
-          <input type="text" className="form-control" name="name" id="name" defaultValue={userInfo?.name} onChange={inputChangeHandler} required />
-          {inputErrName(userInfo?.name)}
+          <input type="text" className="form-control" name="name" id="name" defaultValue={registerableUser?.name} onChange={inputChangeHandler} required />
+          {inputEmptyPrevent(registerableUser.name, 'Name')}
         </div>
         <div className="col-md-6">
           <label htmlFor="email">Email*</label>
-          <input type="email" className="form-control" name="email" id="email" defaultValue={userInfo?.email} onChange={inputChangeHandler} required />
-          {inputErrEmail(userInfo?.email)}
+          <input type="email" className="form-control" name="email" id="email" defaultValue={registerableUser?.email} onChange={inputChangeHandler} required />
+          {inputEmptyPrevent(registerableUser.email, 'Email')}
         </div>
       </div>
       <div className="row mb-3">
-        {userInfo.role === TEACHER && (
+        {registerableUser.role === TEACHER && (
           <div className="col-md-6">
             <label htmlFor="profession">Profession*</label>
-            <input type="profession" className="form-control" name="profession" id="profession" defaultValue={userInfo?.profession} onChange={inputChangeHandler} />
-            {inputErrProfession(userInfo?.profession)}
+            <input
+              type="profession"
+              className="form-control"
+              name="profession"
+              id="profession"
+              defaultValue={registerableUser?.profession}
+              onChange={inputChangeHandler}
+            />
+            {inputEmptyPrevent(registerableUser.profession, 'Profession')}
           </div>
         )}
 
-        <div className={userInfo.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
+        <div className={registerableUser.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
           <label htmlFor="institution">Institution*</label>
           <input
             type="institution"
             className="form-control"
             name="institution"
             id="institution"
-            defaultValue={userInfo?.institution}
+            defaultValue={registerableUser?.institution}
             onChange={inputChangeHandler}
             required
           />
-          {inputErrInstitution(userInfo?.institution)}
+          {inputEmptyPrevent(registerableUser.institution, 'Institution')}
         </div>
       </div>
 
       <div className="row mb-3">
-        {userInfo.role === TEACHER && (
+        {registerableUser.role === TEACHER && (
           <div className="col-md-6">
             <label htmlFor="experience">Experience(years)*</label>
-            <input type="number" className="form-control" name="experience" id="experience" defaultValue={userInfo?.experience} onChange={inputChangeHandler} />
+            <input type="number" className="form-control" name="experience" id="experience" defaultValue={registerableUser?.experience} onChange={inputChangeHandler} />
+            {inputEmptyPrevent(registerableUser.experience, 'Experience')}
           </div>
         )}
 
-        <div className={userInfo.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
+        <div className={registerableUser.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
           {/* Replace this with present address and use google map api  */}
           <label htmlFor="district">Location*</label>
           <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
             <input type="text" className="form-control" id="presentaddress" name="presentaddress" onChange={inputChangeHandler} />
           </Autocomplete>
-          {inputErrLoc(userInfo?.presentaddress)}
+          {inputEmptyPrevent(registerableUser.presentaddress, 'Location')}
         </div>
       </div>
 
-      {userInfo.role === TEACHER && (
+      {registerableUser.role === TEACHER && (
         <>
           <div className="row mb-3">
             <div className="col-md-6">
               <label htmlFor="firstname">highest Education*</label>
-              <input type="text" className="form-control" name="degree" id="degree" defaultValue={userInfo?.degree} onChange={inputChangeHandler} />
-              {inputErrEdu(userInfo?.degree)}
+              <input type="text" className="form-control" name="degree" id="degree" defaultValue={registerableUser?.degree} onChange={inputChangeHandler} />
+              {inputEmptyPrevent(registerableUser.degree, 'Degree')}
             </div>
             <div className="col-md-6">
-              <label htmlFor="major">Major*</label>
-              <input type="text" className="form-control" name="major" id="major" defaultValue={userInfo?.major} onChange={inputChangeHandler} />
+              <label htmlFor="major">Major / Subject*</label>
+              <input type="text" className="form-control" name="major" id="major" defaultValue={registerableUser?.major} onChange={inputChangeHandler} />
+              {inputEmptyPrevent(registerableUser.major, 'Major')}
             </div>
           </div>
           <div className="row mb-3">
@@ -250,7 +345,7 @@ function RegistrationForm(props) {
                 name="passing_year"
                 id="passing_year"
                 ref={pyInputEl}
-                defaultValue={userInfo?.passing_year}
+                defaultValue={registerableUser?.passing_year}
                 onChange={inputChangeHandler}
               />
             </div>
@@ -261,46 +356,127 @@ function RegistrationForm(props) {
               <input type="checkbox" name="running_study" className="mx-2 mt-4" id="running_study" onChange={currentlyStudyHandler} />
             </div>
           </div>
+
+          {/* Tuition style with calculator start  */}
           <div className="row mb-3">
-            <div className="col-md-6">
-              <label htmlFor="monthlyenarning">Per hour rate</label>
-              <div className="input-group mb-3">
-                <div className="form-floating p-0">
-                  <input type="number" className="form-control" ref={rateInputEl} defaultValue={userInfo?.rate} id="rate" name="rate" />
+            <div className="col-md-12">
+              <label htmlFor="tuitionstyle">Tuition Style</label>
+              <div className="row">
+                <div className="col-md-3">
+                  <div className="input-item d-flex align-items-start justify-content-start flex-column">
+                    <div className="form-check">
+                      <input className="form-check-input" name={online} type="checkbox" onChange={inputTuitionStyleHandler} id={online} />
+                      <label className="form-check-label" htmlFor={online}>
+                        Online
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <span className="input-group-text">
-                  <img src="/icons/calculator.svg" alt="" onClick={openPriceCalcHandler} role="button" onKeyDown={(e) => console.log('Open price calc')} />
-                </span>
+                <div className="col-md-3">
+                  <div className="input-item d-flex align-items-start justify-content-start flex-column">
+                    <div className="form-check">
+                      <input className="form-check-input" name={tl} type="checkbox" onChange={inputTuitionStyleHandler} id={tl} />
+                      <label className="form-check-label" htmlFor={tl}>
+                        Teacher&apos;s location
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div className="input-item d-flex align-items-start justify-content-start flex-column">
+                    <div className="form-check">
+                      <input className="form-check-input" name={sl} type="checkbox" onChange={inputTuitionStyleHandler} id={sl} />
+                      <label className="form-check-label" htmlFor={sl}>
+                        Student&apos;s location
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
+              <div className="row">
+                <div className="col-md-3">
+                  {displayTuitionOl && (
+                    <div className="price-form">
+                      <div className="input-group mb-3">
+                        <div className="form-floating p-0">
+                          <input
+                            type="number"
+                            className="form-control"
+                            ref={rateInputOlEl}
+                            defaultValue={registerableUser?.ol_rate}
+                            name="ol_rate"
+                            onChange={inputRateChangeHandler}
+                          />
+                        </div>
+                        <span className="input-group-text">
+                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, online)} role="button" />
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="col-md-3">
+                  {displayTuitionTl && (
+                    <div className="price-form">
+                      <div className="input-group mb-3">
+                        <div className="form-floating p-0">
+                          <input
+                            type="number"
+                            className="form-control"
+                            ref={rateInputTlEl}
+                            onChange={inputRateChangeHandler}
+                            defaultValue={registerableUser?.tl_rate}
+                            id="tl_rate"
+                            name="tl_rate"
+                          />
+                        </div>
+                        <span className="input-group-text">
+                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, tl)} role="button" />
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="col-md-3">
+                  {displayTuitionSl && (
+                    <div className="price-form">
+                      <div className="input-group mb-3">
+                        <div className="form-floating p-0">
+                          <input
+                            type="number"
+                            className="form-control"
+                            ref={rateInputSlEl}
+                            onChange={inputRateChangeHandler}
+                            defaultValue={registerableUser?.sl_rate}
+                            id="sl_rate"
+                            name="sl_rate"
+                          />
+                        </div>
+                        <span className="input-group-text">
+                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, sl)} role="button" />
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* tutionplace */}
+              {inputTuitionStyleErr()}
             </div>
           </div>
           <PriceCalculator
-            title="Calculate rate"
+            title={calculatorTitle}
             inputPriceChangeHandler={inputPriceChangeHandler}
-            result={userInfo?.rate}
+            result={calculateRate}
             defaultDays={daysOfMonth}
             defaultEarn={monthlyEarning}
           />
-
-          {/* <div className="row mb-3">
-            <div className="col-md-4">
-              <label htmlFor="monthly_earning">Total Monthly Earning</label>
-              <input className="rate-inputs form-control" type="number" defaultValue={monthlyEarning} onChange={inputRateChangeHandler} />
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="monthly_earning">Total days of Month</label>
-              <input className="rate-inputs form-control" type="number" defaultValue={daysOfMonth} onChange={inputChangeDaysOfMonthHandler} />
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="monthlyenarning" className="mt-4">
-                Per hour rate Tk {userInfo?.rate?.toFixed(2)}
-              </label>
-            </div>
-          </div> */}
+          {/* Tuition style with calculator end */}
         </>
       )}
 
-      {userInfo.role === STUDENT && (
+      {registerableUser.role === STUDENT && (
         <div className="row mb-3">
           <div className="col-md-6">
             <label htmlFor="tutionm">Medium</label>

@@ -156,7 +156,6 @@
  - ✅ Profession will be student, Full Name, Email, Medium, Class, Institution, Location
  - ✅ No rate,  subject, for students
  - ✅ dashboard -> update user - no any medium
- - Setup sequelize from scretch - association and migrations
  - Rivisions
  - Change favicon.ico 
  - ✅ Custom 404 page
@@ -170,15 +169,26 @@
  - ✅ No gmail login
  - Google place api error
  - ✅ highest education
- - Modal calculating tuition fee
- - tuition style - online / teacher's location / student's location in registration page
- - rate for tuition style -> different rates for student's location teacher's location and online
+ - ✅ Modal calculating tuition fee
+ - Style improvement in tuition style - online / teacher's location / student's location in registration page
+ - ✅ rate for tuition style -> different rates for student's location teacher's location and online
  - ✅ www.ponditi.com add in message
- - Add education freely
- - Experience below the name - dashboard page
- - Personal detail and tuition detail to be in one section and at top
- - Second section preffered subject
- - 3rd section education detail
+ - ✅ Exam detail form - list all exam on component mount
+ - ✅ Add education freely
+ - ✅ Experience below the name - dashboard page
+ - Update tuition detail rates for diffrent tuition stule
+ - Search result display properly with diffrent rate
+ - 1. Personal detail and tuition detail to be in one section and at top
+ - 2. end section preffered subject
+ - 3. 3rd section education detail
+ - server - TL_SL_TL_SL
+ - Should remove all educational detail from user model and keep it clean with education model relationship
+ - Update medium is not working
+
+
+### Sequelize problems
+ - Notification and education need to migrate properly with user when we add a new field to user
+ - Setup sequelize from scretch - association and migrations
 
 Ask questions
 

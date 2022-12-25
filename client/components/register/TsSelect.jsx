@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentUser, setUserFormsType } from '../../redux/reducers/userReducer';
+import { setRegisterableUser } from '../../redux/reducers/userReducer';
 import { REGISTER, roles } from '../../config/keys';
 
 const { TEACHER, STUDENT } = roles;
@@ -7,10 +7,10 @@ const { TEACHER, STUDENT } = roles;
 // Teacher student selection
 function TsSelect() {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.user.currentUser);
+  const registerableUser = useSelector((state) => state.user.registerableUser);
   const toggleRole = (tre, role) => {
     tre.preventDefault();
-    dispatch(setCurrentUser({ role }));
+    dispatch(setRegisterableUser({ role }));
   };
 
   return (
@@ -19,13 +19,13 @@ function TsSelect() {
         <button
           type="button"
           onClick={(e) => toggleRole(e, TEACHER)}
-          className={userInfo.role === TEACHER ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
+          className={registerableUser.role === TEACHER ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
         >
           Register as teacher
         </button>
         <button
           type="button"
-          className={userInfo.role === STUDENT ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
+          className={registerableUser.role === STUDENT ? 'btn btn-primary border  p-5 fs-3' : 'btn btn-primary-outline border  p-5 fs-3'}
           onClick={(e) => toggleRole(e, 'STUDENT')}
         >
           Register as student

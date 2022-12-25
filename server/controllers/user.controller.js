@@ -17,6 +17,7 @@ const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
+const { ONLINE, TL, SL } = keys.types;
 
 /**
  * @param {type} req phone          raw phone number without any country code
@@ -26,7 +27,7 @@ const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const sendOTP = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   try {
@@ -72,7 +73,7 @@ const sendOTP = async (req, res) => {
       }
       // console.log(phoneWithSufix, '+8801785208590');
       // let them register
-      const response = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
+      const response = await sendSMS(phoneWithSufix, `Your Ponditi OTP code is: ${otp}`);
       if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
 
       // update code from database
@@ -81,7 +82,7 @@ const sendOTP = async (req, res) => {
         msg: 'Already sent an OTP, however, we are sending code once again',
       });
     }
-    const response = await sendSMS(phoneWithSufix, `Your OTP code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your Ponditi OTP code is: ${otp}`);
     if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     await User.create({
       phone,
@@ -107,7 +108,7 @@ const sendOTP = async (req, res) => {
 const verifyUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
@@ -142,22 +143,38 @@ const verifyUser = async (req, res) => {
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   const userObj = { ...req.body };
   // if (userObj.isActive) {
   //   return res.status(406).json({ msg: 'You can not change your active status' });
   // }
-  if (userObj.role === TEACHER) {
-    userObj.role = TEACHER;
+  if (userObj.role.toUpperCase() === TEACHER) {
+    // Work wit tuition place - this is only for teacher
+    if (userObj.tutionplace && userObj.tutionplace.length === 0) {
+      return res.status(406).json({ msg: 'You must select atleast one tuition place' });
+    }
+
+    let newTutionplace = '';
+    let i = 0;
+    while (i < userObj.tutionplace.length) {
+      let sep = '';
+      if (i + 1 !== userObj.tutionplace.length) sep = '_';
+      newTutionplace = `${newTutionplace + userObj.tutionplace[i]}${sep}`;
+      i += 1;
+    }
+    if (newTutionplace !== '') userObj.tutionplace = newTutionplace.toUpperCase();
   } else {
     userObj.role = STUDENT;
     userObj.profession = STUDENT.toLowerCase();
     delete userObj.degree;
     delete userObj.major;
     delete userObj.padding_year;
-    delete userObj.rate;
+    delete userObj.tl_rate;
+    delete userObj.sl_rate;
+    delete userObj.ol_rate;
+    delete userObj.tutionplace;
   }
 
   if (userObj.cgpa) {
@@ -201,6 +218,7 @@ const registerUser = async (req, res) => {
       specialChars: false,
     });
     userObj.password = await bcrypt.hash(genPassword, 10);
+
     // console.log(userObj);
     if (userObj?.SubjectId?.length > 0) {
       // set subject
@@ -329,7 +347,7 @@ const login = async (req, res) => {
   const errors = validationResult(req);
   // console.log(errors);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   // const { email, password } = req.body;
@@ -398,7 +416,7 @@ const logout = async (req, res) => {
 const forgetPassword = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   try {
@@ -458,7 +476,7 @@ const forgetPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
   let userExist = null;
@@ -496,7 +514,7 @@ const resetPassword = async (req, res) => {
 const resendOTP = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
   //   const result = await Waitlist.update(
   //     { resume: req.file.filename },
@@ -582,7 +600,11 @@ const getSingleUser = async (req, res) => {
   const { id } = req.params;
   try {
     const userId = parseInt(id, 10);
-    const userExist = await User.findOne({ where: { id: userId } });
+    // include: [{ model: Education }],
+    const userExist = await User.findOne({
+      where: { id: userId },
+      // include: [{ model: ClassType }, { model: Tuitionm }, { model: Subject }, { model: Notification }, { model: Education }],
+    });
     if (userExist === null) {
       return res.status(404).json({ msg: 'user not found' });
     }
@@ -643,16 +665,19 @@ const updateUser = async (req, res) => {
     }
 
     // Set user rate per hour
-    if (updatedObj.rate) {
-      if (req.userRole === STUDENT) {
-        delete updatedObj.rate;
-      } else if (req.userRole === TEACHER) {
-        updatedObj.rate = parseInt(updatedObj.rate, 10);
+    if (req.userRole === STUDENT) {
+      delete updatedObj.tl_rate;
+      delete updatedObj.sl_rate;
+      delete updatedObj.ol_rate;
+    } else if (req.userRole === TEACHER) {
+      if (updatedObj.tl_rate) {
+        updatedObj.tl_rate = parseInt(updatedObj.tl_rate, 10);
       }
-    } else {
-      // eslint-disable-next-line no-lonely-if
-      if (req.userRole === TEACHER) {
-        updatedObj.rate = parseInt(150, 10);
+      if (updatedObj.sl_rate) {
+        updatedObj.sl_rate = parseInt(updatedObj.sl_rate, 10);
+      }
+      if (updatedObj.ol_rate) {
+        updatedObj.ol_rate = parseInt(updatedObj.ol_rate, 10);
       }
     }
     // console.log(updatedObj);
@@ -704,7 +729,7 @@ const updateUser = async (req, res) => {
 const updateExamUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
   const { id } = req.params;
   const pId = parseInt(id, 10);
@@ -726,17 +751,18 @@ const updateExamUser = async (req, res) => {
     }
     const updatedExamList = req.body.examlist;
     // console.log(updatedExamList);
-    const examList = [];
+    const newExamList = [];
     for (let i = 0; i < updatedExamList.length; i += 1) {
       const newExamObj = { ...updatedExamList[i] };
+      delete newExamObj.id;
       if (
         newExamObj.level &&
-        newExamObj.group &&
-        newExamObj.cgpa &&
-        newExamObj.passing_year &&
         newExamObj.level !== null &&
-        newExamObj.group !== null &&
+        newExamObj.cgpa &&
         newExamObj.cgpa !== null &&
+        newExamObj.group &&
+        newExamObj.group !== null &&
+        newExamObj.passing_year &&
         newExamObj.passing_year !== null
       ) {
         newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
@@ -744,20 +770,20 @@ const updateExamUser = async (req, res) => {
         if (existingEducation) {
           // console.log(existingEducation);
           const newUpdatedEducation = existingEducation.update(newExamObj);
-          examList.push(newUpdatedEducation);
+          newExamList.push(newUpdatedEducation);
         } else {
           const newEducationLevel = Education.create(newExamObj); // Create or update
-          examList.push(newEducationLevel);
+          newExamList.push(newEducationLevel);
         }
       }
     }
-    if (examList.length === 0) {
+    if (newExamList.length === 0) {
       return res.status(406).json({
         msg: 'No item to update, make sure to put level, group, cgpa, and passing year',
       });
     }
-    const allUpdatedExam = await Promise.all(examList);
-    const updatedUserExam = await findUser.setEducation(allUpdatedExam);
+    const allUpdatedExam = await Promise.all(newExamList);
+    await findUser.setEducation(allUpdatedExam);
     // Get all exam - array
     // console.log(updatedUserExam);
     // console.log(allUpdatedExam);

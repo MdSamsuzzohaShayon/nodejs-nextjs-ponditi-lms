@@ -54,6 +54,7 @@ router.put(
   '/register/:userId',
   check('name').notEmpty().isString().isLength({ min: 2 }),
   // check('phone').notEmpty().isString(),
+  check('role').notEmpty().isString(),
   check('email').isEmail().notEmpty(),
   // check('age').notEmpty(),
   // check('profession').notEmpty().isString(),
