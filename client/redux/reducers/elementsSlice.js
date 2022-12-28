@@ -93,6 +93,9 @@ const elementsSlice = createSlice({
     setSuccessMessageList: (state, action) => {
       state.successMessageList = action.payload;
     },
+    resetSuccessMessageList: (state, action) => {
+      state.successMessageList = [];
+    },
     setNoValidate: (state, action) => {
       state.noValidate = action.payload;
     },
@@ -102,6 +105,6 @@ const elementsSlice = createSlice({
   },
 });
 
-export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate, setOpenPriceCalc } = elementsSlice.actions;
+export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate, setOpenPriceCalc, resetSuccessMessageList } = elementsSlice.actions;
 
 export default elementsSlice.reducer;

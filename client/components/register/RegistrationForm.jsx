@@ -314,7 +314,7 @@ function RegistrationForm(props) {
 
         <div className={registerableUser.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
           {/* Replace this with present address and use google map api  */}
-          <label htmlFor="district">Location*</label>
+          <label htmlFor="district">Present Address*</label>
           <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
             <input type="text" className="form-control" id="presentaddress" name="presentaddress" onChange={inputChangeHandler} />
           </Autocomplete>

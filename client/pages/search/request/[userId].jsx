@@ -6,7 +6,7 @@ import SendRequest from '../../../components/detail/SendRequest';
 import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
 import { setInitializeSchedule } from '../../../redux/reducers/scheduledclassReducer';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
+import MessageList from '../../../components/elements/MessageList';
 import { resetErrorList } from '../../../redux/reducers/elementsSlice';
 import Loader from '../../../components/elements/Loader';
 
@@ -69,7 +69,7 @@ function index() {
   return (
     <Layout>
       <div className="container request">
-        <ErrorMessages />
+        <MessageList />
         <SendRequest />
       </div>
     </Layout>

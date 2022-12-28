@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import axios from '../../config/axios';
-import ErrorMessages from '../elements/ErrorMessages';
+import MessageList from '../elements/MessageList';
 import Loader from '../elements/Loader';
 import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
@@ -66,7 +66,7 @@ function SubjectContent() {
         <Loader />
       ) : (
         <div className="container">
-          <ErrorMessages />
+          <MessageList />
           {addContent ? (
             <SubjectAdd togglePartHandler={togglePartHandler} classtypeList={classtypeList} subjectList={subjectList} />
           ) : (

@@ -12,7 +12,7 @@ import Review from '../../../components/scheduledclass/Review';
 import SingleScheduledClassInfo from '../../../components/scheduledclass/SingleScheduledClassInfo';
 import StopWatch from '../../../components/elements/StopWatch';
 import Loader from '../../../components/elements/Loader';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
+import MessageList from '../../../components/elements/MessageList';
 
 const { START_CLASS, APPROVED, FINISH_CLASS, PENDING } = scheduledclassStatus;
 const { TEACHER, STUDENT } = roles;
@@ -187,7 +187,7 @@ function detail() {
     <Layout>
       <section className="section section-1">
         <div className="container">
-          <ErrorMessages />
+          <MessageList />
           <div>
             <SingleScheduledClassInfo authUserInfo={authUserInfo} singleScheduledClass={singleScheduledClass} />
             <p>{singleScheduledClass?.desc}</p>

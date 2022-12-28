@@ -94,17 +94,17 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(100),
       },
 
-      institution: {
-        type: new DataTypes.STRING(100),
-      },
+      // institution: {
+      //   type: new DataTypes.STRING(100),
+      // },
 
+      // running_study: {
+      //   type: new DataTypes.BOOLEAN(),
+      //   defaultValue: false,
+      //   allowNull: true,
+      // },
       experience: {
         type: new DataTypes.STRING(100),
-      },
-      running_study: {
-        type: new DataTypes.BOOLEAN(),
-        defaultValue: false,
-        allowNull: true,
       },
       /**
        * @auth data fields

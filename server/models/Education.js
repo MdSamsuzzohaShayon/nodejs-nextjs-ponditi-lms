@@ -9,29 +9,46 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Education.belongsTo(models.User);
+      Education.belongsTo(models.User); // This will create a UserId column in Education table
     }
   }
   Education.init(
     {
-      level: {
-        type: DataTypes.STRING,
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
       },
-      group: {
+      level: {
+        // Exam title
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      major: {
         type: DataTypes.STRING,
       },
       institution: {
         type: DataTypes.STRING,
       },
-      grade: {
-        type: DataTypes.STRING,
-      },
-      cgpa: {
+      board: {
         type: DataTypes.STRING,
       },
       passing_year: {
         type: DataTypes.INTEGER,
       },
+      running_study: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      // group: {
+      //   type: DataTypes.STRING,
+      // },
+      // grade: {
+      //   type: DataTypes.STRING,
+      // },
+      // cgpa: {
+      //   type: DataTypes.STRING,
+      // },
     },
     {
       sequelize,

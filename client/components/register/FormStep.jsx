@@ -19,22 +19,11 @@ function FormStep({ selectedStep, inputChangeHandler, nextStepHandler }) {
       <div className="row mb-3 mx-0">
         {selectedInputs.properties &&
           selectedInputs.properties.length > 0 &&
-          selectedInputs.properties.map((si, idx) => (
-            <InputElement
-              key={idx}
-              text={si.text}
-              field={si.field}
-              inputChangeHandler={inputChangeHandler}
-            />
-          ))}
+          selectedInputs.properties.map((si, idx) => <InputElement key={idx} text={si.text} field={si.field} inputChangeHandler={inputChangeHandler} />)}
       </div>
       {selectedStep === 1 || selectedStep === 2 ? (
         <div className="row mb-3 mx-0">
-          <button
-            className="btn btn-primary w-fit"
-            type="button"
-            onClick={nextStepHandler}
-          >
+          <button className="btn btn-primary w-fit" type="button" onClick={nextStepHandler}>
             Next
           </button>
         </div>

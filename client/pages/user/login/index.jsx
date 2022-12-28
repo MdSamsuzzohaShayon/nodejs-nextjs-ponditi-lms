@@ -7,10 +7,10 @@ import { useEffect } from 'react';
 import Router from 'next/router';
 import Link from 'next/link';
 import axios from '../../../config/axios';
-import { setErrorList, resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
+import { setErrorList, resetErrorList, toggleLoading, resetSuccessMessageList } from '../../../redux/reducers/elementsSlice';
 import { setLoginInfo, resetLoginInfo } from '../../../redux/reducers/userReducer';
 import Layout from '../../../components/layouts/Layout';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
+import MessageList from '../../../components/elements/MessageList';
 import Loader from '../../../components/elements/Loader';
 
 function login() {
@@ -18,6 +18,7 @@ function login() {
 
   const isLoading = useSelector((state) => state.elements.isLoading);
   const loginInfo = useSelector((state) => state.user.loginInfo);
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
   // eslint-disable-next-line consistent-return
   const loginHandler = async (rhe) => {
@@ -66,9 +67,16 @@ function login() {
     dispatch(resetErrorList());
     dispatch(toggleLoading(false));
     return () => {
+      dispatch(resetSuccessMessageList());
       dispatch(resetLoginInfo());
     };
   }, []);
+
+  useEffect(() => {
+    if (authUserInfo.id) {
+      Router.push('/user/dashboard');
+    }
+  }, [authUserInfo]);
 
   // useEffect(() => () => {
   //   // console.log('Component unmounted');
@@ -91,7 +99,11 @@ function login() {
           <div className="side right-side">
             <div className="right-side-wrapper h-full vertical-center">
               <h1 className="login">Login</h1>
-              <ErrorMessages />
+              <div className="row">
+                <div className="col-md-12">
+                  <MessageList />
+                </div>
+              </div>
               <form onSubmit={loginHandler}>
                 <div className="row mb-3">
                   <div className="col-md-12">

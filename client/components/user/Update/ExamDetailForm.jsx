@@ -14,7 +14,7 @@ function ExamDetailForm(props) {
   const userExamList = useSelector((state) => state.user.userExamList);
   const educationUpdateList = useSelector((state) => state.education.educationUpdateList);
   const educationSingleExam = useSelector((state) => state.education.educationSingleExam);
-  const educationGroupList = useSelector((state) => state.education.educationGroupList);
+  const boardList = useSelector((state) => state.education.boardList);
 
   useEffect(() => {
     if (userExamList.length > 0) {
@@ -66,10 +66,39 @@ function ExamDetailForm(props) {
     console.log({ event: euice, examId }, educationObj);
   };
 
+  const euInputRunningStudyHandler = (euirse, examId) => {
+    const educationItem = educationUpdateList.find((eui) => eui.id === examId);
+    const educationObj = { ...educationItem };
+    educationObj[euirse.target.name] = euirse.target.checked;
+
+    const educationItemIndex = educationUpdateList.findIndex((eui) => eui.id === examId);
+    const updateableEducationList = [...educationUpdateList];
+    updateableEducationList.splice(educationItemIndex, 1, educationObj);
+
+    dispatch(setEducationUpdate(updateableEducationList));
+    console.log({ event: euirse, examId }, educationObj);
+  };
+
   const euItemCloseHandler = (euice, examId) => {
     euice.preventDefault();
     const newEducationList = educationUpdateList.filter((eui) => eui.id !== examId);
     dispatch(setEducationUpdate(newEducationList));
+  };
+
+  const selectBoardList = (eu) => {
+    const newList = [];
+    for (let i = 0; i < boardList.length; i += 1) {
+      newList.push(
+        <option key={i} value={boardList[i]}>
+          {boardList[i]}
+        </option>
+      );
+    }
+    return (
+      <select name="board" className="form-control" defaultValue={eu.board} onChange={(e) => euInputChangeHandler(e, eu.id)}>
+        {newList}
+      </select>
+    );
   };
 
   return (
@@ -81,41 +110,36 @@ function ExamDetailForm(props) {
           </div>
           <div className="row mb-3">
             <div className="col-md-12">
-              <label htmlFor="level">Level</label>
+              <label htmlFor="level">Exam title</label>
               <input type="text" name="level" className="form-control" defaultValue={eu.level} onChange={(e) => euInputChangeHandler(e, eu.id)} required />
             </div>
           </div>
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="group">Group</label>
-              <select name="group" className="form-control" defaultValue={eu.group} onChange={(e) => euInputChangeHandler(e, eu.id)} required>
+              <label htmlFor="major">Major</label>
+              <input type="text" name="major" className="form-control" defaultValue={eu.major} onChange={(e) => euInputChangeHandler(e, eu.id)} />
+              {/* <select name="major" className="form-control" defaultValue={eu.major} onChange={(e) => euInputChangeHandler(e, eu.id)} required>
                 {educationGroupList.map((tpm, i) => (
                   <option value={tpm.name} key={tpm.id}>
                     {tpm.text}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </div>
             <div className="col-md-6">
-              <label htmlFor="cgpa">Result</label>
-              <input type="text" className="form-control" name="cgpa" defaultValue={eu.cgpa} onChange={(e) => euInputChangeHandler(e, eu.id)} required />
+              <label htmlFor="board">Board</label>
+              {/* <input type="text" className="form-control" name="board" defaultValue={eu.board} onChange={(e) => euInputChangeHandler(e, eu.id)} required /> */}
+              {selectBoardList(eu)}
             </div>
           </div>
           <div className="row mb-3">
             <div className="col-md-6">
-              <label htmlFor="grade">Grade</label>
-              <input type="text" className="form-control" name="grade" defaultValue={eu.grade} onChange={(e) => euInputChangeHandler(e, eu.id)} required />
-            </div>
-            <div className="col-md-6">
               <label htmlFor="passing_year">Passing Year</label>
-              <input
-                type="number"
-                className="form-control"
-                name="passing_year"
-                defaultValue={eu.passing_year}
-                onChange={(e) => euInputChangeHandler(e, eu.id)}
-                required
-              />
+              <input type="number" className="form-control" name="passing_year" defaultValue={eu.passing_year} onChange={(e) => euInputChangeHandler(e, eu.id)} />
+            </div>
+            <div className="col-md-6 d-flex justify-content-end align-items-center flex-row-reverse">
+              <label htmlFor="running_study">running_study</label>
+              <input type="checkbox" name="running_study" defaultChecked={eu.running_study} onChange={(e) => euInputRunningStudyHandler(e, eu.id)} />
             </div>
           </div>
           <div className="row mb-3">

@@ -11,11 +11,7 @@ const { TEACHER } = roles;
 const { APPROVED, REJECTED, PENDING } = scheduledclassStatus;
 
 // SOR = student or teacher
-function ScheduledClassList({
-  scheduledClassList,
-  acceptRequestHandler,
-  rejectRequestHandler,
-}) {
+function ScheduledClassList({ scheduledClassList, acceptRequestHandler, rejectRequestHandler }) {
   const selectedContent = useSelector((state) => state.user.selectedContent);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
@@ -24,26 +20,14 @@ function ScheduledClassList({
       case PENDING:
         return authUserInfo.role === TEACHER ? (
           <td>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={(are) => acceptRequestHandler(are, src.id)}
-            >
+            <button type="button" className="btn btn-primary" onClick={(are) => acceptRequestHandler(are, src.id)}>
               Accept
             </button>
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={(are) => rejectRequestHandler(are, src.id)}
-            >
+            <button type="button" className="btn btn-danger" onClick={(are) => rejectRequestHandler(are, src.id)}>
               Reject
             </button>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>
@@ -51,11 +35,7 @@ function ScheduledClassList({
         ) : (
           <td>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>
@@ -65,11 +45,7 @@ function ScheduledClassList({
         return (
           <td>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>
@@ -78,19 +54,11 @@ function ScheduledClassList({
       case REJECTED:
         return authUserInfo.role === TEACHER ? (
           <td>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={(are) => acceptRequestHandler(are, src.id)}
-            >
+            <button type="button" className="btn btn-primary" onClick={(are) => acceptRequestHandler(are, src.id)}>
               Accept
             </button>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>
@@ -98,11 +66,7 @@ function ScheduledClassList({
         ) : (
           <td>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>
@@ -113,11 +77,7 @@ function ScheduledClassList({
         return (
           <td>
             <button className="btn btn-primary" type="button">
-              <Link
-                href={`/scheduledclass/detail/${src.id}`}
-                type="button"
-                className="btn btn-primary"
-              >
+              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
                 Detail
               </Link>
             </button>

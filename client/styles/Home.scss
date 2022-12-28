@@ -1,12 +1,32 @@
-// Home
-#home-section {
-    .caption {
-      width: 50%;
+.Home {
+  // background-color: blue;
+  // .slim-input{
+  //     background: blue !important;
+  // }
+  .search-input-row {
+    margin-bottom: 0 !important;
+    .col,
+    .col-md-6,
+    .col-md-4,
+    .col-md-12 {
+      margin-bottom: 0.5rem;
     }
-    .learner {
-      width: 50%;
-      .learner-img{
-        width: 55%;
-      }
+    .form-control,
+    .input-group {
+      height: 2.3rem;
+      font-size: 0.8rem;
+      margin-bottom: 0 !important;
+    }
+    .input-group-text {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    a,
+    button {
+      font-size: 0.8rem;
+    }
+    .btn {
+      padding: 0.4rem 0.7rem;
     }
   }
+}

@@ -2,11 +2,11 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
 import Loader from '../../../components/elements/Loader';
 import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
+import MessageList from '../../../components/elements/MessageList';
 import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
 import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
@@ -109,6 +109,7 @@ function index() {
         signal: controller.signal,
       };
       // Remove updateUserExam
+      /*
       const newObj = educationUpdateList.filter((uel) => {
         if (uel.level && uel.level !== '' && uel.cgpa && uel.cgpa !== '' && uel.passing_year && uel.passing_year !== '') {
           // console.log(uel);
@@ -130,6 +131,15 @@ function index() {
         }
       } else {
         dispatch(setErrorList(['Make sure to put result and passing year in order to update']));
+      }
+      */
+      const response = await axios.put(`/user/updateexam/${authUserInfo.id}`, { examlist: educationUpdateList }, options);
+      controller.abort();
+      if (response.status === 202 || response.status === 201 || response.status === 200) {
+        // console.log(response);
+        window.localStorage.removeItem('updatePart');
+        dispatch(resetErrorList());
+        router.push('/user/dashboard');
       }
     } catch (error) {
       console.log(error);
@@ -210,11 +220,11 @@ function index() {
   return (
     <Layout>
       <div className="user-update">
-        <ErrorMessages />
         {isLoading ? (
           <Loader />
         ) : (
           <section className="section section-1">
+            <MessageList />
             <div className="container">
               <div className="row mx-0 mb-3">
                 <div className="col">

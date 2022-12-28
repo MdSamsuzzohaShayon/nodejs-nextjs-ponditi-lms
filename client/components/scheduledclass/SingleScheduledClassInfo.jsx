@@ -1,11 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 import { locationSelection } from '../../utils/helper';
 import { roles } from '../../config/keys';
-import {
-  convertISOToReadableTime,
-  formatAsDate,
-  makeSlot,
-} from '../../utils/timeFunction';
+import { convertISOToReadableTime, formatAsDate, makeSlot } from '../../utils/timeFunction';
 
 const { TEACHER, STUDENT } = roles;
 
@@ -19,10 +15,7 @@ function SingleScheduledClassInfo(props) {
             <img src="/icons/location.svg" alt="" />
           </div>
           <h4>Tuition Place</h4>
-          <p>
-            {props.singleScheduledClass?.tuitionlocation ||
-              locationSelection(props.singleScheduledClass?.types)}
-          </p>
+          <p>{props.singleScheduledClass?.tuitionlocation || locationSelection(props.singleScheduledClass?.types)}</p>
         </div>
         <div className="col-md-6">
           <div className="icon-img">
@@ -51,9 +44,7 @@ function SingleScheduledClassInfo(props) {
                   <br />
                   Location: {props.singleScheduledClass?.Sender?.presentaddress}
                 </p>
-                <p className="card-text">
-                  Phone: {props.singleScheduledClass?.Sender?.phone}
-                </p>
+                <p className="card-text">Phone: {props.singleScheduledClass?.Sender?.phone}</p>
               </div>
             )}
             {props.authUserInfo.role === STUDENT && (
@@ -67,12 +58,9 @@ function SingleScheduledClassInfo(props) {
                 <p className="card-text">
                   District: {props.singleScheduledClass?.Recever?.district}
                   <br />
-                  Location:{' '}
-                  {props.singleScheduledClass?.Recever?.presentaddress}
+                  Location: {props.singleScheduledClass?.Recever?.presentaddress}
                 </p>
-                <p className="card-text">
-                  Phone: {props.singleScheduledClass?.Recever?.phone}
-                </p>
+                <p className="card-text">Phone: {props.singleScheduledClass?.Recever?.phone}</p>
               </div>
             )}
           </div>
@@ -81,17 +69,13 @@ function SingleScheduledClassInfo(props) {
           <div className="card rounded-1">
             <div className="card-body">
               <h5 className="card-title">Subject Detail</h5>
-              <h6 className="card-subtitle mb-2 text-muted">
-                ID# {props.singleScheduledClass?.id}
-              </h6>
+              <h6 className="card-subtitle mb-2 text-muted">ID# {props.singleScheduledClass?.id}</h6>
               <p className="card-text">
                 Institution: {props.singleScheduledClass?.Sender?.institution}
                 <br />
                 Class: {props.singleScheduledClass?.ClassType?.name}
               </p>
-              <p className="card-text">
-                Subject: {props.singleScheduledClass?.Subject?.name}
-              </p>
+              <p className="card-text">Subject: {props.singleScheduledClass?.Subject?.name}</p>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import Layout from '../../../components/layouts/Layout';
 import Loader from '../../../components/elements/Loader';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
+import MessageList from '../../../components/elements/MessageList';
 import PassChangeReq from '../../../components/user/passwordrecover/PassChangeReq';
 import VerifyPassOtp from '../../../components/user/passwordrecover/VerifyPassOtp';
 // import SetNewPass from '../../../components/user/passwordrecover/SetNewPass';
@@ -47,7 +47,7 @@ function passwordrecover() {
       <section className="Login d-flex p-0 m-0">
         <div className="container">
           <h1 className="PasswordRecover mt-5">Password Recover</h1>
-          <ErrorMessages />
+          <MessageList />
           {showStep()}
           <div className="row mb-3">
             <div className="col d-flex flex-column">

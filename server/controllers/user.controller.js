@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable operator-linebreak */
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
@@ -147,9 +148,11 @@ const registerUser = async (req, res) => {
   }
 
   const userObj = { ...req.body };
+  // console.log(userObj);
   // if (userObj.isActive) {
   //   return res.status(406).json({ msg: 'You can not change your active status' });
   // }
+  const userExam = {};
   if (userObj.role.toUpperCase() === TEACHER) {
     // Work wit tuition place - this is only for teacher
     if (userObj.tutionplace && userObj.tutionplace.length === 0) {
@@ -165,17 +168,25 @@ const registerUser = async (req, res) => {
       i += 1;
     }
     if (newTutionplace !== '') userObj.tutionplace = newTutionplace.toUpperCase();
+
+    // Education detail
+    userExam.level = userObj.degree;
+    userExam.passing_year = userObj.passing_year;
+    userExam.running_study = userObj.running_study;
+    userExam.major = userObj.major;
   } else {
     userObj.role = STUDENT;
     userObj.profession = STUDENT.toLowerCase();
-    delete userObj.degree;
-    delete userObj.major;
-    delete userObj.padding_year;
     delete userObj.tl_rate;
     delete userObj.sl_rate;
     delete userObj.ol_rate;
     delete userObj.tutionplace;
   }
+  // Education detail
+  delete userObj.degree;
+  delete userObj.passing_year;
+  delete userObj.running_study;
+  delete userObj.major;
 
   if (userObj.cgpa) {
     userObj.cgpa = parseFloat(userObj.cgpa);
@@ -273,6 +284,9 @@ const registerUser = async (req, res) => {
       newUserObj.phone = userFindById.dataValues.phone;
       console.log(newUserObj);
     }
+
+    const newEducation = await Education.create(userExam);
+    await userFindById.setEducation(newEducation);
 
     await User.update(userObj, {
       where: { id: req.params.userId },
@@ -754,18 +768,16 @@ const updateExamUser = async (req, res) => {
     const newExamList = [];
     for (let i = 0; i < updatedExamList.length; i += 1) {
       const newExamObj = { ...updatedExamList[i] };
+      // console.log(newExamObj);
       delete newExamObj.id;
-      if (
-        newExamObj.level &&
-        newExamObj.level !== null &&
-        newExamObj.cgpa &&
-        newExamObj.cgpa !== null &&
-        newExamObj.group &&
-        newExamObj.group !== null &&
-        newExamObj.passing_year &&
-        newExamObj.passing_year !== null
-      ) {
-        newExamObj.passing_year = parseInt(newExamObj.passing_year, 10);
+      if (newExamObj.level && newExamObj.level !== null && newExamObj.institution && newExamObj.institution !== null) {
+        if (newExamObj.running_study) {
+          delete newExamObj.passing_year;
+        } else {
+          const passingYearInt = parseInt(newExamObj.passing_year, 10);
+          newExamObj.passing_year = passingYearInt;
+          if (isNaN(passingYearInt)) delete newExamObj.passing_year;
+        }
         const existingEducation = findUser.Education.find((fue) => fue.level === newExamObj.level);
         if (existingEducation) {
           // console.log(existingEducation);
@@ -776,10 +788,12 @@ const updateExamUser = async (req, res) => {
           newExamList.push(newEducationLevel);
         }
       }
+      console.log(newExamObj);
     }
+    // console.log(newExamList);
     if (newExamList.length === 0) {
       return res.status(406).json({
-        msg: 'No item to update, make sure to put level, group, cgpa, and passing year',
+        msg: 'No item to update, make sure to put level, institution',
       });
     }
     const allUpdatedExam = await Promise.all(newExamList);

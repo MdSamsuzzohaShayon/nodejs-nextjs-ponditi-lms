@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { REGISTER, roles } from '../../../../config/keys';
-import { resetErrorList, setErrorList, toggleLoading, setNoValidate } from '../../../../redux/reducers/elementsSlice';
+import { resetErrorList, setErrorList, toggleLoading, setNoValidate, setSuccessMessageList, resetSuccessMessageList } from '../../../../redux/reducers/elementsSlice';
 import { fetchAllClassTypes } from '../../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../../redux/reducers/tuitionmReducer';
@@ -12,7 +12,7 @@ import RegistrationForm from '../../../../components/register/RegistrationForm';
 import ClassSubjectForm from '../../../../components/user/Update/ClassSubjectForm';
 import TsSelect from '../../../../components/register/TsSelect';
 import Loader from '../../../../components/elements/Loader';
-import ErrorMessages from '../../../../components/elements/ErrorMessages';
+import MessageList from '../../../../components/elements/MessageList';
 import axios from '../../../../config/axios';
 
 const { STUDENT } = roles;
@@ -63,6 +63,7 @@ function Registration() {
       if (response.status === 202 || response.status === 201 || response.status === 200) {
         dispatch(resetErrorList());
         // dispatch(setUserFormsType(SEND_CODE));
+        dispatch(setSuccessMessageList(['Registered user successfully, now you can login']));
         dispatch(resetRegisterableUser());
         router.push('/user/login');
       }
@@ -128,6 +129,7 @@ function Registration() {
   useEffect(() => {
     dispatch(resetErrorList());
     dispatch(resetRegisterableUser());
+    dispatch(resetSuccessMessageList());
     if (isMounted) {
       const params = new URLSearchParams(window.location.search);
       const newUserId = params.get('userId');
@@ -154,7 +156,7 @@ function Registration() {
           <Loader />
         ) : (
           <section className="section">
-            <ErrorMessages />
+            <MessageList />
             <h1 className="Register text-capitalize">Register ({registerableUser.role && registerableUser.role})</h1>
             <form onSubmit={registerHandler} noValidate={noValidate}>
               {showSelectedForm()}

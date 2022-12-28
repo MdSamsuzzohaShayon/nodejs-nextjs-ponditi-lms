@@ -5,7 +5,7 @@ import { setLoginAdmin } from '../../redux/reducers/adminReducer';
 import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { toggleAuthUser } from '../../redux/reducers/userReducer';
 import axios from '../../config/axios';
-import ErrorMessages from '../elements/ErrorMessages';
+import MessageList from '../elements/MessageList';
 
 function Login() {
   const router = useRouter();
@@ -73,7 +73,7 @@ function Login() {
       <div className="row mx-0 mb-3">
         <h1>Login as Admin</h1>
       </div>
-      <ErrorMessages />
+      <MessageList />
       <form onSubmit={loginSubmitHandler}>
         <div className="row mb-3 mx-0">
           <div className="col">

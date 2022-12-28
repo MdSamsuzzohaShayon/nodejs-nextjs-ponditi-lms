@@ -184,6 +184,19 @@
  - server - TL_SL_TL_SL
  - Should remove all educational detail from user model and keep it clean with education model relationship
  - Update medium is not working
+ - Scheduled class and search request page need to modify used id as query parameters
+
+ - **Requirement update-6**
+ - ✅ Search component design change in home page
+ - ✅ Add message after register
+ - ✅ Exam title, major, institution, board, passing year - cerrently runnning
+ - No subject edit in student dashboard
+ - Medium in place of group after exam title
+ - Medium class below student
+ - ✅ District - list - 
+ - Change style of search
+ - No board
+ - Show any field between running study and passing year
 
 
 ### Sequelize problems
@@ -244,3 +257,32 @@ Ask questions
 
 ### Docker
  - [Dockerize Your Full-Stack App](https://www.youtube.com/watch?v=Jo5TVUBjbIs), [Dockerizing Full Stack Web App REACTJS & NODEJS](https://www.youtube.com/watch?v=IDVUy34vlSE)
+
+
+### Track
+ - We must make all the tracking of database changes
+
+
+
+
+
+
+
+
+### Technology strategy
+ - **Product Architecture Overview**
+ - This system works seperatly from browser and the server that will give user fast experience by reducing loading time
+ - Containerization is been used to add extra security layer to protect this system
+ - **Key technologies and platforms**
+ - Architectural Pattern: RestAPI
+ - Framework: Express.js is for server and Next.js is for client/browser
+ - Database: MsSql, AWS RDBS
+ - Backend Language: JavaScript, Node.js
+ - Frontend Language: JavaScript, Next.js, JSX, Sass, Bootstrap
+ - Security: Docker Container
+ - All browser support
+
+### Team
+Md. Samsuzzoha
+Fullstack Developer
+3 years of experiance in Upwork and Fiverr

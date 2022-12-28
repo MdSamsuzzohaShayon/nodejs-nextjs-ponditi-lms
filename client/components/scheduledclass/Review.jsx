@@ -4,19 +4,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import Router from 'next/router';
-import {
-  setShowReviewFields,
-  setLeaveAReview,
-  fetchSingleScheduledClass,
-  resetLeaveAReview,
-} from '../../redux/reducers/scheduledclassReducer';
+import { setShowReviewFields, setLeaveAReview, fetchSingleScheduledClass, resetLeaveAReview } from '../../redux/reducers/scheduledclassReducer';
 import MakeStar from '../elements/MakeStar';
 import axios from '../../config/axios';
-import {
-  setErrorList,
-  resetErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
+import { setErrorList, resetErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
 import { roles } from '../../config/keys';
 
@@ -24,16 +15,10 @@ const { TEACHER, STUDENT } = roles;
 
 function Review(props) {
   const dispatch = useDispatch();
-  const [reviewList, setReviewList] = useState(
-    props.singleScheduledClass.Reviews
-  );
-  const [reviewerIds, setReviewerIds] = useState([
-    ...props.singleScheduledClass.Reviews.map((r) => r.reviewerId),
-  ]);
+  const [reviewList, setReviewList] = useState(props.singleScheduledClass.Reviews);
+  const [reviewerIds, setReviewerIds] = useState([...props.singleScheduledClass.Reviews.map((r) => r.reviewerId)]);
 
-  const leaveAReview = useSelector(
-    (state) => state.scheduledclass.leaveAReview
-  );
+  const leaveAReview = useSelector((state) => state.scheduledclass.leaveAReview);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
 
   // console.log(reviewList);
@@ -58,12 +43,9 @@ function Review(props) {
           <div className="col-md-2">
             <div className="rounded-circle bg-danger text-uppercase comment-maker text-white d-flex align-items-center justify-content-center">
               <p className="m-0">
-                {reviewList[i].reviewerId ===
-                props.singleScheduledClass.Sender.id
-                  ? props.singleScheduledClass.Sender.firstname[0] +
-                    props.singleScheduledClass.Sender.lastname[0]
-                  : props.singleScheduledClass.Recever.firstname[0] +
-                    props.singleScheduledClass.Recever.lastname[0]}
+                {reviewList[i].reviewerId === props.singleScheduledClass.Sender.id
+                  ? props.singleScheduledClass.Sender.firstname[0] + props.singleScheduledClass.Sender.lastname[0]
+                  : props.singleScheduledClass.Recever.firstname[0] + props.singleScheduledClass.Recever.lastname[0]}
               </p>
             </div>
             {/* {reviewList[i].reviewerId === authUserInfo.id && (
@@ -95,30 +77,16 @@ function Review(props) {
       return dispatch(setErrorList(['You must write something']));
     }
     if (leaveAReview.comment.length < 10) {
-      return dispatch(
-        setErrorList([
-          'You must write something',
-          'Comment must be more than 10 character long',
-        ])
-      );
+      return dispatch(setErrorList(['You must write something', 'Comment must be more than 10 character long']));
     }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.post(
-        `/review/leave/${props.singleScheduledClass.id}`,
-        leaveAReview
-      );
-      if (
-        response.status === 202 ||
-        response.status === 201 ||
-        response.status === 200
-      ) {
+      const response = await axios.post(`/review/leave/${props.singleScheduledClass.id}`, leaveAReview);
+      if (response.status === 202 || response.status === 201 || response.status === 200) {
         dispatch(resetLeaveAReview());
         dispatch(dispatch(resetErrorList()));
         // Fetch one more time
-        await dispatch(
-          fetchSingleScheduledClass(props.singleScheduledClass.id)
-        );
+        await dispatch(fetchSingleScheduledClass(props.singleScheduledClass.id));
       }
       // console.log(response.data);
       return response.data;
@@ -149,29 +117,15 @@ function Review(props) {
           <label htmlFor="comment" className="comment">
             Comment
           </label>
-          <textarea
-            rows={2}
-            type="text"
-            name="comment"
-            onChange={inputChangeHandler}
-            className="form-control rounded-1"
-          />
+          <textarea rows={2} type="text" name="comment" onChange={inputChangeHandler} className="form-control rounded-1" />
         </div>
       </div>
       <div className="row mx-0 mb-3">
         <div className="col">
-          <button
-            type="button"
-            className="btn btn-primary w-fit"
-            onClick={leaveAReviewHandler}
-          >
+          <button type="button" className="btn btn-primary w-fit" onClick={leaveAReviewHandler}>
             Review
           </button>
-          <button
-            type="button"
-            className="btn btn-danger w-fit mx-2"
-            onClick={cancelSCHandler}
-          >
+          <button type="button" className="btn btn-danger w-fit mx-2" onClick={cancelSCHandler}>
             Cancel
           </button>
         </div>

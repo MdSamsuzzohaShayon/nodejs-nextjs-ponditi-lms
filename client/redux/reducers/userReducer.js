@@ -9,7 +9,7 @@ import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SE
 // import { tuitionplace } from '../../utils/types';
 import axios from '../../config/axios';
 
-const { REJECTED } = userDashboardSidebarList;
+const { REJECTED, PROFILE } = userDashboardSidebarList;
 const { PENDING, APPROVED } = scheduledclassStatus;
 const { TEACHER } = roles;
 
@@ -93,19 +93,19 @@ const initialRegisterableUser = {
   name: null,
   email: null,
   profession: null,
-  institution: null,
   experience: null,
   district: null,
-  degree: null,
-  major: null,
   passing_year: null,
   role: TEACHER,
-  running_study: false,
   tutionplace: [],
   sl_rate: null,
   tl_rate: null,
   ol_rate: null,
   presentaddress: null,
+  degree: null,
+  running_study: false,
+  major: null,
+  institution: null,
 };
 
 const initialLoginInfo = {
@@ -237,7 +237,7 @@ export const userSlice = createSlice({
      * for only showing correct content in sidebar on user dashboard
      */
     // dashboardSidebarElements: initialDashboardSidebarElements,
-    // selectedContent: PROFILE,
+    selectedContent: PROFILE,
     degreeList: initialDegreeList,
     userNotifications: [],
     userUnseenNotifications: [],
@@ -289,9 +289,9 @@ export const userSlice = createSlice({
     /**
      * @static not connected to backend and databases
      */
-    // setSelectedContent: (state, action) => {
-    //   state.selectedContent = action.payload;
-    // },
+    setSelectedContent: (state, action) => {
+      state.selectedContent = action.payload;
+    },
 
     /**
      * @dynamic all those connected to backend and databases
@@ -437,7 +437,7 @@ export const {
   toggleAuthUser,
   setAuthUserInfo,
   resetAuthUserInfo,
-  // setSelectedContent,
+  setSelectedContent,
   resetAllUserList,
   setUpdatePart,
   setUpdateUser,

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
@@ -5,6 +6,7 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import Loader from '../../elements/Loader';
 import { GOOGLE_PLACE_API_KEY, libraries } from '../../../config/keys';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
+import districtList from '../../../data/districtList.json';
 
 const DISTRICT = 'DISTRICT';
 const PRESENTADDRESS = 'PRESENTADDRESS';
@@ -111,7 +113,14 @@ function PersonalInformationForm(props) {
               placeholder="E.G. Dhaka"
             />
           </Autocomplete> */}
-          <input
+          <select name="district" id="district" className="form-control" defaultValue={currentUser?.district} onChange={inputChangeHandler} >
+            {districtList.districtList.map((dl, dli) => (
+              <option value={dl.toLowerCase()} key={dli}>
+                {dl}
+              </option>
+            ))}
+          </select>
+          {/* <input
             type="text"
             className="form-control"
             name="district"
@@ -120,7 +129,7 @@ function PersonalInformationForm(props) {
             // onChange={(piee) => placeInputEmptyHandler(piee, DISTRICT)}
             onChange={inputChangeHandler}
             placeholder="E.G. Dhaka"
-          />
+          /> */}
         </div>
         {/* google places api end  */}
       </div>

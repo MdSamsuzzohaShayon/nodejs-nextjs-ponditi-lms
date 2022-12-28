@@ -1,12 +1,13 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Router from 'next/router';
 import Layout from '../../../components/layouts/Layout';
 import { REGISTER, SEND_CODE, VERIFY_CODE, TS_SELECT } from '../../../config/keys';
 import RegistrationForm from '../../../components/register/RegistrationForm';
 import VerifyCode from '../../../components/register/VerifyCode';
 import SendCode from '../../../components/register/SendCode';
-import ErrorMessages from '../../../components/elements/ErrorMessages';
+import MessageList from '../../../components/elements/MessageList';
 import { resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
 import Loader from '../../../components/elements/Loader';
 import TsSelect from '../../../components/register/TsSelect';
@@ -20,6 +21,7 @@ function register() {
   let isMounted = true;
   const dispatch = useDispatch();
   const userSendVerifyStep = useSelector((state) => state.user.userSendVerifyStep);
+  const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const isLoading = useSelector((state) => state.elements.isLoading);
   // let isLoading = true;
 
@@ -45,6 +47,12 @@ function register() {
     isMounted = false;
   }, []);
 
+  useEffect(() => {
+    if (authUserInfo.id) {
+      Router.push('/user/dashboard');
+    }
+  }, [authUserInfo]);
+
   return (
     <Layout>
       <div className="register container">
@@ -52,7 +60,7 @@ function register() {
           <Loader />
         ) : (
           <>
-            <ErrorMessages />
+            <MessageList />
             {showSelectedForm()}
           </>
         )}

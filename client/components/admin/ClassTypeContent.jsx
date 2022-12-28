@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import axios from '../../config/axios';
-import ErrorMessages from '../elements/ErrorMessages';
+import MessageList from '../elements/MessageList';
 import Loader from '../elements/Loader';
 import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { setClasstypeList, setAddClassType } from '../../redux/reducers/classtypeReducer';
@@ -56,7 +56,7 @@ function ClassTypeContent() {
         <Loader />
       ) : (
         <div className="container">
-          <ErrorMessages />
+          <MessageList />
           {addContent ? (
             <ClassTypeAdd togglePartHandler={togglePartHandler} classtypeList={classtypeList} />
           ) : (

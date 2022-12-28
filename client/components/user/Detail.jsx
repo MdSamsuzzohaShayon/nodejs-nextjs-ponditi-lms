@@ -84,13 +84,12 @@ function Detail({ userDetail, update }) {
                 </>
               )}
               {userDetail?.role === TEACHER && userDetail.experience && (
-                <div className="col-md-4 d-flex justify-content-start">
+                <div className="col-md-12 d-flex justify-content-start align-items-center">
                   <div className="icon">
                     <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
                   </div>
                   <div className="info">
-                    <h2>{userDetail.experience} years</h2>
-                    <p>Experience</p>
+                    <p className="p-0 m-0">{userDetail.experience} years Experience</p>
                   </div>
                 </div>
               )}
@@ -282,18 +281,18 @@ function Detail({ userDetail, update }) {
                       <div className="card-header">{uel.level}</div>
                       <div className="card-body d-flex justify-content-between">
                         <div className="body-left">
-                          <p className="card-text">Group</p>
+                          <p className="card-text">Major</p>
                           <p className="card-text">Institution</p>
-                          <p className="card-text">Grade</p>
-                          <p className="card-text">CGPA</p>
+                          <p className="card-text">Board</p>
                           <p className="card-text">Passing Year</p>
+                          <p className="card-text">Running Study</p>
                         </div>
                         <div className="body-right">
-                          <p className="card-text">: {uel?.group}</p>
+                          <p className="card-text">: {uel?.major}</p>
                           <p className="card-text">: {uel?.institution}</p>
-                          <p className="card-text">: {uel?.grade}</p>
+                          <p className="card-text">: {uel?.board}</p>
                           <p className="card-text">: {uel?.cgpa}</p>
-                          <p className="card-text">: {uel?.passing_year}</p>
+                          <p className="card-text">: {uel.running_study ? 'Yes' : 'No'}</p>
                         </div>
                       </div>
                     </div>

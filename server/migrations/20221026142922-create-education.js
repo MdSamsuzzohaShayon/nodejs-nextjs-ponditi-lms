@@ -6,37 +6,38 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       level: {
-        type: Sequelize.STRING
+        // Exam title
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      group: {
-        type: Sequelize.STRING
+      major: {
+        // Exam title
+        type: Sequelize.STRING,
       },
-      institute: {
-        type: Sequelize.STRING
+      institution: {
+        type: Sequelize.STRING,
       },
-      grade: {
-        type: Sequelize.STRING
-      },
-      cgpa: {
-        type: Sequelize.STRING
+      board: {
+        type: Sequelize.STRING,
       },
       passing_year: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Education');
-  }
+  },
 };

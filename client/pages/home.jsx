@@ -2,11 +2,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/layouts/Layout';
-import SearchForm from '../components/search/SearchForm';
 import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+
 
 export default function home() {
   let isMounted = true;
@@ -28,11 +28,11 @@ export default function home() {
     <Layout>
       <div className="Home">
         <Section1 />
-        <section className="section section-2 bg-secondary text-dark">
+        {/* <section className="section section-2 bg-secondary text-dark">
           <div className="container">
             <SearchForm />
           </div>
-        </section>
+        </section> */}
       </div>
     </Layout>
   );

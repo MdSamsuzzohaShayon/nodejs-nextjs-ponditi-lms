@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/button-has-type */
@@ -23,7 +24,7 @@ import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
 
-function SearchForm() {
+function SearchForm(props) {
   const defaultClass = { id: 0, name: 'Any Class' };
   const defaultSubject = { id: 0, name: 'Any Subject' };
   /**
@@ -178,18 +179,18 @@ function SearchForm() {
     <div className="SearchForm">
       {/* <Script src='https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&key=YOUR_API_KEY' /> */}
       <form className="py-4" onSubmit={searchSubmitHandler}>
-        <div className="row mx-0 mb-3">
+        <div className="row mx-0 mb-3 search-input-row">
           {/* google places api start  */}
-          <div className="col-md-6">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="location">Location</label>
-            <div className="input-group mb-3">
+            <div className="input-group input-group-sm mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/location.svg" alt="" className="h-fit" />
               </span>
               <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
                 <input
                   type="text"
-                  className="form-control"
+                  className={props.fromHome ? 'form-control home-search-input' : 'form-control'}
                   id="location"
                   placeholder="location"
                   name="location"
@@ -200,8 +201,8 @@ function SearchForm() {
             </div>
           </div>
           {/* google places api end  */}
-          <div className="col-md-6">
-            <label htmlFor="tutionplace">Tuition Location</label>
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
+            <label htmlFor="tutionplace">Tuition Style</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />
@@ -217,8 +218,8 @@ function SearchForm() {
             </div>
           </div>
         </div>
-        <div className="row mx-0 mb-3">
-          <div className="col-md-4">
+        <div className="row mx-0 mb-3 search-input-row">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="TuitionmId">Tuition Medium</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -237,7 +238,7 @@ function SearchForm() {
               </select>
             </div>
           </div>
-          <div className="col-md-4">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="ClassTypeId">Class</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -256,7 +257,7 @@ function SearchForm() {
               </select>
             </div>
           </div>
-          <div className="col-md-4">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="SubjectId">Subject</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -276,20 +277,20 @@ function SearchForm() {
             </div>
           </div>
         </div>
-        <div className="row mx-0 mb-3">
+        <div className="row mx-0 mb-3 search-input-row">
           <div className="col d-flex justify-content-end">
             <button className="btn btn-primary w-fit text-uppercase mx-3s" role="button" onClick={searchTeacherHandler}>
               Search Teacher
             </button>
           </div>
         </div>
-        <div className="row mx-0 mb-3">
+        {/* <div className="row mx-0 mb-3 search-input-row">
           <div className="col d-flex justify-content-end">
             <a href="#" className="text-danger">
               Advanced search
             </a>
           </div>
-        </div>
+        </div> */}
       </form>
     </div>
   );

@@ -3,9 +3,7 @@ import ScheduledClassList from './ScheduledClassList';
 
 // SOR = student or teacher
 function RejectedClass() {
-  const rejectedSCOU = useSelector(
-    (state) => state.scheduledclass.rejectedSCOU
-  );
+  const rejectedSCOU = useSelector((state) => state.scheduledclass.rejectedSCOU);
 
   const acceptRequestHandler = async (are, scheduledclassId) => {
     console.log(scheduledclassId);
@@ -20,11 +18,7 @@ function RejectedClass() {
     <div className="RejectedClass">
       <h1>Scheduled Class List</h1>
       {rejectedSCOU.length > 0 ? (
-        <ScheduledClassList
-          scheduledClassList={rejectedSCOU}
-          acceptRequestHandler={acceptRequestHandler}
-          rejectRequestHandler={rejectRequestHandler}
-        />
+        <ScheduledClassList scheduledClassList={rejectedSCOU} acceptRequestHandler={acceptRequestHandler} rejectRequestHandler={rejectRequestHandler} />
       ) : (
         <div className="alert alert-danger">No request found</div>
       )}

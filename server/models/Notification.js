@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Notification.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       type: {
         type: new DataTypes.STRING(),
         allowNull: false, // new request /
@@ -33,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       freezeTableName: true,
       tableName: 'Notification',
-    },
+    }
   );
   return Notification;
 };

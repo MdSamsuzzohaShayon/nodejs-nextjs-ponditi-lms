@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 function AdvancedSearch() {
-  return (
-    <div>AdvancedSearch</div>
-  )
+  return <div>AdvancedSearch</div>;
 }
 
-export default AdvancedSearch
+export default AdvancedSearch;

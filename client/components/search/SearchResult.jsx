@@ -4,7 +4,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import Router from 'next/router';
-import Image from 'next/image';
 import { setRPCurrentPage, setRPStart, setSearchUserList } from '../../redux/reducers/searchReducer';
 import { setSelectedSearchUser, showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
 import { roles, scheduledclassStatus, types, BACKEND_URL } from '../../config/keys';
