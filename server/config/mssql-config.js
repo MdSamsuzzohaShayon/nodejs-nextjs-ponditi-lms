@@ -4,17 +4,19 @@ module.exports = {
   PASSWORD: process.env.MSSQL_PASSWORD,
   DB: process.env.MSSQL_DATABASE,
   PORT: parseInt(process.env.MSSQL_PORT, 10),
+  dialect: process.env.DB_DIALECT,
 
   /*
+  // MySQL Connection
   HOST: '174.138.166.194',
   USER: 'ryansoftcom_ponditi_user',
   // USER: 'shayon',
   PASSWORD: 'Ponditi2022',
   // PASSWORD: 'Test1234',
   DB: 'ryansoftcom_ponditi_db',
+  dialect: "mysql",
   */
 
-  dialect: 'mysql',
 
   pool: {
     max: 5,

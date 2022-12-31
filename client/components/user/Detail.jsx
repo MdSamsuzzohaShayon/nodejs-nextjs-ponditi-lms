@@ -279,21 +279,10 @@ function Detail({ userDetail, update }) {
                   <div key={idx} className="col-md-4 mb-3">
                     <div className="card rounded-1">
                       <div className="card-header">{uel.level}</div>
-                      <div className="card-body d-flex justify-content-between">
-                        <div className="body-left">
-                          <p className="card-text">Major</p>
-                          <p className="card-text">Institution</p>
-                          <p className="card-text">Board</p>
-                          <p className="card-text">Passing Year</p>
-                          <p className="card-text">Running Study</p>
-                        </div>
-                        <div className="body-right">
-                          <p className="card-text">: {uel?.major}</p>
-                          <p className="card-text">: {uel?.institution}</p>
-                          <p className="card-text">: {uel?.board}</p>
-                          <p className="card-text">: {uel?.cgpa}</p>
-                          <p className="card-text">: {uel.running_study ? 'Yes' : 'No'}</p>
-                        </div>
+                      <div className="card-body">
+                        <p className="card-text">Major : {uel?.major}</p>
+                        <p className="card-text">Institution: {uel?.institution}</p>
+                        <p className="card-text">Passing Year: {uel.running_study ? 'Running' : uel?.passing_year}</p>
                       </div>
                     </div>
                   </div>

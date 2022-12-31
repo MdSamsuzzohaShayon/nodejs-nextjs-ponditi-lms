@@ -20,9 +20,6 @@ module.exports = {
       institution: {
         type: Sequelize.STRING,
       },
-      board: {
-        type: Sequelize.STRING,
-      },
       passing_year: {
         type: Sequelize.INTEGER,
         defaultValue: false,

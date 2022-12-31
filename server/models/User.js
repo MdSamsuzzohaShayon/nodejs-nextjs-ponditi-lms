@@ -94,15 +94,6 @@ module.exports = (sequelize, DataTypes) => {
         type: new DataTypes.STRING(100),
       },
 
-      // institution: {
-      //   type: new DataTypes.STRING(100),
-      // },
-
-      // running_study: {
-      //   type: new DataTypes.BOOLEAN(),
-      //   defaultValue: false,
-      //   allowNull: true,
-      // },
       experience: {
         type: new DataTypes.STRING(100),
       },
@@ -124,32 +115,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
-
-      /**
-       * @education data fields
-       */
-      /*
-      // Made a new model for it and making relationship
-      //  result instifute group
-      degree: {
-        type: new DataTypes.STRING(100),
-      },
-
-      institute: {
-        type: new DataTypes.STRING(255),
-      },
-      group: {
-        type: new DataTypes.STRING(100),
-      },
-
-      passing_year: {
-        type: DataTypes.INTEGER,
-      },
-
-      cgpa: {
-        type: new DataTypes.STRING(80),
-      },
-      */
 
       /**
        * @additional
@@ -179,6 +144,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       totalHours: {
+        type: DataTypes.INTEGER,
+      },
+      ref: {
         type: DataTypes.INTEGER,
       },
     },

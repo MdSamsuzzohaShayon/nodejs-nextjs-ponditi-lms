@@ -93,6 +93,9 @@ module.exports = {
       totalHours: {
         type: Sequelize.INTEGER,
       },
+      ref: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

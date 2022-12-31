@@ -30,9 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       institution: {
         type: DataTypes.STRING,
       },
-      board: {
-        type: DataTypes.STRING,
-      },
       passing_year: {
         type: DataTypes.INTEGER,
       },
@@ -40,15 +37,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      // group: {
-      //   type: DataTypes.STRING,
-      // },
-      // grade: {
-      //   type: DataTypes.STRING,
-      // },
-      // cgpa: {
-      //   type: DataTypes.STRING,
-      // },
     },
     {
       sequelize,

@@ -1,6 +1,8 @@
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable @next/next/no-img-element */
+
 import SearchForm from '../search/SearchForm';
+
 function Section1() {
   return (
     <section className="py-5" id="home-section">

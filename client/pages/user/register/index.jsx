@@ -14,7 +14,7 @@ import TsSelect from '../../../components/register/TsSelect';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
-import { resetRegisterableUser } from '../../../redux/reducers/userReducer';
+import { resetRegisterableUser, resetVerifyCode } from '../../../redux/reducers/userReducer';
 
 
 function register() {
@@ -35,6 +35,7 @@ function register() {
   };
 
   useEffect(() => {
+    dispatch(resetVerifyCode());
     dispatch(resetRegisterableUser());
     dispatch(resetErrorList());
     dispatch(toggleLoading(false));

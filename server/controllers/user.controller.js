@@ -74,7 +74,7 @@ const sendOTP = async (req, res) => {
       }
       // console.log(phoneWithSufix, '+8801785208590');
       // let them register
-      const response = await sendSMS(phoneWithSufix, `Your Ponditi OTP code is: ${otp}`);
+      const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is: ${otp}`);
       if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
 
       // update code from database
@@ -83,7 +83,7 @@ const sendOTP = async (req, res) => {
         msg: 'Already sent an OTP, however, we are sending code once again',
       });
     }
-    const response = await sendSMS(phoneWithSufix, `Your Ponditi OTP code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is: ${otp}`);
     if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     await User.create({
       phone,
@@ -93,7 +93,7 @@ const sendOTP = async (req, res) => {
       isVerified: false,
     });
 
-    return res.status(201).json({ msg: 'If the number you is correct a verification OTP code will be sent there' });
+    return res.status(201).json({ msg: 'If the number you is correct, a verification code will be sent there' });
   } catch (error) {
     console.log(error);
   }
@@ -148,10 +148,6 @@ const registerUser = async (req, res) => {
   }
 
   const userObj = { ...req.body };
-  // console.log(userObj);
-  // if (userObj.isActive) {
-  //   return res.status(406).json({ msg: 'You can not change your active status' });
-  // }
   const userExam = {};
   if (userObj.role.toUpperCase() === TEACHER) {
     // Work wit tuition place - this is only for teacher
@@ -252,31 +248,12 @@ const registerUser = async (req, res) => {
       const findAllTuitionm = await Tuitionm.findAll({
         where: { id: userObj.TuitionmId },
       });
-      // console.log(Tuitionm.Instance.prototype);
-      // console.log(findAllTuitionm);
-      // console.log(Object.getOwnPropertyNames(User.constructor));
       await userFindById.setTuitionms(findAllTuitionm);
-      // console.log('Setting classtype');
     }
     delete userObj.SubjectId;
     delete userObj.ClassTypeId;
     delete userObj.TuitionmId;
 
-    /*
-    let newTuitionTuitionm = '';
-    let i = 0;
-    while (i < userObj.tuitiontuitionm.length) {
-      let tmNew = userObj.tuitiontuitionm[i].toUpperCase();
-      if (tmNew !== BANGLA || tmNew !== ENGLISH || tmNew !== ARABIC) {
-        tmNew = BANGLA;
-      }
-      let sep = '';
-      if (i + 1 !== userObj.tuitiontuitionm.length) sep = '_';
-      newTuitionTuitionm = `${newTuitionTuitionm + tmNew}${sep}`;
-      i += 1;
-    }
-    userObj.tuitiontuitionm = newTuitionTuitionm;
-    */
 
     if (process.env.NODE_ENV === 'development') {
       const newUserObj = { ...userObj };
@@ -367,6 +344,7 @@ const login = async (req, res) => {
   }
 
   // const { email, password } = req.body;
+  // console.log(req.body);
 
   try {
     const userExist = await User.findOne({ where: { phone: req.body.phone } });
@@ -461,7 +439,7 @@ const forgetPassword = async (req, res) => {
       specialChars: false,
     });
 
-    const response = await sendSMS(phoneWithSufix, `Your reset password OTP code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your password reset OTP code is: ${otp}`);
     if (process.env.NODE_ENV === 'development') {
       console.log({
         phoneWithSufix,
@@ -475,7 +453,7 @@ const forgetPassword = async (req, res) => {
     // update code from database
     await User.update({ otp }, { where: { id: userExist.dataValues.id } });
 
-    return res.status(201).json({ msg: 'If the number you is correct a verification OTP code will be sent there' });
+    return res.status(201).json({ msg: 'If the number you is correct a verification code will be sent there' });
   } catch (error) {
     console.log(error);
   }

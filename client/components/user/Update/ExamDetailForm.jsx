@@ -14,30 +14,9 @@ function ExamDetailForm(props) {
   const userExamList = useSelector((state) => state.user.userExamList);
   const educationUpdateList = useSelector((state) => state.education.educationUpdateList);
   const educationSingleExam = useSelector((state) => state.education.educationSingleExam);
-  const boardList = useSelector((state) => state.education.boardList);
 
   useEffect(() => {
     if (userExamList.length > 0) {
-      // for (let i = 0; i < userExamList.length; i += 1) {
-      //   if (userExamList[i].level === 'SSC') {
-      //     setSscOLevel(userExamList[i]);
-      //   }
-      //   if (userExamList[i].level === 'HSC') {
-      //     setHscALevel(userExamList[i]);
-      //   }
-      //   if (userExamList[i].level === 'Deploma') {
-      //     setDeplomaLevel(userExamList[i]);
-      //   }
-      //   if (userExamList[i].level === 'Degree') {
-      //     setDegreeLevel(userExamList[i]);
-      //   }
-      //   if (userExamList[i].level === 'Honours') {
-      //     setHonoursLevel(userExamList[i]);
-      //   }
-      //   if (userExamList[i].level === 'Masters') {
-      //     setMastersLevel(userExamList[i]);
-      //   }
-      // }
       dispatch(setEducationUpdate([...userExamList]));
     }
   }, [userExamList]);
@@ -63,7 +42,7 @@ function ExamDetailForm(props) {
     updateableEducationList.splice(educationItemIndex, 1, educationObj);
 
     dispatch(setEducationUpdate(updateableEducationList));
-    console.log({ event: euice, examId }, educationObj);
+    // console.log({ event: euice, examId }, educationObj);
   };
 
   const euInputRunningStudyHandler = (euirse, examId) => {
@@ -76,7 +55,7 @@ function ExamDetailForm(props) {
     updateableEducationList.splice(educationItemIndex, 1, educationObj);
 
     dispatch(setEducationUpdate(updateableEducationList));
-    console.log({ event: euirse, examId }, educationObj);
+    // console.log({ event: euirse, examId }, educationObj);
   };
 
   const euItemCloseHandler = (euice, examId) => {
@@ -85,21 +64,6 @@ function ExamDetailForm(props) {
     dispatch(setEducationUpdate(newEducationList));
   };
 
-  const selectBoardList = (eu) => {
-    const newList = [];
-    for (let i = 0; i < boardList.length; i += 1) {
-      newList.push(
-        <option key={i} value={boardList[i]}>
-          {boardList[i]}
-        </option>
-      );
-    }
-    return (
-      <select name="board" className="form-control" defaultValue={eu.board} onChange={(e) => euInputChangeHandler(e, eu.id)}>
-        {newList}
-      </select>
-    );
-  };
 
   return (
     <div className="ExamDetailForm row mb-3">
@@ -109,27 +73,13 @@ function ExamDetailForm(props) {
             <img src="/icons/close.svg" alt="" role="button" onClick={(e) => euItemCloseHandler(e, eu.id)} />
           </div>
           <div className="row mb-3">
-            <div className="col-md-12">
+            <div className="col-md-6">
               <label htmlFor="level">Exam title</label>
               <input type="text" name="level" className="form-control" defaultValue={eu.level} onChange={(e) => euInputChangeHandler(e, eu.id)} required />
             </div>
-          </div>
-          <div className="row mb-3">
             <div className="col-md-6">
               <label htmlFor="major">Major</label>
               <input type="text" name="major" className="form-control" defaultValue={eu.major} onChange={(e) => euInputChangeHandler(e, eu.id)} />
-              {/* <select name="major" className="form-control" defaultValue={eu.major} onChange={(e) => euInputChangeHandler(e, eu.id)} required>
-                {educationGroupList.map((tpm, i) => (
-                  <option value={tpm.name} key={tpm.id}>
-                    {tpm.text}
-                  </option>
-                ))}
-              </select> */}
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="board">Board</label>
-              {/* <input type="text" className="form-control" name="board" defaultValue={eu.board} onChange={(e) => euInputChangeHandler(e, eu.id)} required /> */}
-              {selectBoardList(eu)}
             </div>
           </div>
           <div className="row mb-3">
