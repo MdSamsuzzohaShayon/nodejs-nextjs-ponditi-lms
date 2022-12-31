@@ -7,12 +7,9 @@ const initialSingleExam = {
   level: null,
   major: null,
   institution: null,
-  board: null,
   passing_year: null,
   running_study: false,
 };
-
-const initialEducationBoardList = ['Barisal', 'Chittagong', 'Cumilla', 'Dhaka', 'Dinajpur', 'Jessore', 'Mymensingh', 'Rajshahi', 'Sylhet'];
 
 // const initialEducationGroupList = [
 //   {
@@ -40,8 +37,6 @@ const initialEducationBoardList = ['Barisal', 'Chittagong', 'Cumilla', 'Dhaka', 
 export const educationSlice = createSlice({
   name: 'education',
   initialState: {
-    boardList: initialEducationBoardList,
-    // educationGroupList: initialEducationGroupList,
     educationSingleExam: initialSingleExam,
     educationUpdateList: [],
   },

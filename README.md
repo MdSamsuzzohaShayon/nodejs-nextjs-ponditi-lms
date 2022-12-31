@@ -195,14 +195,22 @@
  - Medium class below student
  - ✅ District - list - 
  - ✅ Add education freely (not working)
- - No board
- - Show any field between running study and passing year
+ - No board from education model backend and database
+ - ✅ Show any field between running study and passing year
  - Search teacher design change
- - Make header smaller
- - make a refereance field for regestration
- - make sure updating education is working
- - 
+ - ✅ Make header smaller
+ - ✅ make a refereance field for regestration
+ - ✅ make sure updating education is working
+ - ✅ Solve frontend hosting issue
+ - ✅ Password vul dile code dekhai
+ - ✅ Send verification code instead of otp
+ - Check used class and subject is properly selecting or not
 
+
+ - host
+ - sync database
+ - create tution medium, class, subject
+ - 
 
 ### Sequelize problems
  - Notification and education need to migrate properly with user when we add a new field to user
@@ -274,28 +282,10 @@ Ask questions
 
 ### Track
  - We must make all the tracking of database changes
+ - Add ref in User and remove board from Education
 
 
 
 
 
 
-
-
-### Technology strategy
- - **Product Architecture Overview**
- - This system works seperatly from browser and the server that will give user fast experience by reducing loading time
- - Containerization is been used to add extra security layer to protect this system
- - **Key technologies and platforms**
- - Architectural Pattern: RestAPI
- - Framework: Express.js is for server and Next.js is for client/browser
- - Database: MsSql, AWS RDBS
- - Backend Language: JavaScript, Node.js
- - Frontend Language: JavaScript, Next.js, JSX, Sass, Bootstrap
- - Security: Docker Container
- - All browser support
-
-### Team
-Md. Samsuzzoha
-Fullstack Developer
-3 years of experiance in Upwork and Fiverr

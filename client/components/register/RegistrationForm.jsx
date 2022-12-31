@@ -479,8 +479,11 @@ function RegistrationForm(props) {
       {registerableUser.role === STUDENT && (
         <div className="row mb-3">
           <div className="col-md-6">
-            <label htmlFor="tutionm">Medium</label>
-            <select className="form-control" name="tutionm" id="tutionm" onChange={tuitionmChangeHandler}>
+            <label htmlFor="tutionm">Medium*</label>
+            <select className="form-control" name="tutionm" id="tutionm" defaultValue={tuitionmList[0]?.id} onChange={tuitionmChangeHandler}>
+              <option value="0" selected>
+                Select a medium
+              </option>
               {tuitionmList.map((tm) => (
                 <option value={tm.id} key={tm.id}>
                   {tm.name}
@@ -489,8 +492,11 @@ function RegistrationForm(props) {
             </select>
           </div>
           <div className="col-md-6">
-            <label htmlFor="classtype">Class Name</label>
+            <label htmlFor="classtype">Class Name*</label>
             <select className="form-control" name="classtype" id="classtype" onChange={classtypeChangeHandler}>
+              <option value="0" selected>
+                Select a class
+              </option>
               {classtypeList.map((ct) => (
                 <option value={ct.id} key={ct.id}>
                   {ct.name}
@@ -500,6 +506,12 @@ function RegistrationForm(props) {
           </div>
         </div>
       )}
+      <div className="row mb-3">
+        <div className="col-md-6">
+          <label htmlFor="ref">Reference no.(Optional)</label>
+          <input type="number" onChange={inputChangeHandler} name="ref" id="ref" className="form-control" />
+        </div>
+      </div>
     </>
   );
 }

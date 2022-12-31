@@ -18,11 +18,11 @@ export const searchSlice = createSlice({
   name: 'search',
   initialState: {
     searchTypeList: [
-      {
-        id: 0,
-        type: ANY,
-        text: 'Any types',
-      },
+      // {
+      //   id: 0,
+      //   type: ANY,
+      //   text: 'Any types',
+      // },
       ...tuitionplace,
     ],
     /**

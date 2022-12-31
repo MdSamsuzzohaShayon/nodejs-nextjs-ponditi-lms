@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
@@ -177,88 +178,116 @@ function SearchForm(props) {
 
   return (
     <div className="SearchForm">
+      {/* <!-- Floating Labels --> */}
+      {/* Inspired from https://codepen.io/WebDude75/pen/NWRKroX */}
+      {/* <div className="floating-wrapper">
+        <div className="floating-label">
+          <input className="floating-input" type="text" placeholder="" />
+          <span className="input-highlight" />
+          <label>Location</label>
+        </div>
+        <div className="floating-label">
+          <select className="floating-select" onClick="this.setAttribute('value', this.value);" value="">
+            <option value="" />
+            <option value="1">Alabama</option>
+            <option value="2">Boston</option>
+            <option value="3">Ohio</option>
+            <option value="4">New York</option>
+            <option value="5">Washington</option>
+          </select>
+          <span className="input-highlight" />
+          <label>Select</label>
+        </div>
+      </div> */}
+      {/* <!--/ Floating Labels --> */}
       {/* <Script src='https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&key=YOUR_API_KEY' /> */}
       <form className="py-4" onSubmit={searchSubmitHandler}>
-        <div className="row mx-0 mb-3 search-input-row">
+        <div className="row mb-3 search-input-row">
           {/* google places api start  */}
           <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
-            <label htmlFor="location">Location</label>
-            <div className="input-group input-group-sm mb-3">
+            <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/location.svg" alt="" className="h-fit" />
               </span>
-              <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
-                <input
-                  type="text"
-                  className={props.fromHome ? 'form-control home-search-input' : 'form-control'}
-                  id="location"
-                  placeholder="location"
-                  name="location"
-                  defaultValue={searchParams.location}
-                  onChange={inputChangeHandler}
-                />
-              </Autocomplete>
+              <div className="form-floating">
+                <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
+                  <input
+                    type="text"
+                    className={props.fromHome ? 'form-control h-full home-search-input' : 'form-control h-full'}
+                    defaultValue={searchParams.location}
+                    name="location"
+                    placeholder="Location"
+                  />
+                </Autocomplete>
+                <label htmlFor="location">Location</label>
+              </div>
             </div>
           </div>
           {/* google places api end  */}
           <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
-            <label htmlFor="tutionplace">Tuition Style</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
-              <select name="tutionplace" id="tutionplace" className="form-control" defaultValue={searchParams.tutionplace} onChange={inputChangeHandler}>
-                {searchTypeList.length > 0 &&
-                  searchTypeList.map((ctl) => (
-                    <option key={ctl.id} value={ctl.type}>
-                      {ctl.text}
-                    </option>
-                  ))}
-              </select>
+              <div className="form-floating">
+                <select name="tutionplace" id="tutionplace" className="form-select" defaultValue={searchParams.tutionplace} onChange={inputChangeHandler}>
+                  {searchTypeList.length > 0 &&
+                    searchTypeList.map((ctl) => (
+                      <option key={ctl.id} value={ctl.type}>
+                        {ctl.text}
+                      </option>
+                    ))}
+                </select>
+                <label htmlFor="tutionplace">Tuition Types</label>
+              </div>
             </div>
           </div>
         </div>
-        <div className="row mx-0 mb-3 search-input-row">
+        <div className="row mb-3 search-input-row">
           <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
-            <label htmlFor="TuitionmId">Tuition Medium</label>
-            <div className="input-group mb-3">
+            <div className="input-group">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
-              <select name="TuitionmId" id="TuitionmId" className="form-control" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
-                {tuitionmList !== null ? (
-                  tuitionmList.map((tm) => (
-                    <option key={tm.id} value={tm.id}>
-                      {tm.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">Any Class</option>
-                )}
-              </select>
+              <div className="form-floating">
+                <select name="TuitionmId" id="TuitionmId" className="form-select" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
+                  {tuitionmList !== null ? (
+                    tuitionmList.map((tm) => (
+                      <option key={tm.id} value={tm.id}>
+                        {tm.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Any Class</option>
+                  )}
+                </select>
+                <label htmlFor="tutionplace">Tuition Medium</label>
+              </div>
             </div>
           </div>
           <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
-            <label htmlFor="ClassTypeId">Class</label>
-            <div className="input-group mb-3">
+            <div className="input-group">
               <span className="input-group-text bg-white">
                 <img src="/icons/classtype.svg" alt="" className="h-fit" />
               </span>
-              <select name="ClassTypeId" id="ClassTypeId" className="form-control" onChange={classtypeInputChangeHandler} defaultValue={searchParams.ClassTypeId}>
-                {classtypeList !== null ? (
-                  classtypeList.map((ctl) => (
-                    <option key={ctl.id} value={ctl.id}>
-                      {ctl.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">Any Class</option>
-                )}
-              </select>
+              <div className="form-floating">
+                <select name="ClassTypeId" id="ClassTypeId" className="form-select" onChange={classtypeInputChangeHandler} defaultValue={searchParams.ClassTypeId}>
+                  {classtypeList !== null ? (
+                    classtypeList.map((ctl) => (
+                      <option key={ctl.id} value={ctl.id}>
+                        {ctl.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Any Class</option>
+                  )}
+                </select>
+                <label htmlFor="tutionplace">Class</label>
+              </div>
             </div>
           </div>
           <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
-            <label htmlFor="SubjectId">Subject</label>
+            {/* <label htmlFor="SubjectId">Subject</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
                 <img src="/icons/subject.svg" alt="" className="h-fit" />
@@ -274,17 +303,36 @@ function SearchForm(props) {
                   <option value="">Any Subject</option>
                 )}
               </select>
+            </div> */}
+            <div className="input-group">
+              <span className="input-group-text bg-white">
+                <img src="/icons/classtype.svg" alt="" className="h-fit" />
+              </span>
+              <div className="form-floating">
+                <select name="SubjectId" id="SubjectId" className="form-select" onChange={inputChangeHandler} defaultValue={searchParams.SubjectId}>
+                  {subjectList.length > 0 ? (
+                    subjectList.map((ctl) => (
+                      <option key={ctl.id} value={ctl.id}>
+                        {ctl.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Any Subject</option>
+                  )}
+                </select>
+                <label htmlFor="tutionplace">Subject</label>
+              </div>
             </div>
           </div>
         </div>
-        <div className="row mx-0 mb-3 search-input-row">
+        <div className="row mb-3 search-input-row">
           <div className="col d-flex justify-content-end">
             <button className="btn btn-primary w-fit text-uppercase mx-3s" role="button" onClick={searchTeacherHandler}>
               Search Teacher
             </button>
           </div>
         </div>
-        {/* <div className="row mx-0 mb-3 search-input-row">
+        {/* <div className="row mb-3 search-input-row">
           <div className="col d-flex justify-content-end">
             <a href="#" className="text-danger">
               Advanced search
