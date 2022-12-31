@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const cors = require('cors');
-const swaggerJsdoc = require('swagger-jsdoc');
+// const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const outputFile = require('./swagger-output.json');
@@ -42,6 +42,8 @@ app.use((req, res, next) => {
   next();
 });
 
+console.log(process.env);
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
 
 /**
@@ -54,8 +56,8 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
  *         description: Just for testing perpuse that API is working or not
  */
 app.get('/api', (req, res) => {
-  // res.send('Hello World');
-  res.status(200).json({ msg: 'Server is working', env: process.env });
+  res.send('Hello World');
+  // res.status(200).json({ msg: 'Server is working', env: process.env });
 });
 
 app.use('/api/user', userRoutes);

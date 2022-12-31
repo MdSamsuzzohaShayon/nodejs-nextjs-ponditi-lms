@@ -1,5 +1,6 @@
 /server/node_modules
 /server/.env.local
+/server/.env
 /server/dist
 /res
 /client/bootstrap

@@ -205,6 +205,7 @@
  - ✅ Password vul dile code dekhai
  - ✅ Send verification code instead of otp
  - Check used class and subject is properly selecting or not
+ - Problems adding tuition medium
 
 
  - host
