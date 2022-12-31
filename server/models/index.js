@@ -10,27 +10,24 @@ const db = {};
 // DATABASE CONNECTION
 
 /*
-const sequelize = new Sequelize(
-  'mssql://shayon2022:Ponditi2022@server.ryansoftbd.com/Ponditi',
-  {
-    // host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
-    operatorsAliases: false,
-    dialectOptions: {
-      options: {
-        encrypt: false,
-      },
+const sequelize = new Sequelize('mssql://shayon2022:Ponditi2022@103.125.255.88/Ponditi', {
+  // host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
+  operatorsAliases: 0,
+  dialectOptions: {
+    options: {
+      encrypt: false,
     },
-    // port : null,
-    pool: dbConfig.pool,
-  }
-);
+  },
+  // port : null,
+  pool: dbConfig.pool,
+});
 */
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
-  // operatorsAliases: false,
+  // port: dbConfig.port,
   operatorsAliases: 0,
   dialectOptions: {
     options: {

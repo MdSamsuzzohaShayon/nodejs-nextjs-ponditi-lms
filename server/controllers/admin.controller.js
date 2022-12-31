@@ -62,7 +62,7 @@ const loginAdmin = async (req, res, next) => {
   const errors = validationResult(req);
   // console.log(errors);
   if (!errors.isEmpty()) {
-    return res.status(406).json({ error: errors.array() });
+    return res.status(406).json({ error: JSON.stringify(errors.array()) });
   }
 
   // const { email, password } = req.body;
@@ -100,8 +100,8 @@ const loginAdmin = async (req, res, next) => {
     return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ msg: 'Something went wrong', err });
   }
-  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 module.exports = {
