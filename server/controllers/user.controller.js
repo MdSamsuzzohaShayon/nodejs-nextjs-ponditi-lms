@@ -363,31 +363,13 @@ const login = async (req, res) => {
     //   return res.status(406).json({ msg: 'Admin will review your profile and approve' });
     // }
 
-    const isPasswordCorrect = await bcrypt.compare(req.body.password, userExist.dataValues.password);
-    if (!isPasswordCorrect) {
-      return res.status(406).json({ msg: 'Invalid credentials' });
-    }
 
-    const userDetailResponse = {
-      email: userExist.dataValues.email,
-      id: userExist.dataValues.id,
-      role: userExist.dataValues.role,
-    };
-    const token = jwt.sign(userDetailResponse, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-    // const newUser = {
-    //   name: userExist.name,
-    //   email: userExist.email,
-    //   role: userExist.role,
-    //   id: userExist.id,
-    // };
-    res.cookie('token', token, cookieOptions);
-    return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
+
+    return res.status(200).json({ msg: 'Logged in successfully', user });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ msg: 'Something went wrong', err });
   }
-  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const logout = async (req, res) => {

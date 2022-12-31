@@ -9,7 +9,7 @@ function Section1() {
       <div className="container d-flex justify-content-between">
         <div className="row mb-5">
           <div className="col-md-6">
-            <h1>Deliver Better Learning Through Better Teacher</h1>
+            <h1>First ever Hourly-paid tutoring platform in Bangladesh</h1>
             <p>
               Offer engaging learning experiences that go beyond traditional Learning Management Systems. packed with advanced features to find teachers, educate
               yourself,

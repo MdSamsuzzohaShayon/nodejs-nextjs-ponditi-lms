@@ -3,7 +3,7 @@ module.exports = {
   USER: process.env.MSSQL_USER,
   PASSWORD: process.env.MSSQL_PASSWORD,
   DB: process.env.MSSQL_DATABASE,
-  PORT: parseInt(process.env.MSSQL_PORT, 10),
+  // PORT: parseInt(process.env.MSSQL_PORT, 10),
   dialect: process.env.DB_DIALECT,
 
   /*
