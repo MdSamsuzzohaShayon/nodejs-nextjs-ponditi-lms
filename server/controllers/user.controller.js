@@ -285,8 +285,10 @@ const registerUser = async (req, res) => {
       console.log(newUserObj);
     }
 
-    const newEducation = await Education.create(userExam);
-    await userFindById.setEducation(newEducation);
+    if (userObj.role.toUpperCase() === TEACHER) {
+      const newEducation = await Education.create(userExam);
+      await userFindById.setEducation(newEducation);
+    }
 
     await User.update(userObj, {
       where: { id: req.params.userId },
@@ -299,8 +301,8 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ msg: 'Something went wrong', error });
   }
-  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const rejectUser = async (req, res) => {
@@ -551,24 +553,29 @@ const resendOTP = async (req, res) => {
 };
 
 const getAllUsersTemp = async (req, res) => {
-  const users = await User.findAll({
-    include: [
-      {
-        model: Subject,
-        attributes: ['id', 'name'],
-        // through: { where: { amount: 10 } }
-      },
-      {
-        model: ClassType,
-        attributes: ['id', 'name'],
-      },
-      {
-        model: Tuitionm,
-        attributes: ['id', 'name'],
-      },
-    ],
-  });
-  res.status(200).json({ msg: 'Getting all users', users });
+  try {
+    const users = await User.findAll({
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name'],
+          // through: { where: { amount: 10 } }
+        },
+        {
+          model: ClassType,
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Tuitionm,
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
+    return res.status(200).json({ msg: 'Getting all users', users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: 'something went wrong', error });
+  }
 };
 
 const getAllUsers = async (req, res) => {

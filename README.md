@@ -188,15 +188,20 @@
 
  - **Requirement update-6**
  - ✅ Search component design change in home page
- - ✅ Add message after register
+ - Add message after register(not working)
  - ✅ Exam title, major, institution, board, passing year - cerrently runnning
  - No subject edit in student dashboard
  - Medium in place of group after exam title
  - Medium class below student
  - ✅ District - list - 
- - Change style of search
+ - ✅ Add education freely (not working)
  - No board
  - Show any field between running study and passing year
+ - Search teacher design change
+ - Make header smaller
+ - make a refereance field for regestration
+ - make sure updating education is working
+ - 
 
 
 ### Sequelize problems
@@ -218,6 +223,14 @@ Ask questions
 - Disable add admin route and seed route from admin router and get all users from user route
 - make `npm start` script in package.json for **heroku** deployment
 - Remove `dotenv` requirement from server.js for **heroku** deployment
+
+### Deployment on cpanel
+ - Cpanel - domain -> Create a subdomain -> document root -> click on the file location
+ - Upload the code 
+ - Software -> setup nodejs app
+ - Application root will be the domain -> set application start up file
+ - Install npm packages and start app
+ - 
 
 
 ### Nest.js entities

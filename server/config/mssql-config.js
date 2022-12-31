@@ -3,7 +3,18 @@ module.exports = {
   USER: process.env.MSSQL_USER,
   PASSWORD: process.env.MSSQL_PASSWORD,
   DB: process.env.MSSQL_DATABASE,
-  dialect: 'mssql',
+  PORT: parseInt(process.env.MSSQL_PORT, 10),
+
+  /*
+  HOST: '174.138.166.194',
+  USER: 'ryansoftcom_ponditi_user',
+  // USER: 'shayon',
+  PASSWORD: 'Ponditi2022',
+  // PASSWORD: 'Test1234',
+  DB: 'ryansoftcom_ponditi_db',
+  */
+
+  dialect: 'mysql',
 
   pool: {
     max: 5,

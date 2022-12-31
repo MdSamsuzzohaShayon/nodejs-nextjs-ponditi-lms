@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv');
 
 // if (process.env.NODE_ENV === 'development') {
 //   dotenv.config({ path: './.env.local' });
@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 //   dotenv.config({ path: './.env' });
 // }
 
-dotenv.config({ path: './.env' });
+// dotenv.config({ path: './.env' });
 
 const cookieParser = require('cookie-parser');
 const express = require('express');
@@ -29,11 +29,9 @@ const db = require('./models');
 const app = express();
 // middleware
 
-
-
-
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
+// app.use(cors({ credentials: true, origin: 'https://frontend.ryansoftbd.com' }));
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -56,7 +54,8 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
  *         description: Just for testing perpuse that API is working or not
  */
 app.get('/api', (req, res) => {
-  res.send('Hello World');
+  // res.send('Hello World');
+  res.status(200).json({ msg: 'Server is working', env: process.env });
 });
 
 app.use('/api/user', userRoutes);
