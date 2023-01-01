@@ -254,7 +254,6 @@ const registerUser = async (req, res) => {
     delete userObj.ClassTypeId;
     delete userObj.TuitionmId;
 
-
     if (process.env.NODE_ENV === 'development') {
       const newUserObj = { ...userObj };
       newUserObj.password = genPassword;
@@ -342,13 +341,10 @@ const login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
-
   // const { email, password } = req.body;
   // console.log(req.body);
-
   try {
     const userExist = await User.findOne({ where: { phone: req.body.phone } });
-
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: 'Invalid credentials' });
     // console.log(userExist);
@@ -363,13 +359,25 @@ const login = async (req, res) => {
     //   return res.status(406).json({ msg: 'Admin will review your profile and approve' });
     // }
 
+    const isPasswordCorrect = await bcrypt.compare(req.body.password, userExist.dataValues.password);
+    if (!isPasswordCorrect) {
+      return res.status(406).json({ msg: 'Invalid credentials' });
+    }
 
-
-    return res.status(200).json({ msg: 'Logged in successfully', user });
+    const userDetailResponse = {
+      email: userExist.dataValues.email,
+      id: userExist.dataValues.id,
+      role: userExist.dataValues.role,
+    };
+    const token = jwt.sign(userDetailResponse, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    res.cookie('token', token, cookieOptions);
+    return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ msg: 'Something went wrong', err });
   }
+  return res.status(500).json({ msg: 'Something went wrong' });
 };
 
 const logout = async (req, res) => {

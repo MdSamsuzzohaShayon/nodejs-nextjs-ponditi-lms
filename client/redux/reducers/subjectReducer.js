@@ -9,7 +9,7 @@ const initialAddSubject = {
   classTypeId: [],
 };
 
-const fetchSubjects = async (args, { dispatch, rejectWithValue }) => {
+const fetchSubject = async (args, { dispatch, rejectWithValue }) => {
   try {
     // dispatch(toggleLoading(true));
     // console.log('try');
@@ -24,9 +24,8 @@ const fetchSubjects = async (args, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchAllSubjects = createAsyncThunk('scheduledclass/getAllSubjects', fetchSubjects);
-
-export const fetchAllSubjectsSearch = createAsyncThunk('scheduledclass/getAllSubjectsSearch', fetchSubjects);
+export const fetchAllSubjects = createAsyncThunk('scheduledclass/getAllSubjects', fetchSubject);
+export const fetchAllSubjectsSearch = createAsyncThunk('scheduledclass/getAllSubjectsSearch', fetchSubject);
 
 export const subjectSlice = createSlice({
   name: 'subject',
@@ -35,7 +34,7 @@ export const subjectSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     subjectList: [],
-    subjectListCopy: [], // Unchangable
+    constSubjectList: [], // Unchangable
     selectedSubjectList: [],
     addSubject: initialAddSubject,
     displaySubject: false,
@@ -67,12 +66,15 @@ export const subjectSlice = createSlice({
     builder.addCase(fetchAllSubjects.fulfilled, (state, action) => {
       if (action.payload.subjects.length > 0) {
         state.subjectList = action.payload.subjects;
+        state.constSubjectList = action.payload.subjects;
       }
     });
     builder.addCase(fetchAllSubjectsSearch.fulfilled, (state, action) => {
-      const defaultItem = { id: 0, name: 'Any Subject' };
-      state.subjectList = [defaultItem, ...action.payload.subjects];
-      state.subjectListCopy = action.payload.subjects;
+      if (action.payload.subjects.length > 0) {
+        const defaultSubject = { id: 0, name: 'Any Subject' };
+        state.subjectList = [defaultSubject, ...action.payload.subjects];
+        state.constSubjectList = action.payload.subjects;
+      }
     });
   },
 });

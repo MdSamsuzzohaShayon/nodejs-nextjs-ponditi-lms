@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCurrentSingleUser, fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
@@ -17,12 +17,14 @@ function index() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const [userId, setUserId] = useState()
+
   const isLoading = useSelector((state) => state.elements.isLoading);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const initializeSchedule = useSelector((state) => state.scheduledclass.initializeSchedule);
 
-  const { userId } = router.query;
+  // const { userId } = router.query;
 
   const initializeScheduleValue = (receverId) => {
     if (authUserInfo.role === TEACHER) {
@@ -46,14 +48,17 @@ function index() {
   };
 
   useEffect(() => {
-    if (userId && isMounted) {
+    const params = new URLSearchParams(window.location.search);
+    const newUserId = params.get('userId');
+    setUserId(newUserId);
+    if (newUserId && isMounted) {
       dispatch(resetErrorList());
       if (authUserInfo?.role !== STUDENT) {
         router.push('/user/login');
       }
       (async () => {
         // console.log({ userId, authUserInfo });
-        await Promise.all([dispatch(fetchSelectedSingleUser(userId)), dispatch(fetchCurrentSingleUser(authUserInfo.id)), initializeScheduleValue(userId)]);
+        await Promise.all([dispatch(fetchSelectedSingleUser(newUserId)), dispatch(fetchCurrentSingleUser(authUserInfo.id)), initializeScheduleValue(newUserId)]);
       })();
       isMounted = false;
     }

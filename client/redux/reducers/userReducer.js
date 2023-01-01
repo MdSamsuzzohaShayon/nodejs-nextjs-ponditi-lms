@@ -94,7 +94,7 @@ const initialRegisterableUser = {
   email: null,
   profession: null,
   experience: null,
-  district: null,
+  // district: null,
   passing_year: null,
   role: TEACHER,
   tutionplace: [],

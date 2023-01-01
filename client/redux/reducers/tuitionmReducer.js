@@ -9,7 +9,7 @@ const initialAddTuitionm = {
   ClassTypeId: [],
 };
 
-const fetchTuitionms = async (args, { dispatch, rejectWithValue }) => {
+const fetchTuitionm = async (args, { dispatch, rejectWithValue }) => {
   try {
     // dispatch(toggleLoading(true));
     // console.log('try');
@@ -25,9 +25,8 @@ const fetchTuitionms = async (args, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchAllTuitionms = createAsyncThunk('scheduledclass/getTuitionms', fetchTuitionms);
-
-export const fetchAllTuitionmsSearch = createAsyncThunk('scheduledclass/getTuitionmsSearch', fetchTuitionms);
+export const fetchAllTuitionms = createAsyncThunk('scheduledclass/getTuitionms', fetchTuitionm);
+export const fetchAllTuitionmsSearch = createAsyncThunk('scheduledclass/getTuitionmsSearch', fetchTuitionm);
 
 export const tuitionmSlice = createSlice({
   name: 'tuitionm',
@@ -36,7 +35,7 @@ export const tuitionmSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     tuitionmList: [],
-    tuitionmListCopy: [],
+    constTuitionmList: [],
     selectedTuitionmList: [],
     addTuitionm: initialAddTuitionm,
   },
@@ -64,12 +63,15 @@ export const tuitionmSlice = createSlice({
     builder.addCase(fetchAllTuitionms.fulfilled, (state, action) => {
       if (action.payload.tuitionms.length > 0) {
         state.tuitionmList = action.payload.tuitionms;
+        state.constTuitionmList = action.payload.tuitionms;
       }
     });
     builder.addCase(fetchAllTuitionmsSearch.fulfilled, (state, action) => {
-      const defaultItem = { id: 0, name: 'Any Medium' };
-      state.tuitionmList = [defaultItem, ...action.payload.tuitionms];
-      state.tuitionmListCopy = action.payload.tuitionms;
+      if (action.payload.tuitionms.length > 0) {
+        state.constTuitionmList = action.payload.tuitionms;
+        const defaultTuitionm = { id: 0, name: 'Any Medium' };
+        state.tuitionmList = [defaultTuitionm, ...action.payload.tuitionms];
+      }
     });
   },
 });

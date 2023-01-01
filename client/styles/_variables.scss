@@ -2,7 +2,7 @@
 $half-width: 50%;
 $wrapper-width: 70%;
 $wrapper-margin: 30%;
-$section-min-height: 72vh;
+$section-min-height: 90vh;
 $section-padding: 3rem 0;
 
 // Layout
@@ -10,9 +10,11 @@ $danger-color: #852b3a;
 $danger-deep: #5f1d28;
 $white: rgb(255, 255, 255);
 $primary-color: #215971;
+$primary-deep: #0c3f55;
 $dark-color: #201f1f;
 $secondary-color: #e0e2db;
 $success-color: #1f8a66;
+$info-color: #154f92;
 
 $br-xxl: 1400px;
 $br-xl: 1200px;
@@ -22,7 +24,7 @@ $br-md: 768px;
 $logo-column-w: 8%;
 
 $header-height: 4.5rem;
-$bh-height: 2.3rem;
+$bh-height: 2.6rem;
 
 $h-wrapper: 83%;
 
@@ -46,4 +48,5 @@ $theme-colors: (
   'dark': $dark-color,
   'secondary': $secondary-color,
   'success': $success-color,
+  "info": $info-color,
 );

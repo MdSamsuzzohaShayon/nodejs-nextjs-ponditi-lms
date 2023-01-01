@@ -10,7 +10,7 @@ const initialAddClassType = {
   tuitionmId: [],
 };
 
-const fetchClassTypes = async (args, { dispatch, rejectWithValue }) => {
+const fetchClasstypes = async (args, { dispatch, rejectWithValue }) => {
   try {
     // dispatch(toggleLoading(true));
     // console.log('try');
@@ -26,9 +26,8 @@ const fetchClassTypes = async (args, { dispatch, rejectWithValue }) => {
   }
 };
 
-export const fetchAllClassTypes = createAsyncThunk('scheduledclass/getClassTypes', fetchClassTypes);
-
-export const fetchAllClassTypesSearch = createAsyncThunk('scheduledclass/getClassTypesSearch', fetchClassTypes);
+export const fetchAllClassTypes = createAsyncThunk('scheduledclass/getClassTypes', fetchClasstypes);
+export const fetchAllClassTypesSearch = createAsyncThunk('scheduledclass/getClassTypesSearch', fetchClasstypes);
 
 export const classtypeSlice = createSlice({
   name: 'classtype',
@@ -37,7 +36,7 @@ export const classtypeSlice = createSlice({
      * @dynamic or changable elements of the website
      */
     classtypeList: [],
-    classtypeListCopy: [], // Unchangable
+    constClasstypeList: [],
     selectedClasstypeList: [], // list of ids
     addClassType: initialAddClassType,
     displayClassType: false,
@@ -69,12 +68,15 @@ export const classtypeSlice = createSlice({
     builder.addCase(fetchAllClassTypes.fulfilled, (state, action) => {
       if (action.payload.classTypes.length > 0) {
         state.classtypeList = action.payload.classTypes;
+        state.constClasstypeList = action.payload.classTypes;
       }
     });
     builder.addCase(fetchAllClassTypesSearch.fulfilled, (state, action) => {
-      const defaultItem = { id: 0, name: 'Any Class' };
-      state.classtypeList = [defaultItem, ...action.payload.classTypes];
-      state.classtypeListCopy = action.payload.classTypes;
+      if (action.payload.classTypes.length > 0) {
+        const defaultClass = { id: 0, name: 'Any Class' };
+        state.classtypeList = [defaultClass, ...action.payload.classTypes];
+        state.constClasstypeList = action.payload.classTypes;
+      }
     });
   },
 });

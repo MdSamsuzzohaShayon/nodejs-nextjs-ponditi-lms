@@ -74,6 +74,7 @@ function login() {
 
   useEffect(() => {
     dispatch(resetErrorList());
+    dispatch(setNoValidate(true)); // initially we will not validate
     dispatch(toggleLoading(false));
     return () => {
       dispatch(resetSuccessMessageList());
