@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import Layout from '../../../components/layouts/Layout';
@@ -20,7 +20,8 @@ const { TEACHER, STUDENT } = roles;
 function detail() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { scheduledclassId } = router.query;
+  // const { scheduledclassId } = router.query;
+  const [scheduledclassId, setScheduledclassId] = useState(null);
 
   const singleScheduledClass = useSelector((state) => state.scheduledclass.singleScheduledClass);
   const updateScheduledClass = useSelector((state) => state.scheduledclass.updateScheduledClass);
@@ -39,8 +40,11 @@ function detail() {
 
   useEffect(() => {
     (async () => {
-      if (scheduledclassId) {
-        await dispatch(fetchSingleScheduledClass(scheduledclassId));
+      const params = new URLSearchParams(window.location.search);
+      const newScheduledclassId = params.get('scheduledclassId');
+      setScheduledclassId(newScheduledclassId);
+      if (newScheduledclassId) {
+        await dispatch(fetchSingleScheduledClass(newScheduledclassId));
         if (userUnseenNotifications.length > 0) {
           await dispatch(requestHistorySeen(null));
         }

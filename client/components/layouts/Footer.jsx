@@ -2,7 +2,7 @@
 function Footer() {
   return (
     <footer className="Footer w-full text-white ">
-      <div className="footer-top bg-danger-deep d-flex justify-content-center flex-column align-items-center">
+      {/* <div className="footer-top bg-primary d-flex justify-content-center flex-column align-items-center">
         <div className="container d-flex justify-content-between align-items-center flex-column flex-md-row h-full">
           <div className="company">
             <h4 className="h4 text-uppercase">COMPANY</h4>
@@ -35,28 +35,16 @@ function Footer() {
             </ul>
           </div>
         </div>
-      </div>
-      <div className="footer-bottom bg-danger d-flex justify-content-center flex-column align-items-center">
+      </div> */}
+      <div className="footer-bottom bg-primary d-flex justify-content-center flex-column align-items-center">
         <div className="container d-flex flex-column-reverse flex-md-row justify-content-between align-items-center">
           <div className="copyright">
-            <span>© Copyright Ponditi Official website of Ponditi@</span>
+            <span>Copyright © 2023 Ponditil All Rights Reserved</span>
           </div>
           <div className="policies">
             <ul className="d-flex flex-column flex-md-row justify-content-end align-items-center w-full px-0 m-0 footer-bottom-policies">
               <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Legal</a>
-              </li>
-              <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Terms</a>
-              </li>
-              <li className="list-unstyled px-3  footer-bottom-list-item">
                 <a href="#">Privacy Policy</a>
-              </li>
-              <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Cookies</a>
-              </li>
-              <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Accessibility</a>
               </li>
               <li className="list-unstyled px-3  footer-bottom-list-item">
                 <a href="#">Contact</a>

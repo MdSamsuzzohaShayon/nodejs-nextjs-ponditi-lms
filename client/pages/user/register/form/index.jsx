@@ -55,7 +55,8 @@ function Registration() {
       userObj.SubjectId = selectedSubjectList;
       userObj.ClassTypeId = selectedClasstypeList;
       userObj.TuitionmId = selectedTuitionmList;
-      // console.log(userObj);
+      console.log(registerableUser);
+      console.log(userObj);
       const response = await axios.put(`/user/register/${userId}`, userObj, {
         headers: { 'Content-Type': 'application/json' },
       });

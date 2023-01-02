@@ -62,7 +62,6 @@ function Header() {
     isMounted = true;
   }, []);
 
-
   const logoutHandler = async (lhe) => {
     lhe.preventDefault();
     try {
@@ -138,7 +137,7 @@ function Header() {
   return (
     <>
       {/* Menu Start  */}
-      <div className="Header bg-danger text-white p-0 m-0">
+      <div className="Header bg-primary text-white p-0 m-0">
         {isBreakpoint ? (
           <div className="d-md-none container">
             {/* Mobile menu start  */}
@@ -186,7 +185,7 @@ function Header() {
                             <div className="p-1">
                               <Link href="/user/requesthistory">Request history</Link>
                             </div>
-                            {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                            {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                           </li>
                           <li className="d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
                             <div className="p-1">
@@ -196,24 +195,20 @@ function Header() {
                                 <img height={25} src="/icons/notification.svg" alt="notification" />
                               )}
                             </div>
-                            {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                            {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                           </li>
                         </>
                       ) : null}
                       <li className="">
-                        <button className="btn btn-primary small-btn mx-2" type="button" onClick={logoutHandler}>
+                        <button href="#" className="bg-transparent border-0 mx-2 text-white" type="button" onClick={logoutHandler}>
                           Logout
                         </button>
                       </li>
                     </ul>
                   ) : (
                     <div className="d-flex justify-content-start align-items-start flex-column">
-                      <Link href="/user/login" className="btn btn-outline-primary small-btn">
-                        Login
-                      </Link>
-                      <button className="btn btn-primary small-btn" type="button">
-                        <Link href="/user/register">Register</Link>
-                      </button>
+                      <Link href="/user/login">Login</Link>
+                      <Link href="/user/register">Register</Link>
                     </div>
                   )}
 
@@ -257,7 +252,7 @@ function Header() {
                 <img src="/logo.png" className="img-logo" alt="" />
               </div>
               <div className="nav-column p-0">
-                <div className="top-header w-full bg-danger-deep">
+                <div className="top-header bg-primary-deep w-full">
                   <div className="top-header-wrapper d-flex justify-content-between h-full flex-md-row flex-column align-items-start align-items-md-center py-0 py-md-3">
                     <div className="social d-flex h-full py-md-0 py-2">
                       <ul className="d-flex justify-centent-start align-items-center m-0 px-1">
@@ -287,7 +282,7 @@ function Header() {
                                 <div className="p-1">
                                   <Link href="/user/requesthistory">Request history</Link>
                                 </div>
-                                {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                               </li>
                               <li className="mx-2 d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
                                 <div className="p-1">
@@ -297,24 +292,22 @@ function Header() {
                                     <img height={25} src="/icons/notification.svg" alt="notification" />
                                   )}
                                 </div>
-                                {userUnseenNotifications.length > 0 && <div className="bg-primary text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                               </li>
                             </>
                           ) : null}
                           <li className="">
-                            <button className="btn btn-primary small-btn mx-2" type="button" onClick={logoutHandler}>
+                            <button href="#" className="bg-transparent border-0  mx-2 text-white" type="button" onClick={logoutHandler}>
                               Logout
                             </button>
                           </li>
                         </ul>
                       ) : (
                         <div className="mx-2">
-                          <Link href="/user/login" className="btn btn-outline-primary small-btn">
-                            Login
-                          </Link>
-                          <button className="btn btn-primary small-btn mx-2" type="button">
-                            <Link href="/user/register">Register</Link>
+                          <button href="#" className="mx-2 bg-transparent border-0" type="button">
+                            <Link href="/user/login">Login</Link>
                           </button>
+                          <Link href="/user/register">Register</Link>
                         </div>
                       )}
 
@@ -368,7 +361,7 @@ function Header() {
                 </div>
               </div>
             </div>
-            <div className="border-of-header w-full bg-danger-deep" />
+            <div className="border-of-header w-full bg-primary-deep" />
             {/* Desktop menu end  */}
           </>
         )}

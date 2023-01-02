@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { types, roles, tuitionmediums } from '../../config/keys';
-import { tuitionplace } from '../../utils/types';
 
 const { ONLINE, TL, SL, ANY } = types;
 const { BANGLA, ENGLISH, ARABIC } = tuitionmediums;
@@ -14,17 +13,28 @@ export const initialSearchParams = {
   TuitionmId: null,
 };
 
+const initialTuitionType = [
+  {
+    id: 1,
+    type: ONLINE,
+    text: 'Online',
+  },
+  {
+    id: 2,
+    type: TL,
+    text: "Teacher's Location",
+  },
+  {
+    id: 3,
+    type: SL,
+    text: "Student's Location",
+  },
+];
+
 export const searchSlice = createSlice({
   name: 'search',
   initialState: {
-    searchTypeList: [
-      // {
-      //   id: 0,
-      //   type: ANY,
-      //   text: 'Any types',
-      // },
-      ...tuitionplace,
-    ],
+    searchTypeList: initialTuitionType,
     /**
      * @dynamic or changable elements of the website
      */

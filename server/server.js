@@ -42,7 +42,7 @@ app.use((req, res, next) => {
   next();
 });
 
-console.log(process.env);
+
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
 

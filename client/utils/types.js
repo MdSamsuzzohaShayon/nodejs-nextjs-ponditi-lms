@@ -10,23 +10,6 @@ export const REJECTED_REQUEST = 'REJECTED_REQUEST';
 export const START_CLASS = 'START_CLASS';
 export const FINISH_CLASS = 'FINISH_CLASS';
 
-export const tuitionplace = [
-  {
-    id: 1,
-    type: ONLINE,
-    text: 'Online',
-  },
-  {
-    id: 2,
-    type: TL,
-    text: "Teacher's Location",
-  },
-  {
-    id: 3,
-    type: SL,
-    text: "Student's Location",
-  },
-];
 
 // Education group
 export const SCIENCE = 'SCIENCE';

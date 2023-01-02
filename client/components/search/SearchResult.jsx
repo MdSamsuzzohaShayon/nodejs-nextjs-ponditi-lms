@@ -112,9 +112,9 @@ function SearchResult() {
 
   const displayRates = (sul) => (
     <div className="hstack gap-3">
-      {sul.ol_rate && <p className="alert alert-primary w-fit">Online - {sul.ol_rate} tk</p>}
-      {sul.tl_rate && <p className="alert alert-primary w-fit">Teacher&apos;s Location - {sul.tl_rate} tk</p>}
-      {sul.sl_rate && <p className="alert alert-primary w-fit">Student&apos;s Location - {sul.sl_rate} tk </p>}
+      {sul.ol_rate && <p className="mb-0 w-fit">Online - {sul.ol_rate} tk</p>}
+      {sul.tl_rate && <p className="mb-0 w-fit">Teacher&apos;s Location - {sul.tl_rate} tk</p>}
+      {sul.sl_rate && <p className="mb-0 w-fit">Student&apos;s Location - {sul.sl_rate} tk </p>}
     </div>
   );
 

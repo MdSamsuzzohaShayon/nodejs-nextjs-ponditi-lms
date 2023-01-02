@@ -97,24 +97,26 @@ function UserList(props) {
               <p>{aul?.phone}</p>
               <p>{aul?.email}</p>
             </div>
-            <div className="col-md-4 justify-content-end d-flex flex-wrap">
-              <button className="btn btn-primary w-fit h-fit " type="button">
-                <Link href={`/user/detail/?userId=${aul.id}`}>Detail</Link>
+            <div className="col-md-4 justify-content-end d-flex flex-wrap align-items-center">
+              <button className=" mx-1 w-fit h-fit bg-transparent border-0" type="button">
+                <Link href={`/user/detail/?userId=${aul.id}`}>
+                  <img src="/icons/detail.svg" width={20} alt="" />
+                </Link>
               </button>
               {aul.isActive === PENDING && (
                 <>
-                  <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
-                    Approve
+                  <button className=" mx-1 w-fit h-fit bg-transparent border-0" type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
+                    <img src="/icons/tick.svg" width={20} alt="" />
                   </button>
-                  <button className="btn btn-danger w-fit h-fit" type="button" onClick={(e) => rejectedUserHandler(e, aul.id)}>
-                    Reject
+                  <button className=" mx-1 bg-transparent border-0" type="button" onClick={(e) => rejectedUserHandler(e, aul.id)}>
+                    <img src="/icons/reject.svg" width={20} alt="" />
                   </button>
                 </>
               )}
 
               {aul.isActive === REJECTED && (
-                <button className="btn btn-primary w-fit h-fit " type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
-                  Approve
+                <button className=" mx-1 w-fit h-fit bg-transparent border-0" type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
+                  <img src="/icons/reject.svg" width={20} alt="" />
                 </button>
               )}
             </div>

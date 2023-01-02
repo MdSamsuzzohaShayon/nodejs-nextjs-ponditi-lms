@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { toggleLoading, setErrorList } from '../../redux/reducers/elementsSlice';
-import { initialSearchParams, setSearchParams, setSearchUserList, setSearchAllUserList, setRPTotalPage, resetSearchUserList } from '../../redux/reducers/searchReducer';
-import { fetchAllClassTypesSearch } from '../../redux/reducers/classtypeReducer';
-import { fetchAllSubjectsSearch } from '../../redux/reducers/subjectReducer';
-import { fetchAllTuitionmsSearch } from '../../redux/reducers/tuitionmReducer';
+import { initialSearchParams, setSearchParams, setSearchUserList, setSearchAllUserList, setRPTotalPage } from '../../redux/reducers/searchReducer';
+import { fetchAllClassTypes, fetchAllClassTypesSearch, setClasstypeList } from '../../redux/reducers/classtypeReducer';
+import { fetchAllSubjects, fetchAllSubjectsSearch, setSubjectList } from '../../redux/reducers/subjectReducer';
+import { fetchAllTuitionms, fetchAllTuitionmsSearch, setTuitionmList } from '../../redux/reducers/tuitionmReducer';
 
 import Layout from '../../components/layouts/Layout';
 import SearchForm from '../../components/search/SearchForm';
@@ -15,6 +15,7 @@ import Loader from '../../components/elements/Loader';
 import axios from '../../config/axios';
 
 function search() {
+
   let isMounted = false;
   const dispatch = useDispatch();
 
@@ -22,7 +23,6 @@ function search() {
   // rp = result pagination
   const rpStart = useSelector((state) => state.search.rpStart);
   const rpTotal = useSelector((state) => state.search.rpTotal);
-  const isLoading = useSelector((state) => state.elements.isLoading);
 
   // Search on mount
   const initialSearchUsers = async () => {
