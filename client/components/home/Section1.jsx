@@ -5,7 +5,7 @@ import SearchForm from '../search/SearchForm';
 
 function Section1() {
   return (
-    <section className="py-5 section-1" >
+    <section className="py-5 section-1 section" >
       <div className="container d-flex justify-content-between">
         <div className="row mb-5">
           <div className="col-md-6">
