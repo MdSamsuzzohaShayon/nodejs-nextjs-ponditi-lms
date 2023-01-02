@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { roles, scheduledclassStatus, BACKEND_URL } from '../../config/keys';
 import { setUpdatePart } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
+import { toCapSentence } from '../../utils/extendPrototypes';
 
 const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
@@ -143,7 +144,7 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Name</div>
                 <div className="col-md-6">
-                  <p>{userDetail.name}</p>
+                  <p className="text-capitalize">{userDetail.name}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
@@ -155,7 +156,7 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">District</div>
                 <div className="col-md-6">
-                  <p>{userDetail?.district}</p>
+                  <p>{userDetail.district && userDetail.district[0].toUpperCase() + userDetail.district.slice(1)}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
@@ -184,8 +185,10 @@ function Detail({ userDetail, update }) {
                 {userDetail?.role === TEACHER && (
                   <div className="row mx-0 mb-1">
                     <div className="col-md-6">Per Hour Rate</div>
-                    <div className="col-md-6">
-                      <p>{userDetail.rate} TK</p>
+                    <div className="col-md-6 d-flex flex-row align-items-center flex-wrap">
+                      {userDetail.ol_rate && <p className="me-2"> Online - {userDetail.ol_rate}Tk, </p>}
+                      {userDetail.tl_rate && <p className="me-2"> Teacher&apos;s Location - {userDetail.tl_rate}Tk, </p>}
+                      {userDetail.sl_rate && <p className="me-2"> Student&apos;s Location - {userDetail.sl_rate}Tk, </p>}
                     </div>
                   </div>
                 )}

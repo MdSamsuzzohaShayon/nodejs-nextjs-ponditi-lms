@@ -1,8 +1,13 @@
+/* eslint-disable no-lonely-if */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
+import RateInput from '../../register/RateInput';
 // import { setSubjectList } from '../../../redux/reducers/subjectReducer';
 import { roles } from '../../../config/keys';
 
@@ -78,24 +83,38 @@ function TutionDetail(props) {
     }
   };
 
+  const tuitionPlaceChangeHandler = (tpe) => {
+    console.log(tpe.target.name);
+    if (tpe.target.checked) {
+      // add new item
+      // dispatch(setRegisterableUser({ tutionplace: [...props.user.tutionplace, tpe.target.name.toUpperCase()] }));
+      // props.tuitionPlaceChange(true, tpe);
+    } else {
+      // Remove deselected item
+      // const newRegisterableUser = props.user.tutionplace.filter((ru) => ru.toUpperCase() !== tpe.target.name.toUpperCase());
+      // dispatch(setRegisterableUser({ tutionplace: newRegisterableUser }));
+      // props.tuitionPlaceChange(false, tpe);
+      if (tpe.target.name === 'online') {
+        dispatch(setUpdateUser({ ol_rate: null }));
+      } else if (tpe.target.name === 'tl') {
+        dispatch(setUpdateUser({ tl_rate: null }));
+      } else {
+        dispatch(setUpdateUser({ sl_rate: null }));
+      }
+    }
+  };
+
+  const inputRateChangeHandler = ({ name, rate }) => {
+    let newRate = null;
+    Number.isNaN(rate) ? (newRate = null) : (newRate = rate);
+    // console.log({ name, rate: newRate });
+    dispatch(setUpdateUser({ [name]: newRate }));
+  };
+
   return (
     <div className="TutionDetail">
       <div className="row mb-3 mx-0">
-        {currentUser.role === TEACHER && (
-          <div className="col-sm-12 col-md-6">
-            <label htmlFor="rate">Per Hour Rate (TK)</label>
-            <input
-              type="number"
-              className="form-control"
-              name="rate"
-              id="rate"
-              defaultValue={currentUser?.rate}
-              onChange={props.inputChangeHandler}
-              placeholder="E.G. 300"
-            />
-          </div>
-        )}
-        <div className="col-sm-12 col-md-6">
+        <div className="col-md-12">
           <label htmlFor="isAvailable">Available Status</label>
           <div className="toggle d-flex">
             <div className="form-check w-fit">
@@ -127,24 +146,7 @@ function TutionDetail(props) {
           </div>
         </div>
       </div>
-      <div className="row mb-3 mx-0">
-        <div className="col-sm-12 col-md-6">
-          <label htmlFor="tutionplace">Tution Places</label>
-          <div className="input-checkbox d-flex align-items-center">
-            {tutionPlaces
-              .filter((tp) => tp.id !== 0)
-              .map((tpm, tmpI) => (
-                <div className="input-checkbox-item d-flex align-items-center" key={tmpI}>
-                  {/* <option value={tpm.type}>{tpm.text}</option> */}
-                  <input type="checkbox" className="tution-place-checkbox" name={tpm.type} onChange={(tpce) => tutionPlaceChangeHandler(tpce, tpm.type)} />
-                  <label htmlFor={tpm.type} className="m-2">
-                    {tpm.text}
-                  </label>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
+      <RateInput user={currentUser} tuitionPlaceChange={tuitionPlaceChangeHandler} inputRateChange={inputRateChangeHandler} />
     </div>
   );
 }
