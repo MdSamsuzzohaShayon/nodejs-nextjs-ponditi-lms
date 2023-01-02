@@ -5,10 +5,8 @@ import store from '../redux/store';
 import '../styles/globals.scss';
 
 
-
 export default function MyApp(props) {
   const { Component, pageProps } = props;
-
   return (
     <div>
       <Head>

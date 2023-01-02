@@ -167,7 +167,10 @@ const registerUser = async (req, res) => {
 
     // Education detail
     userExam.level = userObj.degree;
-    userExam.passing_year = userObj.passing_year;
+    userExam.institution = userObj.institution;
+    if (userObj.running_study === false) {
+      userExam.passing_year = userObj.passing_year;
+    }
     userExam.running_study = userObj.running_study;
     userExam.major = userObj.major;
   } else {

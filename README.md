@@ -207,6 +207,11 @@
  - Check used class and subject is properly selecting or not
  - Problems adding tuition medium
 
+1. Profile pic show korena
+2. Personal Details e District name capital letter e ashena
+3. Tuition rate edit kora jacchena
+3. Education sector e institution er naam set korar por o show korena
+
 
  - host
  - sync database
