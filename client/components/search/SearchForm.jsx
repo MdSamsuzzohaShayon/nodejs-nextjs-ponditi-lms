@@ -54,7 +54,6 @@ function SearchForm(props) {
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const constClasstypeList = useSelector((state) => state.classtype.constClasstypeList);
 
-
   /**
    * @fetch all data on component mounted
    */
@@ -186,7 +185,7 @@ function SearchForm(props) {
       <form className="py-4" onSubmit={searchSubmitHandler}>
         <div className="row search-input-row  mx-0 mb-3">
           {/* google places api start  */}
-          <div className="col-md-6">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="location">Location</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -206,7 +205,7 @@ function SearchForm(props) {
             </div>
           </div>
           {/* google places api end  */}
-          <div className="col-md-6">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="tutionplace">Tuition style</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -223,7 +222,7 @@ function SearchForm(props) {
           </div>
         </div>
         <div className="row search-input-row  mx-0 mb-3">
-          <div className="col-md-4">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="TuitionmId">Tuition Medium</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -238,7 +237,7 @@ function SearchForm(props) {
               </select>
             </div>
           </div>
-          <div className="col-md-4">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="ClassTypeId">Class</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
@@ -253,7 +252,7 @@ function SearchForm(props) {
               </select>
             </div>
           </div>
-          <div className="col-md-4">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
             <label htmlFor="SubjectId">Subject</label>
             <div className="input-group mb-3">
               <span className="input-group-text bg-white">
