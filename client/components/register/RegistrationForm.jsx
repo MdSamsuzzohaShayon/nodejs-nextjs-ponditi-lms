@@ -11,10 +11,11 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { setRegisterableUser } from '../../redux/reducers/userReducer';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
-import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
+import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 import PriceCalculator from '../elements/PriceCalculator';
+import useMedieQuery from '../../hooks/useMediaQuery';
 
 const { TEACHER, STUDENT } = roles;
 
@@ -24,6 +25,7 @@ const sl = 'sl';
 
 function RegistrationForm(props) {
   const dispatch = useDispatch();
+  const breakpointSm = useMedieQuery(768);
 
   const pyInputEl = useRef(null);
   const rateInputOlEl = useRef(null);
@@ -96,6 +98,8 @@ function RegistrationForm(props) {
 
   const openPriceCalcHandler = (opce, inputName) => {
     opce.preventDefault();
+    // window.pageYOffset
+    dispatch(setPageYOffset(window.pageYOffset));
     setSelectedStyleItem(inputName);
     switch (inputName) {
       case online:
@@ -360,7 +364,7 @@ function RegistrationForm(props) {
           {/* Tuition style with calculator start  */}
           <div className="row mb-3">
             <div className="col-md-12">
-              <label htmlFor="tuitionstyle">Tuition Style</label>
+              <label htmlFor="tuitionstyle">Tuition Style*</label>
               <div className="row">
                 <div className="col-md-3">
                   <div className="input-item d-flex align-items-start justify-content-start flex-column">
@@ -371,6 +375,26 @@ function RegistrationForm(props) {
                       </label>
                     </div>
                   </div>
+                  {displayTuitionOl && (
+                    <div className="price-form">
+                      <div className="input-group mb-3">
+                        <div className="d-flex p-0">
+                          <input
+                            type="number"
+                            className="form-control price-input-field"
+                            ref={rateInputOlEl}
+                            defaultValue={registerableUser?.ol_rate}
+                            name="ol_rate"
+                            placeholder="Rate"
+                            onChange={inputRateChangeHandler}
+                          />
+                          <span className="input-group-text calculator-icon-span">
+                            <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, online)} role="button" />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="col-md-3">
                   <div className="input-item d-flex align-items-start justify-content-start flex-column">
@@ -381,6 +405,27 @@ function RegistrationForm(props) {
                       </label>
                     </div>
                   </div>
+                  {displayTuitionTl && (
+                    <div className="price-form">
+                      <div className="input-group mb-3">
+                        <div className="d-flex p-0">
+                          <input
+                            type="number"
+                            className="form-control price-input-field"
+                            ref={rateInputTlEl}
+                            onChange={inputRateChangeHandler}
+                            defaultValue={registerableUser?.tl_rate}
+                            id="tl_rate"
+                            name="tl_rate"
+                            placeholder="Rate"
+                          />
+                          <span className="input-group-text calculator-icon-span">
+                            <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, tl)} role="button" />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="col-md-3">
                   <div className="input-item d-flex align-items-start justify-content-start flex-column">
@@ -391,70 +436,24 @@ function RegistrationForm(props) {
                       </label>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-3">
-                  {displayTuitionOl && (
-                    <div className="price-form">
-                      <div className="input-group mb-3">
-                        <div className="form-floating p-0">
-                          <input
-                            type="number"
-                            className="form-control"
-                            ref={rateInputOlEl}
-                            defaultValue={registerableUser?.ol_rate}
-                            name="ol_rate"
-                            onChange={inputRateChangeHandler}
-                          />
-                        </div>
-                        <span className="input-group-text">
-                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, online)} role="button" />
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="col-md-3">
-                  {displayTuitionTl && (
-                    <div className="price-form">
-                      <div className="input-group mb-3">
-                        <div className="form-floating p-0">
-                          <input
-                            type="number"
-                            className="form-control"
-                            ref={rateInputTlEl}
-                            onChange={inputRateChangeHandler}
-                            defaultValue={registerableUser?.tl_rate}
-                            id="tl_rate"
-                            name="tl_rate"
-                          />
-                        </div>
-                        <span className="input-group-text">
-                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, tl)} role="button" />
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="col-md-3">
                   {displayTuitionSl && (
                     <div className="price-form">
                       <div className="input-group mb-3">
-                        <div className="form-floating p-0">
+                        <div className="d-flex p-0">
                           <input
                             type="number"
-                            className="form-control"
+                            className="form-control price-input-field"
                             ref={rateInputSlEl}
                             onChange={inputRateChangeHandler}
                             defaultValue={registerableUser?.sl_rate}
                             id="sl_rate"
                             name="sl_rate"
+                            placeholder="Rate"
                           />
+                          <span className="input-group-text calculator-icon-span">
+                            <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, sl)} role="button" />
+                          </span>
                         </div>
-                        <span className="input-group-text">
-                          <img src="/icons/calculator.svg" alt="" onClick={(e) => openPriceCalcHandler(e, sl)} role="button" />
-                        </span>
                       </div>
                     </div>
                   )}

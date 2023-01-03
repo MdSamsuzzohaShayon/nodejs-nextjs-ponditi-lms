@@ -1,17 +1,27 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 import Router from 'next/router';
+import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { roles, scheduledclassStatus, BACKEND_URL } from '../../config/keys';
-import { setUpdatePart } from '../../redux/reducers/userReducer';
+import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
+import { setUpdatePart, setCurrentUser } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 import { toCapSentence } from '../../utils/extendPrototypes';
+import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
+import axios from '../../config/axios';
 
 const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
 
 function Detail({ userDetail, update }) {
   const dispatch = useDispatch();
+  const imageInputEl = useRef(null);
+  let fileSelector = null;
+
   const userSubjects = useSelector((state) => state.user.userSubjects);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
   const userExamList = useSelector((state) => state.user.userExamList);
@@ -34,37 +44,103 @@ function Detail({ userDetail, update }) {
     Router.push({ pathname: '/user/update', query: { userId: userDetail.id } });
   };
 
+  // handleFileSelect = (e) => {
+  //   e.preventDefault();
+  //   fileSelector.click();
+  // }
+
+  const uploadImageHandler = (uie) => {
+    // uie.preventDefault();
+    console.log(uie);
+    imageInputEl.current.click();
+    // imageInputEl.current.dispatchEvent(new Event('click'));
+    // fileSelector.click();
+    // imageInputEl.current = fileSelector;
+  };
+
+  const fileInputChangeHandler = async (fice) => {
+    // fice.preventDefault();
+    // console.log('Upload a file');
+    const fileExist = imageInputEl.current.files[0];
+    if (fileExist) {
+      //   console.log(fileExist);
+      if (fileExist.size / 1000 > 1000) {
+        // fileInputElement.current.value = 0;
+        fice.target.value = '';
+        return dispatch(setErrorList(['You must upload a file with less than 1 mega byte in size']));
+      }
+
+      if (fileExist.type !== 'image/jpeg' && fileExist.type !== 'image/png' && fileExist.type !== 'image/jpg' && fileExist.type !== 'image/gif') {
+        fice.target.value = '';
+        return dispatch(setErrorList(['Invalid file type, please use jpg or png file type']));
+      }
+
+      // File validation succeed. now upload the file
+      const formData = new FormData();
+      fice.preventDefault();
+      // const fileExist = fileInputElement.current.files[0];
+      // console.log(fileExist);
+      if (fileExist) {
+        await formData.set('image', fileExist);
+        try {
+          dispatch(toggleLoading(true));
+          const controller = new AbortController();
+          const options = {
+            signal: controller.signal,
+          };
+
+          const response = await axios.put(`/user/updateimage/${authUserInfo.id}`, formData, options);
+          controller.abort();
+          if (response.status === 202 || response.status === 201 || response.status === 200) {
+            // console.log(response);
+            // window.localStorage.removeItem('updatePart');
+            dispatch(setCurrentUser({ image: response.data.image }));
+            dispatch(resetErrorList());
+            Router.push('/user/dashboard');
+          }
+        } catch (error) {
+          console.log(error);
+          if (error?.response?.data?.msg) {
+            dispatch(setErrorList([error.response.data.msg]));
+          }
+          if (error?.response?.status === 401 || error?.response?.status === 405) {
+            window.localStorage.removeItem('user');
+            Router.push('/user/login');
+          }
+        } finally {
+          dispatch(toggleLoading(false));
+        }
+      }
+    }
+    return null;
+  };
+
   return (
     <div className="Detail my-4">
       {userDetail && (
         <>
-          <div className="row mx-0 mb-5">
-            <div className="col-md-3">
-              <div className="image-wrapper p-2 shadow mb-5 bg-body rounded">
-                <img src={userDetail.image ? `${BACKEND_URL}/${userDetail.image}` : '/img/default-img.jpg'} className="profile-img mb-2" alt="" />
-              </div>
-              {update && userDetail.id === authUserInfo.id && (
-                <button className="btn btn-primary" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 5)}>
-                  Upload
-                </button>
-              )}
-            </div>
-            <div className="col-md-9">
+          <div className="row">
+            <div className="col-12 d-flex justify-content-center align-items-center flex-column">
               {userDetail.name && (
-                <div className="name-edit-profile-wrapper d-flex justify-content-between align-items-center">
-                  <h1 className="h1 text-uppercase">{userDetail.name}</h1>
-
-                  {/* {authUserInfo.id && userDetail?.role === STUDENT && (
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={sendRequesthandler}
-                    >
-                      Send Request
-                    </button>
-                  )} */}
+                <div className="text-center">
+                  <h1 className="h1 text-uppercase mb-0">{userDetail.name}</h1>
+                  {userDetail?.role === TEACHER && userDetail.experience && <p className="p-0 mb-3">{userDetail.experience} years Experience</p>}
                 </div>
               )}
+              <div className="shadow rounded-circle profile-image-wrapper position-relative">
+                {/* https://ponditistorage.s3.ap-southeast-1.amazonaws.com/ramos.jpg-42-image.jpg */}
+                <img
+                  src={userDetail.image ? `${AWS_S3_URL}/${userDetail.image}` : '/img/default-img.jpg'}
+                  className="profile-img rounded-circle position-absolute"
+                  alt=""
+                />
+                <div className="btn btn-dark rounded-circle upload-btn position-absolute" onClick={uploadImageHandler}>
+                  <img src="/icons/camera.svg" className="upload-img position-absolute" alt="" />
+                  <input type="file" className="d-none" ref={imageInputEl} onChange={fileInputChangeHandler} />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-9">
               {userDetail.location && (
                 <>
                   <div className="d-flex">
@@ -83,16 +159,6 @@ function Detail({ userDetail, update }) {
                     )}
                   </p>
                 </>
-              )}
-              {userDetail?.role === TEACHER && userDetail.experience && (
-                <div className="col-md-12 d-flex justify-content-start align-items-center">
-                  <div className="icon">
-                    <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
-                  </div>
-                  <div className="info">
-                    <p className="p-0 m-0">{userDetail.experience} years Experience</p>
-                  </div>
-                </div>
               )}
             </div>
           </div>
@@ -130,7 +196,7 @@ function Detail({ userDetail, update }) {
           <hr />
 
           {/* personal detail start  */}
-          <div className="row mx-0 mb-3 bg-secondary py-3">
+          <div className="row mx-0 mb-3 py-3">
             <div className="heading d-flex justify-content-between align-items-center row py-3">
               <h3 className="h5 w-fit">Personal Detail</h3>
               {update && (
@@ -144,25 +210,25 @@ function Detail({ userDetail, update }) {
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Name</div>
                 <div className="col-md-6">
-                  <p className="text-capitalize">{userDetail.name}</p>
+                  <p className="text-capitalize fw-semibold">{userDetail.name}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Email</div>
                 <div className="col-md-6">
-                  <p>{userDetail?.email}</p>
+                  <p className="fw-semibold">{userDetail?.email}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">District</div>
                 <div className="col-md-6">
-                  <p>{userDetail.district && userDetail.district[0].toUpperCase() + userDetail.district.slice(1)}</p>
+                  <p className="fw-semibold">{userDetail.district && userDetail.district[0].toUpperCase() + userDetail.district.slice(1)}</p>
                 </div>
               </div>
               <div className="row mx-0 mb-1">
                 <div className="col-md-6">Present address</div>
                 <div className="col-md-6">
-                  <p>{userDetail?.presentaddress}</p>
+                  <p className="fw-semibold">{userDetail.presentaddress && userDetail.presentaddress.split('(')[0]}</p>
                 </div>
               </div>
             </div>
@@ -171,7 +237,7 @@ function Detail({ userDetail, update }) {
 
           {/* tution detail start  */}
           {userDetail?.role === TEACHER && (
-            <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="row mx-0 mb-3 py-3">
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Tution Detail</h3>
                 {update && (
@@ -213,7 +279,7 @@ function Detail({ userDetail, update }) {
 
           {/* Subject and class start  */}
           {(authUserInfo.id !== null || userSubjects.length > 0) && (
-            <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="row mx-0 mb-3 py-3">
               <div className="heading d-flex justify-content-between row align-items-center my-3">
                 <h3 className="h5 w-fit">Preffered Mediums, Subjects, & Classes</h3>
                 {update && (
@@ -267,7 +333,7 @@ function Detail({ userDetail, update }) {
 
           {/* Exam detail start  */}
           {authUserInfo.id !== null && userDetail.role === TEACHER && (
-            <div className="row mx-0 mb-3 bg-secondary py-3">
+            <div className="row mx-0 mb-3 py-3">
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Educational Qualification</h3>
                 {update && (

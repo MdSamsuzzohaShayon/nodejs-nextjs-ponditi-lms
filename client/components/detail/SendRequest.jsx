@@ -2,14 +2,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import Router from 'next/router';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import {
-  showRequest,
-  setInitializeSchedule,
-} from '../../redux/reducers/scheduledclassReducer';
-import {
-  setErrorList,
-  toggleLoading,
-} from '../../redux/reducers/elementsSlice';
+import { showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
+import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
 import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
@@ -33,22 +27,15 @@ function SendRequest() {
   const [autocomplete, setAutocomplete] = useState(null);
   const dispatch = useDispatch();
 
-  const selectedSearchUser = useSelector(
-    (state) => state.scheduledclass.selectedSearchUser
-  );
+  const selectedSearchUser = useSelector((state) => state.scheduledclass.selectedSearchUser);
   const currentUser = useSelector((state) => state.user.currentUser);
-  const initializeSchedule = useSelector(
-    (state) => state.scheduledclass.initializeSchedule
-  );
+  const initializeSchedule = useSelector((state) => state.scheduledclass.initializeSchedule);
   const slotList = useSelector((state) => state.scheduledclass.slotList);
 
   useEffect(() => {
     // selectedSearchUser.presentaddress
     if (currentUser.id) {
-      if (
-        initializeSchedule.tutionplace === ONLINE ||
-        initializeSchedule.tutionplace === ANY
-      ) {
+      if (initializeSchedule.tutionplace === ONLINE || initializeSchedule.tutionplace === ANY) {
         dispatch(setInitializeSchedule({ tuitionlocation: ONLINE }));
       } else if (initializeSchedule.tutionplace === TL) {
         dispatch(
@@ -99,10 +86,7 @@ function SendRequest() {
     if (!initializeSchedule.tutionplace) {
       return dispatch(setErrorList(['You must select a tution place']));
     }
-    const startDateTime = new Date([
-      initializeSchedule.date,
-      initializeSchedule.time,
-    ]);
+    const startDateTime = new Date([initializeSchedule.date, initializeSchedule.time]);
     // console.log(startDateTime);
     // console.log(startDateTime.toISOString());
     // console.log('Send request with current time of client');
@@ -180,36 +164,22 @@ function SendRequest() {
     try {
       const lat = autocomplete.getPlace().geometry.location.lat();
       const lng = autocomplete.getPlace().geometry.location.lng();
-      const addressdetail = `${autocomplete.getPlace().name}, ${
-        autocomplete.getPlace().formatted_address
-      }, (${lng}, ${lat})`;
+      const addressdetail = `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`;
       dispatch(setInitializeSchedule({ tuitionlocation: addressdetail }));
     } catch (error) {
       console.log(error);
     }
   };
 
-  const timeSlotDisplay = (
-    offset,
-    timeSlotList,
-    slotLimit,
-    additionalClasses
-  ) => {
+  const timeSlotDisplay = (offset, timeSlotList, slotLimit, additionalClasses) => {
     const slotItemList = [];
     for (let i = offset; i < slotLimit; i += 1) {
       const newItem = (
         <button
           type="button"
           key={timeSlotList[i].id}
-          onClick={(sse) =>
-            selectSlotHandler(sse, timeSlotList[i].slot, timeSlotList[i].ampm)
-          }
-          className={
-            timeSlotList[i].slot === selectedSlot &&
-            timeSlotList[i].ampm === selectedAmpm
-              ? 'btn mb-2 btn-primary'
-              : 'btn mb-2 btn-outline-primary'
-          }
+          onClick={(sse) => selectSlotHandler(sse, timeSlotList[i].slot, timeSlotList[i].ampm)}
+          className={timeSlotList[i].slot === selectedSlot && timeSlotList[i].ampm === selectedAmpm ? 'btn mb-2 btn-primary' : 'btn mb-2 btn-outline-primary'}
         >
           {`${timeSlotList[i].slotName} ${timeSlotList[i].ampm}`}{' '}
         </button>
@@ -217,13 +187,7 @@ function SendRequest() {
       slotItemList.push(newItem);
     }
 
-    return (
-      <div
-        className={`time-slot d-flex w-full justify-content-md-between align-items-center flex-wrap ${additionalClasses}`}
-      >
-        {slotItemList}
-      </div>
-    );
+    return <div className={`time-slot d-flex w-full justify-content-md-between align-items-center flex-wrap ${additionalClasses}`}>{slotItemList}</div>;
   };
 
   return (
@@ -238,22 +202,13 @@ function SendRequest() {
           </div>
           <div className="col-md-12 d-flex justify-content-between flex-md-column">
             {timeSlotDisplay(0, slotList, slotList.length / 2, '')}
-            {timeSlotDisplay(
-              slotList.length / 2,
-              slotList,
-              slotList.length,
-              'justify-content-end'
-            )}
+            {timeSlotDisplay(slotList.length / 2, slotList, slotList.length, 'justify-content-end')}
           </div>
         </div>
         <div className="row mb-3 mx-0">
           <div className="col-md-12">
             <label htmlFor="tuitionlocation">Address</label>
-            <Autocomplete
-              onLoad={onLoadHandler}
-              onPlaceChanged={placeChangedHandler}
-              className="form-control p-0"
-            >
+            <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
               <input
                 name="tuitionlocation"
                 id="tuitionlocation"
@@ -267,14 +222,7 @@ function SendRequest() {
         <div className="row mb-3 mx-0">
           <div className="col-md-12">
             <label htmlFor="desc">Description</label>
-            <textarea
-              name="desc"
-              id="desc"
-              className="form-control"
-              rows="2"
-              defaultValue={initializeSchedule.desc}
-              onChange={inputChangeHandler}
-            />
+            <textarea name="desc" id="desc" className="form-control" rows="2" defaultValue={initializeSchedule.desc} onChange={inputChangeHandler} />
           </div>
         </div>
         <div className="row mb-3 mx-0">
@@ -294,11 +242,7 @@ function SendRequest() {
             <button type="submit" className="btn btn-primary w-fit">
               Submit Request
             </button>
-            <button
-              type="button"
-              className="btn btn-danger w-fit"
-              onClick={cancelRequesthandler}
-            >
+            <button type="button" className="btn btn-danger w-fit" onClick={cancelRequesthandler}>
               Cancel
             </button>
           </div>

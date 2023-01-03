@@ -6,7 +6,7 @@
 
 .PriceCalculator {
   width: 500px;
-  height: 400px;
+  min-height: 450px;
 }
 @media (max-width: 768px) {
   .PriceCalculator {

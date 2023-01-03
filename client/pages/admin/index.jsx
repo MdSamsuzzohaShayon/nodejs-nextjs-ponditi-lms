@@ -48,9 +48,9 @@ function index() {
   // otherwise use dashboard component
   return (
     <Layout>
-      <section className="section-1 Admin">
+      <div className="section-1 Admin">
         <Dashboard />
-      </section>
+      </div>
     </Layout>
   );
 }

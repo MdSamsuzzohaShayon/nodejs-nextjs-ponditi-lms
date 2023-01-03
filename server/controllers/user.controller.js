@@ -12,11 +12,14 @@ const sendSMS = require('../utils/sendSMS');
 const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
+const config = require('../config/s3-config');
 
 // eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
+const {
+ PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
+} = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 
@@ -74,7 +77,7 @@ const sendOTP = async (req, res) => {
       }
       // console.log(phoneWithSufix, '+8801785208590');
       // let them register
-      const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is: ${otp}`);
+      const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is : ${otp}`);
       if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
 
       // update code from database
@@ -83,7 +86,7 @@ const sendOTP = async (req, res) => {
         msg: 'Already sent an OTP, however, we are sending code once again',
       });
     }
-    const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is : ${otp}`);
     if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     await User.create({
       phone,
@@ -274,7 +277,7 @@ const registerUser = async (req, res) => {
     });
     const phoneWithSufix = `+${userFindById.dataValues.cc}${userFindById.dataValues.phone}`;
     // console.log({phoneWithSufix});
-    await sendSMS(phoneWithSufix, `Login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
+    await sendSMS(phoneWithSufix, `Your Ponditi login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
     return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });
@@ -376,6 +379,7 @@ const login = async (req, res) => {
       expiresIn: '1h',
     });
     res.cookie('token', token, cookieOptions);
+    userDetailResponse.name = userExist.dataValues.name;
     return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
     console.log(err);
@@ -432,7 +436,7 @@ const forgetPassword = async (req, res) => {
       specialChars: false,
     });
 
-    const response = await sendSMS(phoneWithSufix, `Your password reset OTP code is: ${otp}`);
+    const response = await sendSMS(phoneWithSufix, `Your Ponditi password reset OTP code is: ${otp}`);
     if (process.env.NODE_ENV === 'development') {
       console.log({
         phoneWithSufix,
@@ -517,7 +521,7 @@ const resendOTP = async (req, res) => {
     specialChars: false,
   });
   const updateOtp = await User.update({ otp }, { where: { id: findByPhone.dataValues.id } }); // isActive
-  await sendSMS(findByPhone.dataValues.phone, `Your OTP code is: ${otp}`);
+  await sendSMS(findByPhone.dataValues.phone, `Your Ponditi verification code is : ${otp}`);
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
   });
@@ -789,6 +793,7 @@ const updateExamUser = async (req, res) => {
 const updateImageUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
+  // console.log('Files - ', req.file.key);
   if (pId !== req.userId) {
     return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
@@ -810,6 +815,16 @@ const updateImageUser = async (req, res) => {
 
     // If there is a file already delete that file first
     if (findUser.dataValues.image) {
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: findUser.dataValues.image,
+      };
+      // console.log(params);
+      config.s3.deleteObject(params, (err, data) => {
+        if (err) console.log(err, err.stack); // an error occurred
+      });
+      /*
+      // Delete file locally
       const fileAbsPath = `${__dirname}/../uploads/${findUser.dataValues.image}`;
       // console.log({ existingFile: findUser.dataValues.image, fileAbsPath });
       try {
@@ -821,11 +836,12 @@ const updateImageUser = async (req, res) => {
       } catch (fileUnlinkErr) {
         console.log(fileUnlinkErr);
       }
+      */
     }
 
-    await User.update({ image: req.file.filename }, { where: { id } });
+    await User.update({ image: req.file.key }, { where: { id } });
 
-    return res.status(202).json({ msg: 'A user image updated' });
+    return res.status(202).json({ msg: 'A user image updated', image: req.file.key });
   } catch (error) {
     console.log(error);
   }

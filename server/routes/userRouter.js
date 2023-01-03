@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 const router = require('express').Router();
 const { check } = require('express-validator');
 const {
@@ -20,8 +21,15 @@ const {
   forgetPassword,
   resetPassword,
 } = require('../controllers/user.controller');
+const { changePassword } = require('../controllers/common.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
-const upload = require('../config/multer-config');
+
+const { upload } = require('../config/s3-config');
+// if (process.env.NODE_ENV === 'development') {
+//   upload = require('../config/multer-config');
+// } else {
+//   upload = require('../config/s3-config')(upload);
+// }
 
 /**
  * @openapi
@@ -84,6 +92,7 @@ router.post('/login', check('phone').notEmpty().isString(), check('password').no
 router.post('/logout', logout);
 router.post('/forgetpassword', forgetPassword);
 router.put('/resetpassword', check('otp').notEmpty(), check('password').notEmpty().isLength({ min: 6 }), resetPassword);
+router.put('/changepassword', ensureAuth, check('current').notEmpty(), check('password').notEmpty(), changePassword);
 
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);

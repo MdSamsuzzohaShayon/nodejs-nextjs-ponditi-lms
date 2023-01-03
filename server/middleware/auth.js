@@ -53,7 +53,7 @@ const ensureAuth = async (req, res, next) => {
     const decodedToken = await jwt.verify(cookieToken, process.env.JWT_SECRET);
     if (!decodedToken) return res.status(401).send({ msg: 'Unauthenticated' });
     // console.log({decodedToken, role: decodedToken.role});
-    if (decodedToken?.role !== STUDENT && decodedToken?.role !== TEACHER) return res.status(401).send({ msg: 'Unauthenticated' });
+    if (decodedToken?.role !== STUDENT && decodedToken?.role !== TEACHER && decodedToken?.role !== ADMIN ) return res.status(401).send({ msg: 'Unauthenticated' });
     req.userId = decodedToken?.id;
     req.userEmail = decodedToken?.email;
     req.userRole = decodedToken.role;

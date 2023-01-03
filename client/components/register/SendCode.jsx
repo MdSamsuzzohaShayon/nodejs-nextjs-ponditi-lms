@@ -96,11 +96,11 @@ function SendCode() {
 
   return (
     <section className="SendCode">
-      <h1 className="Register">Send Code</h1>
+      {/* <h1 className="Register">Send Code</h1> */}
       <form onSubmit={sendCodeHandler} className="needs-validation" noValidate={noValidate} ref={formEl}>
         <div className="row mb-3">
           <div className="col-md-12">
-            <label htmlFor="phone">Phone Number</label>
+            <label htmlFor="phone">Continue with Mobile No</label>
             <div className="input-group mb-3">
               <select name="cc" id="cc" className="w-fit bg-white border-2 border-secondary phone-code" defaultValue={sendOTP.cc} onChange={inputChangeHandler}>
                 {countryPhoneCodes.map(
@@ -133,9 +133,9 @@ function SendCode() {
         </div>
         <div className="row mb-3">
           <div className="col d-flex flex-column">
-            <a href="#" className="text-decoration-underline text-capitalize text-dark w-fit" onClick={verifyCodeSegment}>
+            {/* <a href="#" className="text-decoration-underline text-capitalize text-dark w-fit" onClick={verifyCodeSegment}>
               Verify your existing code.
-            </a>
+            </a> */}
             <Link href="/user/login">
               <a className="text-decoration-underline text-capitalize text-dark w-fit">Already have an account?</a>
             </Link>
