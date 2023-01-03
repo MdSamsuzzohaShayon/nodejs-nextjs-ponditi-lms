@@ -72,6 +72,7 @@ const elementsSlice = createSlice({
     noValidate: true,
 
     openPriceCalc: false, // default false
+    pageYOffset: 0,
   },
   reducers: {
     openModal: (state, action) => {
@@ -93,7 +94,7 @@ const elementsSlice = createSlice({
     setSuccessMessageList: (state, action) => {
       state.successMessageList = action.payload;
     },
-    resetSuccessMessageList: (state, action) => {
+    resetSuccessMessageList: (state) => {
       state.successMessageList = [];
     },
     setNoValidate: (state, action) => {
@@ -102,9 +103,23 @@ const elementsSlice = createSlice({
     setOpenPriceCalc: (state, action) => {
       state.openPriceCalc = action.payload;
     },
+    setPageYOffset: (state, action) => {
+      state.pageYOffset = action.payload;
+    },
   },
 });
 
-export const { openModal, closeModal, toggleLoading, setErrorList, setSuccessMessageList, resetErrorList, setNoValidate, setOpenPriceCalc, resetSuccessMessageList } = elementsSlice.actions;
+export const {
+  openModal,
+  closeModal,
+  toggleLoading,
+  setErrorList,
+  setSuccessMessageList,
+  resetErrorList,
+  setNoValidate,
+  setOpenPriceCalc,
+  resetSuccessMessageList,
+  setPageYOffset,
+} = elementsSlice.actions;
 
 export default elementsSlice.reducer;

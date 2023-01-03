@@ -11,13 +11,19 @@ import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
 function PriceCalculator(props) {
   const dispatch = useDispatch();
   const openPriceCalc = useSelector((state) => state.elements.openPriceCalc);
+  const pageYOffset = useSelector((state) => state.elements.pageYOffset);
+
   const closePriceCalc = (cpce) => {
     cpce.preventDefault();
     // console.log(cpce.target);
     dispatch(setOpenPriceCalc(false));
   };
   return (
-    <div className={`${styles.priceCalculatorWrapper} position-absolute top-0 start-0 ${openPriceCalc ? 'd-block' : 'd-none'}`} role="button">
+    <div
+      className={`${styles.priceCalculatorWrapper} position-absolute start-0 ${openPriceCalc ? 'd-block' : 'd-none'}`}
+      role="button"
+      style={{ top: `${pageYOffset}px` }}
+    >
       <div className={`${styles.PriceCalculator} bg-secondary position-absolute top-50 start-50 translate-middle mt-1 p-2`}>
         <div className="d-flex justify-content-between">
           <h2 className="fs-2 mt-5">{props?.title}</h2>
@@ -48,7 +54,9 @@ function PriceCalculator(props) {
           </div>
         </div>
         <div className="w-full btn-wrapper d-flex justify-content-center">
-          <button className="btn btn-primary" type="button" onClick={closePriceCalc} >Ok</button>
+          <button className="btn btn-primary" type="button" onClick={closePriceCalc}>
+            Ok
+          </button>
         </div>
       </div>
     </div>
