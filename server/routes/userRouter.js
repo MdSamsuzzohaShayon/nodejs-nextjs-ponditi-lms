@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 const router = require('express').Router();
 const { check } = require('express-validator');
 const {
@@ -21,7 +22,13 @@ const {
   resetPassword,
 } = require('../controllers/user.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
-const upload = require('../config/multer-config');
+
+const { upload } = require('../config/s3-config');
+// if (process.env.NODE_ENV === 'development') {
+//   upload = require('../config/multer-config');
+// } else {
+//   upload = require('../config/s3-config')(upload);
+// }
 
 /**
  * @openapi

@@ -12,11 +12,14 @@ const sendSMS = require('../utils/sendSMS');
 const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
+const config = require('../config/s3-config');
 
 // eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
+const {
+ PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
+} = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 
@@ -789,6 +792,7 @@ const updateExamUser = async (req, res) => {
 const updateImageUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
+  // console.log('Files - ', req.file.key);
   if (pId !== req.userId) {
     return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
@@ -810,6 +814,16 @@ const updateImageUser = async (req, res) => {
 
     // If there is a file already delete that file first
     if (findUser.dataValues.image) {
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: findUser.dataValues.image,
+      };
+      // console.log(params);
+      config.s3.deleteObject(params, (err, data) => {
+        if (err) console.log(err, err.stack); // an error occurred
+      });
+      /*
+      // Delete file locally
       const fileAbsPath = `${__dirname}/../uploads/${findUser.dataValues.image}`;
       // console.log({ existingFile: findUser.dataValues.image, fileAbsPath });
       try {
@@ -821,9 +835,10 @@ const updateImageUser = async (req, res) => {
       } catch (fileUnlinkErr) {
         console.log(fileUnlinkErr);
       }
+      */
     }
 
-    await User.update({ image: req.file.filename }, { where: { id } });
+    await User.update({ image: req.file.key }, { where: { id } });
 
     return res.status(202).json({ msg: 'A user image updated' });
   } catch (error) {

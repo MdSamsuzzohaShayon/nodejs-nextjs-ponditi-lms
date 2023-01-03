@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { roles, scheduledclassStatus, BACKEND_URL } from '../../config/keys';
+import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
 import { setUpdatePart } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 import { toCapSentence } from '../../utils/extendPrototypes';
@@ -41,7 +41,8 @@ function Detail({ userDetail, update }) {
           <div className="row mx-0 mb-5">
             <div className="col-md-3">
               <div className="image-wrapper p-2 shadow mb-5 bg-body rounded">
-                <img src={userDetail.image ? `${BACKEND_URL}/${userDetail.image}` : '/img/default-img.jpg'} className="profile-img mb-2" alt="" />
+              {/* https://ponditistorage.s3.ap-southeast-1.amazonaws.com/ramos.jpg-42-image.jpg */}
+                <img src={userDetail.image ? `${AWS_S3_URL}/${userDetail.image}` : '/img/default-img.jpg'} className="profile-img mb-2" alt="" />
               </div>
               {update && userDetail.id === authUserInfo.id && (
                 <button className="btn btn-primary" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 5)}>
