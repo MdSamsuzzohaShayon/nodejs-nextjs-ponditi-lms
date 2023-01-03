@@ -207,10 +207,33 @@
  - Check used class and subject is properly selecting or not
  - Problems adding tuition medium
 
-1. Profile pic show korena
-2. Personal Details e District name capital letter e ashena
-3. Tuition rate edit kora jacchena
-3. Education sector e institution er naam set korar por o show korena
+ - **Requirement update-7**
+ - Profile pic show korena
+ - Personal Details e District name capital letter e ashena
+ - Tuition rate edit kora jacchena
+ - Education sector e institution er naam set korar por o show korena
+
+ - **Requirement update-8**
+ - Change calculator style for mobile
+ - Create a sub domain
+ - ✅ Remove these two lines from Registration page and change the button name to Submit
+ - ✅ Change “Phone Number” to “Continue with Mobile No”
+ - ✅ Remove the line and keep single line like the following pic
+ - ✅ Remove the social media icons from here and add it in the right bottom side of foother
+ - ✅ Change the verification message to “Your Ponditi verification code is : 784547”.
+ - ✅ Align the Profile name and title in the middle and set the profile pic below them
+ - Edit button in the personal Information section will take to the exact same interface where the teacher was registered
+ - ✅ Change the profile pic frame to round and keep a camera icon as upload button in the top right side
+ - ✅ Upload button in the profile pic with directly ask to select the pic from the device, Mobile phone will open the gallery directly
+ - ✅ Remove the icon in the title and keep the title closer to the profile name
+ - ✅ Remove the line from address
+ - ✅ Keep the profile setting in the top right side of the navbar with profile name like the below pic and add Edit profile, Request history, change password & Logout options in the dropdown (See the pic below)
+ - ✅ Keep the color to white removing ash color (No 1) and make the details bold(No 2)
+ - ✅ No cancel button works in edit section
+ - ✅ Keep all the checkboxes in the left side not in the right side
+ - ✅ Add email address in the middle of the footer “infor@ponditibd.com”
+
+
 
 
  - host
@@ -289,6 +312,7 @@ Ask questions
 ### Track
  - We must make all the tracking of database changes
  - Add ref in User and remove board from Education
+ - 
 
 
 

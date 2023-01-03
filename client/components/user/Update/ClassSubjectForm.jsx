@@ -192,7 +192,7 @@ function ClassSubjectForm(props) {
             <h4 className="card-title">Preffered Tuition Medium</h4>
             <div className="row py-3">
               {tuitionmList.map((tm, idx) => (
-                <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
+                <div className="col-md-3 d-flex justify-content-end align-items-center flex-row-reverse" key={idx}>
                   <label className="fs-6 fw-light" htmlFor={tm.id}>
                     {tm.name.substring(0, 1).toUpperCase() + tm.name.substring(1).toLowerCase()}
                   </label>
@@ -217,7 +217,7 @@ function ClassSubjectForm(props) {
               <h4 className="card-title">Preffered Classes</h4>
               <div className="row my-3">
                 {vlsiableClassTypeList().map((ctl, idx) => (
-                  <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
+                  <div className="col-md-3 d-flex justify-content-end align-items-center flex-row-reverse" key={idx}>
                     <label className="fs-6 fw-light" htmlFor={ctl.id}>
                       {ctl.name.substring(0, 1).toUpperCase() + ctl.name.substring(1).toLowerCase()}
                     </label>
@@ -244,7 +244,7 @@ function ClassSubjectForm(props) {
               <h4 className="card-title">Preffered Subjects</h4>
               <div className="row py-3">
                 {vlsiableSubjectList().map((sub, idx) => (
-                  <div className="col-md-3 d-flex justify-content-start align-items-center" key={idx}>
+                  <div className="col-md-3 d-flex justify-content-end align-items-center flex-row-reverse" key={idx}>
                     <label className="fs-6 fw-light" htmlFor={sub.id}>
                       {sub.name.substring(0, 1).toUpperCase() + sub.name.substring(1).toLowerCase()}
                     </label>

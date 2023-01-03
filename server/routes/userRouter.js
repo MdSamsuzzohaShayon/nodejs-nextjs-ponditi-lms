@@ -21,6 +21,7 @@ const {
   forgetPassword,
   resetPassword,
 } = require('../controllers/user.controller');
+const { changePassword } = require('../controllers/common.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
 
 const { upload } = require('../config/s3-config');
@@ -91,6 +92,7 @@ router.post('/login', check('phone').notEmpty().isString(), check('password').no
 router.post('/logout', logout);
 router.post('/forgetpassword', forgetPassword);
 router.put('/resetpassword', check('otp').notEmpty(), check('password').notEmpty().isLength({ min: 6 }), resetPassword);
+router.put('/changepassword', ensureAuth, check('current').notEmpty(), check('password').notEmpty(), changePassword);
 
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);

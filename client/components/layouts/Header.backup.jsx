@@ -30,13 +30,11 @@ function Header() {
   const userNotifications = useSelector((state) => state.user.userNotifications);
   const authenticatedUser = useSelector((state) => state.user.authenticatedUser);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const currentUser = useSelector((state) => state.user.currentUser);
 
-  const [dashboardUrl, setDashboardUrl] = useState('/user/dashboard');
+  const [dashboardUrl, setDashboardUrl] = useState('/initial');
   const [showNotificationBar, setShowNotificationBar] = useState(false);
+  const [notificationOffset, setNotificationOffset] = useState(38);
   const [expandMenu, setExpandMenu] = useState(false);
-  const [showMenues, setShowMenues] = useState(false);
-
   const notificationMenuItem = useRef(null);
 
   // () => {
@@ -88,6 +86,8 @@ function Header() {
     //   w_width: window.innerWidth,
     // });
     setShowNotificationBar((prevState) => !prevState);
+    // const topOffset = `${30 + notificationMenuItem.current.offsetTop}px`;
+    setNotificationOffset(30 + notificationMenuItem.current.offsetTop);
   };
 
   const natificationBarCloseHandler = (nbce) => {
@@ -134,14 +134,6 @@ function Header() {
     router.push(newUrl);
   };
 
-  const setMenuItemClass = (index) => {
-    let newClass = 'd-flex justify-content-center text-center border-right-slim h-full d-flex align-items-center';
-    if (index === 0) {
-      newClass += ' border-left-slim';
-    }
-    return newClass;
-  };
-
   return (
     <>
       {/* Menu Start  */}
@@ -178,16 +170,11 @@ function Header() {
                 </div>
                 <div className="auth py-md-0 py-2">
                   {authenticatedUser ? (
-                    <ul className="list-unstyled d-flex justify-content-start align-items-start flex-column">
+                    <ul className="list-unstyled d-flex justify-content-start align-items-center flex-column">
                       {authUserInfo.role === ADMIN && (
-                        <>
-                          <li>
-                            <Link href="/admin">Dashboard</Link>
-                          </li>
-                          <li>
-                            <Link href="/admin/changepassword">Change Password</Link>
-                          </li>
-                        </>
+                        <li>
+                          <Link href="/admin">Dashboard</Link>
+                        </li>
                       )}
                       {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
                         <>
@@ -213,38 +200,29 @@ function Header() {
                         </>
                       ) : null}
                       <li className="">
-                        <button href="#" className="bg-transparent border-0 text-white" type="button" onClick={logoutHandler}>
+                        <button href="#" className="bg-transparent border-0 mx-2 text-white" type="button" onClick={logoutHandler}>
                           Logout
                         </button>
                       </li>
                     </ul>
                   ) : (
                     <div className="d-flex justify-content-start align-items-start flex-column">
-                      <div href="#">
-                        <Link href="/user/login">Login</Link>
-                      </div>
-                      <div href="#">
-                        <Link href="/user/register">Register</Link>
-                      </div>
+                      <Link href="/user/login">Login</Link>
+                      <Link href="/user/register">Register</Link>
                     </div>
                   )}
 
-                  {/* {showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`} */}
-                  <div
-                    className={
-                      showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`
-                    }
-                  >
+                  <div className={showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`}>
                     <div className="card-body">
                       <div className="d-flex w-full justify-content-between align-items-center mb-2">
-                        <h5 className="card-title">Notifications</h5>
+                        <h5 className="card-title text-dark">Notifications</h5>
                         <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
                       </div>
                       <ul className="list-group">
                         {userNotifications.length > 0 ? (
                           userNotifications.map((un, unI) => (
                             <li
-                              className={un.viewed ? 'list-group-item bg-transparent text-white border-none' : 'list-group-item bg-transparent text-white border-none'}
+                              className={un.viewed ? 'list-group-item' : 'list-group-item bg-secondary'}
                               key={unI}
                               onClick={(lre) => linkRedirectHandler(lre, un)}
                               role="button"
@@ -254,7 +232,7 @@ function Header() {
                             </li>
                           ))
                         ) : (
-                          <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
+                          <li className="list-group-item">No notification found</li>
                         )}
                       </ul>
                     </div>
@@ -269,122 +247,136 @@ function Header() {
         ) : (
           <>
             {/* Desktop menu start  */}
-            <div className="container">
-              <div className="row header-row">
-                <div className="col-2 d-flex justify-content-start align-items-center">
-                  <img src="/logo.png" className="img-logo" alt="" />
-                </div>
-                <div className="col-8">
-                  <div className="d-flex justify-content-around align-items-start align-items-center h-full">
-                    {menuItemList.map((mil, milIdx) => (
-                      <div key={mil.id} className={setMenuItemClass(milIdx)} style={{ flexBasis: `${100 / menuItemList.length}%` }}>
-                        <Link href={mil.link}>{mil.name}</Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="col-2 d-flex justify-content-end align-items-center h-full position-relative">
-                  {authenticatedUser ? (
-                    <>
-                      <div className="dropdown h-full">
-                        <button
-                          className="btn bg-transparent text-white border-none dropdown-toggle btn-dropdown-user h-full text-capitalize"
-                          type="button"
-                          onClick={(e) => setShowMenues((prevState) => !prevState)}
-                        >
-                          {authUserInfo.name && authUserInfo.name.split(' ')[0]}
-                        </button>
-                        {/* // Need to check */}
-                        <ul className={showMenues ? 'dropdown-menu bg-primary d-block' : 'dropdown-menu bg-primary'}>
-                          <li>
-                            <div className="dropdown-item text-white">
-                              <Link href={dashboardUrl}> Edit Profile</Link>
-                            </div>
+            <div className="row m-0 d-flex flex-column flex-md-row">
+              <div className="logo-column p-0 text-center">
+                <img src="/logo.png" className="img-logo" alt="" />
+              </div>
+              <div className="nav-column p-0">
+                <div className="top-header bg-primary-deep w-full">
+                  <div className="top-header-wrapper d-flex justify-content-between h-full flex-md-row flex-column align-items-start align-items-md-center py-0 py-md-3">
+                    <div className="social d-flex h-full py-md-0 py-2">
+                      <ul className="d-flex justify-centent-start align-items-center m-0 px-1">
+                        {socialItems.map((si) => (
+                          <li className="nav-item list-unstyled" key={si.id}>
+                            <a href="#" className="nav-link">
+                              <img src={`/icons/${si.icon}`} alt={si.name} />
+                            </a>
                           </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="auth py-md-0 py-2">
+                      {authenticatedUser ? (
+                        <ul className="list-unstyled d-flex justify-content-center align-items-center flex-direction-column flex-md-direction-row m-0">
                           {authUserInfo.role === ADMIN && (
-                            <li>
-                              <div className="dropdown-item" href="#">
-                                <Link href="/admin">Dashboard</Link>
-                              </div>
+                            <li className="mx-2">
+                              <Link href="/admin">Dashboard</Link>
                             </li>
                           )}
                           {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
-                            <li>
-                              <div className="dropdown-item d-flex">
-                                <Link href="/user/requesthistory">Request history</Link>
-                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
-                              </div>
-                            </li>
+                            <>
+                              <li className="mx-2 text-lowercase">
+                                <Link href={dashboardUrl}>{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
+                              </li>
+                              <li className="mx-2 d-flex">
+                                <div className="p-1">
+                                  <Link href="/user/requesthistory">Request history</Link>
+                                </div>
+                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                              </li>
+                              <li className="mx-2 d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
+                                <div className="p-1">
+                                  {userUnseenNotifications.length > 0 ? (
+                                    <img src="/icons/notification-dot.svg" alt="notification" height={25} />
+                                  ) : (
+                                    <img height={25} src="/icons/notification.svg" alt="notification" />
+                                  )}
+                                </div>
+                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                              </li>
+                            </>
                           ) : null}
-                          <li>
-                            <div className="dropdown-item text-white">
-                              <Link href={authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? '/user/changepassword' : '/admin/changepassword'}>
-                                Change Password
-                              </Link>
-                            </div>
-                          </li>
-                          <li>
-                            <button href="#" className="bg-transparent border-0 text-white dropdown-item" type="button" onClick={logoutHandler}>
+                          <li className="">
+                            <button href="#" className="bg-transparent border-0  mx-2 text-white" type="button" onClick={logoutHandler}>
                               Logout
                             </button>
                           </li>
                         </ul>
-                      </div>
-                      <div className="ntification-item d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
-                        {userUnseenNotifications.length > 0 ? (
-                          <img src="/icons/notification-dot.svg" alt="notification" height={25} />
-                        ) : (
-                          <img height={25} src="/icons/notification.svg" alt="notification" />
-                        )}
-                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="d-flex justify-content-start align-items-start">
-                      <div className="mx-2">
-                        <Link href="/user/login">Login</Link>
-                      </div>
-                      <div className="mx-2">
-                        <Link href="/user/register">Register</Link>
+                      ) : (
+                        <div className="mx-2">
+                          <button href="#" className="mx-2 bg-transparent border-0" type="button">
+                            <Link href="/user/login">Login</Link>
+                          </button>
+                          <Link href="/user/register">Register</Link>
+                        </div>
+                      )}
+
+                      <div className={showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`}>
+                        <div className="card-body">
+                          <div className="d-flex w-full justify-content-between align-items-center mb-2">
+                            <h5 className="card-title text-dark">Notifications</h5>
+                            <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
+                          </div>
+                          <ul className="list-group">
+                            {userNotifications.length > 0 ? (
+                              userNotifications.map((un, unI) => (
+                                <li
+                                  className={un.viewed ? 'list-group-item' : 'list-group-item bg-secondary'}
+                                  key={unI}
+                                  onClick={(lre) => linkRedirectHandler(lre, un)}
+                                  role="button"
+                                  aria-hidden="true"
+                                >
+                                  {un.comment}
+                                </li>
+                              ))
+                            ) : (
+                              <li className="list-group-item">No notification found</li>
+                            )}
+                          </ul>
+                        </div>
                       </div>
                     </div>
-                  )}
-                  <div
-                    className={
-                      showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`
-                    }
-                  >
-                    <div className="card-body">
-                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
-                        <h5 className="card-title">Notifications</h5>
-                        <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
-                      </div>
-                      <ul className="list-group">
-                        {userNotifications.length > 0 ? (
-                          userNotifications.map((un, unI) => (
-                            <li
-                              className={un.viewed ? 'list-group-item bg-transparent text-white border-none' : 'list-group-item bg-transparent text-white border-none'}
-                              key={unI}
-                              onClick={(lre) => linkRedirectHandler(lre, un)}
-                              role="button"
-                              aria-hidden="true"
-                            >
-                              {un.comment}
-                            </li>
-                          ))
-                        ) : (
-                          <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
-                        )}
-                      </ul>
+                  </div>
+                </div>
+                <div className="bottom-header w-full">
+                  <div className="bottom-header-wrapper">
+                    <div className="d-flex justify-content-around align-items-start align-items-md-center w-full h-full flex-column flex-md-row">
+                      {menuItemList.map((mil, milIdx) => {
+                        if (milIdx === menuItemList.length - 1) {
+                          return (
+                            <div key={mil.id} className="menu-item d-flex flex-column justify-content-center text-md-center mx-2 mx-md-0 border-right-slim">
+                              <Link href={mil.link}>{mil.name}</Link>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div key={mil.id} className="menu-item d-flex flex-column justify-content-center text-md-center mx-2 mx-md-0">
+                            <Link href={mil.link}>{mil.name}</Link>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
               </div>
-              {/* <div className="border-of-header w-full bg-primary-deep" /> */}
             </div>
+            <div className="border-of-header w-full bg-primary-deep" />
             {/* Desktop menu end  */}
           </>
         )}
+
+        <style jsx>{`
+          .menu-item {
+            width: ${100 / menuItemList.length} %;
+          }
+          .notification-bar {
+            top: ${notificationOffset}px;
+          }
+          .notification-bar a {
+            color: black !important;
+          }
+        `}</style>
       </div>
       {/* Menu Ends  */}
     </>

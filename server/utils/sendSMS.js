@@ -19,8 +19,8 @@ const sendSMS = async (to, body) => {
     params.append('username', process.env.BULK_SMS_USERNAME);
     params.append('password', process.env.BULK_SMS_PASSWORD);
     params.append('number', to);
-    const msgStr = `www.ponditi.com \n ${body}`;
-    params.append('message', msgStr);
+    // const msgStr = `www.ponditi.com \n ${body}`;
+    params.append('message', body);
 
     // const newURL = `http://66.45.237.70/api.php?username=${process.env.BULK_SMS_USERNAME}&password=${process.env.BULK_SMS_PASSWORD}&number=${to}&message=${body}`;
     const response = await fetch('http://66.45.237.70/api.php', {

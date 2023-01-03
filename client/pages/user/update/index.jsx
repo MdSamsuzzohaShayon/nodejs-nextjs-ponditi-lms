@@ -7,7 +7,6 @@ import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
 import MessageList from '../../../components/elements/MessageList';
-import ImageUpdateForm from '../../../components/user/Update/ImageUpdateForm';
 import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
@@ -157,14 +156,17 @@ function index() {
 
   const cancelBtnHandler = (cbe) => {
     cbe.preventDefault();
-    // router.push('/user/dashboard'); // Solve this later
+    window.localStorage.removeItem('updatePart');
+    router.push('/user/dashboard'); // Solve this later
+    // dispatch(setUpdatePart(1));
+
   };
 
   const displayContentPartwise = () => {
     // updatePart
     switch (updatePart) {
       case 1:
-        return <ClassSubjectForm />;
+        return <ClassSubjectForm cancelBtnHandler={cancelBtnHandler} />;
       case 2:
         return <PersonalInformationForm inputChangeHandler={inputChangeHandler} />;
       case 3:
@@ -195,8 +197,6 @@ function index() {
             </div>
           </form>
         );
-      case 5:
-        return <ImageUpdateForm />;
       default:
         return (
           <form onSubmit={userChangeHandler}>

@@ -98,6 +98,7 @@ const loginAdmin = async (req, res, next) => {
     });
     // console.log(cookieOptions);
     res.cookie('token', token, cookieOptions);
+    userDetailResponse.name = userExist.dataValues.name;
     return res.status(200).json({ msg: 'Logged in successfully', user: userDetailResponse });
   } catch (err) {
     console.log(err);

@@ -126,6 +126,7 @@ const initialVerifyCode = {
 };
 
 const initialAuthUserInfo = {
+  name: null,
   email: null,
   id: null,
   role: null,
