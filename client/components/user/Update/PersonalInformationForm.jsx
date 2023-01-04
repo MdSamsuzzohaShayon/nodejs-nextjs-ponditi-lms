@@ -97,23 +97,10 @@ function PersonalInformationForm(props) {
         {/* google places api start  */}
         <div className="col-md-6">
           <label htmlFor="district">district</label>
-          {/* <Autocomplete
-            onLoad={onLoadHandler}
-            onPlaceChanged={() => placeChangedHandler(DISTRICT)}
-            className="form-control p-0"
-          >
-            <input
-              type="text"
-              className="form-control"
-              name="district"
-              id="district"
-              defaultValue={currentUser?.district}
-              // onChange={(piee) => placeInputEmptyHandler(piee, DISTRICT)}
-              onChange={inputChangeHandler}
-              placeholder="E.G. Dhaka"
-            />
-          </Autocomplete> */}
-          <select name="district" id="district" className="form-control" defaultValue={currentUser?.district} onChange={inputChangeHandler} >
+          <select name="district" id="district" className="form-control" defaultValue={currentUser?.district} onChange={inputChangeHandler}>
+            <option value="" selected>
+              Select a district
+            </option>
             {districtList.districtList.map((dl, dli) => (
               <option value={dl.toLowerCase()} key={dli}>
                 {dl}

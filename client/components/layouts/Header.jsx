@@ -25,12 +25,10 @@ function Header() {
   const isBreakpoint = useMediaQuery(768);
 
   const menuItemList = useSelector((state) => state.elements.menuItemList);
-  const socialItems = useSelector((state) => state.elements.socialItems);
   const userUnseenNotifications = useSelector((state) => state.user.userUnseenNotifications);
   const userNotifications = useSelector((state) => state.user.userNotifications);
   const authenticatedUser = useSelector((state) => state.user.authenticatedUser);
   const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const currentUser = useSelector((state) => state.user.currentUser);
 
   const [dashboardUrl, setDashboardUrl] = useState('/user/dashboard');
   const [showNotificationBar, setShowNotificationBar] = useState(false);
@@ -38,14 +36,6 @@ function Header() {
   const [showMenues, setShowMenues] = useState(false);
 
   const notificationMenuItem = useRef(null);
-
-  // () => {
-  //   console.log({authUserInfo});
-  //   if (authUserInfo.role === 'ADMIN') {
-  //     return '/admin';
-  //   }
-  //   return '/user/dashboard';
-  // }
 
   let isMounted = false;
   useEffect(() => {
@@ -78,18 +68,6 @@ function Header() {
     }
   };
 
-  const notificationBarHandler = (nbe) => {
-    nbe.preventDefault();
-    // console.log(nbe);
-    // console.log({
-    //   rect: notificationMenuItem.current.getBoundingClientRect(),
-    //   offsettop: notificationMenuItem.current.offsetTop,
-    //   w_height: window.innerHeight,
-    //   w_width: window.innerWidth,
-    // });
-    setShowNotificationBar((prevState) => !prevState);
-  };
-
   const natificationBarCloseHandler = (nbce) => {
     nbce.preventDefault();
     setShowNotificationBar(false);
@@ -99,8 +77,6 @@ function Header() {
     lre.preventDefault();
     const baseUrl = window.location.origin;
     let newUrl = window.location.origin;
-    // console.log(window.location);
-    // console.log(notification);
     let scheduledClassId = null;
     if (notification.comment.includes('(')) {
       scheduledClassId = parseInt(notification.comment.substring(notification.comment.indexOf('(') + 1, notification.comment.indexOf(')')), 10);
@@ -142,6 +118,17 @@ function Header() {
     return newClass;
   };
 
+  const dropdownMenuHandler = (dme) => {
+    dme.preventDefault();
+    setShowMenues((prevState) => !prevState);
+    setShowNotificationBar(false);
+  };
+  const notificationBarHandler = (nbe) => {
+    nbe.preventDefault();
+    setShowMenues(false);
+    setShowNotificationBar((prevState) => !prevState);
+  };
+
   return (
     <>
       {/* Menu Start  */}
@@ -180,14 +167,9 @@ function Header() {
                   {authenticatedUser ? (
                     <ul className="list-unstyled d-flex justify-content-start align-items-start flex-column">
                       {authUserInfo.role === ADMIN && (
-                        <>
-                          <li>
-                            <Link href="/admin">Dashboard</Link>
-                          </li>
-                          <li>
-                            <Link href="/admin/changepassword">Change Password</Link>
-                          </li>
-                        </>
+                        <li>
+                          <Link href="/admin">Dashboard</Link>
+                        </li>
                       )}
                       {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
                         <>
@@ -195,13 +177,13 @@ function Header() {
                             <Link href={dashboardUrl}>{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
                           </li>
                           <li className="d-flex">
-                            <div className="p-1">
+                            <div>
                               <Link href="/user/requesthistory">Request history</Link>
                             </div>
                             {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                           </li>
                           <li className="d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
-                            <div className="p-1">
+                            <div>
                               {userUnseenNotifications.length > 0 ? (
                                 <img src="/icons/notification-dot.svg" alt="notification" height={25} />
                               ) : (
@@ -212,7 +194,10 @@ function Header() {
                           </li>
                         </>
                       ) : null}
-                      <li className="">
+                      <li>
+                        <Link href="/admin/changepassword">Change Password</Link>
+                      </li>
+                      <li>
                         <button href="#" className="bg-transparent border-0 text-white" type="button" onClick={logoutHandler}>
                           Logout
                         </button>
@@ -290,7 +275,7 @@ function Header() {
                         <button
                           className="btn bg-transparent text-white border-none dropdown-toggle btn-dropdown-user h-full text-capitalize"
                           type="button"
-                          onClick={(e) => setShowMenues((prevState) => !prevState)}
+                          onClick={dropdownMenuHandler}
                         >
                           {authUserInfo.name && authUserInfo.name.split(' ')[0]}
                         </button>

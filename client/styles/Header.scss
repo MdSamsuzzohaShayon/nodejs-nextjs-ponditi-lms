@@ -15,7 +15,7 @@
     }
     border-color: $danger-deep;
     .img-logo {
-      width: 135px;
+      width: $header-height + 3;
     }
 
     .header-row{
@@ -30,5 +30,10 @@
       a{
         color: black !important;
       }
+    }
+    @media (max-width: 786px) {
+      width: 100vw;
+      height: 100vh;
+      top: 0;
     }
   }

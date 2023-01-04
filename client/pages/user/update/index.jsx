@@ -107,31 +107,6 @@ function index() {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
       };
-      // Remove updateUserExam
-      /*
-      const newObj = educationUpdateList.filter((uel) => {
-        if (uel.level && uel.level !== '' && uel.cgpa && uel.cgpa !== '' && uel.passing_year && uel.passing_year !== '') {
-          // console.log(uel);
-          return uel;
-        }
-        return null;
-      });
-
-      if (newObj.length > 0) {
-        // console.log(newObj);
-        //   console.log(currentUser);
-        const response = await axios.put(`/user/updateexam/${authUserInfo.id}`, { examlist: newObj }, options);
-        controller.abort();
-        if (response.status === 202 || response.status === 201 || response.status === 200) {
-          // console.log(response);
-          window.localStorage.removeItem('updatePart');
-          dispatch(resetErrorList());
-          router.push('/user/dashboard');
-        }
-      } else {
-        dispatch(setErrorList(['Make sure to put result and passing year in order to update']));
-      }
-      */
       const response = await axios.put(`/user/updateexam/${authUserInfo.id}`, { examlist: educationUpdateList }, options);
       controller.abort();
       if (response.status === 202 || response.status === 201 || response.status === 200) {

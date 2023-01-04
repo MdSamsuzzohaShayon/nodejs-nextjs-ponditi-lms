@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useSelector } from 'react-redux';
+import Link from 'next/link';
 
 function Footer() {
   const socialItems = useSelector((state) => state.elements.socialItems);
@@ -45,18 +46,18 @@ function Footer() {
             <span>Copyright © 2023 Ponditil All Rights Reserved</span>
           </div>
           <div className="mail">
-            <p className="mb-0 mt-md-1">infor@ponditibd.com</p>
+            <p className="mb-0 mt-md-1">info@ponditi.com</p>
           </div>
           <div className="policies">
             <ul className="d-flex flex-column flex-md-row justify-content-end align-items-center w-full px-0 m-0 footer-bottom-policies">
               <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Privacy Policy</a>
+                <Link href="/pirvacypolicy">Privacy Policy</Link>
               </li>
               <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">Contact</a>
+                <Link href="/contact">Contact</Link>
               </li>
               <li className="list-unstyled px-3  footer-bottom-list-item">
-                <a href="#">FAQs</a>
+                <Link href="/faq">FAQs</Link>
               </li>
               <li className="list-unstyled px-3  footer-bottom-list-item">
                 <div className="social d-flex h-full py-md-0 py-2">

@@ -252,22 +252,22 @@ function Detail({ userDetail, update }) {
                   <div className="row mx-0 mb-1">
                     <div className="col-md-6">Per Hour Rate</div>
                     <div className="col-md-6 d-flex flex-row align-items-center flex-wrap">
-                      {userDetail.ol_rate && <p className="me-2"> Online - {userDetail.ol_rate}Tk, </p>}
-                      {userDetail.tl_rate && <p className="me-2"> Teacher&apos;s Location - {userDetail.tl_rate}Tk, </p>}
-                      {userDetail.sl_rate && <p className="me-2"> Student&apos;s Location - {userDetail.sl_rate}Tk, </p>}
+                      {userDetail.ol_rate && <p className="me-2 fw-semibold"> Online - {userDetail.ol_rate}Tk, </p>}
+                      {userDetail.tl_rate && <p className="me-2 fw-semibold"> Teacher&apos;s Location - {userDetail.tl_rate}Tk, </p>}
+                      {userDetail.sl_rate && <p className="me-2 fw-semibold"> Student&apos;s Location - {userDetail.sl_rate}Tk, </p>}
                     </div>
                   </div>
                 )}
                 <div className="row mx-0 mb-1">
                   <div className="col-md-6">Available Status</div>
                   <div className="col-md-6">
-                    <p>{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
+                    <p className="fw-semibold">{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
                   </div>
                 </div>
                 <div className="row mx-0 mb-1">
                   <div className="col-md-6">Tution Place</div>
                   <div className="col-md-6">
-                    <p>
+                    <p className="fw-semibold">
                       {locationSelection(userDetail.tutionplace).map((loc, locI) => (locI + 1 !== locationSelection(userDetail.tutionplace).length ? `${loc}, ` : loc))}
                     </p>
                   </div>
@@ -295,7 +295,7 @@ function Detail({ userDetail, update }) {
                     <h5>Tuition Medium</h5>
                     <ul className="list-group">
                       {userTuitionmList.map((us) => (
-                        <li className="list-group-item rounded-1" key={us.id}>
+                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
                           {us.name}
                         </li>
                       ))}
@@ -307,7 +307,7 @@ function Detail({ userDetail, update }) {
                     <h5>Classes</h5>
                     <ul className="list-group">
                       {userClassTypes.map((us) => (
-                        <li className="list-group-item rounded-1" key={us.id}>
+                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
                           {us.name}
                         </li>
                       ))}
@@ -319,7 +319,7 @@ function Detail({ userDetail, update }) {
                     <h5>Subjects</h5>
                     <ul className="list-group">
                       {userSubjects.map((us) => (
-                        <li className="list-group-item rounded-1" key={us.id}>
+                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
                           {us.name}
                         </li>
                       ))}
@@ -349,9 +349,15 @@ function Detail({ userDetail, update }) {
                     <div className="card rounded-1">
                       <div className="card-header">{uel.level}</div>
                       <div className="card-body">
-                        <p className="card-text">Major : {uel?.major}</p>
-                        <p className="card-text">Institution: {uel?.institution}</p>
-                        <p className="card-text">Passing Year: {uel.running_study ? 'Running' : uel?.passing_year}</p>
+                        <p className="card-text">
+                          Major : <span className="fw-semibold">{uel?.major}</span>{' '}
+                        </p>
+                        <p className="card-text">
+                          Institution: <span className="fw-semibold">{uel?.institution}</span>
+                        </p>
+                        <p className="card-text">
+                          Passing Year: <span className="fw-semibold">{uel.running_study ? 'Running' : uel?.passing_year}</span>{' '}
+                        </p>
                       </div>
                     </div>
                   </div>
