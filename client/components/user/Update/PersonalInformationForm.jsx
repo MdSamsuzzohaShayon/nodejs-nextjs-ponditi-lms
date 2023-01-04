@@ -61,28 +61,6 @@ function PersonalInformationForm(props) {
     }
   };
 
-  // const placeInputEmptyHandler = (piee, placeFor) => {
-  //   console.log("Get place from input change handler");
-  //   if (piee.target.value === '' || piee.target.value === null) {
-  //     // set empty
-  //     switch (placeFor) {
-  //       case DISTRICT:
-  //         // set district
-  //         dispatch(setUpdateUser({ district: '' }));
-  //         break;
-  //       case PRESENTADDRESS:
-  //         dispatch(
-  //           setUpdateUser({
-  //             presentaddress: '',
-  //           })
-  //         );
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-  // };
-
   const inputChangeHandler = (ice) => {
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
   };
@@ -107,19 +85,26 @@ function PersonalInformationForm(props) {
               </option>
             ))}
           </select>
-          {/* <input
-            type="text"
-            className="form-control"
-            name="district"
-            id="district"
-            defaultValue={currentUser?.district}
-            // onChange={(piee) => placeInputEmptyHandler(piee, DISTRICT)}
-            onChange={inputChangeHandler}
-            placeholder="E.G. Dhaka"
-          /> */}
         </div>
         {/* google places api end  */}
       </div>
+      <div className="row mb-3 mx-0">
+        <div className="col-md-6">
+          <label htmlFor="profession">Profession</label>
+          <input type="text" className="form-control" name="profession" id="profession" defaultValue={currentUser?.profession} onChange={props.inputChangeHandler} />
+        </div>
+        <div className="col-md-6">
+          <label htmlFor="experience">Experience (years)</label>
+          <input type="number" className="form-control" name="experience" id="experience" defaultValue={currentUser?.experience} onChange={props.inputChangeHandler} />
+        </div>
+      </div>
+      <div className="row mb-3 mx-0">
+        <div className="col-12">
+          <label htmlFor="institution">Institution</label>
+          <input type="text" className="form-control" name="institution" id="institution" defaultValue={currentUser?.institution} onChange={props.inputChangeHandler} />
+        </div>
+      </div>
+
       <div className="row mb-3 mx-0">
         <div className="col-12">
           <label htmlFor="email">Email</label>

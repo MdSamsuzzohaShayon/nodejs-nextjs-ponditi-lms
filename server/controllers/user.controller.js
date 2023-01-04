@@ -17,9 +17,7 @@ const config = require('../config/s3-config');
 // eslint-disable-next-line object-curly-newline
 const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const {
- PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
-} = keys.scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 
@@ -171,6 +169,7 @@ const registerUser = async (req, res) => {
     // Education detail
     userExam.level = userObj.degree;
     userExam.institution = userObj.institution;
+    userObj.institution = userObj.pinstitution;
     if (userObj.running_study === false) {
       userExam.passing_year = userObj.passing_year;
     }
@@ -190,18 +189,14 @@ const registerUser = async (req, res) => {
   delete userObj.running_study;
   delete userObj.major;
 
-  if (userObj.cgpa) {
-    userObj.cgpa = parseFloat(userObj.cgpa);
-  }
-
   userObj.otp = null;
-
-  // handle classtype id and subject id (relationship)
 
   try {
     const userFindById = await User.findOne({
       where: { id: req.params.userId },
     });
+
+    // error return
     if (userFindById === null) {
       return res.status(404).json({ msg: 'This phone number is not validated' });
     }
@@ -211,8 +206,8 @@ const registerUser = async (req, res) => {
     if (userFindById.dataValues.isActive !== REQUEST_REGISTER) {
       return res.status(406).json({ msg: 'User is already registred with this phone number' });
     }
-    // console.log(userFindById);
 
+    // Check email already exist
     const userEmailExist = await User.findOne({
       where: { email: userObj.email },
     });
@@ -221,10 +216,15 @@ const registerUser = async (req, res) => {
         msg: 'User already exist with this email address, you can now login',
       });
     }
+
+    // Contradict for running study - only one field of these two will have value
     if (userObj?.running_study === true) {
       userObj.passing_year = null;
     }
+
+    // Making status pending - admin will accept or reject
     userObj.isActive = PENDING;
+
     // Create password
     const genPassword = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
@@ -232,25 +232,20 @@ const registerUser = async (req, res) => {
     });
     userObj.password = await bcrypt.hash(genPassword, 10);
 
-    // console.log(userObj);
+    // Make relationships with Subject, ClassType and Tuitionm
     if (userObj?.SubjectId?.length > 0) {
-      // set subject
       const findAllSubject = await Subject.findAll({
         where: { id: userObj.SubjectId },
       });
-      // console.log('Setting subject');
       await userFindById.setSubjects(findAllSubject);
     }
     if (userObj?.ClassTypeId?.length > 0) {
-      // set classtype
       const findAllClassType = await ClassType.findAll({
         where: { id: userObj.ClassTypeId },
       });
       await userFindById.setClassTypes(findAllClassType);
-      // console.log('Setting classtype');
     }
     if (userObj?.TuitionmId?.length > 0) {
-      // set classtype
       const findAllTuitionm = await Tuitionm.findAll({
         where: { id: userObj.TuitionmId },
       });
@@ -260,6 +255,7 @@ const registerUser = async (req, res) => {
     delete userObj.ClassTypeId;
     delete userObj.TuitionmId;
 
+    // Console out in development environment
     if (process.env.NODE_ENV === 'development') {
       const newUserObj = { ...userObj };
       newUserObj.password = genPassword;
@@ -267,17 +263,22 @@ const registerUser = async (req, res) => {
       console.log(newUserObj);
     }
 
+    // Make relationship with education or exam only for teacher
     if (userObj.role.toUpperCase() === TEACHER) {
       const newEducation = await Education.create(userExam);
       await userFindById.setEducation(newEducation);
     }
 
+    // Update user detail which is created previously
     await User.update(userObj, {
       where: { id: req.params.userId },
     });
+
+    // Send success message that user is registered
     const phoneWithSufix = `+${userFindById.dataValues.cc}${userFindById.dataValues.phone}`;
-    // console.log({phoneWithSufix});
     await sendSMS(phoneWithSufix, `Your Ponditi login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
+
+    // Final response
     return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });

@@ -1,39 +1,40 @@
-
 .Header {
-    // height: $header-height;
-    // border-bottom: 0.5rem solid blue;
-    a:hover{
-      color: $white;
-      text-decoration: underline;
-    }
-    .btn-dropdown-user{
-      outline: none;
-      border: none ;
-    }
-    .dropdown-item:hover{
-      background-color: transparent;
-    }
-    border-color: $danger-deep;
-    .img-logo {
-      width: $header-height + 3;
-    }
+  // height: $header-height;
+  // border-bottom: 0.5rem solid blue;
+  a:hover {
+    color: $white;
+    text-decoration: underline;
+  }
+  .btn-dropdown-user {
+    outline: none;
+    border: none;
+  }
+  .dropdown-item:hover {
+    background-color: transparent;
+  }
+  border-color: $danger-deep;
+  .img-logo {
+    width: $header-height + 3;
+  }
 
-    .header-row{
-      height: $header-height;
-    }
+  .header-row {
+    height: $header-height;
+  }
 
-    .notification-bar{
-      width: 20rem;
-      top: $header-height;
-      right: 0;
-      z-index: 1;
-      a{
-        color: black !important;
-      }
+  .notification-bar {
+    width: 20rem;
+    top: $header-height;
+    right: 0;
+    z-index: 1;
+    a {
+      color: black !important;
     }
-    @media (max-width: 786px) {
+  }
+  @media (max-width: 786px) {
+    .notification-bar {
       width: 100vw;
       height: 100vh;
       top: 0;
     }
   }
+}

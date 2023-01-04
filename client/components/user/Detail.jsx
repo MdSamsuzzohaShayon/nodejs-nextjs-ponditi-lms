@@ -176,22 +176,6 @@ function Detail({ userDetail, update }) {
                 </div>
               </div>
             )}
-
-            {/* {userDetail.degree && (
-              <div className="col-md-4 d-flex justify-content-start">
-                <div className="icon">
-                  <img
-                    src="/icons/experience.svg"
-                    className="img-fluid explain-icon"
-                    alt=""
-                  />
-                </div>
-                <div className="info">
-                  <h2>No(tutions)</h2>
-                  <p>Completed</p>
-                </div>
-              </div>
-            )} */}
           </div>
           <hr />
 

@@ -43,6 +43,9 @@ module.exports = {
       profession: {
         type: Sequelize.STRING(100),
       },
+      institution: {
+        type: Sequelize.STRING(225),
+      },
       experience: {
         type: Sequelize.STRING(100),
       },

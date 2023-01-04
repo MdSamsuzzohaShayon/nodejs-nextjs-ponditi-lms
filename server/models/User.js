@@ -8,36 +8,40 @@ const { BANGLA } = tuitionmedums;
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
-      // User.belongsTo(models.ClassType);
-      // User.belongsTo(models.Subject);
-      // User.hasOne(models.Subject, { foreignKey: 'subjectId' });
-
+      /**
+       * @relation many to many
+       * This will create an extra table it self and hold user id and another table id that user is going to make relation with
+       */
       User.belongsToMany(models.ClassType, { through: 'UserToClasstype' });
       User.belongsToMany(models.Subject, { through: 'UserToSubject' });
-      // User.belongsToMany(models.Medium, { through: 'UserToMedium' });
       User.belongsToMany(models.Tuitionm, { through: 'UniqueUserTuitionm' });
 
+      /**
+       * @relation one to many
+       */
+      // UserId as senderId (since we are making multiple relation between same two table) will be added as foreign key in ScheduledClass as Sender
       User.hasMany(models.ScheduledClass, {
         foreignKey: 'senderId',
         as: 'Sender',
       });
+      // UserId as receverId (since we are making multiple relation between same two table) will be added as foreign key in ScheduledClass as Recever
       User.hasMany(models.ScheduledClass, {
         foreignKey: 'receverId',
         as: 'Recever',
       });
-
+      // UserId as reviewerId (since we are making multiple relation between same two table) will be added as foreign key in Review as Reviewer
       User.hasMany(models.Review, {
         foreignKey: 'reviewerId',
         as: 'Reviewer',
       });
+      // UserId as reviewtakerId (since we are making multiple relation between same two table) will be added as foreign key in Review as Reviewtaker
       User.hasMany(models.Review, {
         foreignKey: 'reviewtakerId',
         as: 'Reviewtaker',
       });
-
-      // User.hasMany(models.Review);
+      // UserId will be added as foreign key in Notification
       User.hasMany(models.Notification);
+      // UserId will be added as foreign key in Education
       User.hasMany(models.Education);
     }
   }
@@ -93,7 +97,9 @@ module.exports = (sequelize, DataTypes) => {
       profession: {
         type: new DataTypes.STRING(100),
       },
-
+      institution: {
+        type: new DataTypes.STRING(225),
+      },
       experience: {
         type: new DataTypes.STRING(100),
       },
