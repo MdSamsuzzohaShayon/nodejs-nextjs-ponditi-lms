@@ -8,11 +8,14 @@ import Router from 'next/router';
 import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
-import { setUpdatePart, setCurrentUser } from '../../redux/reducers/userReducer';
+import { setUpdatePart, setCurrentUser, setUpdateUser } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
 import { toCapSentence } from '../../utils/extendPrototypes';
 import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
+import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
+import { setSelectedClasstype, setDisplayClassType } from '../../redux/reducers/classtypeReducer';
+import { setSelectedSubject, setDisplaySubject } from '../../redux/reducers/subjectReducer';
 
 const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
@@ -38,6 +41,21 @@ function Detail({ userDetail, update }) {
     epse.preventDefault();
     // selectPart / set part
     dispatch(setUpdatePart(partNum));
+
+    if (partNum === 1) {
+      dispatch(setDisplayClassType(true));
+      dispatch(setDisplaySubject(true));
+      dispatch(setSelectedTuitionm(userTuitionmList.map((ut) => ut.id)));
+      dispatch(setSelectedClasstype(userClassTypes.map((ct) => ct.id)));
+      dispatch(setSelectedSubject(userSubjects.map((us) => us.id)));
+      dispatch(
+        setUpdateUser({
+          TuitionmId: userTuitionmList.map((ut) => ut.id),
+          ClassTypeId: userClassTypes.map((ct) => ct.id),
+          SubjectId: userSubjects.map((us) => us.id),
+        })
+      );
+    }
     window.localStorage.setItem('updatePart', partNum);
     // redirect
     // /?userId=${userDetail.id}`
@@ -51,7 +69,7 @@ function Detail({ userDetail, update }) {
 
   const uploadImageHandler = (uie) => {
     // uie.preventDefault();
-    console.log(uie);
+    // console.log(uie);
     imageInputEl.current.click();
     // imageInputEl.current.dispatchEvent(new Event('click'));
     // fileSelector.click();
@@ -134,13 +152,12 @@ function Detail({ userDetail, update }) {
                   className="profile-img rounded-circle position-absolute"
                   alt=""
                 />
-                {authUserInfo.role === STUDENT ||
-                  (authUserInfo.role === TEACHER && (
-                    <div className="btn btn-dark rounded-circle upload-btn position-absolute" onClick={uploadImageHandler}>
-                      <img src="/icons/camera.svg" className="upload-img position-absolute" alt="" />
-                      <input type="file" className="d-none" ref={imageInputEl} onChange={fileInputChangeHandler} />
-                    </div>
-                  ))}
+                {(authUserInfo.role === STUDENT || authUserInfo.role === TEACHER) && (
+                  <div className="btn btn-dark rounded-circle upload-btn position-absolute" onClick={uploadImageHandler}>
+                    <img src="/icons/camera.svg" className="upload-img position-absolute" alt="" />
+                    <input type="file" className="d-none" ref={imageInputEl} onChange={fileInputChangeHandler} />
+                  </div>
+                )}
               </div>
             </div>
             <div className="col-md-9">
@@ -165,7 +182,7 @@ function Detail({ userDetail, update }) {
               )}
             </div>
           </div>
-          <div className="row mx-0 mb-5">
+          <div className="row  mb-5">
             {userDetail.degree && (
               <div className="col-md-4 d-flex justify-content-start">
                 <div className="icon">
@@ -183,7 +200,7 @@ function Detail({ userDetail, update }) {
           <hr />
 
           {/* personal detail start  */}
-          <div className="row mx-0 mb-3 py-3">
+          <div className="row  mb-3 py-3">
             <div className="heading d-flex justify-content-between align-items-center row py-3">
               <h3 className="h5 w-fit">Personal Detail</h3>
               {update && (
@@ -194,25 +211,25 @@ function Detail({ userDetail, update }) {
             </div>
             <hr />
             <div className="body-content row">
-              <div className="row mx-0 mb-1">
+              <div className="row  mb-1">
                 <div className="col-md-6">Name</div>
                 <div className="col-md-6">
                   <p className="text-capitalize fw-semibold">{userDetail.name}</p>
                 </div>
               </div>
-              <div className="row mx-0 mb-1">
+              <div className="row  mb-1">
                 <div className="col-md-6">Email</div>
                 <div className="col-md-6">
                   <p className="fw-semibold">{userDetail?.email}</p>
                 </div>
               </div>
-              <div className="row mx-0 mb-1">
+              <div className="row  mb-1">
                 <div className="col-md-6">District</div>
                 <div className="col-md-6">
                   <p className="fw-semibold">{userDetail.district && userDetail.district[0].toUpperCase() + userDetail.district.slice(1)}</p>
                 </div>
               </div>
-              <div className="row mx-0 mb-1">
+              <div className="row  mb-1">
                 <div className="col-md-6">Present address</div>
                 <div className="col-md-6">
                   <p className="fw-semibold">{userDetail.presentaddress && userDetail.presentaddress.split('(')[0]}</p>
@@ -224,7 +241,7 @@ function Detail({ userDetail, update }) {
 
           {/* tution detail start  */}
           {userDetail?.role === TEACHER && (
-            <div className="row mx-0 mb-3 py-3">
+            <div className="row  mb-3 py-3">
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Tution Detail</h3>
                 {update && (
@@ -236,7 +253,7 @@ function Detail({ userDetail, update }) {
               <hr />
               <div className="body-content row">
                 {userDetail?.role === TEACHER && (
-                  <div className="row mx-0 mb-1">
+                  <div className="row  mb-1">
                     <div className="col-md-6">Per Hour Rate</div>
                     <div className="col-md-6 d-flex flex-row align-items-center flex-wrap">
                       {userDetail.ol_rate && <p className="me-2 fw-semibold"> Online - {userDetail.ol_rate}Tk, </p>}
@@ -245,13 +262,13 @@ function Detail({ userDetail, update }) {
                     </div>
                   </div>
                 )}
-                <div className="row mx-0 mb-1">
+                <div className="row  mb-1">
                   <div className="col-md-6">Available Status</div>
                   <div className="col-md-6">
                     <p className="fw-semibold">{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
                   </div>
                 </div>
-                <div className="row mx-0 mb-1">
+                <div className="row  mb-1">
                   <div className="col-md-6">Tution Place</div>
                   <div className="col-md-6">
                     <p className="fw-semibold">
@@ -265,10 +282,10 @@ function Detail({ userDetail, update }) {
           {/* tution detail end  */}
 
           {/* Subject and class start  */}
-          {(authUserInfo.id !== null || userSubjects.length > 0) && (
-            <div className="row mx-0 mb-3 py-3">
-              <div className="heading d-flex justify-content-between row align-items-center my-3">
-                <h3 className="h5 w-fit">Preffered Mediums, Subjects, & Classes</h3>
+          {(userDetail?.role === TEACHER || userDetail?.role === STUDENT) && (
+            <div className="row  mb-3 py-3">
+              <div className="col-12 d-flex justify-content-between row align-items-center my-3">
+                <h3 className="h5 w-fit">{userDetail.role === TEACHER ? 'Preffered Mediums, Subjects, & Classes' : 'Preffered Mediums, & Classes'}</h3>
                 {update && (
                   <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 1)}>
                     Edit
@@ -277,40 +294,49 @@ function Detail({ userDetail, update }) {
               </div>
               <hr />
               <div className="body-content row">
-                {userTuitionmList.length > 0 && (
-                  <div className="col-md-4">
-                    <h5>Tuition Medium</h5>
-                    <ul className="list-group">
-                      {userTuitionmList.map((us) => (
-                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
-                          {us.name}
-                        </li>
-                      ))}
-                    </ul>
+                {userDetail.role === TEACHER ? (
+                  <div className="teacher-med-cls-sub">
+                    {userTuitionmList.length > 0 && (
+                      <div className="col-md-4">
+                        <h5>Tuition Medium</h5>
+                        <ul className="list-group">
+                          {userTuitionmList.map((us) => (
+                            <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
+                              {us.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {userClassTypes.length > 0 && (
+                      <div className="col-md-4">
+                        <h5>Classes</h5>
+                        <ul className="list-group">
+                          {userClassTypes.map((us) => (
+                            <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
+                              {us.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {userSubjects.length > 0 && (
+                      <div className="col-md-4">
+                        <h5>Subjects</h5>
+                        <ul className="list-group">
+                          {userSubjects.map((us) => (
+                            <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
+                              {us.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                )}
-                {userClassTypes.length > 0 && (
+                ) : (
                   <div className="col-md-4">
-                    <h5>Classes</h5>
-                    <ul className="list-group">
-                      {userClassTypes.map((us) => (
-                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
-                          {us.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {userSubjects.length > 0 && (
-                  <div className="col-md-4">
-                    <h5>Subjects</h5>
-                    <ul className="list-group">
-                      {userSubjects.map((us) => (
-                        <li className="list-group-item rounded-1 fw-semibold" key={us.id}>
-                          {us.name}
-                        </li>
-                      ))}
-                    </ul>
+                    {userTuitionmList[0] && <p className="text-capitalize">Medium: {userTuitionmList[0].name}</p>}
+                    {userClassTypes[0] && <p className="text-capitalize">Class: {userClassTypes[0].name}</p>}
                   </div>
                 )}
               </div>
@@ -320,7 +346,7 @@ function Detail({ userDetail, update }) {
 
           {/* Exam detail start  */}
           {authUserInfo.id !== null && userDetail.role === TEACHER && (
-            <div className="row mx-0 mb-3 py-3">
+            <div className="row  mb-3 py-3">
               <div className="heading d-flex justify-content-between align-items-center row py-3">
                 <h3 className="h5 w-fit">Educational Qualification</h3>
                 {update && (

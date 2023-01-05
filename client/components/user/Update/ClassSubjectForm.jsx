@@ -13,6 +13,8 @@ function ClassSubjectForm(props) {
 
   const dispatch = useDispatch();
   const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
+  const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
+
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const displayClassType = useSelector((state) => state.classtype.displayClassType);
   const subjectList = useSelector((state) => state.subject.subjectList);
@@ -78,16 +80,15 @@ function ClassSubjectForm(props) {
     let newTuitionmIds = [];
     if (mce.target.checked === true) {
       // add to subject list
-      newTuitionmIds = [...userTuitionmIdList, tuitionmId];
-      setUserTuitionmIdList((prevState) => [...prevState, tuitionmId]);
+      newTuitionmIds = [...selectedTuitionmList, tuitionmId];
     } else {
       // remove from subject list
       newTuitionmIds = userTuitionmIdList.filter((umid) => umid !== tuitionmId);
-      setUserTuitionmIdList(newTuitionmIds);
     }
     const selectedTuitionm = tuitionmList.filter((tm) => newTuitionmIds.includes(tm.id));
     dispatch(setUpdateUser({ TuitionmId: newTuitionmIds }));
     dispatch(setSelectedTuitionm(newTuitionmIds));
+    setUserTuitionmIdList(newTuitionmIds);
 
     // Setting new list of classtype
     const classTypesArr = selectedTuitionm.map((cta) => cta.ClassTypes);
@@ -161,8 +162,6 @@ function ClassSubjectForm(props) {
 
   const vlsiableClassTypeList = () => {
     const newClassTypeList = [];
-
-    // console.log(userClassTypeIdList);
 
     for (let i = 0; i < classtypeList.length; i += 1) {
       const foundClassType = userClassTypeIdList.includes(classtypeList[i].id);

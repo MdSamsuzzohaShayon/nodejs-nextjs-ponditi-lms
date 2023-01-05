@@ -14,6 +14,10 @@ import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { toggleLoading, setErrorList, resetErrorList } from '../../../redux/reducers/elementsSlice';
 import axios from '../../../config/axios';
 import TutionDetail from '../../../components/user/Update/TutionDetail';
+import ClassSubjectStudentForm from '../../../components/register/ClassSubjectStudentForm';
+import { roles } from '../../../config/keys';
+
+const { TEACHER } = roles;
 
 function index() {
   let isMounted = true;
@@ -28,11 +32,26 @@ function index() {
   const isLoading = useSelector((state) => state.elements.isLoading);
   const educationUpdateList = useSelector((state) => state.education.educationUpdateList);
 
+  const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
+  const selectedClasstypeList = useSelector((state) => state.tuitionm.selectedClasstypeList);
+  const userTuitionmList = useSelector((state) => state.user.userTuitionmList);
+  const userClassTypes = useSelector((state) => state.user.userClassTypes);
+  const userSubjects = useSelector((state) => state.user.userSubjects);
+
   // const { userId } = router.query;
 
   const inputChangeHandler = (ice) => {
     ice.preventDefault();
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
+  };
+
+  const tuitionmChangeHandler = (tce) => {
+    const tuitionmId = parseInt(tce.target.value, 10);
+    dispatch(setUpdateUser({ TuitionmId: [tuitionmId] }));
+  };
+  const classtypeChangeHandler = (tce) => {
+    const classtypeId = parseInt(tce.target.value, 10);
+    dispatch(setUpdateUser({ ClassTypeId: [classtypeId] }));
   };
 
   useEffect(() => {
@@ -75,8 +94,13 @@ function index() {
         headers: { 'Content-Type': 'application/json' },
       };
 
+      const userObj = { ...updateUser };
+      if (userObj.district === 'Select a district') {
+        delete userObj.district;
+      }
+
       //   console.log(currentUser);
-      const response = await axios.put(`/user/update/${authUserInfo.id}`, updateUser, options);
+      const response = await axios.put(`/user/update/${userId}`, userObj, options);
       if (response.status === 202 || response.status === 201 || response.status === 200) {
         // console.log(response);
         window.localStorage.removeItem('updatePart');
@@ -134,26 +158,34 @@ function index() {
     window.localStorage.removeItem('updatePart');
     router.push('/user/dashboard'); // Solve this later
     // dispatch(setUpdatePart(1));
-
   };
 
+  // Inside the form
   const displayContentPartwise = () => {
     // updatePart
     switch (updatePart) {
       case 1:
-        return <ClassSubjectForm cancelBtnHandler={cancelBtnHandler} />;
+        return authUserInfo.role === TEACHER ? (
+          <ClassSubjectForm cancelBtnHandler={cancelBtnHandler} />
+        ) : (
+          <ClassSubjectStudentForm
+            selectedMedium={userTuitionmList[0] ? userTuitionmList[0].id : 0}
+            selectedClassType={userClassTypes[0] ? userClassTypes[0].id : 0}
+            tuitionmChangeHandler={tuitionmChangeHandler}
+            classtypeChangeHandler={classtypeChangeHandler}
+          />
+        );
       case 2:
         return <PersonalInformationForm inputChangeHandler={inputChangeHandler} />;
       case 3:
         return <TutionDetail inputChangeHandler={inputChangeHandler} />;
-      // case 4: // Direct from return because it is using diffrent form element
-      //   return <ExamDetailForm inputChangeHandler={inputChangeHandler} />;
 
       default:
         return <ClassSubjectForm cancelBtnHandler={cancelBtnHandler} />;
     }
   };
 
+  // Outside the form
   const changeWholeForm = () => {
     switch (updatePart) {
       case 4:

@@ -9,13 +9,15 @@ import { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { setRegisterableUser } from '../../redux/reducers/userReducer';
+import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
-import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 import PriceCalculator from '../elements/PriceCalculator';
 import useMedieQuery from '../../hooks/useMediaQuery';
+import ClassSubjectStudentForm from './ClassSubjectStudentForm';
+
 
 const { TEACHER, STUDENT } = roles;
 
@@ -42,8 +44,6 @@ function RegistrationForm(props) {
 
   // const registerableUser = useSelector((state) => state.user.currentUser);
   const registerableUser = useSelector((state) => state.user.registerableUser);
-  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
 
   /**
    * Using states because we are not going to need this in another component
@@ -137,13 +137,6 @@ function RegistrationForm(props) {
     dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
   };
 
-  const tuitionmChangeHandler = (tce) => {
-    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
-  };
-
-  const classtypeChangeHandler = (tce) => {
-    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
-  };
   const inputPriceChangeHandler = (ipce) => {
     // console.log({ [ipce.target.name]: ipce.target.value });
     let rate = 120;
@@ -190,6 +183,12 @@ function RegistrationForm(props) {
   const inputRSChangeHandler = (irse) => {
     // console.log(irse.target.checked)
     dispatch(setRegisterableUser({ [irse.target.name]: irse.target.checked }));
+  };
+  const tuitionmChangeHandler = (tce) => {
+    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
+  };
+  const classtypeChangeHandler = (tce) => {
+    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
   };
 
   const currentlyStudyHandler = (cse) => {
@@ -354,7 +353,7 @@ function RegistrationForm(props) {
             </div>
           </div>
           <div className="row ">
-            <div className="col-md-6 mb-3">
+            <div className="col-md-6 mb-md-3">
               <label htmlFor="passing_year">Passing Year*</label>
               <input
                 type="number"
@@ -367,10 +366,10 @@ function RegistrationForm(props) {
               />
             </div>
             <div className="col-md-6 mb-3 d-flex flex-row-reverse justify-content-end align-items-center">
-              <label htmlFor="running_study" className="mt-4">
+              <label htmlFor="running_study" className="mt-md-4 mt-2">
                 Currently running study
               </label>
-              <input type="checkbox" name="running_study" className="mx-2 mt-4" id="running_study" onChange={currentlyStudyHandler} />
+              <input type="checkbox" name="running_study" className="mx-2 mt-md-4 mt-2" id="running_study" onChange={currentlyStudyHandler} />
             </div>
           </div>
 
@@ -489,35 +488,9 @@ function RegistrationForm(props) {
       )}
 
       {registerableUser.role === STUDENT && (
-        <div className="row ">
-          <div className="col-md-6 mb-3">
-            <label htmlFor="tutionm">Medium*</label>
-            <select className="form-control" name="tutionm" id="tutionm" defaultValue={tuitionmList[0]?.id} onChange={tuitionmChangeHandler}>
-              <option value="0" selected>
-                Select a medium
-              </option>
-              {tuitionmList.map((tm) => (
-                <option value={tm.id} key={tm.id}>
-                  {tm.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-6 mb-3">
-            <label htmlFor="classtype">Class Name*</label>
-            <select className="form-control" name="classtype" id="classtype" onChange={classtypeChangeHandler}>
-              <option value="0" selected>
-                Select a class
-              </option>
-              {classtypeList.map((ct) => (
-                <option value={ct.id} key={ct.id}>
-                  {ct.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <ClassSubjectStudentForm selectedMedium={0} selectedClassType={0} tuitionmChangeHandler={tuitionmChangeHandler} classtypeChangeHandler={classtypeChangeHandler} />
       )}
+
       <div className="row ">
         <div className="col-md-6 mb-3">
           <label htmlFor="ref">Reference no.(Optional)</label>

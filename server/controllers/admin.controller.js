@@ -8,7 +8,7 @@ const cookieOptions = require('../config/cookie-config');
 // bcryptjs
 const db = require('../models');
 
-const { User, ClassType } = db;
+const { Customer, ClassType } = db;
 
 const keys = require('../config/keys');
 
@@ -30,7 +30,7 @@ const addAdmin = async (req, res) => {
 
   try {
     // ONLY SUPER USER CAN CREATE A NEW USER
-    const userEmailExist = await User.findOne({
+    const userEmailExist = await Customer.findOne({
       where: {
         [Op.or]: [{ email: userObj.email }, { phone: userObj.phone }],
       },
@@ -44,10 +44,10 @@ const addAdmin = async (req, res) => {
     userObj.password = await bcrypt.hash(userObj.password, 10);
 
     // create
-    const newUser = await User.create(userObj);
+    const newCustomer = await Customer.create(userObj);
     return res.status(201).json({
       msg: 'Registered admin successfully, Now you can login as admin',
-      user: newUser,
+      user: newCustomer,
     });
   } catch (error) {
     console.log(error);
@@ -70,9 +70,9 @@ const loginAdmin = async (req, res, next) => {
   try {
     let userExist = null;
     if (req.body.email) {
-      userExist = await User.findOne({ where: { email: req.body.email } });
+      userExist = await Customer.findOne({ where: { email: req.body.email } });
     } else if (req.body.phone) {
-      userExist = await User.findOne({ where: { phone: req.body.phone } });
+      userExist = await Customer.findOne({ where: { phone: req.body.phone } });
     } else {
       return res.status(406).json({ msg: 'Email and phone both can not be empty' });
     }

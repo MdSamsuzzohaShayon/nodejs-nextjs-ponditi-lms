@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 
 const db = require('../models');
 
-const { User } = db;
+const { Customer } = db;
 
 /**
  * @param {type} req current        Current password
@@ -16,7 +16,7 @@ const changePassword = async (req, res) => {
     return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
   try {
-    const userExist = await User.findOne({ where: { id: req.userId } });
+    const userExist = await Customer.findOne({ where: { id: req.userId } });
     if (!userExist) return res.status(404).json({ msg: 'Invalid credentials, please login again' });
 
     const isPasswordCorrect = await bcrypt.compare(req.body.current, userExist.dataValues.password);
@@ -24,7 +24,7 @@ const changePassword = async (req, res) => {
       return res.status(406).json({ msg: 'Incorrect current password' });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    await User.update({ password: hashedPassword }, { where: { id: req.userId } });
+    await Customer.update({ password: hashedPassword }, { where: { id: req.userId } });
 
     return res.status(202).json({ msg: 'Password updated successfully' });
   } catch (err) {

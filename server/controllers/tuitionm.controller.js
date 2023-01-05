@@ -3,7 +3,7 @@
 // bcryptjs
 const db = require('../models');
 
-const { ClassType, Tuitionm, User } = db;
+const { ClassType, Tuitionm, Customer } = db;
 
 /**
  * @add class type
@@ -48,7 +48,7 @@ const getAllTuitionms = async (req, res) => {
           // through: { where: { amount: 10 } }
         },
         {
-          model: User,
+          model: Customer,
           attributes: ['id', 'name'],
           // through: { where: { amount: 10 } }
         },

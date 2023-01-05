@@ -1,29 +1,3 @@
 .user-dashboard {
-  // min-height: $section-min-height;
-  // .sidebar {
-  //   min-height: $section-min-height;
-  //   width: 15%;
-  //   li {
-  //     border-bottom: $slim-border;
-  //   }
-  // }
-  // .content {
-  //   min-height: $section-min-height;
-  //   width: 85%;
-  // }
-  // .explain-icon {
-  //   width: 3rem;
-  // }
-  .profile-image-wrapper {
-    @include profile_img_wrapper();
-  }
-  .profile-img {
-    @include profile_img();
-  }
-  .upload-btn {
-    @include upload_btn();
-  }
-  .upload-img {
-    @include upload_img();
-  }
+
 }

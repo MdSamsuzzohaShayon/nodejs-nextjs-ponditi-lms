@@ -61,10 +61,6 @@ function PersonalInformationForm(props) {
     }
   };
 
-  const inputChangeHandler = (ice) => {
-    dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
-  };
-
   return (
     <div className="PersonalInformationForm">
       <div className="row mb-3 mx-0">
@@ -75,11 +71,14 @@ function PersonalInformationForm(props) {
         {/* google places api start  */}
         <div className="col-md-6">
           <label htmlFor="district">district</label>
-          <select name="district" id="district" className="form-control" defaultValue={currentUser?.district} onChange={inputChangeHandler}>
-            <option value="" selected>
-              Select a district
-            </option>
-            {districtList.districtList.map((dl, dli) => (
+          <select
+            name="district"
+            id="district"
+            className="form-control"
+            defaultValue={currentUser.district ? currentUser.district : 'Select a district'}
+            onChange={props.inputChangeHandler}
+          >
+            {['Select a district', ...districtList.districtList].map((dl, dli) => (
               <option value={dl.toLowerCase()} key={dli}>
                 {dl}
               </option>
@@ -122,7 +121,7 @@ function PersonalInformationForm(props) {
               id="presentaddress"
               defaultValue={currentUser?.presentaddress}
               // onChange={(piee) => placeInputEmptyHandler(piee, PRESENTADDRESS)}
-              onChange={inputChangeHandler}
+              onChange={props.inputChangeHandler}
               placeholder="E.G. 27-2, Dhanmondi, Dhaka, Bangladesh"
             />
           </Autocomplete>

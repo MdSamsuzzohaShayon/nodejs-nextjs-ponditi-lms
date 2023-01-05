@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Notification.belongsTo(models.User);
+      Notification.belongsTo(models.Customer);
       // Notification.belongsTo(models.ScheduledClass); // will have one review
     }
   }

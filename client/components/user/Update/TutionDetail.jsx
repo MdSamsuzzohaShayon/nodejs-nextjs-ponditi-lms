@@ -146,6 +146,7 @@ function TutionDetail(props) {
           </div>
         </div>
       </div>
+      
       <RateInput user={currentUser} tuitionPlaceChange={tuitionPlaceChangeHandler} inputRateChange={inputRateChangeHandler} />
     </div>
   );

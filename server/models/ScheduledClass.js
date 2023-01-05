@@ -16,11 +16,11 @@ module.exports = (sequelize, DataTypes) => {
   class ScheduledClass extends Model {
     static associate(models) {
       // ScheduledClass.belongsTo(models.ClassType);
-      ScheduledClass.belongsTo(models.User, {
+      ScheduledClass.belongsTo(models.Customer, {
         foreignKey: 'senderId',
         as: 'Sender',
       }); // one sender
-      ScheduledClass.belongsTo(models.User, {
+      ScheduledClass.belongsTo(models.Customer, {
         foreignKey: 'receverId',
         as: 'Recever',
       }); // one reciver

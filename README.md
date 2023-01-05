@@ -236,13 +236,11 @@
 
  - **Requirement update-9**
  - For student update only 1 medium and 1 class
+ - Home text change
  - Change user table name
  - Admin - reject button is not working
+ - Update mudium, class, subject is not working properly
 
- - host
- - sync database
- - create tution medium, class, subject
- - 
 
 ### Sequelize problems
  - Notification and education need to migrate properly with user when we add a new field to user
@@ -318,6 +316,25 @@ ADD Email varchar(255);
 
  - ✅ *Add ref in User and remove board from Education*
  - *Add institution in User* - `ALTER TABLE User ADD institution VARCHAR(255);` alternate `ALTER TABLE dbo.[User] ADD institution VARCHAR(255);`
+ - *Change table name*
+    ```
+    // Change table names
+    EXEC sp_rename 'User', 'Customer';
+    EXEC sp_rename 'UserToClasstype', 'CustomerToClasstype';
+    EXEC sp_rename 'UserToSubject', 'CustomerToSubject';
+    EXEC sp_rename 'UniqueUserTuitionm', 'UniqueCustomerTuitionm';
+    EXEC sp_rename 'UserToTuitionm', 'CustomerToTuitionm';
+
+    // Change column name for many to many relation ship
+    EXEC sp_RENAME 'CustomerToClasstype.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'CustomerToSubject.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'UniqueCustomerTuitionm.UserId' , 'CustomerId', 'COLUMN';
+
+    // Change column name one to many
+    EXEC sp_RENAME 'Education.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'Notification.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'CustomerToTuitionm.UserId' , 'CustomerId', 'COLUMN';
+    ```
 
 
 
