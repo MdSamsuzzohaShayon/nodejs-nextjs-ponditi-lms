@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       //   has many Scheduled Class
       // has many users
-      Review.belongsTo(models.User, {
+      Review.belongsTo(models.Customer, {
         foreignKey: 'reviewerId',
         as: 'Reviewer',
       });
-      Review.belongsTo(models.User, {
+      Review.belongsTo(models.Customer, {
         foreignKey: 'reviewtakerId',
         as: 'Reviewtaker',
       });

@@ -127,7 +127,7 @@ function SendCode() {
         <div className="row mb-3">
           <div className="col-md-12">
             <button type="submit" className="w-fit btn btn-primary">
-              Register
+              Submit
             </button>
           </div>
         </div>

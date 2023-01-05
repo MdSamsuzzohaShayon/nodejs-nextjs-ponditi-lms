@@ -6,7 +6,7 @@ const db = require('../models');
 
 const { scheduledClassStatus } = require('../config/keys');
 
-const { Review, User, ScheduledClass } = db;
+const { Review, Customer, ScheduledClass } = db;
 const { FINISH_CLASS } = scheduledClassStatus;
 const leaveAReview = async (req, res) => {
   const errors = validationResult(req);
@@ -19,7 +19,7 @@ const leaveAReview = async (req, res) => {
     // finishclass
     // console.log(req.params.scheduledclassId);
     const findScheduledClass = await ScheduledClass.findOne({
-      include: [{ model: User, as: 'Sender' }, { model: User, as: 'Recever' }, { model: Review }],
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: Review }],
       where: { id: req.params.scheduledclassId, status: FINISH_CLASS },
     });
     if (!findScheduledClass) {

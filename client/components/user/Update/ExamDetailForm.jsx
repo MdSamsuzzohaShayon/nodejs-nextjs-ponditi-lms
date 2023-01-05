@@ -88,7 +88,7 @@ function ExamDetailForm(props) {
               <input type="number" className="form-control" name="passing_year" defaultValue={eu.passing_year} onChange={(e) => euInputChangeHandler(e, eu.id)} />
             </div>
             <div className="col-md-6 d-flex justify-content-end align-items-center flex-row-reverse">
-              <label htmlFor="running_study">running_study</label>
+              <label htmlFor="running_study" className='mx-2'>Currently Studying</label>
               <input type="checkbox" name="running_study" defaultChecked={eu.running_study} onChange={(e) => euInputRunningStudyHandler(e, eu.id)} />
             </div>
           </div>

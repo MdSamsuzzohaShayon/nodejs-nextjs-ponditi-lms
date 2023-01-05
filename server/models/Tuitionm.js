@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       Tuitionm.belongsToMany(models.ClassType, {
         through: 'TuitionmToClasstype',
       });
-      Tuitionm.belongsToMany(models.User, { through: 'UserToTuitionm' });
-      // Tuitionm.belongsToMany(models.User, { through: 'UniqueUserTuitionm' });
+      Tuitionm.belongsToMany(models.Customer, { through: 'CustomerToTuitionm' });
+      // Tuitionm.belongsToMany(models.Customer, { through: 'UniqueCustomerTuitionm' });
     }
   }
 

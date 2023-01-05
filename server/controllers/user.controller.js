@@ -15,11 +15,9 @@ const cookieOptions = require('../config/cookie-config');
 const config = require('../config/s3-config');
 
 // eslint-disable-next-line object-curly-newline
-const { User, ClassType, Subject, Notification, Education, Tuitionm } = db;
+const { Customer, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const {
- PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
-} = keys.scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 
@@ -56,7 +54,7 @@ const sendOTP = async (req, res) => {
       console.log({ otp });
     }
 
-    const findByPhone = await User.findOne({
+    const findByPhone = await Customer.findOne({
       where: { phone },
     });
     // console.log({otp});
@@ -81,14 +79,14 @@ const sendOTP = async (req, res) => {
       if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
 
       // update code from database
-      await User.update({ otp }, { where: { id: findByPhone.dataValues.id } });
+      await Customer.update({ otp }, { where: { id: findByPhone.dataValues.id } });
       return res.status(208).json({
         msg: 'Already sent an OTP, however, we are sending code once again',
       });
     }
     const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is : ${otp}`);
     if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
-    await User.create({
+    await Customer.create({
       phone,
       cc,
       otp,
@@ -115,7 +113,7 @@ const verifyUser = async (req, res) => {
     return res.status(406).json({ msg: JSON.stringify(errors.array()) });
   }
 
-  const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
+  const findByPhone = await Customer.findOne({ where: { phone: req.body.phone } });
   if (!findByPhone) {
     return res.status(404).json({ msg: 'No user found, register yourself first' });
   }
@@ -132,7 +130,7 @@ const verifyUser = async (req, res) => {
   if (findByPhone.dataValues.otp !== req.body.otp) {
     return res.status(406).json({ msg: 'Invalid OTP' });
   }
-  await User.update({ isVerified: true }, { where: { id: findByPhone.dataValues.id } }); // isActive
+  await Customer.update({ isVerified: true }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
   return res.status(200).json({ msg: 'Validated OTP successfully', userId: findByPhone.dataValues.id });
 };
@@ -171,6 +169,7 @@ const registerUser = async (req, res) => {
     // Education detail
     userExam.level = userObj.degree;
     userExam.institution = userObj.institution;
+    userObj.institution = userObj.pinstitution;
     if (userObj.running_study === false) {
       userExam.passing_year = userObj.passing_year;
     }
@@ -190,18 +189,14 @@ const registerUser = async (req, res) => {
   delete userObj.running_study;
   delete userObj.major;
 
-  if (userObj.cgpa) {
-    userObj.cgpa = parseFloat(userObj.cgpa);
-  }
-
   userObj.otp = null;
 
-  // handle classtype id and subject id (relationship)
-
   try {
-    const userFindById = await User.findOne({
+    const userFindById = await Customer.findOne({
       where: { id: req.params.userId },
     });
+
+    // error return
     if (userFindById === null) {
       return res.status(404).json({ msg: 'This phone number is not validated' });
     }
@@ -211,9 +206,9 @@ const registerUser = async (req, res) => {
     if (userFindById.dataValues.isActive !== REQUEST_REGISTER) {
       return res.status(406).json({ msg: 'User is already registred with this phone number' });
     }
-    // console.log(userFindById);
 
-    const userEmailExist = await User.findOne({
+    // Check email already exist
+    const userEmailExist = await Customer.findOne({
       where: { email: userObj.email },
     });
     if (userEmailExist !== null) {
@@ -221,10 +216,15 @@ const registerUser = async (req, res) => {
         msg: 'User already exist with this email address, you can now login',
       });
     }
+
+    // Contradict for running study - only one field of these two will have value
     if (userObj?.running_study === true) {
       userObj.passing_year = null;
     }
+
+    // Making status pending - admin will accept or reject
     userObj.isActive = PENDING;
+
     // Create password
     const genPassword = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
@@ -232,25 +232,20 @@ const registerUser = async (req, res) => {
     });
     userObj.password = await bcrypt.hash(genPassword, 10);
 
-    // console.log(userObj);
+    // Make relationships with Subject, ClassType and Tuitionm
     if (userObj?.SubjectId?.length > 0) {
-      // set subject
       const findAllSubject = await Subject.findAll({
         where: { id: userObj.SubjectId },
       });
-      // console.log('Setting subject');
       await userFindById.setSubjects(findAllSubject);
     }
     if (userObj?.ClassTypeId?.length > 0) {
-      // set classtype
       const findAllClassType = await ClassType.findAll({
         where: { id: userObj.ClassTypeId },
       });
       await userFindById.setClassTypes(findAllClassType);
-      // console.log('Setting classtype');
     }
     if (userObj?.TuitionmId?.length > 0) {
-      // set classtype
       const findAllTuitionm = await Tuitionm.findAll({
         where: { id: userObj.TuitionmId },
       });
@@ -260,6 +255,7 @@ const registerUser = async (req, res) => {
     delete userObj.ClassTypeId;
     delete userObj.TuitionmId;
 
+    // Console out in development environment
     if (process.env.NODE_ENV === 'development') {
       const newUserObj = { ...userObj };
       newUserObj.password = genPassword;
@@ -267,17 +263,23 @@ const registerUser = async (req, res) => {
       console.log(newUserObj);
     }
 
+    // Make relationship with education or exam only for teacher
     if (userObj.role.toUpperCase() === TEACHER) {
       const newEducation = await Education.create(userExam);
       await userFindById.setEducation(newEducation);
     }
 
-    await User.update(userObj, {
+    // Update user detail which is created previously
+    await Customer.update(userObj, {
       where: { id: req.params.userId },
     });
+
+    // Send success message that user is registered
     const phoneWithSufix = `+${userFindById.dataValues.cc}${userFindById.dataValues.phone}`;
-    // console.log({phoneWithSufix});
-    await sendSMS(phoneWithSufix, `Your Ponditi login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
+    const msg = `Congratulations! your Ponditi account has been created successfully. \n\n Login details:\n ${process.env.FRONTEND_URL} \nusername: ${userFindById.dataValues.phone} \npassword: ${genPassword}`;
+    await sendSMS(phoneWithSufix, msg);
+
+    // Final response
     return res.status(201).json({
       msg: 'Registered user successfully, Now you can login',
     });
@@ -289,7 +291,7 @@ const registerUser = async (req, res) => {
 
 const rejectUser = async (req, res) => {
   try {
-    const findByPhone = await User.findOne({
+    const findByPhone = await Customer.findOne({
       where: { id: req.params.userId },
     });
     if (!findByPhone) {
@@ -303,7 +305,8 @@ const rejectUser = async (req, res) => {
       return res.status(406).json({ msg: 'User is not verified' });
     }
 
-    await User.update({ isActive: REJECTED }, { where: { id: findByPhone.dataValues.id } }); // isActive
+    await Customer.update({ isActive: REJECTED }, { where: { id: findByPhone.dataValues.id } }); // isActive
+    // console.log(updatedUser);
 
     return res.status(202).json({ msg: 'Rejected user' });
   } catch (error) {
@@ -314,7 +317,7 @@ const rejectUser = async (req, res) => {
 
 const acceptUser = async (req, res) => {
   try {
-    const findByPhone = await User.findOne({
+    const findByPhone = await Customer.findOne({
       where: { id: req.params.userId },
     });
     if (!findByPhone) {
@@ -328,7 +331,7 @@ const acceptUser = async (req, res) => {
       return res.status(406).json({ msg: 'The user is not verified' });
     }
 
-    await User.update({ isActive: APPROVED }, { where: { id: findByPhone.dataValues.id } }); // isActive
+    await Customer.update({ isActive: APPROVED }, { where: { id: findByPhone.dataValues.id } }); // isActive
 
     return res.status(202).json({ msg: 'Accepted user' });
   } catch (error) {
@@ -350,12 +353,12 @@ const login = async (req, res) => {
   // const { email, password } = req.body;
   // console.log(req.body);
   try {
-    const userExist = await User.findOne({ where: { phone: req.body.phone } });
+    const userExist = await Customer.findOne({ where: { phone: req.body.phone } });
     // console.log({userExist});
     if (!userExist) return res.status(404).json({ msg: 'Invalid credentials' });
     // console.log(userExist);
     if (userExist.dataValues.isActive === REQUEST_REGISTER) {
-      await User.destroy({ where: { id: userExist.dataValues.id }, force: true });
+      await Customer.destroy({ where: { id: userExist.dataValues.id }, force: true });
       return res.status(406).json({ msg: 'Invalid credentials' });
     }
     if (userExist.dataValues.role !== TEACHER && userExist.dataValues.role !== STUDENT) {
@@ -413,9 +416,9 @@ const forgetPassword = async (req, res) => {
   try {
     let userExist = null;
     if (req.body.email) {
-      userExist = await User.findOne({ where: { email: req.body.email } });
+      userExist = await Customer.findOne({ where: { email: req.body.email } });
     } else if (req.body.phone) {
-      userExist = await User.findOne({ where: { phone: req.body.phone } });
+      userExist = await Customer.findOne({ where: { phone: req.body.phone } });
     } else {
       return res.status(406).json({ msg: 'Email and phone both can not be empty' });
     }
@@ -448,7 +451,7 @@ const forgetPassword = async (req, res) => {
     // console.log(msg);
     if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
     // update code from database
-    await User.update({ otp }, { where: { id: userExist.dataValues.id } });
+    await Customer.update({ otp }, { where: { id: userExist.dataValues.id } });
 
     return res.status(201).json({ msg: 'If the number you is correct a verification code will be sent there' });
   } catch (error) {
@@ -472,9 +475,9 @@ const resetPassword = async (req, res) => {
 
   let userExist = null;
   if (req.body.email) {
-    userExist = await User.findOne({ where: { email: req.body.email } });
+    userExist = await Customer.findOne({ where: { email: req.body.email } });
   } else if (req.body.phone) {
-    userExist = await User.findOne({ where: { phone: req.body.phone } });
+    userExist = await Customer.findOne({ where: { phone: req.body.phone } });
   } else {
     return res.status(406).json({ msg: 'Email and phone both can not be empty' });
   }
@@ -495,7 +498,7 @@ const resetPassword = async (req, res) => {
   updateObj.otp = null;
   updateObj.password = await bcrypt.hash(req.body.password, 10);
 
-  await User.update(updateObj, { where: { id: userExist.dataValues.id } }); // isActive
+  await Customer.update(updateObj, { where: { id: userExist.dataValues.id } }); // isActive
 
   // send message
 
@@ -512,7 +515,7 @@ const resendOTP = async (req, res) => {
   //     { where: { id: waitlistExist.dataValues.id } }
   // );
   // resendotp
-  const findByPhone = await User.findOne({ where: { phone: req.body.phone } });
+  const findByPhone = await Customer.findOne({ where: { phone: req.body.phone } });
   if (!findByPhone) {
     return res.status(406).json({ msg: 'User is not registred with this phone number' });
   }
@@ -520,7 +523,7 @@ const resendOTP = async (req, res) => {
     upperCaseAlphabets: false,
     specialChars: false,
   });
-  const updateOtp = await User.update({ otp }, { where: { id: findByPhone.dataValues.id } }); // isActive
+  const updateOtp = await Customer.update({ otp }, { where: { id: findByPhone.dataValues.id } }); // isActive
   await sendSMS(findByPhone.dataValues.phone, `Your Ponditi verification code is : ${otp}`);
   return res.status(201).json({
     msg: 'Updated OTP you should get new OTP via your phone',
@@ -529,7 +532,7 @@ const resendOTP = async (req, res) => {
 
 const getAllUsersTemp = async (req, res) => {
   try {
-    const users = await User.findAll({
+    const users = await Customer.findAll({
       include: [
         {
           model: Subject,
@@ -555,7 +558,7 @@ const getAllUsersTemp = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll({
+    const users = await Customer.findAll({
       include: [
         {
           model: Subject,
@@ -597,7 +600,7 @@ const getSingleUser = async (req, res) => {
   try {
     const userId = parseInt(id, 10);
     // include: [{ model: Education }],
-    const userExist = await User.findOne({
+    const userExist = await Customer.findOne({
       where: { id: userId },
       // include: [{ model: ClassType }, { model: Tuitionm }, { model: Subject }, { model: Notification }, { model: Education }],
     });
@@ -626,29 +629,41 @@ const getSingleUser = async (req, res) => {
   return res.status(500).json({ msg: 'Something went wrong' });
 };
 
+/**
+ * @param {type} req any            Any properties of user that need to be updated
+ * @returns response 202            If everything is okay update the user
+ */
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
-  // console.log(req.body);
 
+  // A user can onlu update his own informations
   if (pId !== req.userId) {
     return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
   try {
-    const previousUser = await User.findOne({ where: { id: req.userId } });
+    const previousUser = await Customer.findOne({ where: { id: req.userId } });
+
+    // admin can not be updated
     if (previousUser.role === ADMIN) {
       return res.status(406).json({ msg: "Admin can't be updated" });
     }
+
+    // No user exist with this user id
     if (previousUser === null) {
       return res.status(404).json({ msg: 'User not found' });
     }
+
+    // Clone the object
     const updatedObj = { ...req.body };
-    // console.log(updatedObj);
 
     if (updatedObj.tutionplace) {
+      // tuition place must be an array
       if (typeof updatedObj.tutionplace !== 'object') {
         return res.status(406).json({ msg: 'Tution place must be an array' });
       }
+
+      // Convert array to string 
       let newTutionplace = '';
       let i = 0;
       while (i < updatedObj.tutionplace.length) {
@@ -676,45 +691,49 @@ const updateUser = async (req, res) => {
         updatedObj.ol_rate = parseInt(updatedObj.ol_rate, 10);
       }
     }
-    // console.log(updatedObj);
 
-    // check password,
+    // check empty password,
     if (updatedObj.password || updatedObj.password === '') {
       delete updatedObj.password;
     }
-    // check phone
+    // check empty phone
     if (updatedObj.phone || updatedObj.phone === '') {
       delete updatedObj.phone;
     }
-    // check email
+    // check empty email
     if (updatedObj.email || updatedObj.email === '') {
       delete updatedObj.email;
     }
-    // console.log(updatedObj.subjectId);
-    // console.log(updatedObj.classTypeId);
+
+    // Make relationships with tuitionm
+    if (updatedObj?.TuitionmId?.length > 0) {
+      const findAllTuitionm = await Tuitionm.findAll({
+        where: { id: updatedObj.TuitionmId },
+      });
+      await previousUser.setTuitionms(findAllTuitionm);
+      delete updatedObj.TuitionmId;
+    }
+
+    // Make relationships with subject
     if (updatedObj?.SubjectId?.length > 0) {
-      // set subject
       const findAllSubject = await Subject.findAll({
         where: { id: updatedObj.SubjectId },
       });
-      // console.log('Setting subject');
       await previousUser.setSubjects(findAllSubject);
       delete updatedObj.SubjectId;
     }
+
+    // Make relationships with classtype
     if (updatedObj?.ClassTypeId?.length > 0) {
-      // set classtype
       const findAllClassType = await ClassType.findAll({
         where: { id: updatedObj.ClassTypeId },
       });
       await previousUser.setClassTypes(findAllClassType);
-      // console.log('Setting classtype');
       delete updatedObj.ClassTypeId;
     }
-    // console.log(updatedObj);
-    await User.update(updatedObj, { where: { id } });
-    // console.log(updatedUser);
-    // console.log({updatedUser});
-    // console.log(user);
+
+    // Update user property
+    await Customer.update(updatedObj, { where: { id } });
     return res.status(202).json({ msg: 'A user updated', user: updatedObj });
   } catch (error) {
     console.log(error);
@@ -734,11 +753,11 @@ const updateExamUser = async (req, res) => {
     return res.status(406).json({ msg: 'You can not update someonelse detail' });
   }
   try {
-    const findUser = await User.findOne({
+    const findUser = await Customer.findOne({
       where: { id: req.userId },
       include: [{ model: Education }],
     });
-    // console.log(findUser.Education.map((ue)=> ue.dataValues));
+    // console.log(findCustomer.Education.map((ue)=> ue.dataValues));
     if (findUser.role === ADMIN) {
       return res.status(406).json({ msg: "Admin can't be updated" });
     }
@@ -801,11 +820,11 @@ const updateImageUser = async (req, res) => {
     if (!req?.file) {
       return res.status(406).json({ msg: 'No image to update' });
     }
-    const findUser = await User.findOne({
+    const findUser = await Customer.findOne({
       where: { id: req.userId },
       include: [{ model: Education }],
     });
-    // console.log(findUser.Education.map((ue)=> ue.dataValues));
+    // console.log(findCustomer.Education.map((ue)=> ue.dataValues));
     if (findUser.role === ADMIN) {
       return res.status(406).json({ msg: "Admin can't be updated" });
     }
@@ -825,8 +844,8 @@ const updateImageUser = async (req, res) => {
       });
       /*
       // Delete file locally
-      const fileAbsPath = `${__dirname}/../uploads/${findUser.dataValues.image}`;
-      // console.log({ existingFile: findUser.dataValues.image, fileAbsPath });
+      const fileAbsPath = `${__dirname}/../uploads/${findCustomer.dataValues.image}`;
+      // console.log({ existingFile: findCustomer.dataValues.image, fileAbsPath });
       try {
         const openFile = await fsPromise.open(fileAbsPath);
         if (openFile) {
@@ -839,7 +858,7 @@ const updateImageUser = async (req, res) => {
       */
     }
 
-    await User.update({ image: req.file.key }, { where: { id } });
+    await Customer.update({ image: req.file.key }, { where: { id } });
 
     return res.status(202).json({ msg: 'A user image updated', image: req.file.key });
   } catch (error) {
@@ -980,7 +999,7 @@ const seedUsers = async (req, res) => {
     i += 1;
   }
 
-  const allUsers = await User.bulkCreate(userList);
+  const allUsers = await Customer.bulkCreate(userList);
   res.json({ msg: 'all user created', users: allUsers });
 };
 

@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       ClassType.belongsToMany(models.Subject, {
         through: 'SubjectToClasstype',
       });
-      ClassType.belongsToMany(models.User, { through: 'UserToClasstype' });
+      ClassType.belongsToMany(models.Customer, { through: 'CustomerToClasstype' });
       ClassType.hasMany(models.ScheduledClass);
     }
   }

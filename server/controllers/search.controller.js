@@ -10,7 +10,7 @@ const sequelize = require('sequelize');
 const { Op } = sequelize;
 const db = require('../models');
 
-const { User, Subject, ClassType, Review, Tuitionm } = db;
+const { Customer, Subject, ClassType, Review, Tuitionm } = db;
 const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
@@ -140,7 +140,7 @@ const searchTeacher = async (req, res) => {
      */
     searchQuery.where = where;
     searchQuery.include = include;
-    const findTeachers = await User.findAll(searchQuery);
+    const findTeachers = await Customer.findAll(searchQuery);
 
     const teachers = findTeachers.map((teacher) => {
       teacher.password = undefined;

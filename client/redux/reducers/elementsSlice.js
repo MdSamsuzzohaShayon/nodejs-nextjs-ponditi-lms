@@ -22,11 +22,11 @@ const initialLayoutItemList = [
     name: 'contact',
     link: '/contact',
   },
-  {
-    id: 4,
-    name: 'faq',
-    link: '/faq',
-  },
+  // {
+  //   id: 4,
+  //   name: 'faq',
+  //   link: '/faq',
+  // },
 ];
 
 const initialSocialLinks = [

@@ -15,7 +15,6 @@ import Loader from '../../components/elements/Loader';
 import axios from '../../config/axios';
 
 function search() {
-
   let isMounted = false;
   const dispatch = useDispatch();
 
@@ -77,11 +76,9 @@ function search() {
   return (
     <Layout>
       <div className="search">
-        <section className="bg-secondary search-form">
-          <div className="container">
-            <SearchForm />
-          </div>
-        </section>
+        <div className="container">
+          <SearchForm />
+        </div>
         <section className="section section-2 search-result">
           <div className="container">
             <SearchResult />

@@ -6,43 +6,47 @@ const { PENDING } = scheduledClassStatus;
 const { BANGLA } = tuitionmedums;
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Customer extends Model {
     static associate(models) {
-      // User.hasOne(models.ClassType, { foreignKey: 'classTypeId' });
-      // User.belongsTo(models.ClassType);
-      // User.belongsTo(models.Subject);
-      // User.hasOne(models.Subject, { foreignKey: 'subjectId' });
+      /**
+       * @relation many to many
+       * This will create an extra table it self and hold user id and another table id that user is going to make relation with
+       */
+      Customer.belongsToMany(models.ClassType, { through: 'CustomerToClasstype' });
+      Customer.belongsToMany(models.Subject, { through: 'CustomerToSubject' });
+      Customer.belongsToMany(models.Tuitionm, { through: 'UniqueCustomerTuitionm' });
 
-      User.belongsToMany(models.ClassType, { through: 'UserToClasstype' });
-      User.belongsToMany(models.Subject, { through: 'UserToSubject' });
-      // User.belongsToMany(models.Medium, { through: 'UserToMedium' });
-      User.belongsToMany(models.Tuitionm, { through: 'UniqueUserTuitionm' });
-
-      User.hasMany(models.ScheduledClass, {
+      /**
+       * @relation one to many
+       */
+      // CustomerId as senderId (since we are making multiple relation between same two table) will be added as foreign key in ScheduledClass as Sender
+      Customer.hasMany(models.ScheduledClass, {
         foreignKey: 'senderId',
         as: 'Sender',
       });
-      User.hasMany(models.ScheduledClass, {
+      // CustomerId as receverId (since we are making multiple relation between same two table) will be added as foreign key in ScheduledClass as Recever
+      Customer.hasMany(models.ScheduledClass, {
         foreignKey: 'receverId',
         as: 'Recever',
       });
-
-      User.hasMany(models.Review, {
+      // CustomerId as reviewerId (since we are making multiple relation between same two table) will be added as foreign key in Review as Reviewer
+      Customer.hasMany(models.Review, {
         foreignKey: 'reviewerId',
         as: 'Reviewer',
       });
-      User.hasMany(models.Review, {
+      // CustomerId as reviewtakerId (since we are making multiple relation between same two table) will be added as foreign key in Review as Reviewtaker
+      Customer.hasMany(models.Review, {
         foreignKey: 'reviewtakerId',
         as: 'Reviewtaker',
       });
-
-      // User.hasMany(models.Review);
-      User.hasMany(models.Notification);
-      User.hasMany(models.Education);
+      // CustomerId will be added as foreign key in Notification
+      Customer.hasMany(models.Notification);
+      // CustomerId will be added as foreign key in Education
+      Customer.hasMany(models.Education);
     }
   }
 
-  User.init(
+  Customer.init(
     {
       /**
        * @info personal
@@ -93,7 +97,9 @@ module.exports = (sequelize, DataTypes) => {
       profession: {
         type: new DataTypes.STRING(100),
       },
-
+      institution: {
+        type: new DataTypes.STRING(225),
+      },
       experience: {
         type: new DataTypes.STRING(100),
       },
@@ -153,9 +159,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       freezeTableName: true,
-      tableName: 'User',
+      tableName: 'Customer',
     }
   );
 
-  return User;
+  return Customer;
 };

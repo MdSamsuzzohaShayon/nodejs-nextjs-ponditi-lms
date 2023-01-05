@@ -48,10 +48,17 @@ function Registration() {
     // if (selectedClasstypeList.length === 0 || selectedSubjectList.length === 0) {
     //   return dispatch(setErrorList(['Please select a preffered class and a preffered subject']));
     // }
+    const userObj = { ...registerableUser };
+    if (selectedTuitionmList.length === 0) {
+      return dispatch(setErrorList(['Please select a tuition medium']));
+    }
+    if (selectedClasstypeList.length === 0) {
+      return dispatch(setErrorList(['Please select a class']));
+    }
 
     try {
       dispatch(toggleLoading(true));
-      const userObj = { ...registerableUser };
+
       userObj.SubjectId = selectedSubjectList;
       userObj.ClassTypeId = selectedClasstypeList;
       userObj.TuitionmId = selectedTuitionmList;

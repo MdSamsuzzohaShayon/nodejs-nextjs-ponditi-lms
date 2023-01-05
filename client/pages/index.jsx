@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/layouts/Layout';
 import Section1 from '../components/home/Section1';
-import { fetchAllClassTypes, fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
-import { fetchAllSubjects, fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
-import { fetchAllTuitionms, fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
+import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
+import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
 
 export default function home() {
   let isMounted = true;

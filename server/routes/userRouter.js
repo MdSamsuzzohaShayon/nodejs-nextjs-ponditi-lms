@@ -66,7 +66,7 @@ router.put(
   check('email').isEmail().notEmpty(),
   // check('age').notEmpty(),
   // check('profession').notEmpty().isString(),
-  check('institution').notEmpty().isString(),
+  // check('institution').notEmpty().isString(),
   // check('subjects').notEmpty(), // In update section
   // check('experience').notEmpty(),
   check('presentaddress').notEmpty().isString(),

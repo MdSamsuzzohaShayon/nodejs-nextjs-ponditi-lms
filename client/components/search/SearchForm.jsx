@@ -8,9 +8,9 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from '../../config/axios';
-import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
+import { setErrorList } from '../../redux/reducers/elementsSlice';
 import {
   setSearchParams,
   setSearchAllUserList,
@@ -180,95 +180,70 @@ function SearchForm(props) {
   };
 
   return (
-    <div className="SearchForm">
+    <div className="SearchForm shadow">
       {/* <Script src='https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&key=YOUR_API_KEY' /> */}
       <form className="py-4" onSubmit={searchSubmitHandler}>
-        <div className="row search-input-row  mx-0 mb-3">
+        <div className="row search-input-row  mx-0 mb-1">
           {/* google places api start  */}
-          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="location">Location</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/location.svg" alt="" className="h-fit" />
-              </span>
-              <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="location"
-                  placeholder="location"
-                  name="location"
-                  defaultValue={searchParams.location}
-                  onChange={inputChangeHandler}
-                />
-              </Autocomplete>
-            </div>
+            <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
+              <input
+                type="text"
+                className="form-control"
+                id="location"
+                placeholder="location"
+                name="location"
+                defaultValue={searchParams.location}
+                onChange={inputChangeHandler}
+              />
+            </Autocomplete>
           </div>
           {/* google places api end  */}
-          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="tutionplace">Tuition style</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/classtype.svg" alt="" className="h-fit" />
-              </span>
-              <select name="tutionplace" id="tutionplace" className="form-control" defaultValue={searchParams.tutionplace} onChange={inputChangeHandler}>
-                {[defaultTuitionStyle, ...searchTypeList].map((ctl) => (
-                  <option key={ctl.id} value={ctl.type}>
-                    {ctl.text}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select name="tutionplace" id="tutionplace" className="form-control" defaultValue={searchParams.tutionplace} onChange={inputChangeHandler}>
+              {[defaultTuitionStyle, ...searchTypeList].map((ctl) => (
+                <option key={ctl.id} value={ctl.type}>
+                  {ctl.text}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-        <div className="row search-input-row  mx-0 mb-3">
-          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
             <label htmlFor="TuitionmId">Tuition Medium</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/classtype.svg" alt="" className="h-fit" />
-              </span>
-              <select name="TuitionmId" id="TuitionmId" className="form-control" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
-                {tuitionmList.map((tm) => (
-                  <option key={tm.id} value={tm.id}>
-                    {tm.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
-            <label htmlFor="ClassTypeId">Class</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/classtype.svg" alt="" className="h-fit" />
-              </span>
-              <select name="ClassTypeId" id="ClassTypeId" className="form-control" onChange={classtypeInputChangeHandler} defaultValue={searchParams.ClassTypeId}>
-                {classtypeList.map((ctl) => (
-                  <option key={ctl.id} value={ctl.id}>
-                    {ctl.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className={props.fromHome ? 'col-md-12' : 'col-md-6'}>
-            <label htmlFor="SubjectId">Subject</label>
-            <div className="input-group mb-3">
-              <span className="input-group-text bg-white">
-                <img src="/icons/subject.svg" alt="" className="h-fit" />
-              </span>
-              <select name="SubjectId" id="SubjectId" className="form-control" onChange={inputChangeHandler} defaultValue={searchParams.SubjectId}>
-                {subjectList.map((ctl) => (
-                  <option key={ctl.id} value={ctl.id}>
-                    {ctl.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select name="TuitionmId" id="TuitionmId" className="form-control" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
+              {tuitionmList.map((tm) => (
+                <option key={tm.id} value={tm.id}>
+                  {tm.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-        <div className="row search-input-row  mx-0 mb-3">
+        <div className="row search-input-row  mx-0 mb-1">
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
+            <label htmlFor="ClassTypeId">Class</label>
+            <select name="ClassTypeId" id="ClassTypeId" className="form-control" onChange={classtypeInputChangeHandler} defaultValue={searchParams.ClassTypeId}>
+              {classtypeList.map((ctl) => (
+                <option key={ctl.id} value={ctl.id}>
+                  {ctl.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={props.fromHome ? 'col-md-12' : 'col-md-4'}>
+            <label htmlFor="SubjectId">Subject</label>
+            <select name="SubjectId" id="SubjectId" className="form-control" onChange={inputChangeHandler} defaultValue={searchParams.SubjectId}>
+              {subjectList.map((ctl) => (
+                <option key={ctl.id} value={ctl.id}>
+                  {ctl.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="row search-input-row  mx-0 mb-1">
           <div className="col d-flex justify-content-end">
             <button className="btn btn-danger w-fit text-uppercase mx-3s" role="button" onClick={searchTeacherHandler}>
               Search Tutor

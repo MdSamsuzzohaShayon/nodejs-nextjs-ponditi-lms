@@ -9,13 +9,15 @@ import { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import { setRegisterableUser } from '../../redux/reducers/userReducer';
+import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
-import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 import PriceCalculator from '../elements/PriceCalculator';
 import useMedieQuery from '../../hooks/useMediaQuery';
+import ClassSubjectStudentForm from './ClassSubjectStudentForm';
+
 
 const { TEACHER, STUDENT } = roles;
 
@@ -42,8 +44,6 @@ function RegistrationForm(props) {
 
   // const registerableUser = useSelector((state) => state.user.currentUser);
   const registerableUser = useSelector((state) => state.user.registerableUser);
-  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
 
   /**
    * Using states because we are not going to need this in another component
@@ -137,13 +137,6 @@ function RegistrationForm(props) {
     dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
   };
 
-  const tuitionmChangeHandler = (tce) => {
-    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
-  };
-
-  const classtypeChangeHandler = (tce) => {
-    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
-  };
   const inputPriceChangeHandler = (ipce) => {
     // console.log({ [ipce.target.name]: ipce.target.value });
     let rate = 120;
@@ -190,6 +183,12 @@ function RegistrationForm(props) {
   const inputRSChangeHandler = (irse) => {
     // console.log(irse.target.checked)
     dispatch(setRegisterableUser({ [irse.target.name]: irse.target.checked }));
+  };
+  const tuitionmChangeHandler = (tce) => {
+    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
+  };
+  const classtypeChangeHandler = (tce) => {
+    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
   };
 
   const currentlyStudyHandler = (cse) => {
@@ -264,21 +263,21 @@ function RegistrationForm(props) {
 
   return (
     <>
-      <div className="row mb-3">
-        <div className="col-md-6">
+      <div className="row ">
+        <div className="col-md-6 mb-3">
           <label htmlFor="firstname">Name*</label>
           <input type="text" className="form-control" name="name" id="name" defaultValue={registerableUser?.name} onChange={inputChangeHandler} required />
           {inputEmptyPrevent(registerableUser.name, 'Name')}
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 mb-3">
           <label htmlFor="email">Email*</label>
           <input type="email" className="form-control" name="email" id="email" defaultValue={registerableUser?.email} onChange={inputChangeHandler} required />
           {inputEmptyPrevent(registerableUser.email, 'Email')}
         </div>
       </div>
-      <div className="row mb-3">
+      <div className="row ">
         {registerableUser.role === TEACHER && (
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
             <label htmlFor="profession">Profession*</label>
             <input
               type="profession"
@@ -292,31 +291,31 @@ function RegistrationForm(props) {
           </div>
         )}
 
-        <div className={registerableUser.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
-          <label htmlFor="institution">Institution*</label>
+        <div className={registerableUser.role !== TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
+          <label htmlFor="pinstitution">Professional Institution*</label>
           <input
-            type="institution"
+            type="pinstitution"
             className="form-control"
-            name="institution"
-            id="institution"
-            defaultValue={registerableUser?.institution}
+            name="pinstitution"
+            id="pinstitution"
+            defaultValue={registerableUser?.pinstitution}
             onChange={inputChangeHandler}
             required
           />
-          {inputEmptyPrevent(registerableUser.institution, 'Institution')}
+          {inputEmptyPrevent(registerableUser.pinstitution, 'Institution')}
         </div>
       </div>
 
-      <div className="row mb-3">
+      <div className="row ">
         {registerableUser.role === TEACHER && (
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
             <label htmlFor="experience">Experience(years)*</label>
             <input type="number" className="form-control" name="experience" id="experience" defaultValue={registerableUser?.experience} onChange={inputChangeHandler} />
             {inputEmptyPrevent(registerableUser.experience, 'Experience')}
           </div>
         )}
 
-        <div className={registerableUser.role !== TEACHER ? 'col-md-12' : 'col-md-6'}>
+        <div className={registerableUser.role !== TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
           {/* Replace this with present address and use google map api  */}
           <label htmlFor="district">Present Address*</label>
           <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
@@ -328,20 +327,33 @@ function RegistrationForm(props) {
 
       {registerableUser.role === TEACHER && (
         <>
-          <div className="row mb-3">
-            <div className="col-md-6">
+          <div className="row ">
+            <div className="col-md-6 mb-3">
               <label htmlFor="firstname">highest Education*</label>
               <input type="text" className="form-control" name="degree" id="degree" defaultValue={registerableUser?.degree} onChange={inputChangeHandler} />
               {inputEmptyPrevent(registerableUser.degree, 'Degree')}
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-3">
               <label htmlFor="major">Major / Subject*</label>
               <input type="text" className="form-control" name="major" id="major" defaultValue={registerableUser?.major} onChange={inputChangeHandler} />
               {inputEmptyPrevent(registerableUser.major, 'Major')}
             </div>
           </div>
-          <div className="row mb-3">
-            <div className="col-md-6">
+          <div className="row">
+            <div className="col-12 mb-3">
+              <label htmlFor="institution">Institution*</label>
+              <input
+                type="text"
+                className="form-control"
+                name="institution"
+                id="institution"
+                defaultValue={registerableUser?.institution}
+                onChange={inputChangeHandler}
+              />
+            </div>
+          </div>
+          <div className="row ">
+            <div className="col-md-6 mb-md-3">
               <label htmlFor="passing_year">Passing Year*</label>
               <input
                 type="number"
@@ -353,17 +365,17 @@ function RegistrationForm(props) {
                 onChange={inputChangeHandler}
               />
             </div>
-            <div className="col-md-6 d-flex flex-row-reverse justify-content-end align-items-center">
-              <label htmlFor="running_study" className="mt-4">
+            <div className="col-md-6 mb-3 d-flex flex-row-reverse justify-content-end align-items-center">
+              <label htmlFor="running_study" className="mt-md-4 mt-2">
                 Currently running study
               </label>
-              <input type="checkbox" name="running_study" className="mx-2 mt-4" id="running_study" onChange={currentlyStudyHandler} />
+              <input type="checkbox" name="running_study" className="mx-2 mt-md-4 mt-2" id="running_study" onChange={currentlyStudyHandler} />
             </div>
           </div>
 
           {/* Tuition style with calculator start  */}
-          <div className="row mb-3">
-            <div className="col-md-12">
+          <div className="row ">
+            <div className="col-md-12 mb-3">
               <label htmlFor="tuitionstyle">Tuition Style*</label>
               <div className="row">
                 <div className="col-md-3">
@@ -476,37 +488,11 @@ function RegistrationForm(props) {
       )}
 
       {registerableUser.role === STUDENT && (
-        <div className="row mb-3">
-          <div className="col-md-6">
-            <label htmlFor="tutionm">Medium*</label>
-            <select className="form-control" name="tutionm" id="tutionm" defaultValue={tuitionmList[0]?.id} onChange={tuitionmChangeHandler}>
-              <option value="0" selected>
-                Select a medium
-              </option>
-              {tuitionmList.map((tm) => (
-                <option value={tm.id} key={tm.id}>
-                  {tm.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="classtype">Class Name*</label>
-            <select className="form-control" name="classtype" id="classtype" onChange={classtypeChangeHandler}>
-              <option value="0" selected>
-                Select a class
-              </option>
-              {classtypeList.map((ct) => (
-                <option value={ct.id} key={ct.id}>
-                  {ct.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <ClassSubjectStudentForm selectedMedium={0} selectedClassType={0} tuitionmChangeHandler={tuitionmChangeHandler} classtypeChangeHandler={classtypeChangeHandler} />
       )}
-      <div className="row mb-3">
-        <div className="col-md-6">
+
+      <div className="row ">
+        <div className="col-md-6 mb-3">
           <label htmlFor="ref">Reference no.(Optional)</label>
           <input type="number" onChange={inputChangeHandler} name="ref" id="ref" className="form-control" />
         </div>

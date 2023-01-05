@@ -13,6 +13,8 @@ function ClassSubjectForm(props) {
 
   const dispatch = useDispatch();
   const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
+  const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
+
   const classtypeList = useSelector((state) => state.classtype.classtypeList);
   const displayClassType = useSelector((state) => state.classtype.displayClassType);
   const subjectList = useSelector((state) => state.subject.subjectList);
@@ -21,12 +23,22 @@ function ClassSubjectForm(props) {
   const selectedClasstypeList = useSelector((state) => state.classtype.selectedClasstypeList);
   const selectedSubjectList = useSelector((state) => state.subject.selectedSubjectList);
 
+  const userSubjects = useSelector((state) => state.user.userSubjects);
+  const userTuitionmList = useSelector((state) => state.user.userTuitionmList);
+  const userClassTypes = useSelector((state) => state.user.userClassTypes);
+
+  // console.log(userExamList, userTuitionmList, userClassTypes);
+
   // eslint-disable-next-line arrow-body-style
-  const selectClasstypeDefaultCheckbox = (classTypeId) => {
-    return false;
-  };
-  // eslint-disable-next-line arrow-body-style
-  const selectDefaultSubjectCheckbox = (subjectId) => {
+  const selectDefaultCheckbox = (userCTEList, itemId) => {
+    try {
+      const foundClass = userCTEList.find((uct) => uct.id === itemId);
+      // console.log({ foundClass });
+      if (foundClass) return true;
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
     return false;
   };
 
@@ -68,16 +80,15 @@ function ClassSubjectForm(props) {
     let newTuitionmIds = [];
     if (mce.target.checked === true) {
       // add to subject list
-      newTuitionmIds = [...userTuitionmIdList, tuitionmId];
-      setUserTuitionmIdList((prevState) => [...prevState, tuitionmId]);
+      newTuitionmIds = [...selectedTuitionmList, tuitionmId];
     } else {
       // remove from subject list
       newTuitionmIds = userTuitionmIdList.filter((umid) => umid !== tuitionmId);
-      setUserTuitionmIdList(newTuitionmIds);
     }
     const selectedTuitionm = tuitionmList.filter((tm) => newTuitionmIds.includes(tm.id));
     dispatch(setUpdateUser({ TuitionmId: newTuitionmIds }));
     dispatch(setSelectedTuitionm(newTuitionmIds));
+    setUserTuitionmIdList(newTuitionmIds);
 
     // Setting new list of classtype
     const classTypesArr = selectedTuitionm.map((cta) => cta.ClassTypes);
@@ -152,8 +163,6 @@ function ClassSubjectForm(props) {
   const vlsiableClassTypeList = () => {
     const newClassTypeList = [];
 
-    // console.log(userClassTypeIdList);
-
     for (let i = 0; i < classtypeList.length; i += 1) {
       const foundClassType = userClassTypeIdList.includes(classtypeList[i].id);
       // console.log(foundClassType);
@@ -201,7 +210,7 @@ function ClassSubjectForm(props) {
                     type="checkbox"
                     className="class-subject-checkbox mx-2"
                     onChange={(cce) => tuitionmChangeHandler(cce, tm.id)}
-                    defaultChecked={selectClasstypeDefaultCheckbox(tm.id)}
+                    defaultChecked={selectDefaultCheckbox(userTuitionmList, tm.id)}
                   />
                 </div>
               ))}
@@ -226,7 +235,7 @@ function ClassSubjectForm(props) {
                       type="checkbox"
                       className="class-subject-checkbox mx-2"
                       onChange={(cce) => classtypeChangeHandler(cce, ctl.id)}
-                      defaultChecked={selectClasstypeDefaultCheckbox(ctl.id)}
+                      defaultChecked={selectDefaultCheckbox(userClassTypes, ctl.id)}
                     />
                   </div>
                 ))}
@@ -253,7 +262,7 @@ function ClassSubjectForm(props) {
                       type="checkbox"
                       className="class-subject-checkbox mx-2"
                       onChange={(cce) => subjectChangeHandler(cce, sub.id)}
-                      defaultChecked={selectDefaultSubjectCheckbox(sub.id)}
+                      defaultChecked={selectDefaultCheckbox(userSubjects, sub.id)}
                     />
                   </div>
                 ))}

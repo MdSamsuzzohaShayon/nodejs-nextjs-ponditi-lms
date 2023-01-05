@@ -106,6 +106,7 @@ const initialRegisterableUser = {
   running_study: false,
   major: null,
   institution: null,
+  pinstitution: null,
 };
 
 const initialLoginInfo = {

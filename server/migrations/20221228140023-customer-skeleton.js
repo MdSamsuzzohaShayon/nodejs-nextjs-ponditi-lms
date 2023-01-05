@@ -12,7 +12,7 @@ module.exports = {
       Promise.all([
         /*  
       queryInterface.addColumn(
-          'User',
+          'Customer',
           'ref',
           {
             type: Sequelize.DataTypes.INTEGER,

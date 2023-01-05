@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Education.belongsTo(models.User); // This will create a UserId column in Education table
+      Education.belongsTo(models.Customer); // This will create a CustomerId column in Education table
     }
   }
   Education.init(

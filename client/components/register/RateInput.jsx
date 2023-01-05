@@ -7,7 +7,7 @@ import { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRegisterableUser } from '../../redux/reducers/userReducer';
 import PriceCalculator from '../elements/PriceCalculator';
-import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
+import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 
 const online = 'online';
 const tl = 'tl';
@@ -78,6 +78,7 @@ function RateInput(props) {
   const openPriceCalcHandler = (opce, inputName) => {
     opce.preventDefault();
     setSelectedStyleItem(inputName);
+    dispatch(setPageYOffset(window.pageYOffset));
     switch (inputName) {
       case online:
         setCalculatorTitle('Online rate');
@@ -183,36 +184,13 @@ function RateInput(props) {
                   </label>
                 </div>
               </div>
-            </div>
-            <div className="col-md-3">
-              <div className="input-item d-flex align-items-start justify-content-start flex-column">
-                <div className="form-check">
-                  <input className="form-check-input" name={tl} type="checkbox" defaultChecked={!!props.user.tl_rate} onChange={inputTuitionStyleHandler} id={tl} />
-                  <label className="form-check-label" htmlFor={tl}>
-                    Teacher&apos;s location
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="input-item d-flex align-items-start justify-content-start flex-column">
-                <div className="form-check">
-                  <input className="form-check-input" name={sl} type="checkbox" defaultChecked={!!props.user.sl_rate} onChange={inputTuitionStyleHandler} id={sl} />
-                  <label className="form-check-label" htmlFor={sl}>
-                    Student&apos;s location
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-3">
               {displayTuitionOl && (
                 <div className="price-form">
                   <div className="input-group mb-3">
                     <div className="form-floating p-0">
                       <input
                         type="number"
+                        placeholder="Rate"
                         className="form-control"
                         ref={rateInputOlEl}
                         defaultValue={props.user?.ol_rate}
@@ -228,12 +206,21 @@ function RateInput(props) {
               )}
             </div>
             <div className="col-md-3">
+              <div className="input-item d-flex align-items-start justify-content-start flex-column">
+                <div className="form-check">
+                  <input className="form-check-input" name={tl} type="checkbox" defaultChecked={!!props.user.tl_rate} onChange={inputTuitionStyleHandler} id={tl} />
+                  <label className="form-check-label" htmlFor={tl}>
+                    Teacher&apos;s location
+                  </label>
+                </div>
+              </div>
               {displayTuitionTl && (
                 <div className="price-form">
                   <div className="input-group mb-3">
                     <div className="form-floating p-0">
                       <input
                         type="number"
+                        placeholder="Rate"
                         className="form-control"
                         ref={rateInputTlEl}
                         onChange={inputRateChangeHandler}
@@ -250,12 +237,21 @@ function RateInput(props) {
               )}
             </div>
             <div className="col-md-3">
+              <div className="input-item d-flex align-items-start justify-content-start flex-column">
+                <div className="form-check">
+                  <input className="form-check-input" name={sl} type="checkbox" defaultChecked={!!props.user.sl_rate} onChange={inputTuitionStyleHandler} id={sl} />
+                  <label className="form-check-label" htmlFor={sl}>
+                    Student&apos;s location
+                  </label>
+                </div>
+              </div>
               {displayTuitionSl && (
                 <div className="price-form">
                   <div className="input-group mb-3">
                     <div className="form-floating p-0">
                       <input
                         type="number"
+                        placeholder="Rate"
                         className="form-control"
                         ref={rateInputSlEl}
                         onChange={inputRateChangeHandler}

@@ -234,12 +234,13 @@
  - ✅ Add email address in the middle of the footer “infor@ponditibd.com”
 
 
+ - **Requirement update-9**
+ - For student update only 1 medium and 1 class
+ - Home text change
+ - Change user table name
+ - Admin - reject button is not working
+ - Update mudium, class, subject is not working properly
 
-
- - host
- - sync database
- - create tution medium, class, subject
- - 
 
 ### Sequelize problems
  - Notification and education need to migrate properly with user when we add a new field to user
@@ -308,11 +309,32 @@ Ask questions
 ### Docker
  - [Dockerize Your Full-Stack App](https://www.youtube.com/watch?v=Jo5TVUBjbIs), [Dockerizing Full Stack Web App REACTJS & NODEJS](https://www.youtube.com/watch?v=IDVUy34vlSE)
 
-
+ALTER TABLE Customers
+ADD Email varchar(255);
 ### Track
  - We must make all the tracking of database changes
- - Add ref in User and remove board from Education
- - 
+
+ - ✅ *Add ref in User and remove board from Education*
+ - *Add institution in User* - `ALTER TABLE User ADD institution VARCHAR(255);` alternate `ALTER TABLE dbo.[User] ADD institution VARCHAR(255);`
+ - *Change table name*
+    ```
+    // Change table names
+    EXEC sp_rename 'User', 'Customer';
+    EXEC sp_rename 'UserToClasstype', 'CustomerToClasstype';
+    EXEC sp_rename 'UserToSubject', 'CustomerToSubject';
+    EXEC sp_rename 'UniqueUserTuitionm', 'UniqueCustomerTuitionm';
+    EXEC sp_rename 'UserToTuitionm', 'CustomerToTuitionm';
+
+    // Change column name for many to many relation ship
+    EXEC sp_RENAME 'CustomerToClasstype.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'CustomerToSubject.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'UniqueCustomerTuitionm.UserId' , 'CustomerId', 'COLUMN';
+
+    // Change column name one to many
+    EXEC sp_RENAME 'Education.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'Notification.UserId' , 'CustomerId', 'COLUMN';
+    EXEC sp_RENAME 'CustomerToTuitionm.UserId' , 'CustomerId', 'COLUMN';
+    ```
 
 
 
