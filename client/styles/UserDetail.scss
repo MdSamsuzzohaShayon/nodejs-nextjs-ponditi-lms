@@ -1,4 +1,17 @@
-.detail{
-    min-height: $section-min-height;
-    padding: $section-padding;
+.detail {
+  min-height: $section-min-height;
+  padding: $section-padding;
+
+  .profile-image-wrapper {
+    @include profile_img_wrapper();
   }
+  .profile-img {
+    @include profile_img();
+  }
+  .upload-btn {
+    @include upload_btn();
+  }
+  .upload-img {
+    @include upload_img();
+  }
+}

@@ -43,7 +43,7 @@ function Dashboard() {
   return (
     <div className="Dashboard d-flex flex-column flex-md-row">
       <div className="sidebar bg-danger text-secondary">
-        <ul className="d-flex list-unstyled flex-row flex-md-column">
+        <ul className="d-flex list-unstyled flex-row flex-md-column mb-0">
           {adminSidebarElements.map((ase) => (
             <li className={selectedContent === ase.name ? 'px-4 py-2 menu-item bg-primary' : 'px-4 py-2 menu-item '} key={ase.id}>
               <a href="#" role="button" onClick={(e) => selectSidebarElement(e, ase.name)}>

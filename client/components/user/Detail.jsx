@@ -134,10 +134,13 @@ function Detail({ userDetail, update }) {
                   className="profile-img rounded-circle position-absolute"
                   alt=""
                 />
-                <div className="btn btn-dark rounded-circle upload-btn position-absolute" onClick={uploadImageHandler}>
-                  <img src="/icons/camera.svg" className="upload-img position-absolute" alt="" />
-                  <input type="file" className="d-none" ref={imageInputEl} onChange={fileInputChangeHandler} />
-                </div>
+                {authUserInfo.role === STUDENT ||
+                  (authUserInfo.role === TEACHER && (
+                    <div className="btn btn-dark rounded-circle upload-btn position-absolute" onClick={uploadImageHandler}>
+                      <img src="/icons/camera.svg" className="upload-img position-absolute" alt="" />
+                      <input type="file" className="d-none" ref={imageInputEl} onChange={fileInputChangeHandler} />
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="col-md-9">

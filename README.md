@@ -234,7 +234,10 @@
  - ✅ Add email address in the middle of the footer “infor@ponditibd.com”
 
 
-
+ - **Requirement update-9**
+ - For student update only 1 medium and 1 class
+ - Change user table name
+ - Admin - reject button is not working
 
  - host
  - sync database

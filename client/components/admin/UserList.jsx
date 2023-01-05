@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/destructuring-assignment */
 import Link from 'next/link';
 import Router from 'next/router';
@@ -19,10 +20,12 @@ function UserList(props) {
     rue.preventDefault();
     try {
       dispatch(toggleLoading(true));
+      // console.log(userId);
       const response = await axios.put(`/user/reject/${userId}`);
       // console.log(response);
       if (response.status === 202) {
         dispatch(resetErrorList());
+        dispatch(fetchAllUsersByAdmin(null));
       }
     } catch (error) {
       console.log(error);
@@ -116,7 +119,7 @@ function UserList(props) {
 
               {aul.isActive === REJECTED && (
                 <button className=" mx-1 w-fit h-fit bg-transparent border-0" type="button" onClick={(e) => acceptUserHandler(e, aul.id)}>
-                  <img src="/icons/reject.svg" width={20} alt="" />
+                  <img src="/icons/tick.svg" width={20} alt="" />
                 </button>
               )}
             </div>

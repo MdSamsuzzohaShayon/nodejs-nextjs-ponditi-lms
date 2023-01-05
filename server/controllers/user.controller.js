@@ -276,7 +276,8 @@ const registerUser = async (req, res) => {
 
     // Send success message that user is registered
     const phoneWithSufix = `+${userFindById.dataValues.cc}${userFindById.dataValues.phone}`;
-    await sendSMS(phoneWithSufix, `Your Ponditi login credentials is: \n Phone: ${userFindById.dataValues.phone} \n Password: ${genPassword}`);
+    const msg = `Congratulations! your Ponditi account has been created successfully. \n\n Login details:\n ${process.env.FRONTEND_URL} \nusername: ${userFindById.dataValues.phone} \npassword: ${genPassword}`;
+    await sendSMS(phoneWithSufix, msg);
 
     // Final response
     return res.status(201).json({
@@ -304,7 +305,8 @@ const rejectUser = async (req, res) => {
       return res.status(406).json({ msg: 'User is not verified' });
     }
 
-    await User.update({ isActive: REJECTED }, { where: { id: findByPhone.dataValues.id } }); // isActive
+    const updatedUser = await User.update({ isActive: REJECTED }, { where: { id: findByPhone.dataValues.id } }); // isActive
+    // console.log(updatedUser);
 
     return res.status(202).json({ msg: 'Rejected user' });
   } catch (error) {
