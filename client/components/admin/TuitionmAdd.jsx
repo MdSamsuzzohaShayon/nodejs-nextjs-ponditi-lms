@@ -74,19 +74,13 @@ function TuitionmAdd(props) {
       <form className="mb-5" onSubmit={addTuitionmHandler}>
         <div className="row mx-0 mb-3">
           <div className="col">
-            <label htmlFor="name">Class Name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="E.G. Class 1"
-              name="name"
-              aria-label="Recipient's username"
-              aria-describedby="tuitionm-addon"
-              onChange={inputChangeHandler}
-            />
+            <label htmlFor="name">Medium Name</label>
+            <input type="text" className="form-control" name="name" onChange={inputChangeHandler} />
           </div>
         </div>
-        <div className="row mx-0 mb-3">
+        {/* =============================
+        Do not delete it for now (if to delete clean all related functions ) */}
+        {/* <div className="row mx-0 mb-3">
           {classtypeList &&
             classtypeList.map((sl, slIdx) => (
               <div className="col-md-3" key={slIdx}>
@@ -98,7 +92,7 @@ function TuitionmAdd(props) {
                 </div>
               </div>
             ))}
-        </div>
+        </div> */}
         <div className="row mb-3 mx-0 d-flex">
           <div className="col">
             <button className="btn btn-primary w-fit" type="submit" id="tuitionm-addon">

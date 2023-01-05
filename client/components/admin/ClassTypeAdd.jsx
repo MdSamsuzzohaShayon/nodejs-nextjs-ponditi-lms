@@ -120,7 +120,9 @@ function ClassTypeAdd(props) {
               </div>
             ))}
         </div>
-        <div className="row mx-0 mb-3">
+        {/* =============================
+        Do not delete it for now (if to delete clean all related functions ) */}
+        {/* <div className="row mx-0 mb-3">
           <p className="fs-4">Subjects</p>
           {subjectList &&
             subjectList.map((sl, slIdx) => (
@@ -133,7 +135,7 @@ function ClassTypeAdd(props) {
                 </div>
               </div>
             ))}
-        </div>
+        </div> */}
         <div className="row mb-3 mx-0 d-flex">
           <div className="col">
             <button className="btn btn-primary w-fit" type="submit" id="classtype-addon">
