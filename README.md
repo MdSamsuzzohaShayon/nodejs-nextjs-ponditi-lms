@@ -241,6 +241,8 @@
  - Admin - reject button is not working
  - Update mudium, class, subject is not working properly
 
+ - duplicate database and keep backup in excel file
+
 
 ### Sequelize problems
  - Notification and education need to migrate properly with user when we add a new field to user
@@ -315,8 +317,8 @@ ADD Email varchar(255);
  - We must make all the tracking of database changes
 
  - ✅ *Add ref in User and remove board from Education*
- - *Add institution in User* - `ALTER TABLE User ADD institution VARCHAR(255);` alternate `ALTER TABLE dbo.[User] ADD institution VARCHAR(255);`
- - *Change table name*
+ - ✅ *Add institution in User* - `ALTER TABLE User ADD institution VARCHAR(255);` alternate `ALTER TABLE dbo.[User] ADD institution VARCHAR(255);`
+ - ✅ *Change table name*
     ```
     // Change table names
     EXEC sp_rename 'User', 'Customer';
