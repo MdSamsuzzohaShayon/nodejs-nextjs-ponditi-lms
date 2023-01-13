@@ -338,6 +338,10 @@ ADD Email varchar(255);
     EXEC sp_RENAME 'CustomerToTuitionm.UserId' , 'CustomerId', 'COLUMN';
     ```
 
+  ipoh, perak
+  +6012-5252754
+
+
 
 
 

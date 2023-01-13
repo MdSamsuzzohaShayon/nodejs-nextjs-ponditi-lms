@@ -65,6 +65,9 @@ function SearchResult() {
 
   const headToSendRequestHandler = (htsre, receverId) => {
     htsre.preventDefault();
+    // Under dev
+    return Router.push('/development');
+    // eslint-disable-next-line no-unreachable
     const classAndSubject = { receverId };
     // console.log(searchParams);
     if (searchParams.ClassTypeId === '0' || searchParams.ClassTypeId === '' || searchParams.ClassTypeId === ANY) {
@@ -94,7 +97,7 @@ function SearchResult() {
     const newSearch = { ...searchData, ...classAndSubject };
     // console.log(newSearch);
     window.localStorage.setItem('search', JSON.stringify(newSearch));
-    Router.push(`/search/request/${receverId}`);
+    return Router.push(`/search/request/${receverId}`);
   };
 
   const findStarLimit = (sul) => {

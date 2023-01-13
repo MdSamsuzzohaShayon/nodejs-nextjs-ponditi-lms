@@ -3,6 +3,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import { useEffect } from 'react';
+import UnderDev from '../../../components/elements/UnderDev';
 import Layout from '../../../components/layouts/Layout';
 import { scheduledclassStatus } from '../../../config/keys';
 import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
@@ -122,7 +123,7 @@ function requesthistory() {
     <Layout>
       <section className="section">
         <div className="container">
-          <div className="requesthistory">
+          {/* <div className="requesthistory">
             <div className="card">
               <div className="card-header">
                 <ul className="nav nav-tabs">
@@ -144,7 +145,8 @@ function requesthistory() {
                 <div className="content-for-classlist">{showContent()}</div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <UnderDev />
         </div>
       </section>
     </Layout>

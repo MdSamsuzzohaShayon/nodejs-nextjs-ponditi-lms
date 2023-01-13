@@ -1,16 +1,14 @@
 import Layout from '../../components/layouts/Layout';
 import UnderDev from '../../components/elements/UnderDev';
 
-function about() {
+function index() {
   return (
     <Layout>
-      <section className="section section-1">
-        <div className="container">
-          <UnderDev />
-        </div>
+      <section className="privacy policy container">
+        <UnderDev />
       </section>
     </Layout>
   );
 }
 
-export default about;
+export default index;

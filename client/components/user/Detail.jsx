@@ -293,9 +293,9 @@ function Detail({ userDetail, update }) {
                 )}
               </div>
               <hr />
-              <div className="body-content row">
+              <div className="body-content">
                 {userDetail.role === TEACHER ? (
-                  <div className="teacher-med-cls-sub">
+                  <div className="teacher-med-cls-sub row">
                     {userTuitionmList.length > 0 && (
                       <div className="col-md-4">
                         <h5>Tuition Medium</h5>
@@ -334,9 +334,11 @@ function Detail({ userDetail, update }) {
                     )}
                   </div>
                 ) : (
-                  <div className="col-md-4">
-                    {userTuitionmList[0] && <p className="text-capitalize">Medium: {userTuitionmList[0].name}</p>}
-                    {userClassTypes[0] && <p className="text-capitalize">Class: {userClassTypes[0].name}</p>}
+                  <div className="student-med-cls row">
+                    <div className="col-md-4">
+                      {userTuitionmList[0] && <p className="text-capitalize">Medium: {userTuitionmList[0].name}</p>}
+                      {userClassTypes[0] && <p className="text-capitalize">Class: {userClassTypes[0].name}</p>}
+                    </div>
                   </div>
                 )}
               </div>
