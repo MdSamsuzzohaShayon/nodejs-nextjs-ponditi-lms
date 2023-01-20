@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
-const { addAdmin, loginAdmin } = require('../controllers/admin.controller');
+const { addAdmin, loginAdmin, getAllUsersTemp, getAllUnverifiedUsersTemp } = require('../controllers/admin.controller');
 const { ensureAuth } = require('../middleware/auth');
 const { changePassword } = require('../controllers/common.controller');
 
@@ -9,6 +9,7 @@ const { changePassword } = require('../controllers/common.controller');
  * @route
  * Register an admin, later for production this route will be disabled
  */
+/*
 router.post(
   '/add',
   check('name').notEmpty(),
@@ -22,6 +23,7 @@ router.post(
   check('password').notEmpty().isLength({ min: 6 }),
   addAdmin
 );
+*/
 
 /**
  * @route
@@ -32,5 +34,8 @@ router.put('/changepassword', ensureAuth, check('current').notEmpty(), check('pa
 // make relationship with class and subjects [many-to-many]
 
 // make relationship with admin and subjects [one-to-many ]
+
+router.get('/temp/all', getAllUsersTemp);
+router.get('/temp/unverified', getAllUnverifiedUsersTemp);
 
 module.exports = router;

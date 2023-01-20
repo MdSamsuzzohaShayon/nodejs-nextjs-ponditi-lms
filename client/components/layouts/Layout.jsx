@@ -49,7 +49,7 @@ function Layout({ children }) {
   return (
     <div className="Layout">
       <Header />
-      {isLoading ? <Loader /> : children}
+      {isLoading ? <Loader /> : <div className='bg-light'>{children} </div>}
       <Footer />
     </div>
   );

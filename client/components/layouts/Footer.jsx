@@ -5,7 +5,7 @@ import Link from 'next/link';
 function Footer() {
   const socialItems = useSelector((state) => state.elements.socialItems);
   return (
-    <footer className="Footer w-full text-white ">
+    <footer className="Footer w-full shadow">
       {/* <div className="footer-top bg-primary d-flex justify-content-center flex-column align-items-center">
         <div className="container d-flex justify-content-between align-items-center flex-column flex-md-row h-full">
           <div className="company">
@@ -40,7 +40,7 @@ function Footer() {
           </div>
         </div>
       </div> */}
-      <div className="footer-bottom bg-primary d-flex justify-content-center flex-column align-items-center">
+      <div className="footer-bottom d-flex justify-content-center flex-column align-items-center">
         <div className="container d-flex flex-column-reverse flex-md-row justify-content-between align-items-center">
           <div className="copyright">
             <span>Copyright © 2023 Ponditil All Rights Reserved</span>

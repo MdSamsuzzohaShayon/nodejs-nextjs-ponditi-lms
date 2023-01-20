@@ -118,7 +118,7 @@ function login() {
         <Loader />
       ) : (
         <section className="Login d-flex p-0 m-0">
-          <div className="side left-side bg-danger-deep d-none d-md-block">
+          <div className="side left-side bg-primary d-none d-md-block">
             <div className="left-side-wrapper h-full vertical-center">
               <div className="login-shape">
                 <img src="/shape/login.svg" alt="Login" />

@@ -8,11 +8,12 @@ const cookieOptions = require('../config/cookie-config');
 // bcryptjs
 const db = require('../models');
 
-const { Customer, ClassType } = db;
+const { Customer, ClassType, Subject, Tuitionm } = db;
 
 const keys = require('../config/keys');
 
 const { ADMIN, TEACHER } = keys.roles;
+const { APPROVED } = keys.scheduledClassStatus;
 
 /**
  * @add admin
@@ -40,7 +41,8 @@ const addAdmin = async (req, res) => {
         msg: 'User already exist with this email address or phone number, you can now login',
       });
     }
-    userObj.isActive = true;
+    userObj.isActive = APPROVED;
+    userObj.isVerified = true;
     userObj.password = await bcrypt.hash(userObj.password, 10);
 
     // create
@@ -106,7 +108,48 @@ const loginAdmin = async (req, res, next) => {
   }
 };
 
+const getAllUsersTemp = async (req, res) => {
+  try {
+    const users = await Customer.findAll({
+      include: [
+        {
+          model: Subject,
+          attributes: ['id', 'name'],
+          // through: { where: { amount: 10 } }
+        },
+        {
+          model: ClassType,
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Tuitionm,
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
+    return res.status(200).json({ msg: 'Getting all users', users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: 'something went wrong', error });
+  }
+};
+
+const getAllUnverifiedUsersTemp = async (req, res) => {
+  try {
+    const users = await Customer.findAll({ where: { isVerified: false } });
+    console.log(users.length);
+    return res.status(200).json({ msg: 'Getting unverified all users', users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: 'something went wrong', error });
+  }
+};
+
+
+
 module.exports = {
   addAdmin,
   loginAdmin,
+  getAllUsersTemp,
+  getAllUnverifiedUsersTemp,
 };

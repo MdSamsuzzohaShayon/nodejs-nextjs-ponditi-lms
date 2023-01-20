@@ -285,7 +285,7 @@ function Detail({ userDetail, update }) {
           {(userDetail?.role === TEACHER || userDetail?.role === STUDENT) && (
             <div className="row  mb-3 py-3">
               <div className="col-12 d-flex justify-content-between row align-items-center my-3">
-                <h3 className="h5 w-fit">{userDetail.role === TEACHER ? 'Preffered Mediums, Subjects, & Classes' : 'Preffered Mediums, & Classes'}</h3>
+                <h3 className="h5 w-fit">{userDetail.role === TEACHER ? 'Preffered Subjects' : 'Mediums & Class'}</h3>
                 {update && (
                   <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 1)}>
                     Edit

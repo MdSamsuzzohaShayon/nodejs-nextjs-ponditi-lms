@@ -530,31 +530,7 @@ const resendOTP = async (req, res) => {
   });
 };
 
-const getAllUsersTemp = async (req, res) => {
-  try {
-    const users = await Customer.findAll({
-      include: [
-        {
-          model: Subject,
-          attributes: ['id', 'name'],
-          // through: { where: { amount: 10 } }
-        },
-        {
-          model: ClassType,
-          attributes: ['id', 'name'],
-        },
-        {
-          model: Tuitionm,
-          attributes: ['id', 'name'],
-        },
-      ],
-    });
-    return res.status(200).json({ msg: 'Getting all users', users });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ msg: 'something went wrong', error });
-  }
-};
+
 
 const getAllUsers = async (req, res) => {
   try {
@@ -1010,7 +986,6 @@ module.exports = {
   acceptUser,
   verifyUser,
   resendOTP,
-  getAllUsersTemp,
   getAllUsers,
   sendOTP,
   getSingleUser,

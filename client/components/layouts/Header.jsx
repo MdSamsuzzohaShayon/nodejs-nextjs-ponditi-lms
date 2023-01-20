@@ -128,7 +128,7 @@ function Header() {
   return (
     <>
       {/* Menu Start  */}
-      <div className="Header bg-primary text-white p-0 m-0">
+      <div className="Header bg-transparent text-white p-0 m-0 shadow">
         {isBreakpoint ? (
           <div className="d-md-none container">
             {/* Mobile menu start  */}
@@ -247,7 +247,11 @@ function Header() {
                 <div className="col-8">
                   <div className="d-flex justify-content-around align-items-start align-items-center h-full">
                     {menuItemList.map((mil, milIdx) => (
-                      <div key={mil.id} className={setMenuItemClass(milIdx)} style={{ flexBasis: `${100 / menuItemList.length}%` }}>
+                      <div
+                        key={mil.id}
+                        className="d-flex justify-content-center text-center h-full d-flex align-items-center"
+                        style={{ flexBasis: `${100 / menuItemList.length}%` }}
+                      >
                         <Link href={mil.link}>{mil.name}</Link>
                       </div>
                     ))}

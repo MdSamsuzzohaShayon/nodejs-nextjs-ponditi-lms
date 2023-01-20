@@ -7,7 +7,6 @@ const {
   acceptUser,
   verifyUser,
   resendOTP,
-  getAllUsersTemp,
   getAllUsers,
   login,
   sendOTP,
@@ -100,7 +99,7 @@ router.get('/single/:id', getSingleUser);
 // Notification seen
 router.put('/notification/seen', ensureAuth, notificationSeen);
 // disable on production
-router.get('/temp/all', getAllUsersTemp);
+
 router.post('/seed', seedUsers);
 
 module.exports = router;
