@@ -1,4 +1,4 @@
-// Typescript 
+// Typescript
 /*
 import React from 'react';
 import Head from 'next/head';
@@ -57,8 +57,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 */
 
-
-// JavaScript 
+// JavaScript
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,20 +66,20 @@ import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+import { AppDispatch } from '../redux/store';
 
-export default function home() {
+function Home() {
   let isMounted = true;
 
+  const dispatch: AppDispatch = useDispatch();
 
-  const dispatch = useDispatch();
-
-  const isLoading = useSelector((state) => state.elements.isLoading);
+  const isLoading = useSelector((state: any) => state.elements.isLoading);
 
   useEffect(() => {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch()), dispatch(fetchAllTuitionmsSearch())]);
+        await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
       }
     })();
     isMounted = false;
@@ -99,3 +98,5 @@ export default function home() {
     </Layout>
   );
 }
+
+export default Home;

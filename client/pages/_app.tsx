@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 // Typescript
 /*
 import React from 'react';
@@ -11,9 +12,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
 // Javascript
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { Provider } from 'react-redux';
+import { AppProps } from 'next/app';
 // import TagManager from 'react-gtm-module';
 import store from '../redux/store';
 import '../styles/globals.scss';
@@ -22,9 +24,7 @@ import '../styles/globals.scss';
 //   gtmId: process.env.NEXT_PUBLIC_GTM_ID
 // }
 
-export default function MyApp(props) {
-  const { Component, pageProps } = props;
-
+export default function MyApp({ Component, pageProps }: AppProps) {
   // useEffect(()=>{
   //   TagManager.initialize(tagManagerArgs);
   // }, []);
@@ -41,4 +41,3 @@ export default function MyApp(props) {
     </div>
   );
 }
-

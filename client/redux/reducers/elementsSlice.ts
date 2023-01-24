@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { MenuItem } from '../../interfaces/redux/elementsInterface';
 
 const initialModalState = {
   open: false,
   text: { heading: 'Heading', body: 'Body' },
 };
 
-const initialLayoutItemList = [
+const initialLayoutItemList: MenuItem[] = [
   {
     id: 1,
     name: 'Home',

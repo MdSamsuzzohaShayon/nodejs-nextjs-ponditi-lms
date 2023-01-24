@@ -1,30 +1,26 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended",
-    "airbnb",
-    "prettier"
-  ],
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:@typescript-eslint/recommended", "airbnb", "plugin:@next/next/recommended", "next", "next/core-web-vitals", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module",
-    "project": "./tsconfig.json"
+
+    "ecmaVersion": 12,
+    "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "prettier"],
+  "plugins": ["react",  "react-hooks", "prettier", "@typescript-eslint"],
   "rules": {
-    "react/jsx-props-no-spreading": "warn",
-    "import/no-extraneous-dependencies": "warn",
-    "eslintimport/no-named-as-default": "warn",
-    "eslintno-underscore-dangle": "off",
     "prettier/prettier": [
       "warn",
       {
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "react/jsx-filename-extension": "off",
+    "import/extensions" : "off",
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
   }
 }

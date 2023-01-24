@@ -1,4 +1,4 @@
-// Typescript 
+// Typescript
 /*
 import React from 'react';
 import Head from 'next/head';
@@ -57,8 +57,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 */
 
-
-// JavaScript 
+// JavaScript
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,9 +67,8 @@ import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
 
-export default function home() {
+function Home() {
   let isMounted = true;
-
 
   const dispatch = useDispatch();
 
@@ -99,3 +97,5 @@ export default function home() {
     </Layout>
   );
 }
+
+export default Home;
