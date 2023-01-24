@@ -1,0 +1,29 @@
+@import './variables';
+@import './mixins';
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+
+@import './utilities.scss';
+
+@import './Header.scss';
+
+@import './Home.scss';
+
+@import './Register.scss';
+
+// Admin
+@import './Admin.scss';
+
+@import './UserDashboard.scss';
+
+@import './UserUpdate.scss';
+
+@import './Search.scss';
+
+@import './UserDetail.scss';
+
+@import './ScheduledClass.scss';
+
+@import './Login.scss';
+@import './Footer.scss';

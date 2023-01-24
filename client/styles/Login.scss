@@ -1,0 +1,27 @@
+.Login{
+    min-height: $section-min-height;
+    padding: $section-padding;
+    .left-side{
+      width: $half-width;
+      .left-side-wrapper{
+        width: $wrapper-width;
+        margin-left: $wrapper-margin;
+      }
+    }
+    .right-side{
+      width: $half-width;
+      .right-side-wrapper{
+        width: $wrapper-width;
+        margin-right: $wrapper-margin;
+      }
+    }
+    @media (max-width: $br-md) {
+      .right-side{
+        width: 100%;
+        .right-side-wrapper{
+          width: 96%;
+          margin-left: 2%;
+        }
+      }
+    }
+  }

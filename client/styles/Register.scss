@@ -1,0 +1,35 @@
+.SendCode {
+  min-height: $section-min-height;
+  padding: $section-padding;
+  // .phone-code {
+  //   border-top-left-radius: 25px;
+  //   border-bottom-left-radius: 25px;
+  // }
+  .form-select {
+    min-width: 20%;
+  }
+  a {
+    color: $dark-color;
+  }
+  @media (max-width: $br-md) {
+    .phone-code {
+      width: 120px !important;
+    }
+  }
+}
+.VerifyCode {
+  a {
+    color: $dark-color;
+  }
+}
+
+.price-input-field {
+  flex-basis: '74%';
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.calculator-icon-span {
+  flex-basis: '25%';
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}

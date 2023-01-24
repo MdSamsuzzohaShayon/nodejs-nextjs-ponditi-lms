@@ -11,7 +11,9 @@
  - Typescript
 
 ### Development
-
+ - [next js typescript](https://nextjs.org/learn/excel/typescript)
+ - [tsconfig](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+ - Eslint setup now install `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-prettier prettier`
  - Server and client will have seperated cookie for login
  1. Teachers will not be able to chat before student write anything
  2. Chat will be closed after completing the tuition

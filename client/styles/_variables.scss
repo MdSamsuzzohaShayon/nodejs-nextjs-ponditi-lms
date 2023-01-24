@@ -1,0 +1,53 @@
+// Layout
+$danger-color: #852b3a;
+$danger-deep: #5f1d28;
+$white: rgb(255, 255, 255);
+$black: rgb(0, 0, 0);
+$primary-color: #10305f;
+$primary-deep: #092247;
+$dark-color: #201f1f;
+$secondary-color: #0682c8;
+$success-color: #1f8a66;
+$info-color: #154f92;
+
+$light-color: #efefef; // Light blue
+$primaryColor: #add8e6; // Light blue
+$secondaryColor: #34344b; // Dark gray
+$errorColor: rgb(121, 47, 47); // Error color
+
+// Breakpoints
+$br-xxl: 1400px;
+$br-xl: 1200px;
+$br-lg: 992px;
+$br-md: 768px;
+
+// height and width of dirredent sections
+$logo-column-w: 8%;
+$header-height: 4rem;
+$bh-height: 2.6rem;
+$h-wrapper: 83%;
+// Login
+$half-width: 50%;
+$wrapper-width: 70%;
+$wrapper-margin: 30%;
+$section-min-height: 86vh;
+$section-padding: 3rem 0;
+
+$slim-border: #10305f69 1px solid;
+
+// Bootstrap custom style
+// $border-radius: 2px;
+$btn-line-height: 1rem;
+$btn-padding-y: 0.8rem;
+$btn-padding-x: 1.5rem;
+$input-padding-y: 0.6rem;
+
+$theme-colors: (
+  'danger': $danger-color,
+  'primary': $primary-color,
+  'dark': $dark-color,
+  'secondary': $secondary-color,
+  'success': $success-color,
+  'info': $info-color,
+  'light': $light-color,
+);

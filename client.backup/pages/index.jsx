@@ -10,7 +10,6 @@ import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
 export default function home() {
   let isMounted = true;
 
-
   const dispatch = useDispatch();
 
   const isLoading = useSelector((state) => state.elements.isLoading);
