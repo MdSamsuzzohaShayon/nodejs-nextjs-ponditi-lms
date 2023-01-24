@@ -138,9 +138,9 @@ const verifyUser = async (req, res) => {
 /**
  * @param {type} res name           full name
  * @param {type} res phone          raw phone number without any country code
- * @param {type} res email          A valid email address later on you can use email to login
- * @param {type} res institution    A valid email address later on you can use email to login
- * @returns response 201            Registered user successfully, Now you can login
+ * @param {type} res email          A valid email address later on you can use email to register
+ * @param {type} res institution    A valid email address later on you can use email to register
+ * @returns response 201            Registered user successfully, Now you can register
  */
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
@@ -379,7 +379,7 @@ const login = async (req, res) => {
       role: userExist.dataValues.role,
     };
     const token = jwt.sign(userDetailResponse, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '90d',
     });
     res.cookie('token', token, cookieOptions);
     userDetailResponse.name = userExist.dataValues.name;

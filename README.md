@@ -12,6 +12,17 @@
 
 ### Development
 
+ - Server and client will have seperated cookie for login
+ 1. Teachers will not be able to chat before student write anything
+ 2. Chat will be closed after completing the tuition
+ 3. Change the label "student" to "Learner" everywhere in the website. There should be no "Student" label.
+ 4. Teacher will not be able to change the tuition request page until he change the status of expired tuition schedule.
+ 5. Admin panel will get the notification of expired task.
+ 6. Change the browser tab title
+ 7. Total count and search option(id,name,phone no) in Admin panel.
+ 8. Google search index for ponditi.com
+ 9. Compress profile photo
+
  - **Requirement update-2**
  - Reset all targeted value after making request and mounting a component
  - **Register user**

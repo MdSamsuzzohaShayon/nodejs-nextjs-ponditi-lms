@@ -96,7 +96,7 @@ const loginAdmin = async (req, res, next) => {
       role: userExist.dataValues.role,
     };
     const token = jwt.sign(userDetailResponse, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '90d',
     });
     // console.log(cookieOptions);
     res.cookie('token', token, cookieOptions);
