@@ -93,7 +93,7 @@ function UserList(props) {
         ))}
       </ul>
 
-      {props.allUserList.length > 0 &&
+      {props.allUserList.length > 0 ? (
         props.allUserList.map((aul) => (
           <div className="row mt-2 border-bottom" key={aul.id}>
             <div className="col-md-4">{aul?.name}</div>
@@ -125,7 +125,10 @@ function UserList(props) {
               )}
             </div>
           </div>
-        ))}
+        ))
+      ) : (
+        <div className="alert alert-danger">No user found</div>
+      )}
       <style jsx>{`
         .props {
           width: 33%;

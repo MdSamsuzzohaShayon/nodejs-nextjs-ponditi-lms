@@ -3,23 +3,23 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
 import { toggleLoading, resetErrorList } from '../../../redux/reducers/elementsSlice';
 import { toggleAuthUser, fetchCurrentSingleUser } from '../../../redux/reducers/userReducer';
 import { fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
+import { useAppSelector, useAppDispatch } from '../../../redux/store';
 import Detail from '../../../components/user/Detail';
 import Layout from '../../../components/layouts/Layout';
 import { roles } from '../../../config/keys';
 
 const { ADMIN } = roles;
 
-function dashboard() {
+function Dashboard() {
   let isMounted = false;
   const router = useRouter();
-  const dispatch = useDispatch();
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const currentUser = useSelector((state) => state.user.currentUser);
+  const dispatch = useAppDispatch();
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const currentUser = useAppSelector((state) => state.user.currentUser);
 
   useEffect(() => {
     if (isMounted === false) {
@@ -62,4 +62,4 @@ function dashboard() {
   );
 }
 
-export default dashboard;
+export default Dashboard;

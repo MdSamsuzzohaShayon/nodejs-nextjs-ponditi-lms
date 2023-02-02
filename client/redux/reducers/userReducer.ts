@@ -6,6 +6,7 @@ import { fetchAllClassTypes } from './classtypeReducer';
 import { fetchAllSubjects } from './subjectReducer';
 import { setErrorList } from './elementsSlice';
 import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SELECT } from '../../config/keys';
+import {AuthUserInfoInterface} from '../../types/redux/userInterface';
 // import { tuitionplace } from '../../utils/types';
 import axios from '../../config/axios';
 
@@ -126,7 +127,7 @@ const initialVerifyCode = {
   otp: '',
 };
 
-const initialAuthUserInfo = {
+const initialAuthUserInfo: AuthUserInfoInterface = {
   name: null,
   email: null,
   id: null,

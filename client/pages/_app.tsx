@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/extensions */
 // Typescript
 /*
@@ -11,14 +13,14 @@ export default function App({ Component, pageProps }: AppProps) {
 */
 
 // Javascript
-/* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { Provider } from 'react-redux';
 import { AppProps } from 'next/app';
 // import TagManager from 'react-gtm-module';
 import store from '../redux/store';
 import '../styles/globals.scss';
+import ThemeProvider from '../context/ThemeProvider';
 
 // const tagManagerArgs = {
 //   gtmId: process.env.NEXT_PUBLIC_GTM_ID
@@ -36,7 +38,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <Provider store={store}>
-        <Component {...pageProps} />
+        <ThemeProvider>
+          <Component {...pageProps} />
+        </ThemeProvider>
       </Provider>
     </div>
   );

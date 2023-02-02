@@ -159,11 +159,11 @@ function login() {
                 </div>
                 <div className="row mb-3">
                   <div className="col d-flex flex-column">
-                    <Link href="/user/passwordrecover">
-                      <a className="text-decoration-underline text-capitalize text-dark">Password forgotten?</a>
+                    <Link href="/user/passwordrecover" className="text-decoration-underline text-capitalize text-dark">
+                      Password forgotten?
                     </Link>
-                    <Link href="/user/register">
-                      <a className="text-decoration-underline text-capitalize text-dark">Don&apos;t have an account?</a>
+                    <Link href="/user/register" className="text-decoration-underline text-capitalize text-dark">
+                      Don&apos;t have an account?
                     </Link>
                   </div>
                 </div>

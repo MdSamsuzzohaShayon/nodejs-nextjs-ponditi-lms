@@ -34,4 +34,9 @@ module.exports = {
     START_CLASS: 'START_CLASS',
     COMPLETE: 'COMPLETE',
   },
+  roomStatus: {
+    INITIALIZED: 'INITIALIZED',
+    RUNNING: 'RUNNING',
+    FINISH: 'FINISH',
+  },
 };

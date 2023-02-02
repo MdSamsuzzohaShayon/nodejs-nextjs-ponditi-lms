@@ -9,6 +9,7 @@ import { setRPCurrentPage, setRPStart, setSearchUserList } from '../../redux/red
 import { setSelectedSearchUser, showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
 import { roles, scheduledclassStatus, types, BACKEND_URL } from '../../config/keys';
 import MakeStar from '../elements/MakeStar';
+import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
 
 const { STUDENT } = roles;
 const { ANY } = scheduledclassStatus;
@@ -28,7 +29,7 @@ function SearchResult() {
   const rpTotalPage = useSelector((state) => state.search.rpTotalPage);
   const rpCurrentPage = useSelector((state) => state.search.rpCurrentPage);
 
-  const changePageHandler = (cpe, selectedPage) => {
+  const changePageHandler = (cpe: React.ChangeEvent<HTMLBodyElement>, selectedPage: number) => {
     cpe.preventDefault();
     dispatch(setRPStart((selectedPage - 1) * rpTotal));
     dispatch(setRPCurrentPage(selectedPage));
@@ -36,7 +37,7 @@ function SearchResult() {
     dispatch(setSearchUserList(newSearchUserList));
   };
 
-  const changePrevPageHandler = (cppe) => {
+  const changePrevPageHandler = (cppe: React.ChangeEvent) => {
     cppe.preventDefault();
     if (rpCurrentPage !== 1) {
       const newCurrentPage = rpCurrentPage - 1;
@@ -49,7 +50,7 @@ function SearchResult() {
       dispatch(setSearchUserList(newSearchUserList));
     }
   };
-  const changeNextPageHandler = (cnpe) => {
+  const changeNextPageHandler = (cnpe: React.ChangeEvent) => {
     cnpe.preventDefault();
     if (rpCurrentPage !== rpTotalPage) {
       const newCurrentPage = rpCurrentPage + 1;
@@ -64,12 +65,12 @@ function SearchResult() {
     }
   };
 
-  const headToSendRequestHandler = (htsre, receverId) => {
+  const headToSendRequestHandler = (htsre: React.SyntheticEvent, receiverId: number) => {
     htsre.preventDefault();
     // Under dev
-    return Router.push('/development');
+    // return Router.push('/development');
     // eslint-disable-next-line no-unreachable
-    const classAndSubject = { receverId };
+    const classAndSubject: ClassAndSubjectInterface = { receiverId };
     // console.log(searchParams);
     if (searchParams.ClassTypeId === '0' || searchParams.ClassTypeId === '' || searchParams.ClassTypeId === ANY) {
       classAndSubject.ClassTypeId = classtypeList[1].id;
@@ -98,7 +99,7 @@ function SearchResult() {
     const newSearch = { ...searchData, ...classAndSubject };
     // console.log(newSearch);
     window.localStorage.setItem('search', JSON.stringify(newSearch));
-    return Router.push(`/search/request/${receverId}`);
+    return Router.push(`/search/request/?receiverId=${receiverId}`);
   };
 
   const findStarLimit = (sul) => {
@@ -132,31 +133,30 @@ function SearchResult() {
                 <div className="card my-3" key={sul.id}>
                   <div className="search-card-row row g-0">
                     <div className="col-md-3">
-                      {sul?.image ? (
-                        <img src={makeTheUrl(sul.image)} className="rounded-start" alt={sul?.name} />
-                      ) : (
-                        <img src="/img/default-img.jpg" className="rounded-start" alt={sul?.name} />
-                      )}
+                      <Link href={`/search/detail/?userId=${sul.id}`}>
+                        {sul?.image ? (
+                          <img src={makeTheUrl(sul.image)} className="rounded-start" alt={sul?.name} />
+                        ) : (
+                          <img src="/img/default-img.jpg" className="rounded-start" alt={sul?.name} />
+                        )}
+                      </Link>
                     </div>
                     <div className="col-md-6">
                       <div className="card-body">
-                        <div className="d-flex justify-content-between">
-                          <h5 className="card-title text-capitalize">{sul?.name}</h5>
-                          <h5 className="card-title text-capitalize">
-                            <MakeStar limit={findStarLimit(sul)} />
-                          </h5>
-                        </div>
-                        <p className="card-text">Experience: {sul?.experience} years</p>
-                        {/* <p className="card-text">Fees: {sul?.rate} tk per hour</p> */}
-                        {displayRates(sul)}
+                        <Link href={`/search/detail/?userId=${sul.id}`}>
+                          <div className="d-flex justify-content-between">
+                            <h5 className="card-title text-capitalize">{sul?.name}</h5>
+                            <h5 className="card-title text-capitalize">
+                              <MakeStar limit={findStarLimit(sul)} />
+                            </h5>
+                          </div>
+                          <p className="card-text">Experience: {sul?.experience} years</p>
+                          {/* <p className="card-text">Fees: {sul?.rate} tk per hour</p> */}
+                          {displayRates(sul)}
+                        </Link>
                       </div>
                     </div>
                     <div className="col-md-3 vertical-center ">
-                      {authUserInfo?.role === STUDENT && (
-                        <button type="button" className="btn btn-primary my-2 request-details" onClick={(htsre) => headToSendRequestHandler(htsre, sul.id)}>
-                          Send Request
-                        </button>
-                      )}
                       <button
                         type="button"
                         className="btn btn-primary my-2 request-details"
@@ -164,6 +164,16 @@ function SearchResult() {
                       >
                         <Link href={`/search/detail/?userId=${sul.id}`}>View Details</Link>
                       </button>
+                      {authUserInfo?.role === STUDENT && (
+                        <div className="btn-group request-details" role="group" aria-label="Basic example">
+                          <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre, sul.id)}>
+                            Send Request
+                          </button>
+                          <button type="button" className="btn btn-danger">
+                            <Link href={`/user/chat/?receiverId=${sul.id}`}>Chat</Link>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

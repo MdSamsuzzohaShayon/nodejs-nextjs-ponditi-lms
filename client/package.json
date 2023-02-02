@@ -5,11 +5,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --ext .ts,.tsx .",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx}'"
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx}'",
+    "export": "next build && next export -o staticsite"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.17.1",
     "@reduxjs/toolkit": "^1.9.1",
+    "@types/socket.io-client": "^3.0.0",
     "axios": "^1.2.3",
     "bootstrap": "^5.2.3",
     "date-fns": "^2.29.3",
@@ -19,7 +21,8 @@
     "react-dom": "18.2.0",
     "react-redux": "^8.0.5",
     "remark": "^14.0.2",
-    "remark-html": "^15.0.1"
+    "remark-html": "^15.0.1",
+    "socket.io-client": "^4.5.4"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.1.5",

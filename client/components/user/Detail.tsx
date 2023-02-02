@@ -6,7 +6,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Router from 'next/router';
 import React, { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
 import { setUpdatePart, setCurrentUser, setUpdateUser } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
@@ -16,20 +15,21 @@ import axios from '../../config/axios';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype, setDisplayClassType } from '../../redux/reducers/classtypeReducer';
 import { setSelectedSubject, setDisplaySubject } from '../../redux/reducers/subjectReducer';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
 
 const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
 
 function Detail({ userDetail, update }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const imageInputEl = useRef(null);
   const fileSelector = null;
 
-  const userSubjects = useSelector((state) => state.user.userSubjects);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const userExamList = useSelector((state) => state.user.userExamList);
-  const userTuitionmList = useSelector((state) => state.user.userTuitionmList);
-  const userClassTypes = useSelector((state) => state.user.userClassTypes);
+  const userSubjects = useAppSelector((state) => state.user.userSubjects);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const userExamList = useAppSelector((state) => state.user.userExamList);
+  const userTuitionmList = useAppSelector((state) => state.user.userTuitionmList);
+  const userClassTypes = useAppSelector((state) => state.user.userClassTypes);
 
   // const sendRequesthandler = (sre) => {
   //   sre.preventDefault();

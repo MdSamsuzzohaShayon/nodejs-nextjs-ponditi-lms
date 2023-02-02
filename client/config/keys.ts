@@ -1,4 +1,4 @@
-export const BACKEND_URL:string = 'http://localhost:9000';
+export const BACKEND_URL: string = 'http://localhost:9000';
 // export const BACKEND_URL = 'https://ponditi.com';
 // export const BACKEND_URL = 'https://backend.ryansoftbd.com';
 // export const BACKEND_URL = 'https://ponditi-api.onrender.com';

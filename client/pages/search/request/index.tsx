@@ -12,7 +12,7 @@ import Loader from '../../../components/elements/Loader';
 
 const { STUDENT, TEACHER } = roles;
 
-function index() {
+function Index() {
   let isMounted = true;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -49,7 +49,7 @@ function index() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const newUserId = params.get('userId');
+    const newUserId = params.get('receverId');
     setUserId(newUserId);
     if (newUserId && isMounted) {
       dispatch(resetErrorList());
@@ -81,4 +81,4 @@ function index() {
   );
 }
 
-export default index;
+export default Index;

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { MenuItem } from '../../interfaces/redux/elementsInterface';
+import { MenuItem, SocialLinksInterface } from '../../types/redux/elementsInterface';
 
 const initialModalState = {
   open: false,
@@ -30,26 +30,31 @@ const initialLayoutItemList: MenuItem[] = [
   // },
 ];
 
-const initialSocialLinks = [
+
+const initialSocialLinks: SocialLinksInterface[] = [
   {
     id: 1,
     name: 'fb',
     icon: 'fb.svg',
+    link: '/',
   },
   {
     id: 2,
     name: 'twitter',
     icon: 'twitter.svg',
+    link: '/',
   },
   {
     id: 3,
     name: 'linkedin',
     icon: 'linkedin.svg',
+    link: '/',
   },
   {
     id: 4,
     name: 'instagram',
     icon: 'instagram.svg',
+    link: '/',
   },
 ];
 

@@ -115,7 +115,7 @@ function SendCode() {
                     //   );
                     // }
                     <option key={idx} value={`${cpc.code}`}>{`+${cpc.code} (${cpc.iso})`}</option>
-                  )
+                  ),
                   // <option value="1">1</option>
                 )}
               </select>
@@ -136,9 +136,7 @@ function SendCode() {
             {/* <a href="#" className="text-decoration-underline text-capitalize text-dark w-fit" onClick={verifyCodeSegment}>
               Verify your existing code.
             </a> */}
-            <Link href="/user/login">
-              <a className="text-decoration-underline text-capitalize text-dark w-fit">Already have an account?</a>
-            </Link>
+            <Link href="/user/login" className='text-decoration-underline'>Already have an account?</Link>
           </div>
         </div>
       </form>

@@ -39,6 +39,28 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'reviewtakerId',
         as: 'Reviewtaker',
       });
+
+      // // CustomerId as invitorId (since we are making multiple relation between same two table) will be added as foreign key in Chat as Chatinvitor
+      // Customer.hasMany(models.Chat, {
+      //   foreignKey: 'invitorId',
+      //   as: 'Chatinvitor',
+      // });
+      // // CustomerId as invitereceverId (since we are making multiple relation between same two table) will be added as foreign key in Chat as Inviterecever
+      // Customer.hasMany(models.Chat, {
+      //   foreignKey: 'invitereceverId',
+      //   as: 'Inviterecever',
+      // });
+      // // CustomerId as messagesenderId (since we are making multiple relation between same two table) will be added as foreign key in Message as Messagesender
+      // Customer.hasMany(models.Message, {
+      //   foreignKey: 'messagesenderId',
+      //   as: 'Messagesender',
+      // });
+      // // CustomerId as messagereceverId (since we are making multiple relation between same two table) will be added as foreign key in Message as Messagerecever
+      // Customer.hasMany(models.Message, {
+      //   foreignKey: 'messagereceverId',
+      //   as: 'Messagerecever',
+      // });
+
       // CustomerId will be added as foreign key in Notification
       Customer.hasMany(models.Notification);
       // CustomerId will be added as foreign key in Education
@@ -160,7 +182,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       freezeTableName: true,
       tableName: 'Customer',
-    }
+    },
   );
 
   return Customer;

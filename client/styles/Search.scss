@@ -1,8 +1,14 @@
 .search {
   .request-details {
-    min-width: 10rem;
+    min-width: 15rem;
+    a{
+      color: $white;
+    }
   }
   // xxl - 238, xl-204, lg-170, md-144
+  a{
+    color: $dark-color;
+  }
 
   .search-card-row {
     height: 238px;

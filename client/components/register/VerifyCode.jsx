@@ -124,17 +124,17 @@ function VerifyCode() {
         <div className="row mb-3">
           <div className="col d-flex flex-column">
             {sendOTP.phone && sendOTP.phone !== '' ? (
-              <a href="#" className="text-decoration-underline text-capitalize text-dark" onClick={resendCodeHandler}>
+              <button type="button" className="btn btn-transparent text-decoration-underline text-capitalize text-dark w-fit p-0 m-0" onClick={resendCodeHandler}>
                 Resend code
-              </a>
+              </button>
             ) : (
-              <a href="#" className="text-decoration-underline text-capitalize text-dark" onClick={sendCodeSegment}>
+              <button type="button" className="btn btn-transparent text-decoration-underline text-capitalize text-dark w-fit" onClick={sendCodeSegment}>
                 Need code?
-              </a>
+              </button>
             )}
 
-            <Link href="/user/login">
-              <a className="text-decoration-underline text-capitalize text-dark">Already have an account?</a>
+            <Link href="/user/login" className="text-decoration-underline text-capitalize text-dark">
+              Already have an account?
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import { SocialLinksInterface } from '../../types/redux/elementsInterface';
 
 function Footer() {
   const socialItems = useSelector((state) => state.elements.socialItems);
@@ -63,11 +64,11 @@ function Footer() {
               <li className="list-unstyled px-3  footer-bottom-list-item">
                 <div className="social d-flex h-full py-md-0 py-2">
                   <ul className="d-flex justify-centent-start align-items-center m-0 px-1">
-                    {socialItems.map((si) => (
+                    {socialItems.map((si: SocialLinksInterface) => (
                       <li className="nav-item list-unstyled" key={si.id}>
-                        <a href="#" className="nav-link">
+                        <Link href={si.link} className="nav-link">
                           <img src={`/icons/${si.icon}`} alt={si.name} />
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>

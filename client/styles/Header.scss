@@ -4,6 +4,11 @@
   a {
     color: $primary-color !important;
   }
+  .dropdown-item{
+    a{
+      color: $white !important;
+    }
+  }
   a:hover {
     color: $black;
     text-decoration: underline;
@@ -25,10 +30,10 @@
   }
 
   .notification-bar {
-    width: 20rem;
-    top: $header-height;
-    right: 0;
-    z-index: 1;
+    @include display_overlap(20rem);
+  }
+  .inbox-bar{
+    @include display_overlap(20rem);
   }
   @media (max-width: 786px) {
     .notification-bar {

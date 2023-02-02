@@ -1,19 +1,18 @@
 const dotenv = require('dotenv');
 
-console.info(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: './.env.local' });
 } else {
   dotenv.config({ path: './.env' });
 }
-
 // dotenv.config({ path: './.env' });
-
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const cors = require('cors');
 // const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 const outputFile = require('./swagger-output.json');
 const userRoutes = require('./routes/userRouter');
@@ -24,11 +23,24 @@ const subjectRoutes = require('./routes/subjectRouter');
 const scheduledclassRoutes = require('./routes/scheduledclassRouter');
 const reviewRoutes = require('./routes/reviewRouter');
 const tuitionmRoutes = require('./routes/tuitionmRouter');
+const messageRoutes = require('./routes/messageRouter');
 // eslint-disable-next-line no-unused-vars
 const db = require('./models');
+const socketRoutes = require('./socket/socketRoutes');
 
 const app = express();
-// middleware
+/**
+ * @server create socket server for continuous connections
+ * ===================================================================
+ */
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: [process.env.FRONTEND_URL],
+    allowedHeaders: ['my-custom-header'],
+    credentials: true,
+  },
+});
 
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
@@ -42,8 +54,6 @@ app.use((req, res, next) => {
   console.log('\x1b[33m%s\x1b[0m', `${req.method} - ${req.url}`);
   next();
 });
-
-
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
 
@@ -61,6 +71,10 @@ app.get('/api', (req, res) => {
   // res.status(200).json({ msg: 'Server is working', env: process.env });
 });
 
+/**
+ * @api endpoints for restAPI
+ * ===================================================================
+ */
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
@@ -69,15 +83,22 @@ app.use('/api/classtype', classtypeRoutes);
 app.use('/api/subject', subjectRoutes);
 app.use('/api/scheduledclass', scheduledclassRoutes);
 app.use('/api/review', reviewRoutes);
+app.use('/api/message', messageRoutes);
+
+/**
+ * @api for socket io
+ * ===================================================================
+ */
+io.on('connection', socketRoutes);
 
 const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
 
-// IF THERE ARE NO TABLE THIS WILL CREATE
+// IF THERE ARE NO TABLE THIS WILL CREATE - do no make it force true
 // db.sequelize.sync({ alter: true, force: true }).then(() => {
-//   app.listen(PORT, () => {
+//   httpServer.listen(PORT, () => {
 //     console.log(`Server is running on ${PORT}`);
 //   });
 // });

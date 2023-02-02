@@ -30,3 +30,10 @@
   top: 8px;
   left: 10px;
 }
+
+@mixin display_overlap($w) {
+  width: $w;
+  top: $header-height;
+  right: 0;
+  z-index: 1;
+}

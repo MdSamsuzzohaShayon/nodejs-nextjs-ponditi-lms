@@ -5,8 +5,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React,{ useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { roles, scheduledclassStatus } from '../../config/keys';
@@ -15,25 +14,28 @@ import { toggleAuthUser, setSelectedContent } from '../../redux/reducers/userRed
 import { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST, START_CLASS, FINISH_CLASS } from '../../utils/types';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 
 const { ADMIN, STUDENT, TEACHER } = roles;
 const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
 
 function Header() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const isBreakpoint = useMediaQuery(768);
 
-  const menuItemList = useSelector((state) => state.elements.menuItemList);
-  const userUnseenNotifications = useSelector((state) => state.user.userUnseenNotifications);
-  const userNotifications = useSelector((state) => state.user.userNotifications);
-  const authenticatedUser = useSelector((state) => state.user.authenticatedUser);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+  const menuItemList = useAppSelector((state) => state.elements.menuItemList);
+  const userUnseenNotifications = useAppSelector((state) => state.user.userUnseenNotifications);
+  const userNotifications = useAppSelector((state) => state.user.userNotifications);
+  const authenticatedUser = useAppSelector((state) => state.user.authenticatedUser);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const roomListOfAUser = useAppSelector((state) => state.message.roomListOfAUser);
 
   const [dashboardUrl, setDashboardUrl] = useState('/user/dashboard');
   const [showNotificationBar, setShowNotificationBar] = useState(false);
   const [expandMenu, setExpandMenu] = useState(false);
   const [showMenues, setShowMenues] = useState(false);
+  const [showInboxes, setShowInboxes] = useState(false);
 
   const notificationMenuItem = useRef(null);
 
@@ -73,7 +75,7 @@ function Header() {
     setShowNotificationBar(false);
   };
 
-  const linkRedirectHandler = (lre, notification) => {
+  const linkRedirectHandler = (lre: React.SyntheticEvent, notification) => {
     lre.preventDefault();
     const baseUrl = window.location.origin;
     let newUrl = window.location.origin;
@@ -106,23 +108,21 @@ function Header() {
     router.push(newUrl);
   };
 
-  const setMenuItemClass = (index) => {
-    let newClass = 'd-flex justify-content-center text-center border-right-slim h-full d-flex align-items-center';
-    if (index === 0) {
-      newClass += ' border-left-slim';
-    }
-    return newClass;
-  };
-
-  const dropdownMenuHandler = (dme) => {
+  const dropdownMenuHandler = (dme: React.SyntheticEvent) => {
     dme.preventDefault();
     setShowMenues((prevState) => !prevState);
     setShowNotificationBar(false);
   };
-  const notificationBarHandler = (nbe) => {
+  const notificationBarHandler = (nbe: React.SyntheticEvent) => {
     nbe.preventDefault();
     setShowMenues(false);
     setShowNotificationBar((prevState) => !prevState);
+  };
+  const inboxBarHandler = (ibe: React.SyntheticEvent) => {
+    ibe.preventDefault();
+    setShowMenues(false);
+    setShowNotificationBar(false);
+    setShowInboxes((prevState) => !prevState);
   };
 
   return (
@@ -175,9 +175,12 @@ function Header() {
                           <Link href={dashboardUrl}>{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
                         </li>
                         <li className="d-flex">
-                          <div>
-                            <Link href="/user/requesthistory">Request history</Link>
-                          </div>
+                          <Link href="/user/requesthistory">Request history</Link>
+                        </li>
+                        <li className="d-flex">
+                          <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
+                            Inbox
+                          </button>
                         </li>
                       </>
                     ) : null}
@@ -185,17 +188,17 @@ function Header() {
                       <Link href="/admin/changepassword">Change Password</Link>
                     </li>
                     <li>
-                      <button href="#" className="bg-transparent border-0 text-white" type="button" onClick={logoutHandler}>
+                      <button className="bg-transparent border-0 text-white" type="button" onClick={logoutHandler}>
                         Logout
                       </button>
                     </li>
                   </ul>
                 ) : (
                   <div className="d-flex justify-content-start align-items-start flex-column">
-                    <div href="#">
+                    <div>
                       <Link href="/user/login">Login</Link>
                     </div>
-                    <div href="#">
+                    <div>
                       <Link href="/user/register">Register</Link>
                     </div>
                   </div>
@@ -262,7 +265,7 @@ function Header() {
                     <>
                       <div className="dropdown h-full">
                         <button
-                          className="btn bg-transparent text-white border-none dropdown-toggle btn-dropdown-user h-full text-capitalize"
+                          className="btn bg-transparent text-primary border-none dropdown-toggle btn-dropdown-user h-full text-capitalize"
                           type="button"
                           onClick={dropdownMenuHandler}
                         >
@@ -277,18 +280,27 @@ function Header() {
                           </li>
                           {authUserInfo.role === ADMIN && (
                             <li>
-                              <div className="dropdown-item" href="#">
+                              <div className="dropdown-item">
                                 <Link href="/admin">Dashboard</Link>
                               </div>
                             </li>
                           )}
                           {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
-                            <li>
-                              <div className="dropdown-item d-flex">
-                                <Link href="/user/requesthistory">Request history</Link>
-                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
-                              </div>
-                            </li>
+                            <>
+                              <li>
+                                <div className="dropdown-item d-flex">
+                                  <Link href="/user/requesthistory">Request history</Link>
+                                  {userUnseenNotifications.length > 0 && (
+                                    <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>
+                                  )}
+                                </div>
+                              </li>
+                              <li className="d-flex">
+                                <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
+                                  Inbox
+                                </button>
+                              </li>
+                            </>
                           ) : null}
                           <li>
                             <div className="dropdown-item text-white">
@@ -298,7 +310,7 @@ function Header() {
                             </div>
                           </li>
                           <li>
-                            <button href="#" className="bg-transparent border-0 text-white dropdown-item" type="button" onClick={logoutHandler}>
+                            <button className="bg-transparent border-0 text-white dropdown-item" type="button" onClick={logoutHandler}>
                               Logout
                             </button>
                           </li>
@@ -344,6 +356,30 @@ function Header() {
                               aria-hidden="true"
                             >
                               {un.comment}
+                            </li>
+                          ))
+                        ) : (
+                          <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className={showInboxes ? `inbox-bar card text-bg-primary position-absolute` : `inbox-bar card text-bg-primary position-absolute d-none`}>
+                    <div className="card-body">
+                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
+                        <h5 className="card-title">Inbox</h5>
+                        <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
+                      </div>
+                      <ul className="list-group">
+                        {roomListOfAUser.length > 0 ? (
+                          roomListOfAUser.map((rl, rlI) => (
+                            <li className="list-group-item bg-transparent text-white border-none" key={rlI} role="button" aria-hidden="true">
+                              {rl.invitorId === authUserInfo.id ? (
+                                <Link href={`/user/chat/?receiverId=${rl.invitereceverId}`}>{rl.Inviterecever?.name}</Link>
+                              ) : (
+                                <Link href={`/user/chat/?receiverId=${rl.invitorId}`}>{rl.Roominvitor?.name}</Link>
+                              )}
                             </li>
                           ))
                         ) : (

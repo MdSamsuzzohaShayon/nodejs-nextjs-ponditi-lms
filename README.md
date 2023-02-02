@@ -14,6 +14,7 @@
  - [next js typescript](https://nextjs.org/learn/excel/typescript)
  - [tsconfig](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
  - Eslint setup now install `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-prettier prettier`
+ - A room that will have two users with room status
  - Server and client will have seperated cookie for login
  1. Teachers will not be able to chat before student write anything
  2. Chat will be closed after completing the tuition
@@ -24,6 +25,12 @@
  7. Total count and search option(id,name,phone no) in Admin panel.
  8. Google search index for ponditi.com
  9. Compress profile photo
+
+### Typescript
+ - [socket io typescript](https://socket.io/docs/v4/typescript/)
+ - [Deals with cookie and socket io](https://socket.io/how-to/deal-with-cookies)
+ - [redux toolkit typescript](https://redux-toolkit.js.org/usage/usage-with-typescript), [tutorial](https://redux-toolkit.js.org/tutorials/typescript)
+ 
 
  - **Requirement update-2**
  - Reset all targeted value after making request and mounting a component
@@ -254,7 +261,25 @@
  - Admin - reject button is not working
  - Update mudium, class, subject is not working properly
 
+Can not send message to all broser in the room
+Profile page, on off in jamal
  - duplicate database and keep backup in excel file
+ 150px card
+ bold tk
+ top bar shadow in detail
+ send request
+ Available Status not in search detail page
+ send request and chat button
+
+ send request page
+ tuition style
+ location of student edit
+ Description to notes
+ Booked slot will be disabled
+ no hourly rate
+
+ Chat page
+ send request
 
 
 ### Sequelize problems
@@ -313,11 +338,23 @@ Ask questions
  SET foreign_key_checks = 0;
  SET foreign_key_checks = 1;
  ```
- - Migrations
+ - We can drop foreign key if we want to and delete a column
+ ```
+ // This will show an error if it has an foreign key and will show foreign key name as well
+ ALTER TABLE Room DROP COLUMN userId;
+ // Drop foreign key
+ ALTER TABLE Room DROP FOREIGN KEY Room_userId_foreign_idx;
+ // Again drop the column
+ ALTER TABLE Room DROP COLUMN userId;
+ ```
+ - Migrations with mssql for specific file
  ```
  npx sequelize-cli db:migrate:undo:all --to 20220215110049-migration-skeleton.js --url 'mssql://sa:Test1234@localhost/ponditi_db'
  npx sequelize-cli db:migrate --url 'mssql://sa:Test1234@localhost/ponditi_db'
  ```
+ - Migration assosiations
+  - [Migrations, many-to-many relationships](https://fullstackopen.com/en/part13/migrations_many_to_many_relationships#many-to-many-relationships)
+  - [How to define Sequelize associations using migrations](https://medium.com/@andrewoons/how-to-define-sequelize-associations-using-migrations-de4333bf75a7)
 ### Challenges
  - [Cross domain cookie](https://stackoverflow.com/questions/3342140/cross-domain-cookies/74231202#74231202)
 
@@ -350,6 +387,40 @@ ADD Email varchar(255);
     EXEC sp_RENAME 'Notification.UserId' , 'CustomerId', 'COLUMN';
     EXEC sp_RENAME 'CustomerToTuitionm.UserId' , 'CustomerId', 'COLUMN';
     ```
+ - *Create Room with relation of customer multiple times*
+    ```
+    CREATE TABLE Room (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(20) NOT NULL,
+      status VARCHAR(20) NOT NULL,
+      createdAt DATETIME NOT NULL,
+      updatedAt DATETIME NOT NULL,
+      invitorId INT ,
+      FOREIGN KEY(invitorId) REFERENCES Customer(id),
+      invitereceverId INT,
+      FOREIGN KEY (invitereceverId) REFERENCES Customer(id)      
+    );
+    ```    
+
+- _Create Message ane make relation of customer multiple times and relation with room_
+  ```
+  CREATE TABLE Message (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    text VARCHAR(255) NOT NULL,
+    publish BOOLEAN NOT NULL DEFAULT false,
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL,
+    messagesenderId INT ,
+    FOREIGN KEY(messagesenderId) REFERENCES Customer(id),
+    messagereceverId INT,
+    FOREIGN KEY (messagereceverId) REFERENCES Customer(id)   ,
+    RoomId INT,
+    FOREIGN KEY (RoomId) REFERENCES Room(id) 
+  );
+  ```
+
+
+
 
   ipoh, perak
   +6012-5252754

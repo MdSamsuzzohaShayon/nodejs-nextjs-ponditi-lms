@@ -6,7 +6,7 @@ import Layout from '../../components/layouts/Layout';
 import Login from '../../components/admin/Login';
 import { toggleAuthUser } from '../../redux/reducers/userReducer';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
-import Loader from '../../components/elements/Loader';
+// import Loader from '../../components/elements/Loader';
 
 function login() {
   const router = useRouter();

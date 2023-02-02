@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
 import { toggleAuthUser, setAuthUserInfo, resetAuthUserInfo } from '../../redux/reducers/userReducer';
+import { fetchAllRoomsOfAUser } from '../../redux/reducers/messageReducer';
 import Header from './Header';
 import Footer from './Footer';
 import Loader from '../elements/Loader';
@@ -11,9 +12,9 @@ import Loader from '../elements/Loader';
 function Layout(props) {
   let isMounted = false;
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const isLoading = useSelector((state) => state.elements.isLoading);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
 
   useEffect(() => {
     if (isMounted === false) {
@@ -26,6 +27,10 @@ function Layout(props) {
       } else {
         dispatch(toggleAuthUser(true));
         dispatch(setAuthUserInfo(JSON.parse(user)));
+        // Fetch all rooms of a user
+        (async () => {
+          dispatch(fetchAllRoomsOfAUser());
+        })();
       }
       dispatch(toggleLoading(false));
     }
@@ -49,11 +54,11 @@ function Layout(props) {
 
   return (
     <div className="Layout">
-      <Head >
+      <Head>
         <title>{props?.title}</title>
       </Head>
       <Header />
-      {isLoading ? <Loader /> : <div className='bg-light'>{props?.children} </div>}
+      {isLoading ? <Loader /> : <div className="bg-light">{props?.children} </div>}
       <Footer />
     </div>
   );
