@@ -76,14 +76,7 @@ const initialMonthList = [
   },
 ];
 
-const arrangeMonth = (
-  selectedMonth,
-  daysInMonth,
-  selectedYear,
-  selectedDay,
-  daysOfWeek,
-  selectedDate
-) => {
+const arrangeMonth = (selectedMonth, daysInMonth, selectedYear, selectedDay, daysOfWeek, selectedDate) => {
   // Generate month
   const findMonth = initialMonthList.find((iml) => iml.id === selectedMonth);
   const totalDays = daysInMonth(findMonth.short, selectedYear);
@@ -170,9 +163,7 @@ function Calendar(props) {
 
   const [daysOfWeek, setDaysOfWeek] = useState(initialDaysOfWeek);
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
-  const [selectedDay, setSelectedDay] = useState(
-    Math.abs(7 - (new Date().getDay() + 2))
-  );
+  const [selectedDay, setSelectedDay] = useState(Math.abs(7 - (new Date().getDay() + 2)));
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -186,14 +177,7 @@ function Calendar(props) {
     return new Date(year, monthNum, 0).getDate();
   }
 
-  const serielizeMonth = arrangeMonth(
-    selectedMonth,
-    daysInMonth,
-    selectedYear,
-    selectedDay,
-    daysOfWeek,
-    selectedDate
-  );
+  const serielizeMonth = arrangeMonth(selectedMonth, daysInMonth, selectedYear, selectedDay, daysOfWeek, selectedDate);
   const [daysOfMonthList, setDayListOfMonth] = useState(serielizeMonth);
 
   // daysInMonth('feb', 2015)
@@ -244,41 +228,28 @@ function Calendar(props) {
       if (daysOfMonthList[i]) {
         cols.push(
           <li
-            // className={
-            //   i === selectedDate - 1
-            //     ? 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day'
-            //     : 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center'
-            // }
+            className={
+              i === selectedDate - 1
+                ? 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center today-day'
+                : 'bg-secondary text-primary py-3 day-item text-center rounded-1 vertical-center'
+            }
             className={setClassForSelectedItem(i + 1)}
             style={{ flexBasis: '14.28%' }}
             role="button"
             key={i}
             onKeyUp={keyboardHandler}
-            onClick={(sde) =>
-              dateChangeHandler(
-                sde,
-                daysOfMonthList[i].num,
-                selectedMonth,
-                selectedYear
-              )
-            }
+            onClick={(sde) => dateChangeHandler(sde, daysOfMonthList[i].num, selectedMonth, selectedYear)}
           >
             <span>{daysOfMonthList[i].num}</span>
             {/* Day is not working properly  */}
             {/* <span>{daysOfMonthList[i].day}</span> */}
-            <span className="text-capitalize">
-              {initialMonthList.find((m) => m.id === selectedMonth).short}
-            </span>
+            <span className="text-capitalize">{initialMonthList.find((m) => m.id === selectedMonth).short}</span>
             <style jsx>{itemStyle}</style>
-          </li>
+          </li>,
         );
       }
     }
-    return (
-      <ul className="d-flex justify-content-between flex-wrap align-items-center list-unstyled weeks w-full">
-        {cols}
-      </ul>
-    );
+    return <ul className="d-flex justify-content-between flex-wrap align-items-center list-unstyled weeks w-full">{cols}</ul>;
   };
 
   return (

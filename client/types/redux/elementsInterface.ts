@@ -1,3 +1,7 @@
+import { MouseEventHandler } from 'react';
+import { RoomListInterface } from './messageinterface';
+import { AuthUserInfoInterface } from './userInterface';
+
 export interface MenuItem {
   id: number;
   name: string;
@@ -10,3 +14,18 @@ export interface SocialLinksInterface {
   icon: string;
   link: string;
 }
+
+export interface DisplayInboxPropsInterface {
+  showInboxes: boolean;
+  setShowInboxes: any;
+  roomListOfAUser: RoomListInterface[];
+  authUserInfo: AuthUserInfoInterface;
+}
+
+export interface DisplayNotificationPropsInterface {
+  showNotificationBar: boolean; 
+  natificationBarCloseHandler: MouseEventHandler<HTMLImageElement>;
+  userNotifications: any; 
+  linkRedirectHandler: MouseEventHandler<HTMLImageElement>;
+}
+

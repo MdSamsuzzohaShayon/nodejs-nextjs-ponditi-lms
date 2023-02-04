@@ -1,12 +1,23 @@
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
+
+// React/Next
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Router from 'next/router';
-import { setErrorList } from './elementsSlice';
+
+// Config/utils
 import axios from '../../config/axios';
 import { scheduledclassStatus, types } from '../../config/keys';
-import { resetAuthUserInfo, fetchSelectedSingleUser } from './userReducer';
+
+// Types
+import { SingleUserInterface } from '../../types/redux/userInterface';
+import { TimeAMPMEnum, TuitionStyleEnum } from '../../types/enums';
+
+// Redux
+import { resetAuthUserInfo } from './userReducer';
+import { setErrorList } from './elementsSlice';
+import { ScheduledClassInterface, SlotInterface } from '../../types/redux/scheduledclassInterface';
 
 const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 const { ONLINE } = types;
@@ -19,14 +30,15 @@ const initicalAddScheduledClass = {
 const today = new Date();
 const iscHours = 1;
 const iscStart = today.toISOString();
-const initialAScheduledClass = {
-  receverId: null,
-  ClassTypeId: null,
-  SubjectId: null,
-  desc: 'This is description',
+
+const initialAScheduledClass: ScheduledClassInterface = {
+  receiverId: 0,
+  ClassTypeId: 0,
+  SubjectId: 0,
+  desc: 'This is Note',
   date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
-  time: null,
-  tutionplace: ONLINE,
+  time: '',
+  tutionplace: TuitionStyleEnum.ONLINE,
   tuitionlocation: '',
   // start: iscStart,
   // hours: iscHours,
@@ -60,102 +72,102 @@ const initialSCTabElements = [
   },
 ];
 
-const initialSlotList = [
+const initialSlotList: SlotInterface[] = [
   {
     id: 1,
     slot: 8,
     slotName: '08 - 09',
-    ampm: 'AM',
+    ampm: TimeAMPMEnum.AM,
   },
   {
     id: 2,
     slot: 9,
     slotName: '09 - 10',
-    ampm: 'AM',
+    ampm: TimeAMPMEnum.AM,
   },
   {
     id: 3,
     slot: 10,
     slotName: '10 - 11',
-    ampm: 'AM',
+    ampm: TimeAMPMEnum.AM,
   },
   {
     id: 4,
     slot: 11,
     slotName: '11 - 12',
-    ampm: 'AM',
+    ampm: TimeAMPMEnum.AM,
   },
   {
     id: 5,
     slot: 12,
     slotName: '12 - 01',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 6,
     slot: 1,
     slotName: '01 - 02',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 7,
     slot: 2,
     slotName: '02 - 03',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 8,
     slot: 3,
     slotName: '03 - 04',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 9,
     slot: 4,
     slotName: '04 - 05',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 10,
     slot: 5,
     slotName: '05 - 06',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 11,
     slot: 6,
     slotName: '06 - 07',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 12,
     slot: 7,
     slotName: '07 - 08',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 13,
     slot: 8,
     slotName: '08 - 09',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
   {
     id: 14,
     slot: 9,
     slotName: '09 - 10',
-    ampm: 'PM',
+    ampm: TimeAMPMEnum.PM,
   },
 ];
 
 const initialLeaveAReview = { stars: 0, comment: '' };
 
 // scou = Scheduled Class of a User
-export const fetchAllRequestedSCOU = createAsyncThunk('scheduledclass/allRequestedScheduledClass', async (userId, { dispatch, rejectWithValue }) => {
+export const fetchAllRequestedSCOU = createAsyncThunk('scheduledclass/allRequestedScheduledClass', async (userId: number, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/scheduledclass/member/${userId}`);
     // console.log(response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
     }
@@ -196,7 +208,6 @@ export const scheduledclassSlice = createSlice({
      * @static content
      */
     showReviewFields: false,
-    madeRequest: false,
     slotList: initialSlotList,
     tabElements: initialSCTabElements,
     generateBill: 0, // bill per minutes
@@ -205,7 +216,6 @@ export const scheduledclassSlice = createSlice({
      */
     addscheduledclass: initicalAddScheduledClass,
 
-    selectedSearchUser: {},
     selectedClassTypesSU: [],
     selectedSubjectsSU: [],
 
@@ -227,9 +237,6 @@ export const scheduledclassSlice = createSlice({
     leaveAReview: initialLeaveAReview,
   },
   reducers: {
-    showRequest: (state, action) => {
-      state.madeRequest = action.payload;
-    },
     setShowReviewFields: (state, action) => {
       state.showReviewFields = action.payload;
     },
@@ -248,9 +255,6 @@ export const scheduledclassSlice = createSlice({
     setAddscheduledclass: (state, action) => {
       //   state.addscheduledclass = { ...state.addscheduledclass, ...action.payload };
       state.addscheduledclass = action.payload;
-    },
-    setSelectedSearchUser: (state, action) => {
-      state.selectedSearchUser = action.payload;
     },
     setInitializeSchedule: (state, action) => {
       state.initializeSchedule = {
@@ -285,27 +289,6 @@ export const scheduledclassSlice = createSlice({
     //   // We can directly add the new post object to our posts array
     //   state.posts.push(action.payload)
     // })
-    builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
-      // console.log(action.payload, state);
-      state.selectedSearchUser = action.payload.user;
-      /*
-      const initialSchedule = {
-        receverId: action.payload.user.id,
-        desc: 'This is description',
-        start: iscStart,
-        hours: iscHours,
-      };
-      if (action.payload.subjects.length > 0) {
-        state.selectedSubjectsSU = action.payload.subjects;
-        initialSchedule.SubjectId = action.payload.subjects[0].id;
-      }
-      if (action.payload.classTypes.length > 0) {
-        state.selectedClassTypesSU = action.payload.classTypes;
-        initialSchedule.ClassTypeId = action.payload.classTypes[0].id;
-      }
-      state.initializeSchedule = initialSchedule;
-      */
-    });
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
       state.allScheduledClassList = action.payload.classScheduledList;
@@ -324,7 +307,6 @@ export const scheduledclassSlice = createSlice({
 
 export const {
   // Showing content
-  showRequest,
   setShowReviewFields,
   setGenerateBill,
 

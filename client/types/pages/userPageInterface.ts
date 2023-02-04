@@ -11,4 +11,9 @@ export interface ChatPropsInterface {
   authUserInfo: AuthUserInfoInterface;
 }
 
-
+export interface DetailPropsInterface {
+  userDetail: any;
+  update: boolean;
+  search: boolean;
+  userId: number;
+}

@@ -55,7 +55,8 @@ function Dashboard() {
       <div className="user-dashboard d-flex">
         <div className="container">
           {/* <img src="https://ponditistorage.s3.ap-southeast-1.amazonaws.com/ramos.jpg-42-image.jpg" height="200" alt="User Image" /> */}
-          <Detail userDetail={currentUser} update />
+          {/* userDetail, update, search, userId */}
+          <Detail userDetail={currentUser} update search={false} userId={authUserInfo.id} />
         </div>
       </div>
     </Layout>

@@ -6,6 +6,8 @@ import { initialSearchParams, setSearchParams, setSearchUserList, setSearchAllUs
 import { fetchAllClassTypes, fetchAllClassTypesSearch, setClasstypeList } from '../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects, fetchAllSubjectsSearch, setSubjectList } from '../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms, fetchAllTuitionmsSearch, setTuitionmList } from '../../redux/reducers/tuitionmReducer';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
+import {SearchParamsInterface} from '../../types/redux/searchInterface';
 
 import Layout from '../../components/layouts/Layout';
 import SearchForm from '../../components/search/SearchForm';
@@ -14,14 +16,14 @@ import Loader from '../../components/elements/Loader';
 
 import axios from '../../config/axios';
 
-function search() {
+function Search() {
   let isMounted = false;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const searchParams = useSelector((state) => state.search.searchParams);
+  const searchParams = useAppSelector((state) => state.search.searchParams);
   // rp = result pagination
-  const rpStart = useSelector((state) => state.search.rpStart);
-  const rpTotal = useSelector((state) => state.search.rpTotal);
+  const rpStart = useAppSelector((state) => state.search.rpStart);
+  const rpTotal = useAppSelector((state) => state.search.rpTotal);
 
   // Search on mount
   const initialSearchUsers = async () => {
@@ -37,7 +39,7 @@ function search() {
         dispatch(setSearchUserList(displayableItems));
         dispatch(setRPTotalPage(Math.ceil(response.data.teachers.length / rpTotal)));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -55,13 +57,12 @@ function search() {
         // Set local storage from home page
         const searchData = localStorage.getItem('search');
         if (searchData) {
-          dispatch(setSearchParams(JSON.parse(searchData)));
+          const searchParsedData: SearchParamsInterface = JSON.parse(searchData);
+          dispatch(setSearchParams(searchParsedData));
         }
 
         (async () => {
-          if (isMounted === false) {
-            await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch()), dispatch(fetchAllTuitionmsSearch())]);
-          }
+          await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
         })();
       }
       // console.log(searchData);
@@ -89,4 +90,4 @@ function search() {
   );
 }
 
-export default search;
+export default Search;

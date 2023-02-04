@@ -34,12 +34,16 @@
   }
   .inbox-bar{
     @include display_overlap(20rem);
+    a{
+      color: white !important;
+    }
   }
-  @media (max-width: 786px) {
+  @media (max-width: $br-md) {
     .notification-bar {
-      width: 100vw;
-      height: 100vh;
-      top: 0;
+      @include display_ban_mobile();
+    }
+    .inbox-bar{
+      @include display_ban_mobile();
     }
   }
 }

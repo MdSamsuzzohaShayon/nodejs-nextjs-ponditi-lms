@@ -1,35 +1,36 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { types, roles, tuitionmediums } from '../../config/keys';
+import { SearchParamsInterface } from '../../types/redux/searchInterface';
+import { TuitionStyleEnum } from '../../types/enums';
+import { SingleUserInterface } from '../../types/redux/userInterface';
 
-const { ONLINE, TL, SL, ANY } = types;
-const { BANGLA, ENGLISH, ARABIC } = tuitionmediums;
-
-export const initialSearchParams = {
-  location: null,
-  ClassTypeId: null, // id
-  SubjectId: null, // id
-  tutionplace: ANY, // Online - tution location
-  TuitionmId: null,
+export const initialSearchParams: SearchParamsInterface = {
+  location: '',
+  ClassTypeId: 0, // id
+  SubjectId: 0, // id
+  tutionplace: TuitionStyleEnum.ANY, // Online - tution location
+  TuitionmId: 0,
 };
 
 const initialTuitionType = [
   {
     id: 1,
-    type: ONLINE,
+    type: TuitionStyleEnum.ONLINE,
     text: 'Online',
   },
   {
     id: 2,
-    type: TL,
+    type: TuitionStyleEnum.TL,
     text: "Teacher's Location",
   },
   {
     id: 3,
-    type: SL,
+    type: TuitionStyleEnum.SL,
     text: "Student's Location",
   },
 ];
+
+const initialSeachUserList: SingleUserInterface[] = [];
 
 export const searchSlice = createSlice({
   name: 'search',
@@ -44,7 +45,7 @@ export const searchSlice = createSlice({
     /**
      * @function for paginations
      */
-    searchUserList: [],
+    searchUserList: initialSeachUserList,
     rpStart: 0, // rp = result pagination
     rpTotal: 10,
     rpCurrentPage: 1,

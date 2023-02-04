@@ -4,40 +4,51 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
+
+// React and next import
 import Router from 'next/router';
+import Link from 'next/link';
 import React, { useRef } from 'react';
+
+// config and utils
 import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
-import { setUpdatePart, setCurrentUser, setUpdateUser } from '../../redux/reducers/userReducer';
 import { locationSelection } from '../../utils/helper';
-import { toCapSentence } from '../../utils/extendPrototypes';
-import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import axios from '../../config/axios';
+
+// redux
+import { setUpdatePart, setCurrentUser, setUpdateUser } from '../../redux/reducers/userReducer';
+import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype, setDisplayClassType } from '../../redux/reducers/classtypeReducer';
 import { setSelectedSubject, setDisplaySubject } from '../../redux/reducers/subjectReducer';
+import { setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
 
+// types
+import { DetailPropsInterface } from '../../types/pages/userPageInterface';
+import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
+import { TuitionStyleEnum } from '../../types/enums';
+
+// destructure
 const { STUDENT, TEACHER } = roles;
 const { PENDING } = scheduledclassStatus;
 
-function Detail({ userDetail, update }) {
+function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
+  // initialize hooks
   const dispatch = useAppDispatch();
-  const imageInputEl = useRef(null);
-  const fileSelector = null;
+  const imageInputEl = useRef<HTMLInputElement>(null);
 
+  // get state from redux
   const userSubjects = useAppSelector((state) => state.user.userSubjects);
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const userExamList = useAppSelector((state) => state.user.userExamList);
   const userTuitionmList = useAppSelector((state) => state.user.userTuitionmList);
   const userClassTypes = useAppSelector((state) => state.user.userClassTypes);
+  const searchParams = useAppSelector((state) => state.search.searchParams);
+  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
+  const subjectList = useAppSelector((state) => state.subject.subjectList);
 
-  // const sendRequesthandler = (sre) => {
-  //   sre.preventDefault();
-  //   dispatch(showRequest(true));
-  // };
-  // console.log(userDetail);
-
-  const editPartToUpdateHandler = (epse, partNum) => {
+  const editPartToUpdateHandler = (epse: React.SyntheticEvent, partNum: number) => {
     epse.preventDefault();
     // selectPart / set part
     dispatch(setUpdatePart(partNum));
@@ -53,13 +64,13 @@ function Detail({ userDetail, update }) {
           TuitionmId: userTuitionmList.map((ut) => ut.id),
           ClassTypeId: userClassTypes.map((ct) => ct.id),
           SubjectId: userSubjects.map((us) => us.id),
-        })
+        }),
       );
     }
-    window.localStorage.setItem('updatePart', partNum);
+    window.localStorage.setItem('updatePart', partNum.toString());
     // redirect
     // /?userId=${userDetail.id}`
-    Router.push({ pathname: '/user/update', query: { userId: userDetail.id } });
+    Router.push({ pathname: '/user/update', query: { userId } });
   };
 
   // handleFileSelect = (e) => {
@@ -67,13 +78,10 @@ function Detail({ userDetail, update }) {
   //   fileSelector.click();
   // }
 
-  const uploadImageHandler = (uie) => {
-    // uie.preventDefault();
-    // console.log(uie);
-    imageInputEl.current.click();
-    // imageInputEl.current.dispatchEvent(new Event('click'));
-    // fileSelector.click();
-    // imageInputEl.current = fileSelector;
+  const uploadImageHandler = () => {
+    if (imageInputEl.current) {
+      imageInputEl.current.click();
+    }
   };
 
   const fileInputChangeHandler = async (fice) => {
@@ -133,12 +141,47 @@ function Detail({ userDetail, update }) {
     return null;
   };
 
+  const headToSendRequestHandler = (htsre: React.SyntheticEvent) => {
+    htsre.preventDefault();
+    // Under dev
+
+    const receiverId = userId;
+    // return Router.push('/development');
+    // eslint-disable-next-line no-unreachable
+    const classAndSubject: ClassAndSubjectInterface = { receiverId };
+    // console.log(searchParams);
+    if (searchParams.ClassTypeId === 0 || searchParams.ClassTypeId === null) {
+      classAndSubject.ClassTypeId = classtypeList[1].id;
+    } else {
+      classAndSubject.ClassTypeId = searchParams.ClassTypeId;
+    }
+    if (searchParams.SubjectId === 0 || searchParams.SubjectId === null) {
+      classAndSubject.SubjectId = subjectList[1].id;
+    } else {
+      classAndSubject.SubjectId = searchParams.SubjectId;
+    }
+    let tutionplace: string | null = TuitionStyleEnum.ONLINE;
+    if (searchParams.tutionplace !== '' && searchParams.tutionplace !== TuitionStyleEnum.ANY) {
+      tutionplace = searchParams.tutionplace;
+    }
+    // console.log(classAndSubject);
+    dispatch(setInitializeSchedule({ ...classAndSubject, tutionplace }));
+    const searchData: string | null = window.localStorage.getItem('search');
+    if (searchData) {
+      const searchParsedData = JSON.parse(searchData);
+      const newSearch = { ...searchParsedData, ...classAndSubject };
+      // console.log(newSearch);
+      window.localStorage.setItem('search', JSON.stringify(newSearch));
+      Router.push(`/search/request/?receiverId=${receiverId}`);
+    }
+  };
+
   return (
-    <div className="Detail my-4">
+    <div className="Detail">
       {userDetail && (
         <>
           <div className="row">
-            <div className="col-12 d-flex justify-content-center align-items-center flex-column">
+            <div className="col-12 d-flex justify-content-center align-items-center flex-column mt-4">
               {userDetail.name && (
                 <div className="text-center">
                   <h1 className="h1 text-uppercase mb-0">{userDetail.name}</h1>
@@ -182,6 +225,18 @@ function Detail({ userDetail, update }) {
               )}
             </div>
           </div>
+          {search && (
+            <div className="row">
+              <div className="btn-group mt-2" role="group" aria-label="Basic example">
+                <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre)}>
+                  Send Request
+                </button>
+                <button className="btn btn-danger" type="button">
+                  <Link href={`/user/chat/?receiverId=${userId}`}>Chat</Link>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="row  mb-5">
             {userDetail.degree && (
               <div className="col-md-4 d-flex justify-content-start">

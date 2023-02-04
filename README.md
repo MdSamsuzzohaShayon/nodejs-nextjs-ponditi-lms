@@ -255,19 +255,20 @@
 
 
  - **Requirement update-9**
- - For student update only 1 medium and 1 class
- - Home text change
- - Change user table name
- - Admin - reject button is not working
- - Update mudium, class, subject is not working properly
+ - ✅ For student update only 1 medium and 1 class
+ - ✅ Home text change
+ - ✅ Change user table name
+ - ✅ Admin - reject button is not working
+ - ✅ Update mudium, class, subject is not working properly
 
-Can not send message to all broser in the room
-Profile page, on off in jamal
+ - **Requirement update-10**
+ - ✅ Can not send message to all browser in the room
+ - Profile page, on off in jamal
  - duplicate database and keep backup in excel file
- 150px card
- bold tk
- top bar shadow in detail
- send request
+ - ✅ 150px card
+ - ✅ bold tk
+ - ✅ top bar shadow in detail
+ send request from chat
  Available Status not in search detail page
  send request and chat button
 

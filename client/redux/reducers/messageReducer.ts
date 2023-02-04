@@ -9,8 +9,8 @@ const initialMessagesOfARoom: RoomMessageInterface[] = [];
 const initialRoomListOfAUser: RoomListInterface[] = [];
 
 const setANewMessageType: CaseReducer<RoomMessageStateType, PayloadAction<RoomMessageInterface>> = (state, action) => {
-  console.log(action.payload);
-  console.log(state.messagesOfARoom);
+  // console.log(action.payload);
+  // console.log(state.messagesOfARoom);
   
   state.messagesOfARoom = [...state.messagesOfARoom, action.payload];
 };
@@ -69,7 +69,7 @@ export const classtypeSlice = createSlice({
     });
     builder.addCase(fetchAllRoomsOfAUser.fulfilled, (state, action) => {
       if (action.payload.rooms.length > 0) {
-        console.log(action.payload.rooms);
+        // console.log(action.payload.rooms);
         state.roomListOfAUser = action.payload.rooms;
       }
     });

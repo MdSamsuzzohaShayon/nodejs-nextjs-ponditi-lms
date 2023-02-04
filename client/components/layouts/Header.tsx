@@ -5,25 +5,41 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/anchor-is-valid */
+
+// React/next
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+
+// Config/util
 import { roles, scheduledclassStatus } from '../../config/keys';
 import axios from '../../config/axios';
-import { toggleAuthUser, setSelectedContent } from '../../redux/reducers/userReducer';
 import { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST, START_CLASS, FINISH_CLASS } from '../../utils/types';
-import useMediaQuery from '../../hooks/useMediaQuery';
+
+// Redux
+import { toggleAuthUser, setSelectedContent } from '../../redux/reducers/userReducer';
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+
+// Hooks
+import useMediaQuery from '../../hooks/useMediaQuery';
+
+// Component
+import DisplayInbox from './DisplayInbox';
+import DisplayNotificationBar from './DisplayNotificationBar';
 
 const { ADMIN, STUDENT, TEACHER } = roles;
 const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
 
 function Header() {
+  let isMounted = false;
+
+  // hooks
   const dispatch = useAppDispatch();
   const router = useRouter();
   const isBreakpoint = useMediaQuery(768);
 
+  // States from redux
   const menuItemList = useAppSelector((state) => state.elements.menuItemList);
   const userUnseenNotifications = useAppSelector((state) => state.user.userUnseenNotifications);
   const userNotifications = useAppSelector((state) => state.user.userNotifications);
@@ -31,21 +47,22 @@ function Header() {
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const roomListOfAUser = useAppSelector((state) => state.message.roomListOfAUser);
 
+  // State local
   const [dashboardUrl, setDashboardUrl] = useState('/user/dashboard');
   const [showNotificationBar, setShowNotificationBar] = useState(false);
   const [expandMenu, setExpandMenu] = useState(false);
   const [showMenues, setShowMenues] = useState(false);
   const [showInboxes, setShowInboxes] = useState(false);
 
+  // Ref
   const notificationMenuItem = useRef(null);
 
-  let isMounted = false;
   useEffect(() => {
     if (isMounted === false) {
       const user = localStorage.getItem('user');
-      const userData = JSON.parse(user);
-
       if (user !== null) {
+        const userData = JSON.parse(user);
+
         if (userData.role === ADMIN) {
           setDashboardUrl('/admin');
         } else {
@@ -112,10 +129,12 @@ function Header() {
     dme.preventDefault();
     setShowMenues((prevState) => !prevState);
     setShowNotificationBar(false);
+    setShowInboxes(false);
   };
   const notificationBarHandler = (nbe: React.SyntheticEvent) => {
     nbe.preventDefault();
     setShowMenues(false);
+    setShowInboxes(false);
     setShowNotificationBar((prevState) => !prevState);
   };
   const inboxBarHandler = (ibe: React.SyntheticEvent) => {
@@ -143,18 +162,6 @@ function Header() {
             {/* Expanded content start  */}
             {expandMenu && (
               <>
-                {authUserInfo.role === STUDENT ||
-                  (authUserInfo.role === TEACHER && (
-                    <div role="button" className="float-end" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
-                      {userUnseenNotifications.length > 0 ? (
-                        <img src="/icons/notification-dot.svg" alt="notification" height={35} />
-                      ) : (
-                        <img height={35} src="/icons/notification.svg" alt="notification" />
-                      )}
-                      {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
-                    </div>
-                  ))}
-
                 <ul className="d-flex align-items-start flex-column p-0 m-0">
                   {menuItemList.map((mil, milIdx) => (
                     <li key={mil.id} className="list-unstyled">
@@ -177,11 +184,6 @@ function Header() {
                         <li className="d-flex">
                           <Link href="/user/requesthistory">Request history</Link>
                         </li>
-                        <li className="d-flex">
-                          <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
-                            Inbox
-                          </button>
-                        </li>
                       </>
                     ) : null}
                     <li>
@@ -190,6 +192,19 @@ function Header() {
                     <li>
                       <button className="bg-transparent border-0 text-white" type="button" onClick={logoutHandler}>
                         Logout
+                      </button>
+                    </li>
+                    <li className="d-flex justify-content-center w-full">
+                      <button type="button" className="btn btn-transparent p-0 m-0 " onClick={notificationBarHandler} ref={notificationMenuItem}>
+                        {userUnseenNotifications.length > 0 ? (
+                          <img src="/icons/notification-dot.svg" alt="notification" height={35} />
+                        ) : (
+                          <img height={35} src="/icons/notification.svg" alt="notification" />
+                        )}
+                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                      </button>
+                      <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
+                        <img src="/icons/inbox.svg" className="f-full" alt="" height={30} />
                       </button>
                     </li>
                   </ul>
@@ -204,35 +219,13 @@ function Header() {
                   </div>
                 )}
                 {/* {showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`} */}
-                <div
-                  className={
-                    showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`
-                  }
-                >
-                  <div className="card-body">
-                    <div className="d-flex w-full justify-content-between align-items-center mb-2">
-                      <h5 className="card-title">Notifications</h5>
-                      <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
-                    </div>
-                    <ul className="list-group">
-                      {userNotifications.length > 0 ? (
-                        userNotifications.map((un, unI) => (
-                          <li
-                            className={un.viewed ? 'list-group-item bg-transparent text-white border-none' : 'list-group-item bg-transparent text-white border-none'}
-                            key={unI}
-                            onClick={(lre) => linkRedirectHandler(lre, un)}
-                            role="button"
-                            aria-hidden="true"
-                          >
-                            {un.comment}
-                          </li>
-                        ))
-                      ) : (
-                        <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
+                <DisplayNotificationBar
+                  linkRedirectHandler={linkRedirectHandler}
+                  natificationBarCloseHandler={natificationBarCloseHandler}
+                  showNotificationBar={showNotificationBar}
+                  userNotifications={userNotifications}
+                />
+                <DisplayInbox authUserInfo={authUserInfo} roomListOfAUser={roomListOfAUser} showInboxes={showInboxes} setShowInboxes={setShowInboxes} />
               </>
             )}
 
@@ -286,21 +279,12 @@ function Header() {
                             </li>
                           )}
                           {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
-                            <>
-                              <li>
-                                <div className="dropdown-item d-flex">
-                                  <Link href="/user/requesthistory">Request history</Link>
-                                  {userUnseenNotifications.length > 0 && (
-                                    <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>
-                                  )}
-                                </div>
-                              </li>
-                              <li className="d-flex">
-                                <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
-                                  Inbox
-                                </button>
-                              </li>
-                            </>
+                            <li>
+                              <div className="dropdown-item d-flex">
+                                <Link href="/user/requesthistory">Request history</Link>
+                                {userUnseenNotifications.length > 0 && <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                              </div>
+                            </li>
                           ) : null}
                           <li>
                             <div className="dropdown-item text-white">
@@ -316,13 +300,18 @@ function Header() {
                           </li>
                         </ul>
                       </div>
-                      <div className="ntification-item d-flex" role="button" onClick={notificationBarHandler} aria-hidden="true" ref={notificationMenuItem}>
+                      <button type="button" className="btn btn-transparent p-0 m-0 " onClick={notificationBarHandler} ref={notificationMenuItem}>
                         {userUnseenNotifications.length > 0 ? (
-                          <img src="/icons/notification-dot.svg" alt="notification" height={25} />
+                          <img src="/icons/notification-dot.svg" alt="notification" height={35} />
                         ) : (
-                          <img height={25} src="/icons/notification.svg" alt="notification" />
+                          <img height={35} src="/icons/notification.svg" alt="notification" />
                         )}
-                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white px-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                      </button>
+                      <div className="d-flex">
+                        <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
+                          <img src="/icons/inbox.svg" className="f-full" alt="" height={25} />
+                        </button>
                       </div>
                     </>
                   ) : (
@@ -335,59 +324,13 @@ function Header() {
                       </div>
                     </div>
                   )}
-                  <div
-                    className={
-                      showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`
-                    }
-                  >
-                    <div className="card-body">
-                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
-                        <h5 className="card-title">Notifications</h5>
-                        <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
-                      </div>
-                      <ul className="list-group">
-                        {userNotifications.length > 0 ? (
-                          userNotifications.map((un, unI) => (
-                            <li
-                              className={un.viewed ? 'list-group-item bg-transparent text-white border-none' : 'list-group-item bg-transparent text-white border-none'}
-                              key={unI}
-                              onClick={(lre) => linkRedirectHandler(lre, un)}
-                              role="button"
-                              aria-hidden="true"
-                            >
-                              {un.comment}
-                            </li>
-                          ))
-                        ) : (
-                          <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className={showInboxes ? `inbox-bar card text-bg-primary position-absolute` : `inbox-bar card text-bg-primary position-absolute d-none`}>
-                    <div className="card-body">
-                      <div className="d-flex w-full justify-content-between align-items-center mb-2">
-                        <h5 className="card-title">Inbox</h5>
-                        <img src="/icons/close.svg" width={30} alt="close" aria-hidden="true" onClick={natificationBarCloseHandler} />
-                      </div>
-                      <ul className="list-group">
-                        {roomListOfAUser.length > 0 ? (
-                          roomListOfAUser.map((rl, rlI) => (
-                            <li className="list-group-item bg-transparent text-white border-none" key={rlI} role="button" aria-hidden="true">
-                              {rl.invitorId === authUserInfo.id ? (
-                                <Link href={`/user/chat/?receiverId=${rl.invitereceverId}`}>{rl.Inviterecever?.name}</Link>
-                              ) : (
-                                <Link href={`/user/chat/?receiverId=${rl.invitorId}`}>{rl.Roominvitor?.name}</Link>
-                              )}
-                            </li>
-                          ))
-                        ) : (
-                          <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
+                  <DisplayNotificationBar
+                    linkRedirectHandler={linkRedirectHandler}
+                    natificationBarCloseHandler={natificationBarCloseHandler}
+                    showNotificationBar={showNotificationBar}
+                    userNotifications={userNotifications}
+                  />
+                  <DisplayInbox authUserInfo={authUserInfo} roomListOfAUser={roomListOfAUser} showInboxes={showInboxes} setShowInboxes={setShowInboxes} />
                 </div>
               </div>
               {/* <div className="border-of-header w-full bg-primary-deep" /> */}

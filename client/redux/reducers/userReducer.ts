@@ -1,14 +1,22 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-param-reassign */
+
+// React/next
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Router from 'next/router';
+
+// Redux
 import { fetchAllClassTypes } from './classtypeReducer';
 import { fetchAllSubjects } from './subjectReducer';
 import { setErrorList } from './elementsSlice';
+
+// Config/utils
 import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SELECT } from '../../config/keys';
-import {AuthUserInfoInterface} from '../../types/redux/userInterface';
-// import { tuitionplace } from '../../utils/types';
 import axios from '../../config/axios';
+
+// Types
+import { AuthUserInfoInterface, SingleUserInterface } from '../../types/redux/userInterface';
+// import { tuitionplace } from '../../utils/types';
 
 const { REJECTED, PROFILE } = userDashboardSidebarList;
 const { PENDING, APPROVED } = scheduledclassStatus;
@@ -73,18 +81,25 @@ const initialRegisterStaps = [
   },
 ];
 
-const initialCurrentUser = {
+const initialCurrentUser: SingleUserInterface = {
+  id: null,
   name: '',
+  phone: '',
+  image: '',
+  cc: '',
   email: '',
+  district: '',
+  presentaddress: '',
+  age: null,
   profession: '',
   institution: '',
   experience: '',
-  district: '',
-  degree: '',
-  major: '',
-  passing_year: '',
+  isActive: '',
+  isVerified: true,
+  tutionplace: '',
+  tuitionmedium: '',
+  isAvailable: true,
   role: TEACHER,
-  running_study: false,
   sl_rate: null,
   tl_rate: null,
   ol_rate: null,
@@ -155,7 +170,7 @@ const initialDegreeList = [
 
 // const initialTuitionStyles = tuitionplace;
 
-const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
+const fetchUser = async (userId: number, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/user/single/${userId}`);
     // console.log(response.data);
@@ -168,7 +183,7 @@ const fetchUser = async (userId, { dispatch, rejectWithValue }) => {
       await dispatch(fetchAllSubjects(null));
     }
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     // console.log(error.response.status);
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
@@ -192,7 +207,7 @@ export const requestHistorySeen = createAsyncThunk('user/historySeen', async (ar
   try {
     const response = await axios.put(`/user/notification/seen`);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     // console.log(error.response.status);
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
@@ -213,7 +228,7 @@ export const fetchAllUsersByAdmin = createAsyncThunk('user/allUsers', async (pro
   try {
     const response = await axios.get(`/user/all`);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     // console.log(error.response.status);
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));

@@ -60,20 +60,20 @@ export const getStaticProps: GetStaticProps = async () => {
 // JavaScript
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Layout from '../components/layouts/Layout';
 import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
-import { AppDispatch } from '../redux/store';
+import { AppDispatch, useAppSelector } from '../redux/store';
 
 function Home() {
   let isMounted = true;
 
   const dispatch: AppDispatch = useDispatch();
 
-  const isLoading = useSelector((state: any) => state.elements.isLoading);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
 
   useEffect(() => {
     window.localStorage.removeItem('search');

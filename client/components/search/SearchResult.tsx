@@ -1,33 +1,46 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @next/next/no-img-element */
-import { useSelector, useDispatch } from 'react-redux';
+
+// React/next
 import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
+
+// Redux
 import { setRPCurrentPage, setRPStart, setSearchUserList } from '../../redux/reducers/searchReducer';
-import { setSelectedSearchUser, showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
-import { roles, scheduledclassStatus, types, BACKEND_URL } from '../../config/keys';
+import { setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+
+// Config/utils
+import { roles, types, BACKEND_URL } from '../../config/keys';
+
+// Components
 import MakeStar from '../elements/MakeStar';
+
+// Types
 import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
+import { TuitionStyleEnum } from '../../types/enums';
+import { TuitionRateInterface } from '../../types/redux/userInterface';
 
 const { STUDENT } = roles;
-const { ANY } = scheduledclassStatus;
+const { ANY } = TuitionStyleEnum;
 const { ONLINE } = types;
 
 function SearchResult() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const searchUserList = useSelector((state) => state.search.searchUserList);
-  const searchParams = useSelector((state) => state.search.searchParams);
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
-  const subjectList = useSelector((state) => state.subject.subjectList);
-  const searchAllUserList = useSelector((state) => state.search.searchAllUserList);
-  const rpStart = useSelector((state) => state.search.rpStart);
-  const rpTotal = useSelector((state) => state.search.rpTotal);
-  const rpTotalPage = useSelector((state) => state.search.rpTotalPage);
-  const rpCurrentPage = useSelector((state) => state.search.rpCurrentPage);
+  // state
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const searchUserList = useAppSelector((state) => state.search.searchUserList);
+  const searchParams = useAppSelector((state) => state.search.searchParams);
+  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
+  const subjectList = useAppSelector((state) => state.subject.subjectList);
+  const searchAllUserList = useAppSelector((state) => state.search.searchAllUserList);
+  const rpStart = useAppSelector((state) => state.search.rpStart);
+  const rpTotal = useAppSelector((state) => state.search.rpTotal);
+  const rpTotalPage = useAppSelector((state) => state.search.rpTotalPage);
+  const rpCurrentPage = useAppSelector((state) => state.search.rpCurrentPage);
 
   const changePageHandler = (cpe: React.ChangeEvent<HTMLBodyElement>, selectedPage: number) => {
     cpe.preventDefault();
@@ -37,7 +50,7 @@ function SearchResult() {
     dispatch(setSearchUserList(newSearchUserList));
   };
 
-  const changePrevPageHandler = (cppe: React.ChangeEvent) => {
+  const changePrevPageHandler = (cppe: React.SyntheticEvent) => {
     cppe.preventDefault();
     if (rpCurrentPage !== 1) {
       const newCurrentPage = rpCurrentPage - 1;
@@ -50,7 +63,7 @@ function SearchResult() {
       dispatch(setSearchUserList(newSearchUserList));
     }
   };
-  const changeNextPageHandler = (cnpe: React.ChangeEvent) => {
+  const changeNextPageHandler = (cnpe: React.SyntheticEvent) => {
     cnpe.preventDefault();
     if (rpCurrentPage !== rpTotalPage) {
       const newCurrentPage = rpCurrentPage + 1;
@@ -67,39 +80,30 @@ function SearchResult() {
 
   const headToSendRequestHandler = (htsre: React.SyntheticEvent, receiverId: number) => {
     htsre.preventDefault();
-    // Under dev
-    // return Router.push('/development');
-    // eslint-disable-next-line no-unreachable
     const classAndSubject: ClassAndSubjectInterface = { receiverId };
-    // console.log(searchParams);
-    if (searchParams.ClassTypeId === '0' || searchParams.ClassTypeId === '' || searchParams.ClassTypeId === ANY) {
+    if (searchParams.ClassTypeId === 0 || searchParams.ClassTypeId === null) {
       classAndSubject.ClassTypeId = classtypeList[1].id;
     } else {
-      classAndSubject.ClassTypeId = parseInt(searchParams.ClassTypeId, 10);
+      classAndSubject.ClassTypeId = searchParams.ClassTypeId;
     }
-    if (searchParams.SubjectId === '0' || searchParams.SubjectId === '' || searchParams.SubjectId === ANY) {
+    if (searchParams.SubjectId === 0 || searchParams.SubjectId === null) {
       classAndSubject.SubjectId = subjectList[1].id;
     } else {
-      classAndSubject.SubjectId = parseInt(searchParams.SubjectId, 10);
+      classAndSubject.SubjectId = searchParams.SubjectId;
     }
-    let tutionplace = ONLINE;
+    let tutionplace: string | null = ONLINE;
     if (searchParams.tutionplace !== '' && searchParams.tutionplace !== ANY) {
       tutionplace = searchParams.tutionplace;
     }
-    // console.log(classAndSubject);
     dispatch(setInitializeSchedule({ ...classAndSubject, tutionplace }));
-    // console.log(classAndSubject);
-    // console.log(subjectList);
-    // Set localstorage
-    // css = Class Scheduled and Subject
-    // window.localStorage.setItem('css', JSON.stringify(classAndSubject));
-    // redirect to `/search/request/${sul.id}`
-    const search = window.localStorage.getItem('search');
-    const searchData = JSON.parse(search);
-    const newSearch = { ...searchData, ...classAndSubject };
-    // console.log(newSearch);
-    window.localStorage.setItem('search', JSON.stringify(newSearch));
-    return Router.push(`/search/request/?receiverId=${receiverId}`);
+    const search: string | null = window.localStorage.getItem('search');
+    if (search) {
+      const searchData = JSON.parse(search);
+      const newSearch = { ...searchData, ...classAndSubject };
+      window.localStorage.setItem('search', JSON.stringify(newSearch));
+      return Router.push(`/search/request/?receiverId=${receiverId}`);
+    }
+    return null;
   };
 
   const findStarLimit = (sul) => {
@@ -113,13 +117,25 @@ function SearchResult() {
     return limit;
   };
 
-  const makeTheUrl = (userImage) => `${BACKEND_URL}/${userImage}`;
+  const makeTheUrl = (userImage: string) => `${BACKEND_URL}/${userImage}`;
 
-  const displayRates = (sul) => (
+  const displayRates = (sul: TuitionRateInterface) => (
     <div className="hstack gap-3">
-      {sul.ol_rate && <p className="mb-0 w-fit">Online - {sul.ol_rate} tk</p>}
-      {sul.tl_rate && <p className="mb-0 w-fit">Teacher&apos;s Location - {sul.tl_rate} tk</p>}
-      {sul.sl_rate && <p className="mb-0 w-fit">Student&apos;s Location - {sul.sl_rate} tk </p>}
+      {sul.ol_rate && (
+        <p className="mb-0 w-fit">
+          Online - <b>{sul.ol_rate} tk</b>
+        </p>
+      )}
+      {sul.tl_rate && (
+        <p className="mb-0 w-fit">
+          Teacher&apos;s Location - <b>{sul.tl_rate} tk</b>
+        </p>
+      )}
+      {sul.sl_rate && (
+        <p className="mb-0 w-fit">
+          Student&apos;s Location - <b>{sul.sl_rate} tk</b>
+        </p>
+      )}
     </div>
   );
 
@@ -133,24 +149,29 @@ function SearchResult() {
                 <div className="card my-3" key={sul.id}>
                   <div className="search-card-row row g-0">
                     <div className="col-md-3">
+                      {/* <div className="img-circle">
+
+                      </div> */}
                       <Link href={`/search/detail/?userId=${sul.id}`}>
-                        {sul?.image ? (
-                          <img src={makeTheUrl(sul.image)} className="rounded-start" alt={sul?.name} />
-                        ) : (
-                          <img src="/img/default-img.jpg" className="rounded-start" alt={sul?.name} />
-                        )}
+                        <div className="img-wrapper d-flex w-full h-full justify-content-center align-items-center">
+                          {sul.image ? (
+                            <img src={makeTheUrl(sul.image)} className="rounded-circle" alt={sul?.name} />
+                          ) : (
+                            <img src="/img/default-img.jpg" className="rounded-circle" alt={sul?.name} />
+                          )}
+                        </div>
                       </Link>
                     </div>
                     <div className="col-md-6">
                       <div className="card-body">
                         <Link href={`/search/detail/?userId=${sul.id}`}>
                           <div className="d-flex justify-content-between">
-                            <h5 className="card-title text-capitalize">{sul?.name}</h5>
-                            <h5 className="card-title text-capitalize">
+                            <h5 className="card-title text-capitalize m-0">{sul?.name}</h5>
+                            <h5 className="card-title text-capitalize m-0">
                               <MakeStar limit={findStarLimit(sul)} />
                             </h5>
                           </div>
-                          <p className="card-text">Experience: {sul?.experience} years</p>
+                          <p className="card-text mb-0 mb-md-2">Experience: {sul?.experience} years</p>
                           {/* <p className="card-text">Fees: {sul?.rate} tk per hour</p> */}
                           {displayRates(sul)}
                         </Link>

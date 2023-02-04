@@ -60,25 +60,25 @@ export const getStaticProps: GetStaticProps = async () => {
 // JavaScript
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/layouts/Layout';
 import Section1 from '../components/home/Section1';
 import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
 import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
 import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+import { useAppSelector, useAppDispatch } from '../redux/store';
 
 function Home() {
   let isMounted = true;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const isLoading = useSelector((state) => state.elements.isLoading);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
 
   useEffect(() => {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([dispatch(fetchAllClassTypesSearch()), dispatch(fetchAllSubjectsSearch()), dispatch(fetchAllTuitionmsSearch())]);
+        await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
       }
     })();
     isMounted = false;

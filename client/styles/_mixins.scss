@@ -37,3 +37,9 @@
   right: 0;
   z-index: 1;
 }
+
+@mixin display_ban_mobile{
+  width: 100vw;
+      height: 100vh;
+      top: 0;
+}

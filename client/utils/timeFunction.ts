@@ -17,7 +17,7 @@ export const convertISOToReadableTime = (isoTime) => {
   return `${newDate} ${formathours}`;
 };
 
-export const formatAsDate = (isoTime) => {
+export const formatAsDate = (isoTime: string) => {
   //     const isoToReadAble = new Date(isoTime);
   const newTimeDate = new Date(isoTime);
   const newDate = `${newTimeDate.getDate()}-${newTimeDate.getMonth()}-${newTimeDate.getFullYear()}`;
@@ -27,17 +27,17 @@ export const formatAsDate = (isoTime) => {
 export const makeSlot = (isoTime) => {
   //     const isoToReadAble = new Date(isoTime);
   const newTimeDate = new Date(isoTime);
-  const newDate = `${newTimeDate.getHours()}-${newTimeDate.getHours()+1}`;
+  const newDate = `${newTimeDate.getHours()}-${newTimeDate.getHours() + 1}`;
   return newDate;
 };
 
 export const convertReadableToISOTime = (readableTime) => readableTime;
 
-export const inputToISOtime = (inputedDT)=>{
-    const newDateTime = new Date(inputedDT);
-    return newDateTime.toISOString();
-}
+export const inputToISOtime = (inputedDT) => {
+  const newDateTime = new Date(inputedDT);
+  return newDateTime.toISOString();
+};
 
 export const calculateDuration = (startTime, hours) => {
-    return startTime;
+  return startTime;
 };

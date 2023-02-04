@@ -1,45 +1,53 @@
+// React/next
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
+
+// redux
+import { useAppSelector, useAppDispatch } from '../../../redux/store';
 import { fetchCurrentSingleUser, fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
+import { setInitializeSchedule, fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
+import { resetErrorList } from '../../../redux/reducers/elementsSlice';
+
+// Components
 import SendRequest from '../../../components/detail/SendRequest';
 import Layout from '../../../components/layouts/Layout';
-import { roles } from '../../../config/keys';
-import { setInitializeSchedule } from '../../../redux/reducers/scheduledclassReducer';
 import MessageList from '../../../components/elements/MessageList';
-import { resetErrorList } from '../../../redux/reducers/elementsSlice';
 import Loader from '../../../components/elements/Loader';
+
+// Utils/config
+import { roles } from '../../../config/keys';
 
 const { STUDENT, TEACHER } = roles;
 
 function Index() {
   let isMounted = true;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const [userId, setUserId] = useState()
+  const [userId, setUserId] = useState(0);
+  const [existingScheduledClassList, setExistingScheduledClassList] = useState([]);
 
-  const isLoading = useSelector((state) => state.elements.isLoading);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const selectedUser = useSelector((state) => state.user.selectedUser);
-  const initializeSchedule = useSelector((state) => state.scheduledclass.initializeSchedule);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const selectedUser = useAppSelector((state) => state.user.selectedUser);
+  const initializeSchedule = useAppSelector((state) => state.scheduledclass.initializeSchedule);
 
   // const { userId } = router.query;
 
-  const initializeScheduleValue = (receverId) => {
+  const initializeScheduleValue = (receiverId: number) => {
     if (authUserInfo.role === TEACHER) {
       router.push('/user/dashboard');
-    } else if (initializeSchedule.SubjectId === null || initializeSchedule.ClassTypeId === null) {
+    } else if (initializeSchedule.SubjectId === 0 || initializeSchedule.ClassTypeId === 0) {
       const search = window.localStorage.getItem('search');
       if (search) {
         const searchData = JSON.parse(search);
         dispatch(
           setInitializeSchedule({
-            receverId: parseInt(receverId, 10),
+            receiverId,
             SubjectId: parseInt(searchData.SubjectId, 10),
             ClassTypeId: parseInt(searchData.ClassTypeId, 10),
             tutionplace: searchData.tutionplace,
-          })
+          }),
         );
       } else {
         router.push('/search');
@@ -49,20 +57,31 @@ function Index() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const newUserId = params.get('receverId');
-    setUserId(newUserId);
-    if (newUserId && isMounted) {
-      dispatch(resetErrorList());
-      if (authUserInfo?.role !== STUDENT) {
-        router.push('/user/login');
+    const newUserId = params.get('receiverId');
+    if (newUserId && authUserInfo.id) {
+      // console.log("Request searching")
+      const userIdInt: number = parseInt(newUserId, 10);
+      if (userIdInt && isMounted) {
+        setUserId(userIdInt);
+        dispatch(resetErrorList());
+        if (authUserInfo?.role !== STUDENT) {
+          router.push('/user/login');
+        }
+        (async () => {
+          // fetchAllRequestedSCOU
+          console.log("Working");
+          
+          await Promise.all([
+            dispatch(fetchSelectedSingleUser(userIdInt)),
+            dispatch(fetchCurrentSingleUser(authUserInfo.id)),
+            initializeScheduleValue(userIdInt),
+            dispatch(fetchAllRequestedSCOU(userIdInt)),
+          ]);
+        })();
+        isMounted = false;
       }
-      (async () => {
-        // console.log({ userId, authUserInfo });
-        await Promise.all([dispatch(fetchSelectedSingleUser(newUserId)), dispatch(fetchCurrentSingleUser(authUserInfo.id)), initializeScheduleValue(newUserId)]);
-      })();
-      isMounted = false;
     }
-  }, [router.isReady]);
+  }, [authUserInfo]);
 
   useEffect(() => {
     // console.log(selectedUser);
@@ -71,12 +90,14 @@ function Index() {
     }
   }, [selectedUser]);
 
+
+
   return (
     <Layout title="Tuition Request | Ponditi">
-      <div className="container request">
+      <section className="container request">
         <MessageList />
         <SendRequest />
-      </div>
+      </section>
     </Layout>
   );
 }

@@ -1,18 +1,32 @@
-import { useDispatch, useSelector } from 'react-redux';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+// React/next
 import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import { showRequest, setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
-import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
-import axios from '../../config/axios';
-import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
-import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
-import Loader from '../elements/Loader';
 
+// Google place API
+import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+
+// Redux
+import { setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
+import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
+import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
+
+// Components
+import Loader from '../elements/Loader';
 import Calendar from '../elements/Calendar';
 
-const { ANY, ONLINE, TL, SL } = types;
+// Config/utils
+import { GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
+import axios from '../../config/axios';
+import { formatAsDate } from '../../utils/timeFunction';
 
+// Types
+import { TuitionStyleEnum, TimeAMPMEnum } from '../../types/enums';
+import { SlotInterface, FetchedScheduledClassInterface } from '../../types/redux/scheduledclassInterface';
+import { ClassTypeInterface } from '../../types/redux/SubjectClassTuitionmInterface';
+
+// http://localhost:3000/search/request/?receiverId=2
 function SendRequest() {
   /**
    * @api for google places
@@ -25,47 +39,46 @@ function SendRequest() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedAmpm, setSelectedAmpm] = useState(null);
   const [autocomplete, setAutocomplete] = useState(null);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const selectedSearchUser = useSelector((state) => state.scheduledclass.selectedSearchUser);
-  const currentUser = useSelector((state) => state.user.currentUser);
-  const initializeSchedule = useSelector((state) => state.scheduledclass.initializeSchedule);
-  const slotList = useSelector((state) => state.scheduledclass.slotList);
+  const selectedSearchUser = useAppSelector((state) => state.user.selectedUser);
+  const currentUser = useAppSelector((state) => state.user.currentUser);
+  const initializeSchedule = useAppSelector((state) => state.scheduledclass.initializeSchedule);
+  const slotList = useAppSelector((state) => state.scheduledclass.slotList);
+  const acceptedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU); // Later make it acceptedSCOU
 
+  /**
+   * INITIALIZE SCHEDULE AT COMPONENT MOUNT
+   * =========================================================================================================
+   */
   useEffect(() => {
     // selectedSearchUser.presentaddress
     if (currentUser.id) {
-      if (initializeSchedule.tutionplace === ONLINE || initializeSchedule.tutionplace === ANY) {
-        dispatch(setInitializeSchedule({ tuitionlocation: ONLINE }));
-      } else if (initializeSchedule.tutionplace === TL) {
-        dispatch(
-          setInitializeSchedule({
-            tuitionlocation: selectedSearchUser.presentaddress,
-          })
-        );
-      } else if (initializeSchedule.tutionplace === SL) {
+      // DEFAULT ONLINE
+      if (initializeSchedule.tutionplace === TuitionStyleEnum.ONLINE || initializeSchedule.tutionplace === TuitionStyleEnum.ANY) {
+        dispatch(setInitializeSchedule({ tuitionlocation: TuitionStyleEnum.ONLINE }));
+        // FOR TEACHER'S LOCATION
+      } else if (initializeSchedule.tutionplace === TuitionStyleEnum.TL) {
+        dispatch(setInitializeSchedule({ tuitionlocation: selectedSearchUser.presentaddress }));
+        // fOR STUDENT'S LOCATION
+      } else if (initializeSchedule.tutionplace === TuitionStyleEnum.SL) {
         let placeWithoutLngLat = currentUser.presentaddress;
         if (placeWithoutLngLat.includes('(')) {
           // eslint-disable-next-line prefer-destructuring
           placeWithoutLngLat = placeWithoutLngLat.split('(')[0];
         }
-        dispatch(
-          setInitializeSchedule({
-            tuitionlocation: placeWithoutLngLat,
-          })
-        );
+        dispatch(setInitializeSchedule({ tuitionlocation: placeWithoutLngLat }));
       }
       // console.log(currentUser);
     }
   }, [currentUser]);
 
-  const cancelRequesthandler = (cre) => {
+  const cancelRequesthandler = (cre: React.SyntheticEvent) => {
     cre.preventDefault();
-    dispatch(showRequest(false));
   };
 
   // set default value
-  const inputChangeHandler = (ice) => {
+  const inputChangeHandler = (ice: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     ice.preventDefault();
     dispatch(setInitializeSchedule({ [ice.target.name]: ice.target.value }));
   };
@@ -77,21 +90,22 @@ function SendRequest() {
   //   );
   // };
 
-  const initializeScheduledClassHandler = async (isce) => {
+  /**
+   * SEND REQUEST
+   * =========================================================================================================
+   */
+  const initializeScheduledClassHandler = async (isce: React.FormEvent<HTMLFormElement>) => {
     isce.preventDefault();
-    // console.log(initializeSchedule);
     if (!initializeSchedule.time) {
       return dispatch(setErrorList(['You must select a slot']));
     }
     if (!initializeSchedule.tutionplace) {
       return dispatch(setErrorList(['You must select a tution place']));
     }
-    const startDateTime = new Date([initializeSchedule.date, initializeSchedule.time]);
-    // console.log(startDateTime);
     // console.log(startDateTime.toISOString());
     // console.log('Send request with current time of client');
-    if (!initializeSchedule.receverId) {
-      return dispatch(setErrorList(['You must have a recever']));
+    if (!initializeSchedule.receiverId || initializeSchedule.receiverId === 0) {
+      return dispatch(setErrorList(['You must have a receiver']));
     }
 
     if (!initializeSchedule.ClassTypeId) {
@@ -102,9 +116,10 @@ function SendRequest() {
     }
     // console.log(initializeSchedule);
     const newObj = { ...initializeSchedule };
+    newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
+    // newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
     delete newObj.date;
     delete newObj.time;
-    newObj.start = startDateTime.toISOString();
     // console.log(newObj);
 
     try {
@@ -114,7 +129,7 @@ function SendRequest() {
         window.localStorage.removeItem('search');
         Router.push('/user/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -128,31 +143,40 @@ function SendRequest() {
       // console.log('finally');
       dispatch(toggleLoading(false));
     }
+    return null;
   };
 
+  /**
+   * DATE CHANGE
+   * =========================================================================================================
+   */
   const dateChangeHandler = (sde, detail) => {
     sde.preventDefault();
     // console.log(detail);
     // const tutionDate = new Date(detail.year, detail.month, detail.date);
     // console.log(tutionDate.toISOString());
-    dispatch(
-      setInitializeSchedule({
-        date: `${detail.year}-${detail.month}-${detail.date}`,
-      })
-    );
+    dispatch(setInitializeSchedule({ date: `${detail.year}-${detail.month}-${detail.date}` }));
   };
 
+  /**
+   * SELECT SLOT
+   * =========================================================================================================
+   */
   const selectSlotHandler = (sse, slot, ampm) => {
     sse.preventDefault();
     setSelectedSlot(slot);
     setSelectedAmpm(ampm);
-    if (ampm === 'PM') {
+    if (ampm === TimeAMPMEnum.PM) {
       dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
     } else {
       dispatch(setInitializeSchedule({ time: `${slot}:00` }));
     }
   };
 
+  /**
+   * LOADING GOOGLE PLACE API
+   * =========================================================================================================
+   */
   if (!isLoaded) {
     return <Loader />;
   }
@@ -160,30 +184,61 @@ function SendRequest() {
     setAutocomplete(ace);
   };
 
+  /**
+   * PLACE CHANGE HANDLER
+   * =========================================================================================================
+   */
   const placeChangedHandler = () => {
     try {
-      const lat = autocomplete.getPlace().geometry.location.lat();
-      const lng = autocomplete.getPlace().geometry.location.lng();
-      const addressdetail = `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`;
-      dispatch(setInitializeSchedule({ tuitionlocation: addressdetail }));
+      if (autocomplete) {
+        const lat = autocomplete.getPlace().geometry.location.lat();
+        const lng = autocomplete.getPlace().geometry.location.lng();
+        const addressdetail = `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`;
+        dispatch(setInitializeSchedule({ tuitionlocation: addressdetail }));
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const timeSlotDisplay = (offset, timeSlotList, slotLimit, additionalClasses) => {
+  /**
+   * DISPLAY ALL SLOTS AVAILABLE
+   * =========================================================================================================
+   */
+  const timeSlotDisplay = (offset: number, timeSlotList: SlotInterface[], slotLimit: number, additionalClasses: string) => {
     const slotItemList = [];
+    // acceptedSCOU
     for (let i = offset; i < slotLimit; i += 1) {
-      const newItem = (
-        <button
-          type="button"
-          key={timeSlotList[i].id}
-          onClick={(sse) => selectSlotHandler(sse, timeSlotList[i].slot, timeSlotList[i].ampm)}
-          className={timeSlotList[i].slot === selectedSlot && timeSlotList[i].ampm === selectedAmpm ? 'btn mb-2 btn-primary' : 'btn mb-2 btn-outline-primary'}
-        >
-          {`${timeSlotList[i].slotName} ${timeSlotList[i].ampm}`}{' '}
-        </button>
-      );
+      const slotBooked = acceptedSCOU.find((sc: FetchedScheduledClassInterface) => {
+        const startedDate = new Date(sc.start).toISOString().substring(0, 10);
+        let slotTime = timeSlotList[i].slot;
+        if (timeSlotList[i].ampm === TimeAMPMEnum.PM) {
+          slotTime += 12;
+        }
+        if (initializeSchedule.date && initializeSchedule.date === startedDate && new Date(sc.start).getHours() === slotTime) {
+          return sc;
+        }
+        return null;
+      });
+      let newItem: React.ReactElement | null = null;
+      if (slotBooked) {
+        newItem = (
+          <button type="button" key={timeSlotList[i].id} className="btn mb-2 btn-secondary" disabled>
+            {`${timeSlotList[i].slotName} ${timeSlotList[i].ampm}`}
+          </button>
+        );
+      } else {
+        newItem = (
+          <button
+            type="button"
+            key={timeSlotList[i].id}
+            onClick={(sse) => selectSlotHandler(sse, timeSlotList[i].slot, timeSlotList[i].ampm)}
+            className={timeSlotList[i].slot === selectedSlot && timeSlotList[i].ampm === selectedAmpm ? 'btn mb-2 btn-primary' : 'btn mb-2 btn-outline-primary'}
+          >
+            {`${timeSlotList[i].slotName} ${timeSlotList[i].ampm}`}
+          </button>
+        );
+      }
       slotItemList.push(newItem);
     }
 
@@ -192,20 +247,25 @@ function SendRequest() {
 
   return (
     <div className="SendRequest">
-      <div className="row mx-0 mb-3">
+      <div className="row mb-3">
         <h1 className="h1">Send Request</h1>
       </div>
       <form onSubmit={initializeScheduledClassHandler}>
-        <div className="row mb-3 mx-0">
+        <div className="row mb-3">
           <div className="my-2 week-calendar col-md-12">
-            <Calendar onDateChange={dateChangeHandler} />
+            {/* <Calendar onDateChange={dateChangeHandler} /> */}
+            <label htmlFor="date">Date</label>
+            <input type="date" name="date" id="date" className="form-control" onChange={inputChangeHandler} />
           </div>
+        </div>
+        <div className="row mb-3">
           <div className="col-md-12 d-flex justify-content-between flex-md-column">
+            <label htmlFor="slot">Slot</label>
             {timeSlotDisplay(0, slotList, slotList.length / 2, '')}
             {timeSlotDisplay(slotList.length / 2, slotList, slotList.length, 'justify-content-end')}
           </div>
         </div>
-        <div className="row mb-3 mx-0">
+        <div className="row mb-3">
           <div className="col-md-12">
             <label htmlFor="tuitionlocation">Address</label>
             <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
@@ -219,17 +279,17 @@ function SendRequest() {
             </Autocomplete>
           </div>
         </div>
-        <div className="row mb-3 mx-0">
+        <div className="row mb-3 ">
           <div className="col-md-12">
             <label htmlFor="desc">Description</label>
-            <textarea name="desc" id="desc" className="form-control" rows="2" defaultValue={initializeSchedule.desc} onChange={inputChangeHandler} />
+            <textarea name="desc" id="desc" className="form-control" rows={2} defaultValue={initializeSchedule.desc} onChange={inputChangeHandler} />
           </div>
         </div>
-        <div className="row mb-3 mx-0">
+        {/* <div className="row mb-3 mx-0">
           <div className="col-md-6">
-            <h3 htmlFor="rate">Hourly Rate {selectedSearchUser?.rate}</h3>
+            <h3 htmlFor="rate">Hourly Rate {selectedSearchUser.ol_rate}</h3>
           </div>
-        </div>
+        </div> */}
         <hr />
         <div className="row mb-3 mx-0">
           {/* <div className="col-md-12">

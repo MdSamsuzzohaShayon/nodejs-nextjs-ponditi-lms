@@ -13,8 +13,6 @@ const { ONLINE, TL, SL } = types;
 const { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST } = notificationTypes;
 
 const { ScheduledClass, Customer, ClassType, Subject, Review, Notification } = db;
-
-
 const initiateScheduledClass = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -60,7 +58,7 @@ const initiateScheduledClass = async (req, res) => {
       return res.status(406).json({ msg: 'Only student and teacher can send request' });
     }
     const findRecever = await Customer.findOne({
-      where: { id: scObj.receverId },
+      where: { id: scObj.receiverId },
     });
     // console.log(req.userRole);
     // console.log("Sender - student");
@@ -104,6 +102,7 @@ const initiateScheduledClass = async (req, res) => {
     // calculate cost
     // perHourRate
     // findRecever.dataValues.rate * scObj.hours = total costs
+    // console.log(scObj.start);
     const scObjToCreate = {
       status: PENDING,
       types: scObj.tutionplace,
@@ -203,18 +202,21 @@ const getAllScheduledClassofAMember = async (req, res) => {
   try {
     const memberId = parseInt(req.params.memberId, 10); // getAllScheduledClassofAMember
     // console.log(memberId, req.userId, req.userRole);
-    if (memberId !== req.userId) {
+    // if (memberId !== req.userId) {
+    //   return res.status(404).json({ msg: 'No user with this ID' });
+    // }
+    const findUser = await Customer.findOne({ where: { id: memberId } });
+    if (!findUser) {
       return res.status(404).json({ msg: 'No user with this ID' });
     }
     const where = {};
-    if (req.userRole === TEACHER) {
-      where.ReceverId = req.params.memberId;
-    } else if (req.userRole === STUDENT) {
-      where.SenderId = req.params.memberId;
+    if (findUser.dataValues.role === TEACHER) {
+      where.ReceverId = memberId;
+    } else if (findUser.dataValues.role === STUDENT) {
+      where.SenderId = memberId;
     } else {
       return res.status(404).json({ msg: 'no class found' });
     }
-
     const allScheduledClass = await ScheduledClass.findAll({
       include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
       where,

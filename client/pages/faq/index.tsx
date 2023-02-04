@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '../../components/layouts/Layout';
 import UnderDev from '../../components/elements/UnderDev';
 
-function faq() {
+function FAQ() {
   return (
     <Layout title="Frequently Asked Questions | Ponditi">
       <section className="section section-1">
@@ -15,4 +15,4 @@ function faq() {
   );
 }
 
-export default faq;
+export default FAQ;

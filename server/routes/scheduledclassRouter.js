@@ -26,7 +26,7 @@ router.post(
   '/initiate',
   ensureAuth,
   //   check('senderId').notEmpty().isDecimal(), // get from jwt token
-  check('receverId').notEmpty().isDecimal(),
+  check('receiverId').notEmpty().isDecimal(),
   check('ClassTypeId').notEmpty().isDecimal(),
   check('SubjectId').notEmpty().isDecimal(),
   check('start').notEmpty().isISO8601().toDate(),

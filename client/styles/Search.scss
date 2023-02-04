@@ -1,6 +1,6 @@
 .search {
   .request-details {
-    min-width: 15rem;
+    width: 15rem;
     a{
       color: $white;
     }
@@ -11,12 +11,12 @@
   }
 
   .search-card-row {
-    height: 238px;
+    height: 150px;
     .col-md-3 {
       height: 100%;
       img {
-        height: 100%;
-        width: 100%;
+        height: 150px;
+        width: 150px;
         object-fit: cover;
         object-position: center;
       }
@@ -24,10 +24,13 @@
   }
   @media (max-width: $br-xxl){
     .search-card-row {
-      height: 204px;
+      height: 130px;
     }
   }
   @media (max-width: $br-xl){
+    .request-details {
+      width: 12rem;
+    }
     .search-card-row{
       height: 170px;
     }
@@ -41,15 +44,13 @@
     .search-card-row{
       height: 500px;
       .col-md-3{
-        height: 250px;
+        height: 160px;
       }
       .vertical-center{
         height: fit-content !important;
       }
     }
+
   }
 }
 
-
-.request {
-}

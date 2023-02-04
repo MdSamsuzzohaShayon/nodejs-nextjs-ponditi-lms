@@ -63,7 +63,8 @@ function Profile() {
   return (
     <div className="Profile m-4">
       {/* general detail  */}
-      <Detail userDetail={currentUser} update />
+      {/* userDetail, update, search, userId */}
+      <Detail userDetail={currentUser} update search={false} userId={authUserInfo.id} />
       {/* updateable detail  */}
       
     </div>

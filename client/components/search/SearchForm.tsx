@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-array-index-key */
@@ -5,7 +6,6 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable @next/next/no-img-element */
-import { useSelector, useDispatch } from 'react-redux';
 import Router from 'next/router';
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import React, { useState } from 'react';
@@ -21,6 +21,7 @@ import {
   resetSearchUserList,
 } from '../../redux/reducers/searchReducer';
 import { setSubjectList } from '../../redux/reducers/subjectReducer';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { types, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import Loader from '../elements/Loader';
 import { setClasstypeList } from '../../redux/reducers/classtypeReducer';
@@ -42,17 +43,17 @@ function SearchForm(props) {
 
   const [autocomplete, setAutocomplete] = useState(null);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const searchParams = useSelector((state) => state.search.searchParams);
-  const searchTypeList = useSelector((state) => state.search.searchTypeList);
-  const rpStart = useSelector((state) => state.search.rpStart);
-  const rpTotal = useSelector((state) => state.search.rpTotal);
-  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
-  const subjectList = useSelector((state) => state.subject.subjectList);
-  const constSubjectList = useSelector((state) => state.subject.constSubjectList);
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
-  const constClasstypeList = useSelector((state) => state.classtype.constClasstypeList);
+  const searchParams = useAppSelector((state) => state.search.searchParams);
+  const searchTypeList = useAppSelector((state) => state.search.searchTypeList);
+  const rpStart = useAppSelector((state) => state.search.rpStart);
+  const rpTotal = useAppSelector((state) => state.search.rpTotal);
+  const tuitionmList = useAppSelector((state) => state.tuitionm.tuitionmList);
+  const subjectList = useAppSelector((state) => state.subject.subjectList);
+  const constSubjectList = useAppSelector((state) => state.subject.constSubjectList);
+  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
+  const constClasstypeList = useAppSelector((state) => state.classtype.constClasstypeList);
 
   /**
    * @fetch all data on component mounted
@@ -79,7 +80,7 @@ function SearchForm(props) {
         dispatch(setErrorList(['No teacher found']));
         dispatch(resetSearchUserList());
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       window.localStorage.removeItem('search');
       if (error?.response?.data?.msg) {
@@ -88,14 +89,14 @@ function SearchForm(props) {
     }
   };
 
-  const tuitionmInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    dispatch(setSearchParams({ [iche.target.name]: iche.target.value }));
-    if (iche.target.value === '0') {
+  const tuitionmInputChangeHandler = (iche: React.ChangeEvent<HTMLSelectElement>) => {
+    const intVal = parseInt(iche.target.value, 10);
+    dispatch(setSearchParams({ [iche.target.name]: intVal }));
+    if (intVal === 0) {
       dispatch(setClasstypeList([defaultClass, ...constClasstypeList]));
       dispatch(setSubjectList([defaultSubject, ...constSubjectList]));
     } else {
-      const classTypeOfOneTuitionm = tuitionmList.find((ctl) => ctl.id === val)?.ClassTypes;
+      const classTypeOfOneTuitionm = tuitionmList.find((ctl) => ctl.id === intVal)?.ClassTypes;
       // console.log(newClassTypeList);
       const classtypeIdList = classTypeOfOneTuitionm.map((c) => c.id);
       const selectedClassTypes = constClasstypeList.filter((ctl) => classtypeIdList.includes(ctl.id));
@@ -103,7 +104,7 @@ function SearchForm(props) {
 
       if (selectedClassTypes?.length > 0) {
         dispatch(setClasstypeList([defaultClass, ...selectedClassTypes]));
-        dispatch(setSearchParams({ ClassTypeId: selectedClassTypes[0].id.toString() }));
+        dispatch(setSearchParams({ ClassTypeId: selectedClassTypes[0].id }));
 
         // set subject list
         const newSubjectIdList = [];
@@ -117,20 +118,20 @@ function SearchForm(props) {
           const uniqueSubjectIdList = [...new Set(newSubjectIdList)];
           const newSubjectList = constSubjectList.filter((sl) => uniqueSubjectIdList.includes(sl.id));
           dispatch(setSubjectList([defaultSubject, ...newSubjectList]));
-          dispatch(setSearchParams({ SubjectId: newSubjectList[0].id.toString() }));
+          dispatch(setSearchParams({ SubjectId: newSubjectList[0].id }));
         }
       }
     }
   };
 
-  const classtypeInputChangeHandler = (iche) => {
-    const val = parseInt(iche.target.value, 10);
-    dispatch(setSearchParams({ [iche.target.name]: iche.target.value }));
-    if (iche.target.value === '0') {
+  const classtypeInputChangeHandler = (iche: React.ChangeEvent<HTMLSelectElement>) => {
+    const intVal = parseInt(iche.target.value, 10);
+    dispatch(setSearchParams({ [iche.target.name]: intVal }));
+    if (intVal === 0) {
       dispatch(setSubjectList([defaultSubject, ...constSubjectList]));
       // Need to work here
     } else {
-      const selectedSubjects = constClasstypeList.find((ctl) => ctl.id === val)?.Subjects;
+      const selectedSubjects = constClasstypeList.find((ctl) => ctl.id === intVal)?.Subjects;
       const newSubjectIdList = [];
       for (let i = 0; i < selectedSubjects.length; i += 1) {
         newSubjectIdList.push(selectedSubjects[i].id);
@@ -145,14 +146,14 @@ function SearchForm(props) {
   };
 
   // online, teacher's location, student's location
-  const inputChangeHandler = (tiche) => {
+  const inputChangeHandler = (tiche: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     dispatch(setSearchParams({ [tiche.target.name]: tiche.target.value }));
   };
 
   /**
    * @submit form event
    */
-  const searchSubmitHandler = (sshe) => {
+  const searchSubmitHandler = (sshe: React.FormEvent) => {
     sshe.preventDefault();
     window.localStorage.setItem('search', JSON.stringify(searchParams));
     Router.push('/search');
