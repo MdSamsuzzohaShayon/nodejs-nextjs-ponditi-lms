@@ -22,25 +22,14 @@ const {
 } = require('../controllers/user.controller');
 const { changePassword } = require('../controllers/common.controller');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth');
+// const { upload } = require('../config/s3-config');
+const upload = require('../config/multer-config');
 
-const { upload } = require('../config/s3-config');
 // if (process.env.NODE_ENV === 'development') {
 //   upload = require('../config/multer-config');
 // } else {
 //   upload = require('../config/s3-config')(upload);
 // }
-
-/**
- * @openapi
- * /api/user/sendotp:
- *   get:
- *     description: Official documentation of ponditi API
- *     responses:
- *       200:
- *         description: Just for testing perpuse that API is working or not
- *       406:
- *         description: Not acceptable
- */
 router.post('/sendotp', check('phone').notEmpty(), check('cc').notEmpty(), sendOTP);
 
 /**
@@ -74,7 +63,7 @@ router.put(
   // Relational
   // check('classTypeId').notEmpty(), // In update section
   // check('subjectId').notEmpty(), // In update section
-  registerUser
+  registerUser,
 );
 
 /**

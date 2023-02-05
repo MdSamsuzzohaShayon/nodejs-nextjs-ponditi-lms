@@ -3,7 +3,7 @@
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
-const fsPromise = require('fs/promises');
+const fs = require('fs');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
@@ -12,12 +12,15 @@ const sendSMS = require('../utils/sendSMS');
 const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
-const config = require('../config/s3-config');
+const { s3, uploadImageToS3 } = require('../config/s3-config');
+const { unlinkFile, compressImage, bufferToReadableStream } = require('../utils/fileFunctions');
 
 // eslint-disable-next-line object-curly-newline
 const { Customer, ClassType, Subject, Notification, Education, Tuitionm } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
-const { PENDING, APPROVED, REJECTED, REQUEST_REGISTER } = keys.scheduledClassStatus;
+const {
+  PENDING, APPROVED, REJECTED, REQUEST_REGISTER
+} = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 
@@ -530,8 +533,6 @@ const resendOTP = async (req, res) => {
   });
 };
 
-
-
 const getAllUsers = async (req, res) => {
   try {
     const users = await Customer.findAll({
@@ -639,7 +640,7 @@ const updateUser = async (req, res) => {
         return res.status(406).json({ msg: 'Tution place must be an array' });
       }
 
-      // Convert array to string 
+      // Convert array to string
       let newTutionplace = '';
       let i = 0;
       while (i < updatedObj.tutionplace.length) {
@@ -788,25 +789,29 @@ const updateExamUser = async (req, res) => {
 const updateImageUser = async (req, res) => {
   const { id } = req.params;
   const pId = parseInt(id, 10);
-  // console.log('Files - ', req.file.key);
   if (pId !== req.userId) {
-    return res.status(406).json({ msg: 'You can not update someonelse detail' });
+    return res.status(406).json({ msg: 'You can not update someon else detail' });
   }
   try {
-    if (!req?.file) {
+    if (!req.file) {
       return res.status(406).json({ msg: 'No image to update' });
     }
     const findUser = await Customer.findOne({
       where: { id: req.userId },
       include: [{ model: Education }],
     });
-    // console.log(findCustomer.Education.map((ue)=> ue.dataValues));
     if (findUser.role === ADMIN) {
       return res.status(406).json({ msg: "Admin can't be updated" });
     }
     if (findUser === null) {
       return res.status(404).json({ msg: 'User not found' });
     }
+
+    // console.log(req.file);
+    const filePath = `${__dirname}/../uploads/${req.file.filename}`;
+    await uploadImageToS3(req.file); // Upload compressed file
+    await unlinkFile(filePath); // Delete orginal file
+    // Delete file if it exist
 
     // If there is a file already delete that file first
     if (findUser.dataValues.image) {
@@ -815,28 +820,12 @@ const updateImageUser = async (req, res) => {
         Key: findUser.dataValues.image,
       };
       // console.log(params);
-      config.s3.deleteObject(params, (err, data) => {
-        if (err) console.log(err, err.stack); // an error occurred
-      });
-      /*
-      // Delete file locally
-      const fileAbsPath = `${__dirname}/../uploads/${findCustomer.dataValues.image}`;
-      // console.log({ existingFile: findCustomer.dataValues.image, fileAbsPath });
-      try {
-        const openFile = await fsPromise.open(fileAbsPath);
-        if (openFile) {
-          await fsPromise.unlink(fileAbsPath);
-        }
-        // console.log(openFile);
-      } catch (fileUnlinkErr) {
-        console.log(fileUnlinkErr);
-      }
-      */
+      await s3.deleteObject(params).promise();
     }
 
-    await Customer.update({ image: req.file.key }, { where: { id } });
+    await Customer.update({ image: req.file.filename }, { where: { id } });
 
-    return res.status(202).json({ msg: 'A user image updated', image: req.file.key });
+    return res.status(202).json({ msg: 'A user image updated', image: req.file.filename });
   } catch (error) {
     console.log(error);
   }

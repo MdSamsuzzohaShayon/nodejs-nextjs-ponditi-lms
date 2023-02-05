@@ -1,0 +1,1 @@
+do not delete this file from here, if uploads folder is empty it will not add to git 
