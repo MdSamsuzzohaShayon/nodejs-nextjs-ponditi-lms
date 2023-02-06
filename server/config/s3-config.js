@@ -1,6 +1,5 @@
 /* eslint-disable no-return-assign */
 const { S3 } = require('aws-sdk');
-const fs = require('fs');
 const { compressImage, bufferToReadableStream } = require('../utils/fileFunctions')
 
 const s3 = new S3({

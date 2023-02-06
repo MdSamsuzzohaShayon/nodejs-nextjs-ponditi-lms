@@ -36,3 +36,9 @@ export interface SlotInterface {
   slotName: string;
   ampm: string;
 }
+
+export interface TuitionStyle {
+  id: number;
+  text: string;
+  value: string;
+}

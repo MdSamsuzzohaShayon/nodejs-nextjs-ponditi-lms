@@ -14,7 +14,7 @@ import { roles } from '../../../config/keys';
 
 const { ADMIN } = roles;
 
-function Dashboard() {
+function DashboardIndex() {
   let isMounted = false;
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -63,4 +63,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardIndex;

@@ -12,12 +12,12 @@ import { scheduledclassStatus, types } from '../../config/keys';
 
 // Types
 import { SingleUserInterface } from '../../types/redux/userInterface';
+import { ScheduledClassInterface, SlotInterface, TuitionStyle } from '../../types/redux/scheduledclassInterface';
 import { TimeAMPMEnum, TuitionStyleEnum } from '../../types/enums';
 
 // Redux
 import { resetAuthUserInfo } from './userReducer';
 import { setErrorList } from './elementsSlice';
-import { ScheduledClassInterface, SlotInterface } from '../../types/redux/scheduledclassInterface';
 
 const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 const { ONLINE } = types;
@@ -28,15 +28,31 @@ const initicalAddScheduledClass = {
 };
 
 const today = new Date();
-const iscHours = 1;
-const iscStart = today.toISOString();
+
+const initialTuitionStyle: TuitionStyle[] = [
+  {
+    id: 1,
+    text: 'Online',
+    value: TuitionStyleEnum.ONLINE,
+  },
+  {
+    id: 2,
+    text: "Teacher's Location",
+    value: TuitionStyleEnum.TL,
+  },
+  {
+    id: 3,
+    text: "Student's Location",
+    value: TuitionStyleEnum.SL,
+  },
+];
 
 const initialAScheduledClass: ScheduledClassInterface = {
   receiverId: 0,
   ClassTypeId: 0,
   SubjectId: 0,
   desc: 'This is Note',
-  date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+  date: `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`,
   time: '',
   tutionplace: TuitionStyleEnum.ONLINE,
   tuitionlocation: '',
@@ -210,6 +226,7 @@ export const scheduledclassSlice = createSlice({
     showReviewFields: false,
     slotList: initialSlotList,
     tabElements: initialSCTabElements,
+    tuitionStyle: initialTuitionStyle,
     generateBill: 0, // bill per minutes
     /**
      * @dynamic or changable elements of the website
@@ -317,7 +334,6 @@ export const {
 
   // More
   setAddscheduledclass,
-  setSelectedSearchUser,
   setInitializeSchedule,
   setSingleScheduledClass,
   setUpdateScheduledClass,

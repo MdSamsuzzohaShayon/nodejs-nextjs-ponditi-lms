@@ -1,23 +1,49 @@
 /* eslint-disable @next/next/no-img-element */
+
+// React/next
 import React from 'react';
+import Link from 'next/link';
+
+// Redux
 import { useAppSelector, useAppDispatch } from '../../../redux/store';
 import { setANewMessage } from '../../../redux/reducers/messageReducer';
+import { setErrorList } from '../../../redux/reducers/elementsSlice';
+
+// Socket
 import { useSocket } from '../../../context/ThemeProvider';
+
+// Types
 import { ChatPropsInterface, DataInterface } from '../../../types/pages/userPageInterface';
 import { RoomMessageInterface } from '../../../types/redux/messageinterface';
+import { UserRoleEnum } from '../../../types/enums';
 
+// React Chat Component
 function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
-  const dispatch = useAppDispatch();
+  // Reference to React Element
+  const lastMessageEl = React.useRef<HTMLDivElement>(null);
   const messageInputEl = React.useRef<HTMLInputElement>(null);
+
+  // Dispatch
+  const dispatch = useAppDispatch();
+
+  // Use socket from context
   const socket = useSocket(); // useContext
+
+  // State
   const [data, setData] = React.useState<DataInterface>(); // This data is going to submit as object
   const selectedUser = useAppSelector((state) => state.user.selectedUser);
   const messagesOfARoom = useAppSelector((state) => state.message.messagesOfARoom);
 
-  const sendMessageHandler = (sme: React.FormEvent<HTMLFormElement>): void => {
+  // Send message
+  const sendMessageHandler = (sme: React.FormEvent<HTMLFormElement>) => {
     sme.preventDefault();
+    if (lastMessageEl && lastMessageEl.current) {
+      lastMessageEl.current.scrollIntoView();
+    }
+    if (data && data.message && data.message.length > 250) {
+      return dispatch(setErrorList(['Message is too long']));
+    }
     if (data && data.message !== '') {
-      // Send message
       const newDataObj: DataInterface = { ...data, receiverId, senderId: authUserInfo.id };
       socket.emit('message-from-client', newDataObj);
       // add message to the state after sending message
@@ -38,8 +64,10 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
       }
       setData({ message: '' });
     }
+    return null;
   };
 
+  // Join room and Receive message
   React.useEffect(() => {
     // console.log('Before - ',{receiverId, senderId: authUserInfo.id});
     if (!socket || !receiverId || !authUserInfo.id) return;
@@ -68,15 +96,24 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
     });
   }, [socket, authUserInfo, receiverId]);
 
+  // Scroll into the last message element
+  React.useEffect(() => {
+    if (lastMessageEl && lastMessageEl.current) {
+      lastMessageEl.current.scrollIntoView();
+    }
+  }, []);
+
+  // input change
   const inputMessageChangeHandler = (imce: React.ChangeEvent<HTMLInputElement>) => {
     if (imce.target.value.toString().length > 250) {
-      console.log('Message is too long');
+      dispatch(setErrorList(['Message is too long']));
     } else {
       setData({ message: imce.target.value });
     }
   };
 
-  const balanceLeftRightMessage = (i: number, prevMessageUserId: number | null, messageList: React.ReactElement[], messageSetList: []) => {
+  // Message align and make message set
+  const balanceLeftRightMessage = (i: number, prevMessageUserId: number | null, messageList: React.ReactElement[], messageSetList: React.ReactElement[]) => {
     if (messageSetList.length === 0) return;
     if (prevMessageUserId === authUserInfo.id) {
       messageList.push(
@@ -111,26 +148,22 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
     const messageList: [] = [];
     let messageSetList = [];
     let singleMessageCls: string = '';
-    // messagesOfARoom
     for (let i = 0; i < messagesOfARoom.length; i += 1) {
-      // console.log({
-      //   i,
-      //   prevMessageUserId,
-      //   messagesenderId: messagesOfARoom[i].messagesenderId,
-      // });
       if (messagesOfARoom[i].messagesenderId === authUserInfo.id) {
-        //  iAmSender = true;
         singleMessageCls = 'alert alert-primary w-fit rounded-pill py-2 shadow';
       } else {
         singleMessageCls = 'alert alert-light w-fit rounded-pill py-2 shadow';
       }
 
+      // For last message
       if (i === messagesOfARoom.length - 1) {
+        prevMessageUserId = messagesOfARoom[i].messagesenderId;
         messageSetList.push(
           <p key={i} className={singleMessageCls} style={{ margin: '3px 0' }}>
             {messagesOfARoom[i].text}
           </p>,
         );
+        // console.log(prevMessageUserId, authUserInfo.id);
         balanceLeftRightMessage(i, prevMessageUserId, messageList, messageSetList);
         break;
       }
@@ -156,7 +189,12 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
       prevMessageUserId = messagesOfARoom[i].messagesenderId;
       // console.log(i);
     }
-    return <div className="row mt-3">{messageList}</div>;
+    return (
+      <div className="row mt-3 chat-content" style={{ height: '70vh', overflowY: 'auto' }}>
+        {messageList}
+        <div className="last-message-element" ref={lastMessageEl} />
+      </div>
+    );
   };
 
   return (
@@ -169,14 +207,19 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
           </span>
         </div>
       </div>
-      <div className="chat-body">
-        <div className="container">{displayMessage()}</div>
-      </div>
+      <div className="chat-body">{displayMessage()}</div>
       <div className="chat-header bg-white p-0 m-0">
         <form className="form w-full" onSubmit={sendMessageHandler}>
           {/* <input type="text" placeholder="Type a message" className="form-control" /> */}
           <div className="input-group">
             <input type="text" className="form-control rounded-0  py-3" placeholder="Type a message..." ref={messageInputEl} onChange={inputMessageChangeHandler} />
+            {authUserInfo.role === UserRoleEnum.STUDENT && (
+              <span className="input-group-text py-3 rounded-0 bg-white" id="basic-addon1">
+                <Link className="btn btn-transparent w-full" href={`/search/request/?receiverId=${receiverId}`}>
+                  <img src="/icons/study.svg" className="w-full" alt="" />
+                </Link>
+              </span>
+            )}
             <span className="input-group-text py-3 rounded-0 bg-white" id="basic-addon1">
               <button className="btn btn-transparent w-full" type="submit">
                 <img src="/icons/send.svg" className="w-full" alt="" />

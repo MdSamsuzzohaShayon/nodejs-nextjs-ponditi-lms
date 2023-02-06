@@ -33,7 +33,7 @@ try {
 module.exports.compressImage = async (filePath) => {
   try {
     // eslint-disable-next-line newline-per-chained-call
-    const fileData = await sharp(filePath).rotate().resize(200).jpeg({ mozjpeg: true }).toBuffer();
+    const fileData = await sharp(filePath).rotate().resize(240).jpeg({ mozjpeg: true }).toBuffer();
 
     return fileData;
   } catch (err) {

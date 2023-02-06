@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-lonely-if */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
@@ -5,11 +6,11 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/destructuring-assignment */
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { setUpdateUser } from '../../../redux/reducers/userReducer';
 import RateInput from '../../register/RateInput';
 // import { setSubjectList } from '../../../redux/reducers/subjectReducer';
 import { roles } from '../../../config/keys';
+import { useAppSelector, useAppDispatch } from '../../../redux/store';
 
 const { TEACHER } = roles;
 
@@ -19,11 +20,11 @@ function TutionDetail(props) {
   const [placeItems, setPlaceItems] = useState([]);
   const [isUserAvailable, setIsUserAvailable] = useState(false);
 
-  const dispatch = useDispatch();
-  // const classtypeList = useSelector((state) => state.classtype.classtypeList);
-  const currentUser = useSelector((state) => state.user.currentUser);
-  const updateUser = useSelector((state) => state.user.updateUser);
-  const tutionPlaces = useSelector((state) => state.search.searchTypeList);
+  const dispatch = useAppDispatch();
+  // const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
+  const currentUser = useAppSelector((state) => state.user.currentUser);
+  const updateUser = useAppSelector((state) => state.user.updateUser);
+  const tutionPlaces = useAppSelector((state) => state.search.searchTypeList);
   // const [available, setAvailable] = useState(currentUser.isAvailable);
 
   useEffect(() => {

@@ -1,16 +1,15 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
 
 function ClassSubjectStudentForm(props) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const tuitionmList = useSelector((state) => state.tuitionm.tuitionmList);
-  const classtypeList = useSelector((state) => state.classtype.classtypeList);
-
-
+  const tuitionmList = useAppSelector((state) => state.tuitionm.tuitionmList);
+  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
 
   return (
     <div className="row ClassSubjectStudentForm">

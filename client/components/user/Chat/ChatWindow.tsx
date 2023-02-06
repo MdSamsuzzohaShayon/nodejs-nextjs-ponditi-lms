@@ -5,7 +5,7 @@ import Chat from './Chat';
 function ChatWindow() {
   return (
     <Layout title="User Messages | Ponditi">
-      <Chat />
+      <Chat receiverId={null} authUserInfo={undefined} />
     </Layout>
   );
 }

@@ -17,3 +17,5 @@ export interface DetailPropsInterface {
   search: boolean;
   userId: number;
 }
+
+

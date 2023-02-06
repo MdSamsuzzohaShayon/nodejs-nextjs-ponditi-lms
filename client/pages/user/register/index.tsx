@@ -1,32 +1,43 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+// React/next
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
-import Layout from '../../../components/layouts/Layout';
-import { REGISTER, SEND_CODE, VERIFY_CODE, TS_SELECT } from '../../../config/keys';
-import RegistrationForm from '../../../components/register/RegistrationForm';
-import VerifyCode from '../../../components/register/VerifyCode';
-import SendCode from '../../../components/register/SendCode';
-import MessageList from '../../../components/elements/MessageList';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
-import Loader from '../../../components/elements/Loader';
-import TsSelect from '../../../components/register/TsSelect';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { resetRegisterableUser, resetSendOTP, resetVerifyCode } from '../../../redux/reducers/userReducer';
 
+// Config/utils
+import { REGISTER, SEND_CODE, VERIFY_CODE, TS_SELECT } from '../../../config/keys';
+import RegistrationForm from '../../../components/register/RegistrationForm';
 
-function register() {
+// Components
+import Layout from '../../../components/layouts/Layout';
+import VerifyCode from '../../../components/register/VerifyCode';
+import SendCode from '../../../components/register/SendCode';
+import MessageList from '../../../components/elements/MessageList';
+import Loader from '../../../components/elements/Loader';
+import TsSelect from '../../../components/register/TsSelect';
+
+
+function RegisterIndex() {
+  // Variables
   let isMounted = true;
-  const dispatch = useDispatch();
-  const userSendVerifyStep = useSelector((state) => state.user.userSendVerifyStep);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const isLoading = useSelector((state) => state.elements.isLoading);
-  // let isLoading = true;
 
-  // eslint-disable-next-line consistent-return
+  // Hooks
+  const dispatch = useAppDispatch();
 
+  // Redux state
+  const userSendVerifyStep = useAppSelector((state) => state.user.userSendVerifyStep);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+
+
+  // Conditional component display
   const showSelectedForm = () => {
     if (userSendVerifyStep === VERIFY_CODE) {
       return <VerifyCode />;
@@ -34,6 +45,7 @@ function register() {
     return <SendCode />;
   };
 
+  // Fetch on component mount
   useEffect(() => {
     dispatch(resetSendOTP());
     dispatch(resetVerifyCode());
@@ -49,6 +61,7 @@ function register() {
     isMounted = false;
   }, []);
 
+  // Redirect user if already logged in
   useEffect(() => {
     if (authUserInfo.id) {
       Router.push('/user/dashboard');
@@ -72,4 +85,4 @@ function register() {
   );
 }
 
-export default register;
+export default RegisterIndex;

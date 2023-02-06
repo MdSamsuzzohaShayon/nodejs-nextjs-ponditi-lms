@@ -1,45 +1,57 @@
-import { useSelector, useDispatch } from 'react-redux';
+// React/next
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+
+// Config/utils
 import { REGISTER, roles } from '../../../../config/keys';
+import axios from '../../../../config/axios';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { resetErrorList, setErrorList, toggleLoading, setNoValidate, setSuccessMessageList, resetSuccessMessageList } from '../../../../redux/reducers/elementsSlice';
 import { fetchAllClassTypes } from '../../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../../redux/reducers/subjectReducer';
 import { fetchAllTuitionms } from '../../../../redux/reducers/tuitionmReducer';
 import { resetRegisterableUser, setSelectedStep, setUserSendVerifyStep } from '../../../../redux/reducers/userReducer';
+
+// Components
 import Layout from '../../../../components/layouts/Layout';
 import RegistrationForm from '../../../../components/register/RegistrationForm';
 import ClassSubjectForm from '../../../../components/user/Update/ClassSubjectForm';
 import TsSelect from '../../../../components/register/TsSelect';
 import Loader from '../../../../components/elements/Loader';
 import MessageList from '../../../../components/elements/MessageList';
-import axios from '../../../../config/axios';
 
 const { STUDENT } = roles;
 
-// tutionplace
-function Registration() {
+// REGISTRATION PAGE COMPONENT
+function RegistrationIndex() {
+  // VARIABLES
   let isMounted = true;
   let validationPassed = true;
+
+  // HOOKS
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const [userId, setUserId] = useState(null);
+  // LOCAL STATE
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const selectedStep = useSelector((state) => state.user.selectedStep);
-  const isLoading = useSelector((state) => state.elements.isLoading);
+  // REDUX STATE
+  const selectedStep = useAppSelector((state) => state.user.selectedStep);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const registerableUser = useAppSelector((state) => state.user.registerableUser);
+  const selectedTuitionmList = useAppSelector((state) => state.tuitionm.selectedTuitionmList);
+  const selectedClasstypeList = useAppSelector((state) => state.classtype.selectedClasstypeList);
+  const selectedSubjectList = useAppSelector((state) => state.subject.selectedSubjectList);
 
-  // const registerableUser = useSelector((state) => state.user.currentUser);
-  const registerableUser = useSelector((state) => state.user.registerableUser);
-  const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
-  const selectedClasstypeList = useSelector((state) => state.classtype.selectedClasstypeList);
-  const selectedSubjectList = useSelector((state) => state.subject.selectedSubjectList);
+  const noValidate = useAppSelector((state) => state.elements.noValidate);
 
-  const noValidate = useSelector((state) => state.elements.noValidate);
-
-  // const { userId } = router.query;
-
-  const registerHandler = async (rhe) => {
+  /**
+   * =========================================================================
+   * REGISTRATION FORM SUBMISSION
+   */
+  const registerHandler = async (rhe: React.FormEvent<HTMLFormElement>) => {
     rhe.preventDefault();
 
     dispatch(setNoValidate(false));
@@ -62,8 +74,6 @@ function Registration() {
       userObj.SubjectId = selectedSubjectList;
       userObj.ClassTypeId = selectedClasstypeList;
       userObj.TuitionmId = selectedTuitionmList;
-      console.log(registerableUser);
-      console.log(userObj);
       const response = await axios.put(`/user/register/${userId}`, userObj, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -75,7 +85,7 @@ function Registration() {
         dispatch(resetRegisterableUser());
         router.push('/user/login');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -87,7 +97,11 @@ function Registration() {
     return null;
   };
 
-  const stepBtnHandler = (sbhe, stepNo) => {
+  /**
+   * =========================================================================
+   * STEP HANDLER
+   */
+  const stepBtnHandler = (sbhe: React.SyntheticEvent, stepNo: number) => {
     sbhe.preventDefault();
     // validate previous state
     /**
@@ -102,18 +116,13 @@ function Registration() {
     return dispatch(setSelectedStep(stepNo));
   };
 
-  const changeValidationPassed = (valPass) => {
-    validationPassed = valPass;
-    // console.log({ validationPassed, valPass });
-  };
-
-  const prevStepHandler = (pscse) => {
+  const prevStepHandler = (pscse: React.SyntheticEvent) => {
     pscse.preventDefault();
     dispatch(resetErrorList());
     return dispatch(setSelectedStep(selectedStep - 1));
   };
 
-  const nextStepHandler = (nscse) => {
+  const nextStepHandler = (nscse: React.SyntheticEvent) => {
     if (selectedStep === 2 && registerableUser.role === STUDENT) {
       // Submit register page and return
     }
@@ -124,6 +133,19 @@ function Registration() {
     return dispatch(setSelectedStep(selectedStep + 1));
   };
 
+  /**
+   * =========================================================================
+   * VALIDATION
+   */
+  const changeValidationPassed = (valPass: boolean) => {
+    validationPassed = valPass;
+    // console.log({ validationPassed, valPass });
+  };
+
+  /**
+   * =========================================================================
+   * CONDITIONAL COMPONENT DISPLAY
+   */
   const showSelectedForm = () => {
     if (selectedStep === 2) {
       return <RegistrationForm changeValidationPassed={changeValidationPassed} noValidate={noValidate} userId={userId} />;
@@ -134,6 +156,10 @@ function Registration() {
     return <TsSelect />;
   };
 
+  /**
+   * =========================================================================
+   * FETCH DATA ON COMPONENT MOUNT
+   */
   useEffect(() => {
     dispatch(resetErrorList());
     dispatch(resetRegisterableUser());
@@ -143,7 +169,8 @@ function Registration() {
       const newUserId = params.get('userId');
       // console.log({ newUserId });
       if (newUserId) {
-        setUserId(newUserId);
+        const userIdInt = parseInt(newUserId, 10);
+        setUserId(userIdInt);
         (async () => {
           dispatch(resetErrorList());
           await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
@@ -171,11 +198,9 @@ function Registration() {
               <div className="row mb-3">
                 {selectedStep === 3 ? (
                   <div className="d-flex">
-                    {selectedStep !== 1 && (
-                      <button className="btn btn-secondary w-fit" type="button" onClick={prevStepHandler}>
-                        Previous
-                      </button>
-                    )}
+                    <button className="btn btn-secondary w-fit" type="button" onClick={prevStepHandler}>
+                      Previous
+                    </button>
 
                     <button className="btn btn-primary w-fit mx-3" type="submit">
                       Register
@@ -209,4 +234,4 @@ function Registration() {
   );
 }
 
-export default Registration;
+export default RegistrationIndex;

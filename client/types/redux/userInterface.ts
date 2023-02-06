@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface AuthUserInfoInterface {
   name: string | null;
   email: string | null;
@@ -10,6 +12,31 @@ export interface TuitionRateInterface {
   tl_rate?: number;
   sl_rate?: number;
 }
+
+export interface RegisterableUserInterface {
+  name: string;
+  email: string;
+  profession: string;
+  experience: number | null;
+  passing_year: number | null;
+  role: string;
+  sl_rate?: number | null;
+  tl_rate?: number | null;
+  ol_rate?: number | null;
+  presentaddress: string;
+  degree: string;
+  running_study: boolean;
+  major: string;
+  institution: string;
+  pinstitution: string;
+  ref: number | null;
+  tutionplace: string[];
+}
+
+
+// experience(pin):"4"
+// passing_year(pin):"2023"
+// ref(pin):"109"
 
 export interface SingleUserInterface {
   id: number | null;
@@ -37,4 +64,18 @@ export interface SingleUserInterface {
   ref?: number;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface UserRegPriceCalcPropsInterface {
+  title: string;
+  inputPriceChangeHandler: React.ChangeEventHandler<HTMLInputElement>;
+  result: number | null;
+  defaultDays: number;
+  defaultEarn: number;
+}
+
+export interface UserRegFormPropsInterface {
+  changeValidationPassed: any;
+  noValidate: boolean;
+  userId: number | null;
 }

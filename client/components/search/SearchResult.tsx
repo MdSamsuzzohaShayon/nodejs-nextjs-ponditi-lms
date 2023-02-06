@@ -81,16 +81,8 @@ function SearchResult() {
   const headToSendRequestHandler = (htsre: React.SyntheticEvent, receiverId: number) => {
     htsre.preventDefault();
     const classAndSubject: ClassAndSubjectInterface = { receiverId };
-    if (searchParams.ClassTypeId === 0 || searchParams.ClassTypeId === null) {
-      classAndSubject.ClassTypeId = classtypeList[1].id;
-    } else {
-      classAndSubject.ClassTypeId = searchParams.ClassTypeId;
-    }
-    if (searchParams.SubjectId === 0 || searchParams.SubjectId === null) {
-      classAndSubject.SubjectId = subjectList[1].id;
-    } else {
-      classAndSubject.SubjectId = searchParams.SubjectId;
-    }
+    classAndSubject.ClassTypeId = searchParams.ClassTypeId;
+    classAndSubject.SubjectId = searchParams.SubjectId;
     let tutionplace: string | null = ONLINE;
     if (searchParams.tutionplace !== '' && searchParams.tutionplace !== ANY) {
       tutionplace = searchParams.tutionplace;

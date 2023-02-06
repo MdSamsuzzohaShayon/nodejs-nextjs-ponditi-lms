@@ -76,7 +76,6 @@ function SearchForm(props) {
         // rpTotalPage: 1,
         dispatch(setRPTotalPage(Math.ceil(response.data.teachers.length / rpTotal)));
       } else if (response.status === 204) {
-        window.localStorage.removeItem('search');
         dispatch(setErrorList(['No teacher found']));
         dispatch(resetSearchUserList());
       }

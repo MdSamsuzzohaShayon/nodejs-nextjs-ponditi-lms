@@ -15,7 +15,7 @@ import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SE
 import axios from '../../config/axios';
 
 // Types
-import { AuthUserInfoInterface, SingleUserInterface } from '../../types/redux/userInterface';
+import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface } from '../../types/redux/userInterface';
 // import { tuitionplace } from '../../utils/types';
 
 const { REJECTED, PROFILE } = userDashboardSidebarList;
@@ -105,24 +105,25 @@ const initialCurrentUser: SingleUserInterface = {
   ol_rate: null,
 };
 
-const initialRegisterableUser = {
-  name: null,
-  email: null,
-  profession: null,
+const initialRegisterableUser: RegisterableUserInterface = {
+  name: '',
+  email: '',
+  profession: '',
   experience: null,
-  // district: null,
+  // district: '',
   passing_year: null,
   role: TEACHER,
   tutionplace: [],
   sl_rate: null,
   tl_rate: null,
   ol_rate: null,
-  presentaddress: null,
-  degree: null,
+  presentaddress: '',
+  degree: '',
   running_study: false,
-  major: null,
-  institution: null,
-  pinstitution: null,
+  major: '',
+  institution: '',
+  pinstitution: '',
+  ref: null
 };
 
 const initialLoginInfo = {
@@ -167,6 +168,8 @@ const initialDegreeList = [
     name: 'HONOURS',
   },
 ];
+
+const initialSelectedStep: number = 1;
 
 // const initialTuitionStyles = tuitionplace;
 
@@ -286,7 +289,7 @@ export const userSlice = createSlice({
     hasPhone: false,
     verifyCode: initialVerifyCode,
 
-    selectedStep: 1, // default 1
+    selectedStep: initialSelectedStep, // default 1
     registerSteps: initialRegisterStaps,
 
     authenticatedUser: false,

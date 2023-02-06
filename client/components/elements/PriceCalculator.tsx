@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
@@ -5,16 +6,17 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
 import styles from './PriceCalculator.module.scss';
 import { setOpenPriceCalc } from '../../redux/reducers/elementsSlice';
+import { UserRegPriceCalcPropsInterface } from '../../types/redux/userInterface';
 
-function PriceCalculator(props) {
-  const dispatch = useDispatch();
-  const openPriceCalc = useSelector((state) => state.elements.openPriceCalc);
-  const pageYOffset = useSelector((state) => state.elements.pageYOffset);
+function PriceCalculator(props: UserRegPriceCalcPropsInterface) {
+  const dispatch = useAppDispatch();
+  const openPriceCalc = useAppSelector((state) => state.elements.openPriceCalc);
+  const pageYOffset = useAppSelector((state) => state.elements.pageYOffset);
 
-  const closePriceCalc = (cpce) => {
+  const closePriceCalc = (cpce: React.SyntheticEvent) => {
     cpce.preventDefault();
     // console.log(cpce.target);
     dispatch(setOpenPriceCalc(false));

@@ -268,19 +268,22 @@
  - ✅ 150px card
  - ✅ bold tk
  - ✅ top bar shadow in detail
- send request from chat
- Available Status not in search detail page
- send request and chat button
-
+ - send request from chat
+ - ✅ Available Status not in search detail page
+ - Notifications on menu need to resize and align properly (from teacher's)
+ - ✅ send request and chat button
  send request page
  tuition style
- location of student edit
+ location of student can be edited edit
  Description to notes
- Booked slot will be disabled
- no hourly rate
-
- Chat page
+ - ✅ Booked slot will be disabled
+ - no hourly rate
+ - ✅ Chat page
  send request
+ delete useless images from AWS
+ - A teacher can block a student or a student can block a teacher
+ - AI Detects mobile number and social media links
+ - ✅ Prebook slot disabled
 
 
 ### Sequelize problems

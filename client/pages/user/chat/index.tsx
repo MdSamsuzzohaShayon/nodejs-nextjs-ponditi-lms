@@ -4,12 +4,15 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import Chat from '../../../components/user/Chat/Chat';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import Layout from '../../../components/layouts/Layout';
-import { resetErrorList } from '../../../redux/reducers/elementsSlice';
-import { fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
+import { resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
+import { fetchSelectedSingleUser, toggleAuthUser } from '../../../redux/reducers/userReducer';
 import { fetchAllMessagesOfARoom } from '../../../redux/reducers/messageReducer';
 
+// Types
+import { UserRoleEnum } from '../../../types/enums';
+
 // Check authentication and fetch previous messages
-function Index() {
+function ChatIndex() {
   let isMounted: boolean = true;
   const [receiverId, setReceiver] = useState<number | null>(null);
   const dispatch = useAppDispatch();
@@ -38,6 +41,26 @@ function Index() {
       }
     }
   }, [authUserInfo]);
+
+  useEffect(() => {
+    if (isMounted) {
+      dispatch(toggleLoading(true));
+      const user = localStorage.getItem('user');
+      // console.log(user);
+      if (user === null) {
+        dispatch(toggleAuthUser(false));
+        Router.push('/user/login');
+      } else {
+        dispatch(toggleAuthUser(true));
+        const userData = JSON.stringify(user);
+        if (userData.role === UserRoleEnum.ADMIN) {
+          Router.push('/admin');
+        }
+      }
+      dispatch(resetErrorList([]));
+      dispatch(toggleLoading(false));
+    }
+  }, []);
 
   /*
     useEffect(() => {
@@ -76,4 +99,4 @@ function Index() {
   );
 }
 
-export default Index;
+export default ChatIndex;

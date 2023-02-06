@@ -27,7 +27,7 @@ import { useAppSelector, useAppDispatch } from '../../redux/store';
 // types
 import { DetailPropsInterface } from '../../types/pages/userPageInterface';
 import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
-import { TuitionStyleEnum } from '../../types/enums';
+import { TuitionStyleEnum, UserRoleEnum } from '../../types/enums';
 
 // destructure
 const { STUDENT, TEACHER } = roles;
@@ -89,8 +89,8 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
     // console.log('Upload a file');
     const fileExist = imageInputEl.current.files[0];
     if (fileExist) {
-      //   console.log(fileExist);
-      if (fileExist.size / 1000 > 1000) {
+      // File can be uploaded
+      if (fileExist.size / 8000 > 8000) {
         // fileInputElement.current.value = 0;
         fice.target.value = '';
         return dispatch(setErrorList(['You must upload a file with less than 1 mega byte in size']));
@@ -124,7 +124,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
             dispatch(resetErrorList());
             Router.push('/user/dashboard');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.log(error);
           if (error?.response?.data?.msg) {
             dispatch(setErrorList([error.response.data.msg]));
@@ -225,7 +225,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
               )}
             </div>
           </div>
-          {search && (
+          {search && authUserInfo.role === UserRoleEnum.STUDENT && (
             <div className="row">
               <div className="btn-group mt-2" role="group" aria-label="Basic example">
                 <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre)}>
@@ -335,12 +335,15 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                     </div> */}
                   </div>
                 )}
-                <div className="row  mb-1">
-                  <div className="col-md-6">Available Status</div>
-                  <div className="col-md-6">
-                    <p className="fw-semibold">{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
+                {!search && (
+                  <div className="row  mb-1">
+                    <div className="col-md-6">Available Status</div>
+                    <div className="col-md-6">
+                      <p className="fw-semibold">{userDetail?.isAvailable ? 'Available' : 'Not Available'}</p>
+                    </div>
                   </div>
-                </div>
+                )}
+
                 <div className="row  mb-1">
                   <div className="col-md-6">Tution Place</div>
                   <div className="col-md-6">

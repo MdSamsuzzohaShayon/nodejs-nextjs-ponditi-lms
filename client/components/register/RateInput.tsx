@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -17,9 +18,9 @@ function RateInput(props) {
   const dispatch = useDispatch();
 
   const pyInputEl = useRef(null);
-  const rateInputOlEl = useRef(null);
-  const rateInputTlEl = useRef(null);
-  const rateInputSlEl = useRef(null);
+  const rateInputOlEl = useRef<HTMLInputElement>(null);
+  const rateInputTlEl = useRef<HTMLInputElement>(null);
+  const rateInputSlEl = useRef<HTMLInputElement>(null);
 
   //   const registerableUser = useSelector((state) => state.user.registerableUser);
   //   const currentUser = useSelector((state) => state.user.currentUser);
@@ -44,7 +45,7 @@ function RateInput(props) {
   const [monthlyEarningTl, setMonthlyEarningTl] = useState(initialMonthlyEarning);
   const [calculateRate, setCalculateRate] = useState(null);
 
-  const inputTuitionStyleHandler = (itse) => {
+  const inputTuitionStyleHandler = (itse: React.ChangeEvent<HTMLInputElement>) => {
     switch (itse.target.name) {
       case online:
         setDisplayTuitionOl((prevState) => !prevState);
@@ -75,7 +76,7 @@ function RateInput(props) {
     // (e) => setDisplayTuitionOl((prevState) => !prevState)
   };
 
-  const openPriceCalcHandler = (opce, inputName) => {
+  const openPriceCalcHandler = (opce: React.SyntheticEvent<HTMLImageElement>, inputName: string) => {
     opce.preventDefault();
     setSelectedStyleItem(inputName);
     dispatch(setPageYOffset(window.pageYOffset));
@@ -105,13 +106,13 @@ function RateInput(props) {
     dispatch(setOpenPriceCalc(true));
   };
 
-  const inputRateChangeHandler = (irce) => {
+  const inputRateChangeHandler = (irce: React.ChangeEvent<HTMLInputElement>) => {
     // console.log({ [irce.target.name]: parseInt(irce.target.value, 10) });
     // dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
     props.inputRateChange({ name: irce.target.name, rate: parseInt(irce.target.value, 10) });
   };
 
-  const inputPriceChangeHandler = (ipce) => {
+  const inputPriceChangeHandler = (ipce: React.ChangeEvent<HTMLInputElement>) => {
     // console.log({ [ipce.target.name]: ipce.target.value });
     let rate = 120;
     let earning = null;
@@ -124,7 +125,7 @@ function RateInput(props) {
       earning = monthlyEarning;
       days = parseInt(ipce.target.value, 10);
       rate = (monthlyEarning / days).toFixed(2);
-    }
+    }earning
     setCalculateRate(rate);
     switch (selectedStyleItem) {
       case online: {

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
@@ -5,19 +6,31 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
+
+// React/next
 import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+// Google API
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { setRegisterableUser } from '../../redux/reducers/userReducer';
 import { setOpenPriceCalc, setPageYOffset } from '../../redux/reducers/elementsSlice';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype } from '../../redux/reducers/classtypeReducer';
+
+// Utils/config
 import { roles, GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
+
+// Components
 import Loader from '../elements/Loader';
 import PriceCalculator from '../elements/PriceCalculator';
 import useMedieQuery from '../../hooks/useMediaQuery';
 import ClassSubjectStudentForm from './ClassSubjectStudentForm';
 
+// Types
+import { UserRegFormPropsInterface } from '../../types/redux/userInterface';
 
 const { TEACHER, STUDENT } = roles;
 
@@ -25,15 +38,20 @@ const online = 'online';
 const tl = 'tl';
 const sl = 'sl';
 
-function RegistrationForm(props) {
-  const dispatch = useDispatch();
+// Register form component
+function RegistrationForm(props: UserRegFormPropsInterface) {
+  // Hooks
+  const dispatch = useAppDispatch();
   const breakpointSm = useMedieQuery(768);
 
-  const pyInputEl = useRef(null);
-  const rateInputOlEl = useRef(null);
-  const rateInputTlEl = useRef(null);
-  const rateInputSlEl = useRef(null);
+  // Element reference
+  const pyInputEl = useRef<HTMLInputElement | null>(null);
+  const rateInputOlEl = useRef<HTMLInputElement | null>(null);
+  const rateInputTlEl = useRef<HTMLInputElement | null>(null);
+  const rateInputSlEl = useRef<HTMLInputElement | null>(null);
+
   /**
+   * ========================================================================
    * @api for google places
    */
   const { isLoaded } = useJsApiLoader({
@@ -43,34 +61,44 @@ function RegistrationForm(props) {
   });
 
   // const registerableUser = useSelector((state) => state.user.currentUser);
-  const registerableUser = useSelector((state) => state.user.registerableUser);
+  const registerableUser = useAppSelector((state) => state.user.registerableUser);
 
   /**
    * Using states because we are not going to need this in another component
    */
   const [autocomplete, setAutocomplete] = useState(null);
 
-  // For calculating price
-  const [selectedStyleItem, setSelectedStyleItem] = useState(online);
-  const [calculatorTitle, setCalculatorTitle] = useState('untitled');
-  const initialDaysOfMonth = 15;
-  const initialMonthlyEarning = 3000;
-  const [daysOfMonth, setDaysOfMonth] = useState(initialDaysOfMonth);
-  const [daysOfMonthOl, setDaysOfMonthOl] = useState(initialDaysOfMonth);
-  const [daysOfMonthSl, setDaysOfMonthSl] = useState(initialDaysOfMonth);
-  const [daysOfMonthTl, setDaysOfMonthTl] = useState(initialDaysOfMonth);
-  const [monthlyEarning, setMonthlyEarning] = useState(initialMonthlyEarning);
-  const [monthlyEarningOl, setMonthlyEarningOl] = useState(initialMonthlyEarning);
-  const [monthlyEarningSl, setMonthlyEarningSl] = useState(initialMonthlyEarning);
-  const [monthlyEarningTl, setMonthlyEarningTl] = useState(initialMonthlyEarning);
-  const [calculateRate, setCalculateRate] = useState(null);
+  /**
+   * ========================================================================
+   * LOCAL STATE FOR CALCULATING PRICE
+   */
+  const [selectedStyleItem, setSelectedStyleItem] = useState<string>(online);
+  const [calculatorTitle, setCalculatorTitle] = useState<string>('untitled');
+  const initialDaysOfMonth: number = 15;
+  const initialMonthlyEarning: number = 3000;
+  const [daysOfMonth, setDaysOfMonth] = useState<number>(initialDaysOfMonth);
+  const [daysOfMonthOl, setDaysOfMonthOl] = useState<number>(initialDaysOfMonth);
+  const [daysOfMonthSl, setDaysOfMonthSl] = useState<number>(initialDaysOfMonth);
+  const [daysOfMonthTl, setDaysOfMonthTl] = useState<number>(initialDaysOfMonth);
+  const [monthlyEarning, setMonthlyEarning] = useState<number>(initialMonthlyEarning);
+  const [monthlyEarningOl, setMonthlyEarningOl] = useState<number>(initialMonthlyEarning);
+  const [monthlyEarningSl, setMonthlyEarningSl] = useState<number>(initialMonthlyEarning);
+  const [monthlyEarningTl, setMonthlyEarningTl] = useState<number>(initialMonthlyEarning);
+  const [calculateRate, setCalculateRate] = useState<number | null>(null);
 
-  // Display tuition styles input field
-  const [displayTuitionOl, setDisplayTuitionOl] = useState(false);
-  const [displayTuitionSl, setDisplayTuitionSl] = useState(false);
-  const [displayTuitionTl, setDisplayTuitionTl] = useState(false);
+  /**
+   * ========================================================================
+   * LOCAL STATE FOR TUITION STYLE
+   */
+  const [displayTuitionOl, setDisplayTuitionOl] = useState<boolean>(false);
+  const [displayTuitionSl, setDisplayTuitionSl] = useState<boolean>(false);
+  const [displayTuitionTl, setDisplayTuitionTl] = useState<boolean>(false);
 
-  const inputTuitionStyleHandler = (itse) => {
+  /**
+   * ========================================================================
+   * CHANGE EVENT HANDLER 1
+   */
+  const inputTuitionStyleHandler = (itse: React.ChangeEvent<HTMLInputElement>) => {
     switch (itse.target.name) {
       case online:
         setDisplayTuitionOl((prevState) => !prevState);
@@ -90,13 +118,134 @@ function RegistrationForm(props) {
       dispatch(setRegisterableUser({ tutionplace: [...registerableUser.tutionplace, itse.target.name.toUpperCase()] }));
     } else {
       // Remove deselected item
-      const newRegisterableUser = registerableUser.tutionplace.filter((ru) => ru.toUpperCase() !== itse.target.name.toUpperCase());
+      const newRegisterableUser = registerableUser.tutionplace.filter((ru: string) => ru.toUpperCase() !== itse.target.name.toUpperCase());
       dispatch(setRegisterableUser({ tutionplace: newRegisterableUser }));
     }
     // (e) => setDisplayTuitionOl((prevState) => !prevState)
   };
+  // CHANGE EVENT HANDLER 2
+  const inputChangeHandler = (iche: React.ChangeEvent<HTMLInputElement>) => {
+    // iche.preventDefault();
+    dispatch(setRegisterableUser({ [iche.target.name]: iche.target.value }));
+  };
+  // CHANGE EVENT HANDLER 3
+  const inputRateChangeHandler = (irce: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log({ [irce.target.name]: parseInt(irce.target.value, 10) });
+    dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
+  };
+  // CHANGE EVENT HANDLER 4
+  const inputPriceChangeHandler = (ipce: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log({ [ipce.target.name]: ipce.target.value });
+    let rate: number = 120;
+    let earning: number | null = null;
+    let days = null;
+    if (ipce.target.name === 'monthly_earning') {
+      earning = parseInt(ipce.target.value, 10);
+      days = daysOfMonth;
+      rate = parseInt((earning / daysOfMonth).toFixed(2), 10);
+    } else if (ipce.target.name === 'days_of_month') {
+      earning = monthlyEarning;
+      days = parseInt(ipce.target.value, 10);
+      rate = parseInt((monthlyEarning / days).toFixed(2), 10);
+    }
+    setCalculateRate(rate);
+    switch (selectedStyleItem) {
+      case online: {
+        dispatch(setRegisterableUser({ ol_rate: rate }));
+        if (rateInputOlEl && rateInputOlEl.current) {
+          rateInputOlEl.current.value = rate.toString();
+        }
+        if (earning) {
+          setMonthlyEarningOl(earning);
+        }
+        if (days) {
+          setDaysOfMonthOl(days);
+        }
+        break;
+      }
+      case sl: {
+        dispatch(setRegisterableUser({ sl_rate: rate }));
+        if (rateInputSlEl && rateInputSlEl.current) {
+          rateInputSlEl.current.value = rate.toString();
+        }
+        if (earning) {
+          setMonthlyEarningSl(earning);
+        }
+        if (days) {
+          setDaysOfMonthSl(days);
+        }
+        break;
+      }
+      case tl: {
+        dispatch(setRegisterableUser({ tl_rate: rate }));
+        if (rateInputTlEl && rateInputTlEl.current) {
+          rateInputTlEl.current.value = rate.toString();
+        }
+        if (earning) {
+          setMonthlyEarningTl(earning);
+        }
+        if (days) {
+          setDaysOfMonthTl(days);
+        }
+        break;
+      }
 
-  const openPriceCalcHandler = (opce, inputName) => {
+      default:
+        break;
+    }
+  };
+  // CHANGE EVENT HANDLER 5
+  const inputRSChangeHandler = (irse: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(irse.target.checked)
+    dispatch(setRegisterableUser({ [irse.target.name]: irse.target.checked }));
+  };
+  // CHANGE EVENT HANDLER 6
+  const tuitionmChangeHandler = (tce: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
+  };
+  // CHANGE EVENT HANDLER 7
+  const classtypeChangeHandler = (tce: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
+  };
+  // CHANGE EVENT HANDLER 8
+  const currentlyStudyHandler = (cse: React.ChangeEvent<HTMLInputElement>) => {
+    // cse.preventDefault();
+    inputRSChangeHandler(cse);
+    if (cse.target.checked) {
+      if (pyInputEl && pyInputEl.current) {
+        pyInputEl.current.disabled = true;
+        pyInputEl.current.value = '';
+      }
+    } else if (pyInputEl && pyInputEl.current) {
+      pyInputEl.current.disabled = false;
+    }
+  };
+  // CHANGE EVENT HANDLER 9
+  const placeChangedHandler = () => {
+    if (autocomplete) {
+      const lat = autocomplete.getPlace().geometry.location.lat();
+      const lng = autocomplete.getPlace().geometry.location.lng();
+      try {
+        dispatch(setRegisterableUser({ presentaddress: `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})` }));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+  // CHANGE EVENT HANDLER 10
+  const inputNumChangeHandler = (iche: React.ChangeEvent<HTMLInputElement>) => {
+    if (iche.target.value !== '') {
+      dispatch(setRegisterableUser({ [iche.target.name]: parseInt(iche.target.value, 10) }));
+    } else {
+      dispatch(setRegisterableUser({ [iche.target.name]: null }));
+    }
+  };
+
+  /**
+   * ========================================================================
+   * TOGGLE PRICE CALCULATOR
+   */
+  const openPriceCalcHandler = (opce: React.SyntheticEvent, inputName: string) => {
     opce.preventDefault();
     // window.pageYOffset
     dispatch(setPageYOffset(window.pageYOffset));
@@ -104,19 +253,19 @@ function RegistrationForm(props) {
     switch (inputName) {
       case online:
         setCalculatorTitle('Online rate');
-        setCalculateRate(registerableUser.ol_rate);
+        if (registerableUser.ol_rate) setCalculateRate(registerableUser.ol_rate);
         setMonthlyEarning(monthlyEarningOl);
         setDaysOfMonth(daysOfMonthOl);
         break;
       case tl:
         setCalculatorTitle("Teacher's location rate");
-        setCalculateRate(registerableUser.tl_rate);
+        if (registerableUser.tl_rate) setCalculateRate(registerableUser.tl_rate);
         setMonthlyEarning(monthlyEarningTl);
         setDaysOfMonth(daysOfMonthTl);
         break;
       case sl:
         setCalculatorTitle("Student's Location rate");
-        setCalculateRate(registerableUser.sl_rate);
+        if (registerableUser.sl_rate) setCalculateRate(registerableUser.sl_rate);
         setMonthlyEarning(monthlyEarningSl);
         setDaysOfMonth(daysOfMonthSl);
         break;
@@ -127,90 +276,27 @@ function RegistrationForm(props) {
     dispatch(setOpenPriceCalc(true));
   };
 
-  const inputChangeHandler = (iche) => {
-    // iche.preventDefault();
-    dispatch(setRegisterableUser({ [iche.target.name]: iche.target.value }));
-  };
-
-  const inputRateChangeHandler = (irce) => {
-    // console.log({ [irce.target.name]: parseInt(irce.target.value, 10) });
-    dispatch(setRegisterableUser({ [irce.target.name]: parseInt(irce.target.value, 10) }));
-  };
-
-  const inputPriceChangeHandler = (ipce) => {
-    // console.log({ [ipce.target.name]: ipce.target.value });
-    let rate = 120;
-    let earning = null;
-    let days = null;
-    if (ipce.target.name === 'monthly_earning') {
-      earning = parseInt(ipce.target.value, 10);
-      days = daysOfMonth;
-      rate = (earning / daysOfMonth).toFixed(2);
-    } else if (ipce.target.name === 'days_of_month') {
-      earning = monthlyEarning;
-      days = parseInt(ipce.target.value, 10);
-      rate = (monthlyEarning / days).toFixed(2);
-    }
-    setCalculateRate(rate);
-    switch (selectedStyleItem) {
-      case online: {
-        dispatch(setRegisterableUser({ ol_rate: parseInt(rate, 10) }));
-        rateInputOlEl.current.value = rate;
-        setMonthlyEarningOl(earning);
-        setDaysOfMonthOl(days);
-        break;
-      }
-      case sl: {
-        dispatch(setRegisterableUser({ sl_rate: parseInt(rate, 10) }));
-        rateInputSlEl.current.value = rate;
-        setMonthlyEarningSl(earning);
-        setDaysOfMonthSl(days);
-        break;
-      }
-      case tl: {
-        dispatch(setRegisterableUser({ tl_rate: parseInt(rate, 10) }));
-        rateInputTlEl.current.value = rate;
-        setMonthlyEarningTl(earning);
-        setDaysOfMonthTl(days);
-        break;
-      }
-
-      default:
-        break;
-    }
-  };
-
-  const inputRSChangeHandler = (irse) => {
-    // console.log(irse.target.checked)
-    dispatch(setRegisterableUser({ [irse.target.name]: irse.target.checked }));
-  };
-  const tuitionmChangeHandler = (tce) => {
-    dispatch(setSelectedTuitionm([parseInt(tce.target.value, 10)]));
-  };
-  const classtypeChangeHandler = (tce) => {
-    dispatch(setSelectedClasstype([parseInt(tce.target.value, 10)]));
-  };
-
-  const currentlyStudyHandler = (cse) => {
-    // cse.preventDefault();
-    inputRSChangeHandler(cse);
-    if (cse.target.checked) {
-      pyInputEl.current.disabled = true;
-      pyInputEl.current.value = null;
-    } else {
-      pyInputEl.current.disabled = false;
-    }
-  };
-
+  /**
+   * ========================================================================
+   * ERROR VALIDATION
+   */
   const commonCls = 'fs-6 fw-light text-danger';
-  const inputEmptyPrevent = (userProp, text) => {
+  const inputEmptyPrevent = (userProp: string, text: string) => {
     if (userProp === '' || userProp === null) {
       props.changeValidationPassed(false);
       return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>{text} can not be empty</p>;
     }
     return null;
   };
+  const inputNumEmptyPrevent = (userProp: number | null, text: string) => {
+    if (userProp === 0 || userProp === null) {
+      props.changeValidationPassed(false);
+      return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>{text} can not be empty</p>;
+    }
+    return null;
+  };
 
+  // TUITION STYLE ERROR
   const inputTuitionStyleErr = () => {
     if (registerableUser.tutionplace.length < 1) {
       props.changeValidationPassed(false);
@@ -220,19 +306,19 @@ function RegistrationForm(props) {
       let errStr = '';
       let passed = true;
       if (displayTuitionOl) {
-        if (registerableUser.ol_rate === null || registerableUser.ol_rate === '') {
+        if (registerableUser.ol_rate === null) {
           passed = false;
           errStr += 'Online, ';
         }
       }
       if (displayTuitionSl) {
-        if (registerableUser.sl_rate === null || registerableUser.sl_rate === '') {
+        if (registerableUser.sl_rate === null) {
           passed = false;
           errStr += "Student's Location, ";
         }
       }
       if (displayTuitionTl) {
-        if (registerableUser.tl_rate === null || registerableUser.tl_rate === '') {
+        if (registerableUser.tl_rate === null) {
           passed = false;
           errStr += "Teacher's Location ";
         }
@@ -242,16 +328,6 @@ function RegistrationForm(props) {
       return <p className={props.noValidate === false ? commonCls : `${commonCls} text-danger d-none`}>Rates can not be empty for {errStr}</p>;
     }
     return null;
-  };
-
-  const placeChangedHandler = () => {
-    const lat = autocomplete.getPlace().geometry.location.lat();
-    const lng = autocomplete.getPlace().geometry.location.lng();
-    try {
-      dispatch(setRegisterableUser({ presentaddress: `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})` }));
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   if (!isLoaded) {
@@ -310,8 +386,8 @@ function RegistrationForm(props) {
         {registerableUser.role === TEACHER && (
           <div className="col-md-6 mb-3">
             <label htmlFor="experience">Experience(years)*</label>
-            <input type="number" className="form-control" name="experience" id="experience" defaultValue={registerableUser?.experience} onChange={inputChangeHandler} />
-            {inputEmptyPrevent(registerableUser.experience, 'Experience')}
+            <input type="number" className="form-control" name="experience" id="experience" defaultValue={registerableUser?.experience} onChange={inputNumChangeHandler} />
+            {inputNumEmptyPrevent(registerableUser.experience, 'Experience')}
           </div>
         )}
 
@@ -362,7 +438,7 @@ function RegistrationForm(props) {
                 id="passing_year"
                 ref={pyInputEl}
                 defaultValue={registerableUser?.passing_year}
-                onChange={inputChangeHandler}
+                onChange={inputNumChangeHandler}
               />
             </div>
             <div className="col-md-6 mb-3 d-flex flex-row-reverse justify-content-end align-items-center">
@@ -494,7 +570,7 @@ function RegistrationForm(props) {
       <div className="row ">
         <div className="col-md-6 mb-3">
           <label htmlFor="ref">Reference no.(Optional)</label>
-          <input type="number" onChange={inputChangeHandler} name="ref" id="ref" className="form-control" />
+          <input type="number" onChange={inputNumChangeHandler} name="ref" id="ref" className="form-control" />
         </div>
       </div>
     </>

@@ -26,10 +26,12 @@ const getAllMessageOfARoom = async (req, res) => {
 };
 const getAllRoomsOfAUser = async (req, res) => {
   try {
+    console.log({ userId: req.userId });
     // Find existing room with status of running or initialized
     const findAllRooms = await Room.findAll({
       where: {
         [Op.or]: [{ invitorId: req.userId }, { invitereceverId: req.userId }],
+        // [Op.or]: [{ '$Roominvitor.id$': req.userId }, { '$Inviterecever.id$': req.userId }],
       },
       include: [
         { model: Customer, as: 'Roominvitor', attributes: ['id', 'name', 'phone'] },

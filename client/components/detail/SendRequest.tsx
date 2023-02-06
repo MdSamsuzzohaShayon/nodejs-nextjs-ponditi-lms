@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+
 // React/next
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Router from 'next/router';
+import Link from 'next/link';
 
 // Google place API
 import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
@@ -19,15 +21,14 @@ import Calendar from '../elements/Calendar';
 // Config/utils
 import { GOOGLE_PLACE_API_KEY, libraries } from '../../config/keys';
 import axios from '../../config/axios';
-import { formatAsDate } from '../../utils/timeFunction';
 
 // Types
 import { TuitionStyleEnum, TimeAMPMEnum } from '../../types/enums';
 import { SlotInterface, FetchedScheduledClassInterface } from '../../types/redux/scheduledclassInterface';
 import { ClassTypeInterface } from '../../types/redux/SubjectClassTuitionmInterface';
 
-// http://localhost:3000/search/request/?receiverId=2
 function SendRequest() {
+  const dateInputEl = useRef<HTMLInputElement>(null);
   /**
    * @api for google places
    */
@@ -36,51 +37,85 @@ function SendRequest() {
     googleMapsApiKey: GOOGLE_PLACE_API_KEY,
     libraries,
   });
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [selectedAmpm, setSelectedAmpm] = useState(null);
+
+  // Local state
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [selectedAmpm, setSelectedAmpm] = useState<string | null>(null);
   const [autocomplete, setAutocomplete] = useState(null);
   const dispatch = useAppDispatch();
 
+  // Redux state
   const selectedSearchUser = useAppSelector((state) => state.user.selectedUser);
-  const currentUser = useAppSelector((state) => state.user.currentUser);
   const initializeSchedule = useAppSelector((state) => state.scheduledclass.initializeSchedule);
   const slotList = useAppSelector((state) => state.scheduledclass.slotList);
   const acceptedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU); // Later make it acceptedSCOU
+  const tuitionStyle = useAppSelector((state) => state.scheduledclass.tuitionStyle);
+  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
+  const subjectList = useAppSelector((state) => state.subject.subjectList);
 
   /**
-   * INITIALIZE SCHEDULE AT COMPONENT MOUNT
+   * SET DEFAUL TODAY DATE
    * =========================================================================================================
    */
   useEffect(() => {
-    // selectedSearchUser.presentaddress
-    if (currentUser.id) {
-      // DEFAULT ONLINE
-      if (initializeSchedule.tutionplace === TuitionStyleEnum.ONLINE || initializeSchedule.tutionplace === TuitionStyleEnum.ANY) {
-        dispatch(setInitializeSchedule({ tuitionlocation: TuitionStyleEnum.ONLINE }));
-        // FOR TEACHER'S LOCATION
-      } else if (initializeSchedule.tutionplace === TuitionStyleEnum.TL) {
-        dispatch(setInitializeSchedule({ tuitionlocation: selectedSearchUser.presentaddress }));
-        // fOR STUDENT'S LOCATION
-      } else if (initializeSchedule.tutionplace === TuitionStyleEnum.SL) {
-        let placeWithoutLngLat = currentUser.presentaddress;
-        if (placeWithoutLngLat.includes('(')) {
-          // eslint-disable-next-line prefer-destructuring
-          placeWithoutLngLat = placeWithoutLngLat.split('(')[0];
-        }
-        dispatch(setInitializeSchedule({ tuitionlocation: placeWithoutLngLat }));
+    setTimeout(() => {
+      if (dateInputEl.current) {
+        dateInputEl.current.valueAsDate = new Date();
       }
-      // console.log(currentUser);
-    }
-  }, [currentUser]);
+    }, 2000);
+  }, []);
 
-  const cancelRequesthandler = (cre: React.SyntheticEvent) => {
-    cre.preventDefault();
-  };
-
-  // set default value
+  /**
+   * ON CHANGE EVENTS HANDLER
+   * =========================================================================================================
+   */
   const inputChangeHandler = (ice: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     ice.preventDefault();
     dispatch(setInitializeSchedule({ [ice.target.name]: ice.target.value }));
+  };
+  const inputNumChangeHandler = (ince: React.ChangeEvent<HTMLSelectElement>) => {
+    ince.preventDefault();
+    dispatch(setInitializeSchedule({ [ince.target.name]: parseInt(ince.target.value, 10) }));
+  };
+
+  const tuitionStyleChangeHandler = (tsce: React.ChangeEvent<HTMLSelectElement>) => {
+    tsce.preventDefault();
+    if (tsce.target.value === TuitionStyleEnum.SL) {
+      dispatch(setInitializeSchedule({ [tsce.target.name]: tsce.target.value, tuitionlocation: selectedSearchUser.presentaddress }));
+    } else {
+      dispatch(setInitializeSchedule({ [tsce.target.name]: tsce.target.value }));
+    }
+  };
+
+  const dateChangeHandler = (sde, detail) => {
+    sde.preventDefault();
+    // console.log(detail);
+    // const tutionDate = new Date(detail.year, detail.month, detail.date);
+    // console.log(tutionDate.toISOString());
+    dispatch(setInitializeSchedule({ date: `${detail.year}-${detail.month}-${detail.date}` }));
+  };
+
+  const selectSlotHandler = (sse: React.SyntheticEvent, slot: number, ampm: string) => {
+    sse.preventDefault();
+    setSelectedSlot(slot);
+    setSelectedAmpm(ampm);
+    if (ampm === TimeAMPMEnum.PM) {
+      dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
+    } else {
+      dispatch(setInitializeSchedule({ time: `${slot}:00` }));
+    }
+  };
+  const placeChangedHandler = () => {
+    try {
+      if (autocomplete) {
+        const lat = autocomplete.getPlace().geometry.location.lat();
+        const lng = autocomplete.getPlace().geometry.location.lng();
+        const addressdetail = `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`;
+        dispatch(setInitializeSchedule({ tuitionlocation: addressdetail }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // const startTimeChangeHandler = (ste) => {
@@ -91,11 +126,12 @@ function SendRequest() {
   // };
 
   /**
-   * SEND REQUEST
+   * SEND REQUEST / SUBMIT REQUEST
    * =========================================================================================================
    */
-  const initializeScheduledClassHandler = async (isce: React.FormEvent<HTMLFormElement>) => {
+  const scheduledClassSubmitHandler = async (isce: React.FormEvent<HTMLFormElement>) => {
     isce.preventDefault();
+    console.log(initializeSchedule.date);
     if (!initializeSchedule.time) {
       return dispatch(setErrorList(['You must select a slot']));
     }
@@ -108,10 +144,10 @@ function SendRequest() {
       return dispatch(setErrorList(['You must have a receiver']));
     }
 
-    if (!initializeSchedule.ClassTypeId) {
+    if (!initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) {
       return dispatch(setErrorList(['You must have a class type']));
     }
-    if (!initializeSchedule.SubjectId) {
+    if (!initializeSchedule.SubjectId || initializeSchedule.SubjectId === 0) {
       return dispatch(setErrorList(['You must have a subject']));
     }
     // console.log(initializeSchedule);
@@ -147,33 +183,6 @@ function SendRequest() {
   };
 
   /**
-   * DATE CHANGE
-   * =========================================================================================================
-   */
-  const dateChangeHandler = (sde, detail) => {
-    sde.preventDefault();
-    // console.log(detail);
-    // const tutionDate = new Date(detail.year, detail.month, detail.date);
-    // console.log(tutionDate.toISOString());
-    dispatch(setInitializeSchedule({ date: `${detail.year}-${detail.month}-${detail.date}` }));
-  };
-
-  /**
-   * SELECT SLOT
-   * =========================================================================================================
-   */
-  const selectSlotHandler = (sse, slot, ampm) => {
-    sse.preventDefault();
-    setSelectedSlot(slot);
-    setSelectedAmpm(ampm);
-    if (ampm === TimeAMPMEnum.PM) {
-      dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
-    } else {
-      dispatch(setInitializeSchedule({ time: `${slot}:00` }));
-    }
-  };
-
-  /**
    * LOADING GOOGLE PLACE API
    * =========================================================================================================
    */
@@ -182,23 +191,6 @@ function SendRequest() {
   }
   const onLoadHandler = (ace) => {
     setAutocomplete(ace);
-  };
-
-  /**
-   * PLACE CHANGE HANDLER
-   * =========================================================================================================
-   */
-  const placeChangedHandler = () => {
-    try {
-      if (autocomplete) {
-        const lat = autocomplete.getPlace().geometry.location.lat();
-        const lng = autocomplete.getPlace().geometry.location.lng();
-        const addressdetail = `${autocomplete.getPlace().name}, ${autocomplete.getPlace().formatted_address}, (${lng}, ${lat})`;
-        dispatch(setInitializeSchedule({ tuitionlocation: addressdetail }));
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   /**
@@ -250,38 +242,81 @@ function SendRequest() {
       <div className="row mb-3">
         <h1 className="h1">Send Request</h1>
       </div>
-      <form onSubmit={initializeScheduledClassHandler}>
+      <form onSubmit={scheduledClassSubmitHandler}>
         <div className="row mb-3">
           <div className="my-2 week-calendar col-md-12">
             {/* <Calendar onDateChange={dateChangeHandler} /> */}
             <label htmlFor="date">Date</label>
-            <input type="date" name="date" id="date" className="form-control" onChange={inputChangeHandler} />
+            <input type="date" ref={dateInputEl} name="date" id="date" className="form-control" defaultValue={initializeSchedule.date} onChange={inputNumChangeHandler} />
           </div>
         </div>
         <div className="row mb-3">
-          <div className="col-md-12 d-flex justify-content-between flex-md-column">
+          <div className="col-md-12">
             <label htmlFor="slot">Slot</label>
+          </div>
+          <div className="col-md-12 d-flex justify-content-between flex-md-column">
             {timeSlotDisplay(0, slotList, slotList.length / 2, '')}
             {timeSlotDisplay(slotList.length / 2, slotList, slotList.length, 'justify-content-end')}
           </div>
         </div>
         <div className="row mb-3">
+          {(initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) && (
+            <div className="col-md-12">
+              <label htmlFor="classtype">Class Name</label>
+              <select className="form-control" name="classtype" id="classtype" defaultValue={initializeSchedule.ClassTypeId} onChange={inputChangeHandler}>
+                {[{ id: 0, name: 'Select a class' }, ...classtypeList].map((ct) => (
+                  <option value={ct.id} key={ct.id}>
+                    {ct.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {(initializeSchedule.SubjectId || initializeSchedule.SubjectId === 0) && (
+            <div className="col-md-12">
+              <label htmlFor="classtype">Subject Name</label>
+              <select className="form-control" name="classtype" id="classtype" defaultValue={initializeSchedule.SubjectId} onChange={inputNumChangeHandler}>
+                {[{ id: 0, name: 'Select a subject' }, ...subjectList].map((sb) => (
+                  <option value={sb.id} key={sb.id}>
+                    {sb.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+        <div className="row mb-3">
           <div className="col-md-12">
-            <label htmlFor="tuitionlocation">Address</label>
-            <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
-              <input
-                name="tuitionlocation"
-                id="tuitionlocation"
-                className="form-control"
-                defaultValue={initializeSchedule?.tuitionlocation}
-                onChange={inputChangeHandler}
-              />
-            </Autocomplete>
+            <label htmlFor="tutionplace">Tuition Style</label>
+            <select name="tutionplace" id="tutionplace" className="form-control" onChange={tuitionStyleChangeHandler}>
+              {tuitionStyle.map((ts) => (
+                <option value={ts.value} key={ts.id}>
+                  {ts.text}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+        {initializeSchedule.tutionplace === TuitionStyleEnum.SL && (
+          <div className="row mb-3">
+            <div className="col-md-12">
+              <label htmlFor="tuitionlocation">Address</label>
+              <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
+                <input
+                  name="tuitionlocation"
+                  id="tuitionlocation"
+                  className="form-control"
+                  defaultValue={initializeSchedule?.tuitionlocation}
+                  onChange={inputChangeHandler}
+                />
+              </Autocomplete>
+            </div>
+          </div>
+        )}
+
         <div className="row mb-3 ">
           <div className="col-md-12">
-            <label htmlFor="desc">Description</label>
+            <label htmlFor="desc">Note</label>
             <textarea name="desc" id="desc" className="form-control" rows={2} defaultValue={initializeSchedule.desc} onChange={inputChangeHandler} />
           </div>
         </div>
@@ -302,8 +337,8 @@ function SendRequest() {
             <button type="submit" className="btn btn-primary w-fit">
               Submit Request
             </button>
-            <button type="button" className="btn btn-danger w-fit" onClick={cancelRequesthandler}>
-              Cancel
+            <button type="button" className="btn btn-danger w-fit">
+              <Link href="/">Cancel</Link>
             </button>
           </div>
         </div>
