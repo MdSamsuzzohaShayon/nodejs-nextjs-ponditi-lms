@@ -24,7 +24,7 @@ function DisplayInbox({ showInboxes, setShowInboxes, roomListOfAUser, authUserIn
               </li>
             ))
           ) : (
-            <li className="list-group-item bg-transparent text-white border-none">No notification found</li>
+            <li className="list-group-item bg-transparent text-white border-none">No message found</li>
           )}
         </ul>
       </div>

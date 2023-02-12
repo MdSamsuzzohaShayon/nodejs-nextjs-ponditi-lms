@@ -15,7 +15,7 @@ import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SE
 import axios from '../../config/axios';
 
 // Types
-import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface } from '../../types/redux/userInterface';
+import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface, UserNotificationInterface } from '../../types/redux/userInterface';
 // import { tuitionplace } from '../../utils/types';
 
 const { REJECTED, PROFILE } = userDashboardSidebarList;
@@ -170,6 +170,7 @@ const initialDegreeList = [
 ];
 
 const initialSelectedStep: number = 1;
+const initialUserNotifications: UserNotificationInterface[] = [];
 
 // const initialTuitionStyles = tuitionplace;
 
@@ -260,8 +261,8 @@ export const userSlice = createSlice({
     // dashboardSidebarElements: initialDashboardSidebarElements,
     selectedContent: PROFILE,
     degreeList: initialDegreeList,
-    userNotifications: [],
-    userUnseenNotifications: [],
+    userNotifications: initialUserNotifications,
+    userUnseenNotifications: initialUserNotifications,
 
     /**
      * @dynamic all those connected to backend and databases

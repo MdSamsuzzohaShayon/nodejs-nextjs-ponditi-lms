@@ -1,4 +1,5 @@
 import React from 'react';
+import { TDateISO } from '../utils/dateFunctions';
 
 export interface AuthUserInfoInterface {
   name: string | null;
@@ -32,7 +33,6 @@ export interface RegisterableUserInterface {
   ref: number | null;
   tutionplace: string[];
 }
-
 
 // experience(pin):"4"
 // passing_year(pin):"2023"
@@ -78,4 +78,14 @@ export interface UserRegFormPropsInterface {
   changeValidationPassed: any;
   noValidate: boolean;
   userId: number | null;
+}
+
+export interface UserNotificationInterface {
+  id: number;
+  type: string;
+  comment: string;
+  viewed: boolean;
+  createdAt: TDateISO;
+  updatedAt: TDateISO;
+  CustomerId: number;
 }

@@ -834,7 +834,7 @@ const updateImageUser = async (req, res) => {
 
 const notificationSeen = async (req, res) => {
   try {
-    const seenNotifications = await Notification.update({ viewed: true }, { where: { userId: req.userId } });
+    const seenNotifications = await Notification.update({ viewed: true }, { where: { CustomerId: req.userId } });
     if (seenNotifications === null) {
       return res.status(404).json({ msg: 'No notification found' });
     }

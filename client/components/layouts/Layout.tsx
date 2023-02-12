@@ -1,15 +1,25 @@
+// React/next
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+
+// Redux
 import { toggleLoading } from '../../redux/reducers/elementsSlice';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
-import { toggleAuthUser, setAuthUserInfo, resetAuthUserInfo } from '../../redux/reducers/userReducer';
+import { toggleAuthUser, setAuthUserInfo, resetAuthUserInfo, fetchCurrentSingleUser } from '../../redux/reducers/userReducer';
 import { fetchAllRoomsOfAUser } from '../../redux/reducers/messageReducer';
+
+// Components
 import Header from './Header';
 import Footer from './Footer';
 import Loader from '../elements/Loader';
 
-function Layout(props) {
+// Types
+import { LayoutPropsInterface } from '../../types/components/Layout';
+
+
+
+function Layout(props: LayoutPropsInterface) {
   let isMounted = false;
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -29,6 +39,9 @@ function Layout(props) {
         dispatch(setAuthUserInfo(JSON.parse(user)));
         // Fetch all rooms of a user
         (async () => {
+          if (JSON.parse(user).id) {
+            dispatch(fetchCurrentSingleUser(JSON.parse(user).id));
+          }
           dispatch(fetchAllRoomsOfAUser());
         })();
       }
@@ -38,8 +51,8 @@ function Layout(props) {
   }, []);
 
   useEffect(() => {
-    const handleStart = (url) => url !== router.asPath && dispatch(toggleLoading(true));
-    const handleComplete = (url) => url === router.asPath && dispatch(toggleLoading(false));
+    const handleStart = (url:string) => url !== router.asPath && dispatch(toggleLoading(true));
+    const handleComplete = (url: string) => url === router.asPath && dispatch(toggleLoading(false));
 
     router.events.on('routeChangeStart', handleStart);
     router.events.on('routeChangeComplete', handleComplete);

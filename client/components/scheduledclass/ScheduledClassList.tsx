@@ -1,25 +1,29 @@
 /* eslint-disable react/no-array-index-key */
-import { useSelector } from 'react-redux';
+
+// React/next
 import React from 'react';
 import Link from 'next/link';
-import { roles, scheduledclassStatus } from '../../config/keys';
-import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
+
+// Redux
+import { useAppSelector } from '../../redux/store';
+
+// Config/utils
 import { locationSelection } from '../../utils/helper';
 import { convertISOToReadableTime } from '../../utils/timeFunction';
 
-const { TEACHER } = roles;
-
-const { APPROVED, REJECTED, PENDING } = scheduledclassStatus;
+// Types
+import { UserRoleEnum, StatusEnum } from '../../types/enums';
+import { ScheduledclassListPropsInterface, SingleScheduledClassInterface } from '../../types/pages/scheduledclassInterface';
 
 // SOR = student or teacher
-function ScheduledClassList({ scheduledClassList, acceptRequestHandler, rejectRequestHandler }) {
-  const selectedContent = useSelector((state) => state.user.selectedContent);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+function ScheduledClassList({ scheduledClassList, acceptRequestHandler, rejectRequestHandler }: ScheduledclassListPropsInterface) {
+  const selectedContent = useAppSelector((state) => state.user.selectedContent);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
 
-  const showContent = (src) => {
+  const showContent = (src: SingleScheduledClassInterface) => {
     switch (selectedContent) {
-      case PENDING:
-        return authUserInfo.role === TEACHER ? (
+      case StatusEnum.PENDING:
+        return authUserInfo.role === UserRoleEnum.TEACHER ? (
           <td>
             <button type="button" className="btn btn-primary" onClick={(are) => acceptRequestHandler(are, src.id)}>
               Accept
@@ -27,61 +31,49 @@ function ScheduledClassList({ scheduledClassList, acceptRequestHandler, rejectRe
             <button type="button" className="btn btn-danger" onClick={(are) => rejectRequestHandler(are, src.id)}>
               Reject
             </button>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         ) : (
           <td>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         );
-      case APPROVED:
+      case StatusEnum.APPROVED:
         return (
           <td>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         );
-      case REJECTED:
-        return authUserInfo.role === TEACHER ? (
+      case StatusEnum.REJECTED:
+        return authUserInfo.role === UserRoleEnum.TEACHER ? (
           <td>
             <button type="button" className="btn btn-primary" onClick={(are) => acceptRequestHandler(are, src.id)}>
               Accept
             </button>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         ) : (
           <td>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         );
 
       default:
         return (
           <td>
-            <button className="btn btn-primary" type="button">
-              <Link href={`/scheduledclass/detail/${src.id}`} type="button" className="btn btn-primary">
-                Detail
-              </Link>
-            </button>
+            <Link href={`/scheduledclass/detail/?scheduledclassId=${src.id}`} type="button" className="btn btn-primary">
+              Detail
+            </Link>
           </td>
         );
     }

@@ -85,7 +85,7 @@ router.put('/changepassword', ensureAuth, check('current').notEmpty(), check('pa
 router.get('/all', ensureAdmin, getAllUsers);
 router.get('/single/:id', getSingleUser);
 
-// Notification seen
+// Notification seen // Something went wrong while updating database
 router.put('/notification/seen', ensureAuth, notificationSeen);
 // disable on production
 

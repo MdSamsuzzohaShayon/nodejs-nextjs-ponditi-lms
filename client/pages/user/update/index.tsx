@@ -1,55 +1,60 @@
+// React/next
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+// Components
+import TutionDetail from '../../../components/user/Update/TutionDetail';
+import ClassSubjectStudentForm from '../../../components/register/ClassSubjectStudentForm';
 import Layout from '../../../components/layouts/Layout';
 import Loader from '../../../components/elements/Loader';
 import ClassSubjectForm from '../../../components/user/Update/ClassSubjectForm';
 import PersonalInformationForm from '../../../components/user/Update/PersonalInformationForm';
 import ExamDetailForm from '../../../components/user/Update/ExamDetailForm';
 import MessageList from '../../../components/elements/MessageList';
-import { fetchCurrentSingleUser, resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
 import { toggleLoading, setErrorList, resetErrorList } from '../../../redux/reducers/elementsSlice';
+
+// Config/utils
 import axios from '../../../config/axios';
-import TutionDetail from '../../../components/user/Update/TutionDetail';
-import ClassSubjectStudentForm from '../../../components/register/ClassSubjectStudentForm';
 import { roles } from '../../../config/keys';
 
 const { TEACHER } = roles;
 
-function index() {
+function UpdateIndex() {
   let isMounted = true;
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const updatePart = useSelector((state) => state.user.updatePart);
-  const updateUser = useSelector((state) => state.user.updateUser);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const isLoading = useSelector((state) => state.elements.isLoading);
-  const educationUpdateList = useSelector((state) => state.education.educationUpdateList);
+  const updatePart = useAppSelector((state) => state.user.updatePart);
+  const updateUser = useAppSelector((state) => state.user.updateUser);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const educationUpdateList = useAppSelector((state) => state.education.educationUpdateList);
 
-  const selectedTuitionmList = useSelector((state) => state.tuitionm.selectedTuitionmList);
-  const selectedClasstypeList = useSelector((state) => state.tuitionm.selectedClasstypeList);
-  const userTuitionmList = useSelector((state) => state.user.userTuitionmList);
-  const userClassTypes = useSelector((state) => state.user.userClassTypes);
-  const userSubjects = useSelector((state) => state.user.userSubjects);
+
+  const userTuitionmList = useAppSelector((state) => state.user.userTuitionmList);
+  const userClassTypes = useAppSelector((state) => state.user.userClassTypes);
 
   // const { userId } = router.query;
 
-  const inputChangeHandler = (ice) => {
+  const inputChangeHandler = (ice: React.ChangeEvent<HTMLInputElement>) => {
     ice.preventDefault();
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
   };
 
-  const tuitionmChangeHandler = (tce) => {
+  const tuitionmChangeHandler = (tce: React.ChangeEvent<HTMLSelectElement>) => {
     const tuitionmId = parseInt(tce.target.value, 10);
     dispatch(setUpdateUser({ TuitionmId: [tuitionmId] }));
   };
-  const classtypeChangeHandler = (tce) => {
+  const classtypeChangeHandler = (tce: React.ChangeEvent<HTMLSelectElement>) => {
     const classtypeId = parseInt(tce.target.value, 10);
     dispatch(setUpdateUser({ ClassTypeId: [classtypeId] }));
   };
@@ -60,23 +65,20 @@ function index() {
     // console.log({ newUserId });
     if (newUserId !== null) {
       const userIdInt = parseInt(newUserId, 10);
-      setUserId(newUserId);
+      setUserId(userIdInt);
       if (userIdInt !== authUserInfo.id) {
         router.push('/user/dashboard');
       } else {
         const getUpdatePart = window.localStorage.getItem('updatePart');
-        dispatch(setUpdatePart(parseInt(getUpdatePart, 10)));
+        if (getUpdatePart) {
+          dispatch(setUpdatePart(parseInt(getUpdatePart, 10)));
+        }
         (async () => {
           //   console.log(authUserInfo);
           //   console.log({ userId, updatePart });
           // get subjects  / class types / user
           dispatch(resetErrorList());
-          await Promise.all([
-            dispatch(fetchCurrentSingleUser(newUserId)),
-            dispatch(fetchAllTuitionms(null)),
-            dispatch(fetchAllClassTypes(null)),
-            dispatch(fetchAllSubjects(null)),
-          ]);
+          await Promise.all([dispatch(fetchAllTuitionms(null)), dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null))]);
         })();
       }
       isMounted = false;
@@ -122,7 +124,7 @@ function index() {
     }
   };
 
-  const userExamSubmitHandler = async (uce) => {
+  const userExamSubmitHandler = async (uce: React.FormEvent<HTMLFormElement>) => {
     uce.preventDefault();
     try {
       dispatch(toggleLoading(true));
@@ -139,7 +141,7 @@ function index() {
         dispatch(resetErrorList());
         router.push('/user/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -153,7 +155,7 @@ function index() {
     }
   };
 
-  const cancelBtnHandler = (cbe) => {
+  const cancelBtnHandler = (cbe: React.SyntheticEvent) => {
     cbe.preventDefault();
     window.localStorage.removeItem('updatePart');
     router.push('/user/dashboard'); // Solve this later
@@ -247,4 +249,4 @@ function index() {
   );
 }
 
-export default index;
+export default UpdateIndex;

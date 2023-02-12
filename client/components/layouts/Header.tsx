@@ -14,7 +14,6 @@ import { useRouter } from 'next/router';
 // Config/util
 import { roles, scheduledclassStatus } from '../../config/keys';
 import axios from '../../config/axios';
-import { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST, START_CLASS, FINISH_CLASS } from '../../utils/types';
 
 // Redux
 import { toggleAuthUser, setSelectedContent } from '../../redux/reducers/userReducer';
@@ -27,6 +26,10 @@ import useMediaQuery from '../../hooks/useMediaQuery';
 // Component
 import DisplayInbox from './DisplayInbox';
 import DisplayNotificationBar from './DisplayNotificationBar';
+
+// Types
+import { UserNotificationInterface } from '../../types/redux/userInterface';
+import { ClassStatusEnum } from '../../types/enums';
 
 const { ADMIN, STUDENT, TEACHER } = roles;
 const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
@@ -73,12 +76,13 @@ function Header() {
     isMounted = true;
   }, []);
 
-  const logoutHandler = async (lhe) => {
+  // Logout
+  const logoutHandler = async (lhe: React.SyntheticEvent) => {
     lhe.preventDefault();
     try {
       dispatch(toggleLoading(true));
       const response = await axios.post('/user/logout');
-      dispatch(toggleAuthUser());
+      dispatch(toggleAuthUser(null));
       router.push('/');
     } catch (error) {
       console.log(error);
@@ -92,7 +96,7 @@ function Header() {
     setShowNotificationBar(false);
   };
 
-  const linkRedirectHandler = (lre: React.SyntheticEvent, notification) => {
+  const linkRedirectHandler = (lre: React.SyntheticEvent, notification: UserNotificationInterface) => {
     lre.preventDefault();
     const baseUrl = window.location.origin;
     let newUrl = window.location.origin;
@@ -102,21 +106,21 @@ function Header() {
     }
 
     // http://localhost:3000/scheduledclass/detail/2
-    newUrl = scheduledClassId ? `${baseUrl}/scheduledclass/detail/${scheduledClassId}` : `${baseUrl}/user/requesthistory`;
+    newUrl = scheduledClassId ? `${baseUrl}/scheduledclass/detail/?scheduledclassId=${scheduledClassId}` : `${baseUrl}/user/requesthistory`;
     switch (notification.type) {
-      case INITIATED_CLASS:
+      case ClassStatusEnum.INITIATED_CLASS:
         dispatch(setSelectedContent(PENDING));
         break;
       // 'ACCEPT_REQUEST REJECTED_REQUEST START_CLASS',
-      case ACCEPT_REQUEST:
+      case ClassStatusEnum.ACCEPT_REQUEST:
         dispatch(setSelectedContent(APPROVED));
         break;
-      case REJECTED_REQUEST:
+      case ClassStatusEnum.REJECTED_REQUEST:
         dispatch(setSelectedContent(REJECTED));
         break;
-      case START_CLASS:
+      case ClassStatusEnum.START_CLASS:
         break;
-      case FINISH_CLASS:
+      case ClassStatusEnum.FINISH_CLASS:
         break;
       default:
         break;
@@ -300,13 +304,15 @@ function Header() {
                           </li>
                         </ul>
                       </div>
-                      <button type="button" className="btn btn-transparent p-0 m-0 " onClick={notificationBarHandler} ref={notificationMenuItem}>
+                      <button type="button" className="btn btn-transparent p-0 m-0 position-relative" onClick={notificationBarHandler} ref={notificationMenuItem}>
                         {userUnseenNotifications.length > 0 ? (
                           <img src="/icons/notification-dot.svg" alt="notification" height={35} />
                         ) : (
                           <img height={35} src="/icons/notification.svg" alt="notification" />
                         )}
-                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
+                        {userUnseenNotifications.length > 0 && (
+                          <div className="bg-danger text-white p-1 w-fit rounded-3 position-absolute top-0">{userUnseenNotifications.length}</div>
+                        )}
                       </button>
                       <div className="d-flex">
                         <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>

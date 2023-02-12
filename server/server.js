@@ -55,17 +55,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
+// app.use('/docs', swaggerUi.serve, swaggerUi.setup(outputFile));
 
-/**
- * @openapi
- * /api:
- *   get:
- *     description: Official documentation of ponditi API
- *     responses:
- *       200:
- *         description: Just for testing perpuse that API is working or not
- */
+
 app.get('/api', (req, res) => {
   res.send('Hello World');
   // res.status(200).json({ msg: 'Server is working', env: process.env });

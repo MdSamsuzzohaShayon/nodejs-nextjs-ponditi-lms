@@ -1,35 +1,43 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useSelector, useDispatch } from 'react-redux';
+
+// React/next
 import Router from 'next/router';
 import React, { useEffect } from 'react';
+
+// Redux
+import { useAppDispatch, useAppSelector} from '../../../redux/store';
+import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
+import { setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../../redux/reducers/userReducer';
+import { toggleLoading, setErrorList } from '../../../redux/reducers/elementsSlice';
+
+// Components
 import UnderDev from '../../../components/elements/UnderDev';
 import Layout from '../../../components/layouts/Layout';
 import { scheduledclassStatus } from '../../../config/keys';
-import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
-import { fetchCurrentSingleUser, setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../../redux/reducers/userReducer';
 import ScheduledClassList from '../../../components/scheduledclass/ScheduledClassList';
-import { toggleLoading, setErrorList } from '../../../redux/reducers/elementsSlice';
+
+// Config/utils
 import axios from '../../../config/axios';
 
 const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
 
-function requesthistory() {
-  const dispatch = useDispatch();
+function RequesthistoryIndex() {
+  const dispatch = useAppDispatch();
   // const [selectedElement, setSelectedElement] = useState(APPROVED);
-  const selectedContent = useSelector((state) => state.user.selectedContent);
+  const selectedContent = useAppSelector((state) => state.user.selectedContent);
 
-  const tabElements = useSelector((state) => state.scheduledclass.tabElements);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const requestedSCOU = useSelector((state) => state.scheduledclass.requestedSCOU);
-  const runningSCOU = useSelector((state) => state.scheduledclass.runningSCOU);
-  const completedSCOU = useSelector((state) => state.scheduledclass.completedSCOU);
-  const acceptedSCOU = useSelector((state) => state.scheduledclass.acceptedSCOU);
-  const rejectedSCOU = useSelector((state) => state.scheduledclass.rejectedSCOU);
+  const tabElements = useAppSelector((state) => state.scheduledclass.tabElements);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const requestedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU);
+  const runningSCOU = useAppSelector((state) => state.scheduledclass.runningSCOU);
+  const completedSCOU = useAppSelector((state) => state.scheduledclass.completedSCOU);
+  const acceptedSCOU = useAppSelector((state) => state.scheduledclass.acceptedSCOU);
+  const rejectedSCOU = useAppSelector((state) => state.scheduledclass.rejectedSCOU);
 
-  const userUnseenNotifications = useSelector((state) => state.user.userUnseenNotifications);
+  const userUnseenNotifications = useAppSelector((state) => state.user.userUnseenNotifications);
 
-  const tabElementChangeHandler = (tece, tabName) => {
+  const tabElementChangeHandler = (tece: React.SyntheticEvent, tabName: string) => {
     tece.preventDefault();
     dispatch(setSelectedContent(tabName));
   };
@@ -37,11 +45,10 @@ function requesthistory() {
   /**
    * @action handler
    */
-  const acceptRequestHandler = async (are, scheduledclassId) => {
+  const acceptRequestHandler = async (are: React.SyntheticEvent, scheduledclassId: number) => {
     are.preventDefault();
-    console.log('Accept');
     try {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(true));
       // check recever id and current user id
       const response = await axios.put(`/scheduledclass/accept/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
@@ -51,7 +58,7 @@ function requesthistory() {
         dispatch(setAcceptedSCOU([...acceptedSCOU, newAcceptedSCOU]));
         dispatch(setRequestedSCOU(newRequestedSCOU));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -62,14 +69,14 @@ function requesthistory() {
         Router.push('/user/login');
       }
     } finally {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(false));
     }
   };
 
-  const rejectRequestHandler = async (are, scheduledclassId) => {
+  const rejectRequestHandler = async (are: React.SyntheticEvent, scheduledclassId: number) => {
     are.preventDefault();
     try {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(true));
       // check recever id and current user id
       const response = await axios.put(`/scheduledclass/reject/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
@@ -78,13 +85,13 @@ function requesthistory() {
         dispatch(setRejectedSCOU([...rejectedSCOU, newRejectedSCOU]));
         dispatch(setRequestedSCOU(newRequestedSCOU));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
     } finally {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -110,9 +117,9 @@ function requesthistory() {
   useEffect(() => {
     if (authUserInfo.id) {
       (async () => {
-        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id)), dispatch(fetchCurrentSingleUser(authUserInfo.id))]);
+        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id))]);
         if (userUnseenNotifications.length > 0) {
-          await dispatch(requestHistorySeen(null));
+          await dispatch(requestHistorySeen());
         }
       })();
       // seen request history
@@ -123,7 +130,7 @@ function requesthistory() {
     <Layout title="Request History | Ponditi">
       <section className="section">
         <div className="container">
-          {/* <div className="requesthistory">
+          <div className="requesthistory">
             <div className="card">
               <div className="card-header">
                 <ul className="nav nav-tabs">
@@ -145,12 +152,11 @@ function requesthistory() {
                 <div className="content-for-classlist">{showContent()}</div>
               </div>
             </div>
-          </div> */}
-          <UnderDev />
+          </div> 
         </div>
       </section>
     </Layout>
   );
 }
 
-export default requesthistory;
+export default RequesthistoryIndex;

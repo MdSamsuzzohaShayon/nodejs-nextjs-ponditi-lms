@@ -1,75 +1,83 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React,{ useEffect, useState } from 'react';
+
+// React/next
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
-import Layout from '../../../components/layouts/Layout';
+
+// Redux
+import { useAppSelector, useAppDispatch } from '../../../redux/store';
 import { fetchSingleScheduledClass, setUpdateScheduledClass, setAcceptedSCOU, setRequestedSCOU, setRejectedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import { resetErrorList, setErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo, requestHistorySeen } from '../../../redux/reducers/userReducer';
-import { scheduledclassStatus, roles } from '../../../config/keys';
-import axios from '../../../config/axios';
+
+// Components
+import Layout from '../../../components/layouts/Layout';
 import Review from '../../../components/scheduledclass/Review';
 import SingleScheduledClassInfo from '../../../components/scheduledclass/SingleScheduledClassInfo';
 import StopWatch from '../../../components/elements/StopWatch';
 import Loader from '../../../components/elements/Loader';
 import MessageList from '../../../components/elements/MessageList';
 
+// Config/utils
+import { scheduledclassStatus, roles } from '../../../config/keys';
+import axios from '../../../config/axios';
+
 const { START_CLASS, APPROVED, FINISH_CLASS, PENDING } = scheduledclassStatus;
 const { TEACHER, STUDENT } = roles;
 
-function detail() {
+function ScheduledclassIndex() {
+  // HOOKS
   const router = useRouter();
-  const dispatch = useDispatch();
-  // const { scheduledclassId } = router.query;
-  const [scheduledclassId, setScheduledclassId] = useState(null);
+  const dispatch = useAppDispatch();
 
-  const singleScheduledClass = useSelector((state) => state.scheduledclass.singleScheduledClass);
-  const updateScheduledClass = useSelector((state) => state.scheduledclass.updateScheduledClass);
+  // LOCAL STATE
+  const [scheduledclassId, setScheduledclassId] = useState<number | null>(null);
 
-  const requestedSCOU = useSelector((state) => state.scheduledclass.requestedSCOU);
-  const acceptedSCOU = useSelector((state) => state.scheduledclass.acceptedSCOU);
-  const rejectedSCOU = useSelector((state) => state.scheduledclass.rejectedSCOU);
-  const generateBill = useSelector((state) => state.scheduledclass.generateBill);
+  // REDUX STATE
+  const singleScheduledClass = useAppSelector((state) => state.scheduledclass.singleScheduledClass);
+  const updateScheduledClass = useAppSelector((state) => state.scheduledclass.updateScheduledClass);
+  const requestedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU);
+  const acceptedSCOU = useAppSelector((state) => state.scheduledclass.acceptedSCOU);
+  const rejectedSCOU = useAppSelector((state) => state.scheduledclass.rejectedSCOU);
+  const generateBill = useAppSelector((state) => state.scheduledclass.generateBill);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const userUnseenNotifications = useAppSelector((state) => state.user.userUnseenNotifications);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
 
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
-  const userUnseenNotifications = useSelector((state) => state.user.userUnseenNotifications);
-
-  const isLoading = useSelector((state) => state.elements.isLoading);
-
-  // console.log({scheduledclassId});
-
+  /**
+   * ================================================================================================
+   * FETCH A SINGLE SCHEDULED CLASS AND MAKE ALL OF THEM SEEN AT MOUNT POINT
+   */
   useEffect(() => {
     (async () => {
       const params = new URLSearchParams(window.location.search);
       const newScheduledclassId = params.get('scheduledclassId');
-      setScheduledclassId(newScheduledclassId);
       if (newScheduledclassId) {
-        await dispatch(fetchSingleScheduledClass(newScheduledclassId));
+        const newScheduledclassIdInt = parseInt(newScheduledclassId, 10);
+        setScheduledclassId(newScheduledclassIdInt);
+        await dispatch(fetchSingleScheduledClass(newScheduledclassIdInt));
         if (userUnseenNotifications.length > 0) {
-          await dispatch(requestHistorySeen(null));
+          await dispatch(requestHistorySeen());
         }
       }
     })();
-  }, [router.isReady]);
+  }, []);
 
-  /*
-  useEffect(()=>{
-    console.log("singleScheduledClass");
-    console.log(singleScheduledClass);
-  }, [singleScheduledClass]);
-  */
-
-  const startClassHandler = async (sce) => {
+  /**
+   * ================================================================================================
+   * START A CLASS BY TEACHER
+   */
+  const startClassHandler = async (sce: React.SyntheticEvent) => {
     sce.preventDefault();
     try {
       const response = await axios.put(`/scheduledclass/start/${scheduledclassId}`);
       if (response.status === 202) {
         dispatch(dispatch(resetErrorList()));
-        await dispatch(fetchSingleScheduledClass(scheduledclassId));
+        if (scheduledclassId) await dispatch(fetchSingleScheduledClass(scheduledclassId));
       }
       // console.log(response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error?.response?.data?.msg]));
@@ -80,20 +88,26 @@ function detail() {
         router.push('/user/login');
       }
     }
+    return null;
   };
 
-  const inputChangeHandler = (ice) => {
+  /**
+   * ================================================================================================
+   * MEET LINK CHANGE HANDLER
+   */
+  const inputChangeHandler = (ice: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setUpdateScheduledClass({ meetlink: ice.target.value }));
     // updateScheduledClass
   };
 
   /**
-   * @action handler
+   * ================================================================================================
+   * ACCEPT THE REQUEST
    */
-  const acceptRequestHandler = async (are) => {
+  const acceptRequestHandler = async (are: React.SyntheticEvent) => {
     are.preventDefault();
     try {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(true));
       // check recever id and current user id
       const response = await axios.put(`/scheduledclass/accept/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
@@ -104,7 +118,7 @@ function detail() {
         dispatch(setRequestedSCOU(newRequestedSCOU));
         router.push('/user/requesthistory');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -115,14 +129,18 @@ function detail() {
         router.push('/user/login');
       }
     } finally {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(false));
     }
   };
 
-  const rejectRequestHandler = async (are) => {
+  /**
+   * ================================================================================================
+   * REJECT TUITION REQUEST
+   */
+  const rejectRequestHandler = async (are: React.SyntheticEvent) => {
     are.preventDefault();
     try {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(true));
       // check recever id and current user id
       const response = await axios.put(`/scheduledclass/reject/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
@@ -132,17 +150,21 @@ function detail() {
         dispatch(setRequestedSCOU(newRequestedSCOU));
         router.push('/user/requesthistory');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
       }
     } finally {
-      dispatch(toggleLoading());
+      dispatch(toggleLoading(false));
     }
   };
 
-  const addMeetLinkHandler = async (amle) => {
+  /**
+   * ================================================================================================
+   * SUBMIT OR ADD MEET LINK
+   */
+  const addMeetLinkHandler = async (amle: React.FormEvent<HTMLFormElement>) => {
     amle.preventDefault();
     try {
       if (!updateScheduledClass.meetlink) {
@@ -151,9 +173,9 @@ function detail() {
       const response = await axios.put(`/scheduledclass/update/${scheduledclassId}`, { meetlink: updateScheduledClass.meetlink });
       if (response.status === 202) {
         dispatch(dispatch(resetErrorList()));
-        await dispatch(fetchSingleScheduledClass(scheduledclassId));
+        if (scheduledclassId) await dispatch(fetchSingleScheduledClass(scheduledclassId));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error?.response?.data?.msg]));
@@ -164,17 +186,22 @@ function detail() {
         router.push('/user/login');
       }
     }
+    return null;
   };
 
-  const finishClassHandler = async (fce) => {
+  /**
+   * ================================================================================================
+   * FINISH THE CLASS BY TEACHER
+   */
+  const finishClassHandler = async (fce: React.SyntheticEvent) => {
     fce.preventDefault();
     try {
       const response = await axios.put(`/scheduledclass/finishclass/${scheduledclassId}`);
       if (response.status === 202) {
         dispatch(dispatch(resetErrorList()));
-        await dispatch(fetchSingleScheduledClass(scheduledclassId));
+        if (scheduledclassId) await dispatch(fetchSingleScheduledClass(scheduledclassId));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error?.response?.data?.msg]));
@@ -193,6 +220,10 @@ function detail() {
         <div className="container">
           <MessageList />
           <div>
+            {/*
+             * ================================================================================================
+             * DETAIL OF A SINGLE SCHEDULED CLASS
+             */}
             <SingleScheduledClassInfo authUserInfo={authUserInfo} singleScheduledClass={singleScheduledClass} />
             <p>{singleScheduledClass?.desc}</p>
             {singleScheduledClass.status === APPROVED && authUserInfo.role === TEACHER && (
@@ -261,4 +292,4 @@ function detail() {
   );
 }
 
-export default detail;
+export default ScheduledclassIndex;

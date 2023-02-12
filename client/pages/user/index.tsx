@@ -20,7 +20,7 @@ import { userDashboardSidebarList, roles } from '../../config/keys';
 
 // Redux
 import { toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
-import { setSelectedContent, toggleAuthUser, fetchCurrentSingleUser } from '../../redux/reducers/userReducer';
+import { setSelectedContent, toggleAuthUser } from '../../redux/reducers/userReducer';
 import { fetchAllRequestedSCOU } from '../../redux/reducers/scheduledclassReducer';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
 
@@ -64,7 +64,6 @@ function User() {
   useEffect(() => {
     if (authUserInfo.id) {
       dispatch(fetchAllRequestedSCOU(authUserInfo.id));
-      dispatch(fetchCurrentSingleUser(authUserInfo.id));
     }
   }, [authUserInfo]);
 

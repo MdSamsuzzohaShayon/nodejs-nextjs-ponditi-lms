@@ -284,6 +284,10 @@
  - A teacher can block a student or a student can block a teacher
  - AI Detects mobile number and social media links
  - ✅ Prebook slot disabled
+no any option in search with class, medium, subject
+No professional institution for student
+Complete button only
+Chat is not working properly
 
 
 ### Sequelize problems

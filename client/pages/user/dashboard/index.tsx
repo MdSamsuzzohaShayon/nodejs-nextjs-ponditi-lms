@@ -4,7 +4,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { toggleLoading, resetErrorList } from '../../../redux/reducers/elementsSlice';
-import { toggleAuthUser, fetchCurrentSingleUser } from '../../../redux/reducers/userReducer';
+import { toggleAuthUser } from '../../../redux/reducers/userReducer';
 import { fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { useAppSelector, useAppDispatch } from '../../../redux/store';
@@ -45,7 +45,7 @@ function DashboardIndex() {
   useEffect(() => {
     if (authUserInfo.id) {
       (async () => {
-        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id)), dispatch(fetchCurrentSingleUser(authUserInfo.id))]);
+        await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id))]);
       })();
     }
   }, [authUserInfo]);

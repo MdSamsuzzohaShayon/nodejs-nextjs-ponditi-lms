@@ -2,8 +2,9 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { DisplayNotificationPropsInterface } from '../../types/redux/elementsInterface';
+import { UserNotificationInterface } from '../../types/redux/userInterface';
 
-function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandler, userNotifications, linkRedirectHandler }) {
+function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandler, userNotifications, linkRedirectHandler }: DisplayNotificationPropsInterface) {
   return (
     <div className={showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`}>
       <div className="card-body">
@@ -13,14 +14,11 @@ function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandl
         </div>
         <ul className="list-group">
           {userNotifications.length > 0 ? (
-            userNotifications.map((un, unI) => (
-              <li
-                className={un.viewed ? 'list-group-item bg-transparent text-white border-none' : 'list-group-item bg-transparent text-white border-none'}
-                key={unI}
-                onClick={(lre) => linkRedirectHandler(lre, un)}
-                aria-hidden="true"
-              >
-                {un.comment}
+            userNotifications.map((un: UserNotificationInterface, unI: number) => (
+              <li className={un.viewed ? 'list-group-item bg-transparent border-none' : 'list-group-item bg-transparent text-white border-none'} key={unI}>
+                <button type="button" className="btn btn-transparent p-0 m-0 text-white" onClick={(lre) => linkRedirectHandler(lre, un)}>
+                  {un.comment}
+                </button>
               </li>
             ))
           ) : (

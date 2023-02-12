@@ -8,20 +8,24 @@ import Router from 'next/router';
 
 // Config/utils
 import axios from '../../config/axios';
-import { scheduledclassStatus, types } from '../../config/keys';
+
 
 // Types
-import { SingleUserInterface } from '../../types/redux/userInterface';
+import { SingleScheduledClassInterface } from '../../types/pages/scheduledclassInterface';
 import { ScheduledClassInterface, SlotInterface, TuitionStyle } from '../../types/redux/scheduledclassInterface';
-import { TimeAMPMEnum, TuitionStyleEnum } from '../../types/enums';
+import { TimeAMPMEnum, TuitionStyleEnum, StatusEnum } from '../../types/enums';
 
 // Redux
 import { resetAuthUserInfo } from './userReducer';
 import { setErrorList } from './elementsSlice';
 
-const { APPROVED, PENDING, REJECTED, START_CLASS, FINISH_CLASS } = scheduledclassStatus;
-const { ONLINE } = types;
 
+
+
+/**
+ * ==========================================================================================
+ * INITIAL VALUES OF STATE
+ */
 const initicalAddScheduledClass = {
   name: '',
   subjectId: '',
@@ -63,27 +67,27 @@ const initialAScheduledClass: ScheduledClassInterface = {
 const initialSCTabElements = [
   {
     id: 1,
-    name: APPROVED,
+    name: StatusEnum.APPROVED,
     text: 'Approved Class',
   },
   {
     id: 2,
-    name: PENDING,
+    name: StatusEnum.PENDING,
     text: 'Pending Class',
   },
   {
     id: 3,
-    name: REJECTED,
+    name: StatusEnum.REJECTED,
     text: 'Rejected Class',
   },
   {
     id: 4,
-    name: START_CLASS,
+    name: StatusEnum.START_CLASS,
     text: 'Running Class',
   },
   {
     id: 5,
-    name: FINISH_CLASS,
+    name: StatusEnum.FINISH_CLASS,
     text: 'Completed Class',
   },
 ];
@@ -177,7 +181,21 @@ const initialSlotList: SlotInterface[] = [
 
 const initialLeaveAReview = { stars: 0, comment: '' };
 
-// scou = Scheduled Class of a User
+const initialSingleScheduledClass: SingleScheduledClassInterface | Record<string, never> = {};
+
+const initialRequestedSCOU: SingleScheduledClassInterface[] = [];
+const initialAcceptedSCOU: SingleScheduledClassInterface[] = [];
+const initialRejectedSCOU: SingleScheduledClassInterface[] = [];
+const initialRunningSCOU: SingleScheduledClassInterface[] = [];
+const initialCompletedSCOU: SingleScheduledClassInterface[] = [];
+
+const initialAllScheduledClassList: SingleScheduledClassInterface[] = [];
+const initialFilteredSCOU: SingleScheduledClassInterface[] = [];
+
+/**
+ * ==========================================================================================
+ * FETCH DATA ASYNC IN REDUX
+ */
 export const fetchAllRequestedSCOU = createAsyncThunk('scheduledclass/allRequestedScheduledClass', async (userId: number, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/scheduledclass/member/${userId}`);
@@ -196,13 +214,12 @@ export const fetchAllRequestedSCOU = createAsyncThunk('scheduledclass/allRequest
   }
 });
 
-// scou = Scheduled Class of a User
-export const fetchSingleScheduledClass = createAsyncThunk('scheduledclass/singleScheduledClass', async (scheduledclassId, { dispatch, rejectWithValue }) => {
+export const fetchSingleScheduledClass = createAsyncThunk('scheduledclass/singleScheduledClass', async (scheduledclassId: number, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/scheduledclass/single/${scheduledclassId}`);
     // console.log(response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
     }
@@ -217,6 +234,10 @@ export const fetchSingleScheduledClass = createAsyncThunk('scheduledclass/single
   }
 });
 
+/**
+ * ==========================================================================================
+ * SLICE | ACTION AND REDUCER
+ */
 export const scheduledclassSlice = createSlice({
   name: 'scheduledclass',
   initialState: {
@@ -237,17 +258,17 @@ export const scheduledclassSlice = createSlice({
     selectedSubjectsSU: [],
 
     // scou = Scheduled Class of a User
-    requestedSCOU: [],
-    acceptedSCOU: [],
-    rejectedSCOU: [],
-    runningSCOU: [],
-    completedSCOU: [],
+    requestedSCOU: initialRequestedSCOU,
+    acceptedSCOU: initialAcceptedSCOU,
+    rejectedSCOU: initialRejectedSCOU,
+    runningSCOU: initialRunningSCOU,
+    completedSCOU: initialCompletedSCOU,
 
-    allScheduledClassList: [],
-    filteredSCOU: [],
+    allScheduledClassList: initialAllScheduledClassList,
+    filteredSCOU: initialFilteredSCOU,
 
     initializeSchedule: initialAScheduledClass,
-    singleScheduledClass: {},
+    singleScheduledClass: initialSingleScheduledClass,
 
     updateScheduledClass: {},
 
@@ -309,11 +330,11 @@ export const scheduledclassSlice = createSlice({
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
       state.allScheduledClassList = action.payload.classScheduledList;
-      state.requestedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === PENDING);
-      state.acceptedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === APPROVED);
-      state.rejectedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === REJECTED);
-      state.runningSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === START_CLASS);
-      state.completedSCOU = action.payload?.classScheduledList.filter((csl) => csl.status === FINISH_CLASS);
+      state.requestedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.PENDING);
+      state.acceptedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.APPROVED);
+      state.rejectedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.REJECTED);
+      state.runningSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.START_CLASS);
+      state.completedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.FINISH_CLASS);
     });
 
     builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action) => {
@@ -322,6 +343,10 @@ export const scheduledclassSlice = createSlice({
   },
 });
 
+/**
+ * ==========================================================================================
+ * EXPORT ACTION FUNCTION
+ */
 export const {
   // Showing content
   setShowReviewFields,
@@ -341,4 +366,8 @@ export const {
   resetLeaveAReview,
 } = scheduledclassSlice.actions;
 
+/**
+ * ==========================================================================================
+ * EXPORT REDUCER
+ */
 export default scheduledclassSlice.reducer;

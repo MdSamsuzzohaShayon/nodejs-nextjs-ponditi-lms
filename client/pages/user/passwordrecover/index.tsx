@@ -53,10 +53,10 @@ function passwordrecover() {
           <div className="row mb-3">
             <div className="col d-flex flex-column">
               <Link href="/user/passwordrecover">
-                <a className="text-decoration-underline text-capitalize text-dark">Login</a>
+                Login
               </Link>
               <Link href="/user/register">
-                <a className="text-decoration-underline text-capitalize text-dark">Don&apos;t have an account?</a>
+                Don&apos;t have an account?
               </Link>
             </div>
           </div>

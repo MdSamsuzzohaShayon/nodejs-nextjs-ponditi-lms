@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 // redux
 import { useAppSelector, useAppDispatch } from '../../../redux/store';
-import { fetchCurrentSingleUser, fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
+import { fetchSelectedSingleUser } from '../../../redux/reducers/userReducer';
 import { setInitializeSchedule, fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import { resetErrorList } from '../../../redux/reducers/elementsSlice';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';

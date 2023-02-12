@@ -144,14 +144,16 @@ function SendRequest() {
       return dispatch(setErrorList(['You must have a receiver']));
     }
 
-    if (!initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) {
-      return dispatch(setErrorList(['You must have a class type']));
-    }
-    if (!initializeSchedule.SubjectId || initializeSchedule.SubjectId === 0) {
-      return dispatch(setErrorList(['You must have a subject']));
-    }
+    // if (!initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) {
+    //   return dispatch(setErrorList(['You must have a class type']));
+    // }
+    // if (!initializeSchedule.SubjectId || initializeSchedule.SubjectId === 0) {
+    //   return dispatch(setErrorList(['You must have a subject']));
+    // }
     // console.log(initializeSchedule);
     const newObj = { ...initializeSchedule };
+    newObj.ClassTypeId = 1;
+    newObj.SubjectId = 1;
     newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
     // newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
     delete newObj.date;
