@@ -18,4 +18,9 @@ export interface DetailPropsInterface {
   userId: number;
 }
 
-
+export interface ResetPassReqInterface {
+  phoneoremail: string;
+  otp: string;
+  password: string;
+  password2: string;
+}

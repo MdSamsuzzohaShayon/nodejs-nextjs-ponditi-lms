@@ -62,9 +62,9 @@ export const getStaticProps: GetStaticProps = async () => {
 import React, { useEffect } from 'react';
 import Layout from '../components/layouts/Layout';
 import Section1 from '../components/home/Section1';
-import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
-import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
-import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+import { fetchAllClassTypes } from '../redux/reducers/classtypeReducer';
+import { fetchAllSubjects } from '../redux/reducers/subjectReducer';
+import { fetchAllTuitionms } from '../redux/reducers/tuitionmReducer';
 import { useAppSelector, useAppDispatch } from '../redux/store';
 
 function Home() {
@@ -78,7 +78,7 @@ function Home() {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
+        await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
       }
     })();
     isMounted = false;

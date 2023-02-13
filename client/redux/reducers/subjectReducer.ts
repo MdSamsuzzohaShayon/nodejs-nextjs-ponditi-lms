@@ -2,20 +2,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../config/axios';
 import { setErrorList } from './elementsSlice';
-import { setAllSubjectList } from './searchReducer';
+import { SubjectInterface } from '../../types/redux/SubjectClassTuitionmInterface';
+
 
 const initialAddSubject = {
   name: '',
   classTypeId: [],
 };
 
-const fetchSubject = async (args, { dispatch, rejectWithValue }) => {
+
+const initialSubjectList: SubjectInterface[] = [];
+
+const fetchSubject = async (args: null, { dispatch, rejectWithValue }) => {
   try {
     // dispatch(toggleLoading(true));
     // console.log('try');
     const response = await axios.get('/subject/all');
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
@@ -25,17 +29,17 @@ const fetchSubject = async (args, { dispatch, rejectWithValue }) => {
 };
 
 export const fetchAllSubjects = createAsyncThunk('scheduledclass/getAllSubjects', fetchSubject);
-export const fetchAllSubjectsSearch = createAsyncThunk('scheduledclass/getAllSubjectsSearch', fetchSubject);
+// export const fetchAllSubjectsSearch = createAsyncThunk('scheduledclass/getAllSubjectsSearch', fetchSubject);
 
 export const subjectSlice = createSlice({
   name: 'subject',
   initialState: {
+    constSubjectList: initialSubjectList, // Unchangable
     /**
      * @dynamic or changable elements of the website
      */
-    subjectList: [],
-    constSubjectList: [], // Unchangable
-    selectedSubjectList: [],
+    subjectList: initialSubjectList,
+    selectedSubjectList: initialSubjectList,
     addSubject: initialAddSubject,
     displaySubject: false,
   },
@@ -69,13 +73,13 @@ export const subjectSlice = createSlice({
         state.constSubjectList = action.payload.subjects;
       }
     });
-    builder.addCase(fetchAllSubjectsSearch.fulfilled, (state, action) => {
-      if (action.payload.subjects.length > 0) {
-        const defaultSubject = { id: 0, name: 'Any Subject' };
-        state.subjectList = [defaultSubject, ...action.payload.subjects];
-        state.constSubjectList = action.payload.subjects;
-      }
-    });
+    // builder.addCase(fetchAllSubjectsSearch.fulfilled, (state, action) => {
+    //   if (action.payload.subjects.length > 0) {
+    //     const defaultSubject = { id: 0, name: 'Any Subject' };
+    //     state.subjectList = [defaultSubject, ...action.payload.subjects];
+    //     state.constSubjectList = action.payload.subjects;
+    //   }
+    // });
   },
 });
 

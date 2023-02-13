@@ -6,8 +6,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Router from 'next/router';
 
 // Redux
-import { fetchAllClassTypes } from './classtypeReducer';
-import { fetchAllSubjects } from './subjectReducer';
+// import { fetchAllClassTypes } from './classtypeReducer';
+// import { fetchAllSubjects } from './subjectReducer';
 import { setErrorList } from './elementsSlice';
 
 // Config/utils
@@ -15,7 +15,7 @@ import { userDashboardSidebarList, SEND_CODE, scheduledclassStatus, roles, TS_SE
 import axios from '../../config/axios';
 
 // Types
-import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface, UserNotificationInterface } from '../../types/redux/userInterface';
+import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface, UserNotificationInterface, ResetPassReqInterface } from '../../types/redux/userInterface';
 // import { tuitionplace } from '../../utils/types';
 
 const { REJECTED, PROFILE } = userDashboardSidebarList;
@@ -131,7 +131,7 @@ const initialLoginInfo = {
   password: null,
 };
 
-const initialResetPassReq = { emailorpassword: '', otp: '', password: '', password2: '' };
+const initialResetPassReq: ResetPassReqInterface = { phoneoremail: '', otp: '', password: '', password2: '' };
 
 const initialSendOTP = {
   phone: '',
@@ -178,14 +178,14 @@ const fetchUser = async (userId: number, { dispatch, rejectWithValue }) => {
   try {
     const response = await axios.get(`/user/single/${userId}`);
     // console.log(response.data);
-    if (response.data.classTypes.legth === 0) {
-      // fetch all class types
-      await dispatch(fetchAllClassTypes(null));
-    }
-    if (response.data.subjects.legth === 0) {
-      // fetch all subjects
-      await dispatch(fetchAllSubjects(null));
-    }
+    // if (response.data.classTypes.legth === 0) {
+    //   // fetch all class types
+    //   await dispatch(fetchAllClassTypes(null));
+    // }
+    // if (response.data.subjects.legth === 0) {
+    //   // fetch all subjects
+    //   await dispatch(fetchAllSubjects(null));
+    // }
     return response.data;
   } catch (error: any) {
     // console.log(error.response.status);

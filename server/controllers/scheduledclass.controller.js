@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable prefer-object-spread */
 /* eslint-disable object-curly-newline */
 /* eslint-disable operator-linebreak */
@@ -103,10 +104,25 @@ const initiateScheduledClass = async (req, res) => {
     // perHourRate
     // findRecever.dataValues.rate * scObj.hours = total costs
     // console.log(scObj.start);
+
+    let startISODate = scObj.start;
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!isoDateRegex.test(startISODate)) {
+      startISODate = new Date(startISODate);
+    } else {
+      const date = new Date(startISODate);
+
+      if (isNaN(date)) {
+        return res.status(406).json({
+          msg: 'Invalid Date format',
+        });
+      }
+    }
     const scObjToCreate = {
       status: PENDING,
       types: scObj.tutionplace,
-      start: scObj.start,
+      start: startISODate,
       // hours: scObj.hours,
       perHourRate: findRecever.dataValues.rate,
       tuitionlocation: scObj.tuitionlocation,
@@ -223,7 +239,7 @@ const getAllScheduledClassofAMember = async (req, res) => {
     });
     // console.log(allScheduledClass.length);
     if (allScheduledClass.length === 0) {
-      return res.status(404).json({ msg: 'no class found' });
+      return res.status(204).json({ msg: 'no class found', classScheduledList: [] });
     }
     const newScheduledClass = Object.assign(allScheduledClass);
     const modifiedScheduledClassList = [];
@@ -410,14 +426,23 @@ const completeRequestedScheduledClass = async (req, res) => {
     return res.status(406).json({ error: errors.array() });
   }
   try {
-    // finishclass
-    // console.log(req.params.scheduledclassId);
+    /*
+    // STARTED CLASS CAN BE COMPLETED
     const findScheduledClass = await ScheduledClass.findOne({
       where: { id: req.params.scheduledclassId, status: START_CLASS },
     });
     // console.log(findScheduledClass);
     if (!findScheduledClass) {
       return res.status(406).json({ msg: 'No class found to reject or class may not started' });
+    }
+    */
+
+    // APPROVED CLASS CAN BE COMPLETED
+    const findScheduledClass = await ScheduledClass.findOne({
+      where: { id: req.params.scheduledclassId, status: APPROVED },
+    });
+    if (!findScheduledClass) {
+      return res.status(406).json({ msg: 'No class found to reject or class may not approved' });
     }
     await Promise.all([
       findScheduledClass.update({

@@ -31,8 +31,8 @@ import ClassSubjectStudentForm from './ClassSubjectStudentForm';
 
 // Types
 import { UserRegFormPropsInterface } from '../../types/redux/userInterface';
+import { UserRoleEnum } from '../../types/enums';
 
-const { TEACHER, STUDENT } = roles;
 
 const online = 'online';
 const tl = 'tl';
@@ -352,7 +352,7 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
         </div>
       </div>
       <div className="row ">
-        {registerableUser.role === TEACHER && (
+        {registerableUser.role === UserRoleEnum.TEACHER && (
           <div className="col-md-6 mb-3">
             <label htmlFor="profession">Profession*</label>
             <input
@@ -367,8 +367,8 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
           </div>
         )}
 
-        <div className={registerableUser.role !== TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
-          <label htmlFor="pinstitution">Professional Institution*</label>
+        <div className={registerableUser.role !== UserRoleEnum.TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
+          <label htmlFor="pinstitution">{registerableUser.role === UserRoleEnum.TEACHER ? 'Professional Institution*' : 'Institution*'}</label>
           <input
             type="pinstitution"
             className="form-control"
@@ -383,15 +383,22 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
       </div>
 
       <div className="row ">
-        {registerableUser.role === TEACHER && (
+        {registerableUser.role === UserRoleEnum.TEACHER && (
           <div className="col-md-6 mb-3">
             <label htmlFor="experience">Experience(years)*</label>
-            <input type="number" className="form-control" name="experience" id="experience" defaultValue={registerableUser?.experience} onChange={inputNumChangeHandler} />
+            <input
+              type="number"
+              className="form-control"
+              name="experience"
+              id="experience"
+              defaultValue={registerableUser?.experience}
+              onChange={inputNumChangeHandler}
+            />
             {inputNumEmptyPrevent(registerableUser.experience, 'Experience')}
           </div>
         )}
 
-        <div className={registerableUser.role !== TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
+        <div className={registerableUser.role !== UserRoleEnum.TEACHER ? 'col-md-12 mb-3' : 'col-md-6 mb-3'}>
           {/* Replace this with present address and use google map api  */}
           <label htmlFor="district">Present Address*</label>
           <Autocomplete onLoad={onLoadHandler} onPlaceChanged={placeChangedHandler} className="form-control p-0">
@@ -401,7 +408,7 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
         </div>
       </div>
 
-      {registerableUser.role === TEACHER && (
+      {registerableUser.role === UserRoleEnum.TEACHER && (
         <>
           <div className="row ">
             <div className="col-md-6 mb-3">
@@ -563,7 +570,7 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
         </>
       )}
 
-      {registerableUser.role === STUDENT && (
+      {registerableUser.role === UserRoleEnum.STUDENT && (
         <ClassSubjectStudentForm selectedMedium={0} selectedClassType={0} tuitionmChangeHandler={tuitionmChangeHandler} classtypeChangeHandler={classtypeChangeHandler} />
       )}
 

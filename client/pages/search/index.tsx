@@ -1,28 +1,37 @@
+// React/next
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { toggleLoading, setErrorList } from '../../redux/reducers/elementsSlice';
+// Redux
+import { toggleLoading, setErrorList, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { initialSearchParams, setSearchParams, setSearchUserList, setSearchAllUserList, setRPTotalPage } from '../../redux/reducers/searchReducer';
-import { fetchAllClassTypes, fetchAllClassTypesSearch, setClasstypeList } from '../../redux/reducers/classtypeReducer';
-import { fetchAllSubjects, fetchAllSubjectsSearch, setSubjectList } from '../../redux/reducers/subjectReducer';
-import { fetchAllTuitionms, fetchAllTuitionmsSearch, setTuitionmList } from '../../redux/reducers/tuitionmReducer';
+import { fetchAllClassTypes, setClasstypeList } from '../../redux/reducers/classtypeReducer';
+import { fetchAllSubjects, setSubjectList } from '../../redux/reducers/subjectReducer';
+import { fetchAllTuitionms, setTuitionmList } from '../../redux/reducers/tuitionmReducer';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
-import {SearchParamsInterface} from '../../types/redux/searchInterface';
 
+// Types
+import { SearchParamsInterface } from '../../types/redux/searchInterface';
+
+// Components
 import Layout from '../../components/layouts/Layout';
 import SearchForm from '../../components/search/SearchForm';
 import SearchResult from '../../components/search/SearchResult';
 import Loader from '../../components/elements/Loader';
 
+// Config/utils
 import axios from '../../config/axios';
 
-function Search() {
+// Page component
+function SearchIndex() {
   let isMounted = false;
+
+  // Hooks
   const dispatch = useAppDispatch();
 
+  // Redux state
   const searchParams = useAppSelector((state) => state.search.searchParams);
-  // rp = result pagination
-  const rpStart = useAppSelector((state) => state.search.rpStart);
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const rpStart = useAppSelector((state) => state.search.rpStart); // rp = result pagination
   const rpTotal = useAppSelector((state) => state.search.rpTotal);
 
   // Search on mount
@@ -49,7 +58,7 @@ function Search() {
     }
   };
 
-  // get localstorage
+  // Fetch class, subject, and tution medium
   useEffect(() => {
     if (isMounted === false) {
       dispatch(toggleLoading(true));
@@ -58,11 +67,28 @@ function Search() {
         const searchData = localStorage.getItem('search');
         if (searchData) {
           const searchParsedData: SearchParamsInterface = JSON.parse(searchData);
+          // Search params validation
+          dispatch(resetErrorList());
+          const errList = [];
+          if (!searchParsedData.TuitionmId) {
+            errList.push('You must need to select a tuition medium');
+          }
+          if (!searchParsedData.ClassTypeId) {
+            errList.push('You must need to select a class');
+          }
+          if (!searchParsedData.SubjectId) {
+            errList.push('You must need to select a subject');
+          }
+          if (errList.length > 0) {
+            dispatch(setErrorList(errList));
+          }
           dispatch(setSearchParams(searchParsedData));
+        } else {
+          dispatch(setErrorList(['You must need to select a tuition medium', 'You must need to select a class', 'You must need to select a subject']));
         }
 
         (async () => {
-          await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
+          await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
         })();
       }
       // console.log(searchData);
@@ -76,18 +102,22 @@ function Search() {
 
   return (
     <Layout title="Search Teacher | Ponditi">
-      <div className="search">
-        <div className="container">
-          <SearchForm />
-        </div>
-        <section className="section section-2 search-result">
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="search">
           <div className="container">
-            <SearchResult />
+            <SearchForm fromHome={false} />
           </div>
-        </section>
-      </div>
+          <section className="section section-2 search-result">
+            <div className="container">
+              <SearchResult />
+            </div>
+          </section>
+        </div>
+      )}
     </Layout>
   );
 }
 
-export default Search;
+export default SearchIndex;

@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { toggleLoading, resetErrorList } from '../../../redux/reducers/elementsSlice';
 import { toggleAuthUser } from '../../../redux/reducers/userReducer';
 import { fetchAllRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
-import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { useAppSelector, useAppDispatch } from '../../../redux/store';
 import Detail from '../../../components/user/Detail';
 import Layout from '../../../components/layouts/Layout';
@@ -43,11 +42,11 @@ function DashboardIndex() {
   }, []);
 
   useEffect(() => {
-    if (authUserInfo.id) {
-      (async () => {
+    (async () => {
+      if (authUserInfo.id) {
         await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id))]);
-      })();
-    }
+      }
+    })();
   }, [authUserInfo]);
 
   return (

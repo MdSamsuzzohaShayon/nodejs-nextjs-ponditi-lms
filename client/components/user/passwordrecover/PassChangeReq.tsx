@@ -1,4 +1,4 @@
-/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useDispatch } from 'react-redux';
 import React from 'react';
@@ -6,25 +6,26 @@ import { resetChangeResetPassReq } from '../../../redux/reducers/userReducer';
 import { resetErrorList, setErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
 import axios from '../../../config/axios';
 
-function PassChangeReq(props) {
+import { PassChangeReqPropsInterface, SendCodeToPhoneOrEmailInterface } from '../../../types/pages/passwordRecoverinterface';
+
+function PassChangeReq({ resetPassReq, toNextStep, inputChangeHandler }: PassChangeReqPropsInterface) {
   const dispatch = useDispatch();
 
   // const resetPassReq = useSelector((state) => state.user.resetPassReq);
 
-
-
-  const passChangeReqHandler = async (pcre) => {
+  const passChangeReqHandler = async (pcre: React.FormEvent<HTMLFormElement>) => {
     pcre.preventDefault();
     dispatch(resetErrorList());
-    if (props.resetPassReq.phoneoremail === '') {
+
+    if (resetPassReq.phoneoremail === '') {
       dispatch(setErrorList(['both field must be filled']));
     }
 
-    const newObj = {};
-    if (props.resetPassReq.phoneoremail.toString().includes('@')) {
-      newObj.email = props.resetPassReq.phoneoremail;
+    const newObj: SendCodeToPhoneOrEmailInterface = {};
+    if (resetPassReq.phoneoremail.toString().includes('@')) {
+      newObj.email = resetPassReq.phoneoremail;
     } else {
-      newObj.phone = props.resetPassReq.phoneoremail;
+      newObj.phone = resetPassReq.phoneoremail;
     }
 
     try {
@@ -37,9 +38,9 @@ function PassChangeReq(props) {
       if (response.status === 201) {
         dispatch(resetErrorList());
         // navigate to next step
-        props.toNextStep();
+        toNextStep();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -51,11 +52,11 @@ function PassChangeReq(props) {
 
   return (
     <div>
-      <form onSubmit={passChangeReqHandler} >
+      <form onSubmit={passChangeReqHandler}>
         <div className="row mb-3">
           <div className="col-md-12">
             <label htmlFor="phoneoremail">Phone or Email (an OTP will be sent to your phone)</label>
-            <input type="text" className="form-control" name="phoneoremail" defaultValue={props.resetPassReq.phoneoremail} onChange={props.inputChangeHandler} />
+            <input type="text" className="form-control" name="phoneoremail" defaultValue={resetPassReq.phoneoremail} onChange={inputChangeHandler} />
           </div>
         </div>
         <div className="row mb-3">

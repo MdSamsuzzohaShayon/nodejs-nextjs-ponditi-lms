@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 // Config/util
-import { roles, scheduledclassStatus } from '../../config/keys';
 import axios from '../../config/axios';
 
 // Redux
@@ -29,10 +28,8 @@ import DisplayNotificationBar from './DisplayNotificationBar';
 
 // Types
 import { UserNotificationInterface } from '../../types/redux/userInterface';
-import { ClassStatusEnum } from '../../types/enums';
+import { ClassStatusEnum, StatusEnum, UserRoleEnum } from '../../types/enums';
 
-const { ADMIN, STUDENT, TEACHER } = roles;
-const { PENDING, APPROVED, REJECTED } = scheduledclassStatus;
 
 function Header() {
   let isMounted = false;
@@ -66,7 +63,7 @@ function Header() {
       if (user !== null) {
         const userData = JSON.parse(user);
 
-        if (userData.role === ADMIN) {
+        if (userData.role === UserRoleEnum.ADMIN) {
           setDashboardUrl('/admin');
         } else {
           setDashboardUrl('/user/dashboard');
@@ -96,38 +93,7 @@ function Header() {
     setShowNotificationBar(false);
   };
 
-  const linkRedirectHandler = (lre: React.SyntheticEvent, notification: UserNotificationInterface) => {
-    lre.preventDefault();
-    const baseUrl = window.location.origin;
-    let newUrl = window.location.origin;
-    let scheduledClassId = null;
-    if (notification.comment.includes('(')) {
-      scheduledClassId = parseInt(notification.comment.substring(notification.comment.indexOf('(') + 1, notification.comment.indexOf(')')), 10);
-    }
-
-    // http://localhost:3000/scheduledclass/detail/2
-    newUrl = scheduledClassId ? `${baseUrl}/scheduledclass/detail/?scheduledclassId=${scheduledClassId}` : `${baseUrl}/user/requesthistory`;
-    switch (notification.type) {
-      case ClassStatusEnum.INITIATED_CLASS:
-        dispatch(setSelectedContent(PENDING));
-        break;
-      // 'ACCEPT_REQUEST REJECTED_REQUEST START_CLASS',
-      case ClassStatusEnum.ACCEPT_REQUEST:
-        dispatch(setSelectedContent(APPROVED));
-        break;
-      case ClassStatusEnum.REJECTED_REQUEST:
-        dispatch(setSelectedContent(REJECTED));
-        break;
-      case ClassStatusEnum.START_CLASS:
-        break;
-      case ClassStatusEnum.FINISH_CLASS:
-        break;
-      default:
-        break;
-    }
-    // console.log({newUrl, scheduledClassId});
-    router.push(newUrl);
-  };
+  
 
   const dropdownMenuHandler = (dme: React.SyntheticEvent) => {
     dme.preventDefault();
@@ -175,12 +141,12 @@ function Header() {
                 </ul>
                 {authenticatedUser ? (
                   <ul className="list-unstyled d-flex justify-content-start align-items-start flex-column">
-                    {authUserInfo.role === ADMIN && (
+                    {authUserInfo.role === UserRoleEnum.ADMIN && (
                       <li>
                         <Link href="/admin">Dashboard</Link>
                       </li>
                     )}
-                    {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
+                    {authUserInfo.role === UserRoleEnum.STUDENT || authUserInfo.role === UserRoleEnum.TEACHER ? (
                       <>
                         <li className="text-lowercase">
                           <Link href={dashboardUrl}>{`Profile (${authUserInfo.role.toLowerCase()})`}</Link>
@@ -224,7 +190,6 @@ function Header() {
                 )}
                 {/* {showNotificationBar ? `notification-bar card position-absolute` : `notification-bar card position-absolute d-none`} */}
                 <DisplayNotificationBar
-                  linkRedirectHandler={linkRedirectHandler}
                   natificationBarCloseHandler={natificationBarCloseHandler}
                   showNotificationBar={showNotificationBar}
                   userNotifications={userNotifications}
@@ -275,14 +240,14 @@ function Header() {
                               <Link href={dashboardUrl}> Edit Profile</Link>
                             </div>
                           </li>
-                          {authUserInfo.role === ADMIN && (
+                          {authUserInfo.role === UserRoleEnum.ADMIN && (
                             <li>
                               <div className="dropdown-item">
                                 <Link href="/admin">Dashboard</Link>
                               </div>
                             </li>
                           )}
-                          {authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? (
+                          {authUserInfo.role === UserRoleEnum.STUDENT || authUserInfo.role === UserRoleEnum.TEACHER ? (
                             <li>
                               <div className="dropdown-item d-flex">
                                 <Link href="/user/requesthistory">Request history</Link>
@@ -292,7 +257,7 @@ function Header() {
                           ) : null}
                           <li>
                             <div className="dropdown-item text-white">
-                              <Link href={authUserInfo.role === STUDENT || authUserInfo.role === TEACHER ? '/user/changepassword' : '/admin/changepassword'}>
+                              <Link href={authUserInfo.role === UserRoleEnum.STUDENT || authUserInfo.role === UserRoleEnum.TEACHER ? '/user/changepassword' : '/admin/changepassword'}>
                                 Change Password
                               </Link>
                             </div>
@@ -331,7 +296,6 @@ function Header() {
                     </div>
                   )}
                   <DisplayNotificationBar
-                    linkRedirectHandler={linkRedirectHandler}
                     natificationBarCloseHandler={natificationBarCloseHandler}
                     showNotificationBar={showNotificationBar}
                     userNotifications={userNotifications}

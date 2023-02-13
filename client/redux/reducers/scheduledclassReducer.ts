@@ -9,7 +9,6 @@ import Router from 'next/router';
 // Config/utils
 import axios from '../../config/axios';
 
-
 // Types
 import { SingleScheduledClassInterface } from '../../types/pages/scheduledclassInterface';
 import { ScheduledClassInterface, SlotInterface, TuitionStyle } from '../../types/redux/scheduledclassInterface';
@@ -18,9 +17,6 @@ import { TimeAMPMEnum, TuitionStyleEnum, StatusEnum } from '../../types/enums';
 // Redux
 import { resetAuthUserInfo } from './userReducer';
 import { setErrorList } from './elementsSlice';
-
-
-
 
 /**
  * ==========================================================================================
@@ -181,7 +177,27 @@ const initialSlotList: SlotInterface[] = [
 
 const initialLeaveAReview = { stars: 0, comment: '' };
 
-const initialSingleScheduledClass: SingleScheduledClassInterface | Record<string, never> = {};
+const initialSingleScheduledClass: SingleScheduledClassInterface = {
+  id: null,
+  desc: '',
+  types: '',
+  status: '',
+  start: null,
+  startedat: null,
+  meetlink: null,
+  terminatedat: null,
+  tuitionlocation: '',
+  perHourRate: null,
+  createdAt: null,
+  updatedAt: null,
+  ClassTypeId: null,
+  senderId: null,
+  receverId: null,
+  SubjectId: null,
+};
+const initialScheduledClassUpdate: SingleScheduledClassInterface | Record<string, never> = {};
+
+
 
 const initialRequestedSCOU: SingleScheduledClassInterface[] = [];
 const initialAcceptedSCOU: SingleScheduledClassInterface[] = [];
@@ -270,7 +286,7 @@ export const scheduledclassSlice = createSlice({
     initializeSchedule: initialAScheduledClass,
     singleScheduledClass: initialSingleScheduledClass,
 
-    updateScheduledClass: {},
+    updateScheduledClass: initialScheduledClassUpdate,
 
     leaveAReview: initialLeaveAReview,
   },
@@ -329,12 +345,14 @@ export const scheduledclassSlice = createSlice({
     // })
 
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
-      state.allScheduledClassList = action.payload.classScheduledList;
-      state.requestedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.PENDING);
-      state.acceptedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.APPROVED);
-      state.rejectedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.REJECTED);
-      state.runningSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.START_CLASS);
-      state.completedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.FINISH_CLASS);
+      if (action.payload.classScheduledList && action.payload.classScheduledList.length > 0) {
+        state.allScheduledClassList = action.payload.classScheduledList;
+        state.requestedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.PENDING);
+        state.acceptedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.APPROVED);
+        state.rejectedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.REJECTED);
+        state.runningSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.START_CLASS);
+        state.completedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.FINISH_CLASS);
+      }
     });
 
     builder.addCase(fetchSingleScheduledClass.fulfilled, (state, action) => {

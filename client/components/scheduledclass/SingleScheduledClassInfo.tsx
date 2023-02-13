@@ -85,7 +85,7 @@ function SingleScheduledClassInfo(props) {
 
       {/* Time detail start  */}
       <div className="row mb-3 mx-0">
-        Scheduled Time : {formatAsDate(props.singleScheduledClass.start)}
+        Scheduled Time : {convertISOToReadableTime(props.singleScheduledClass.start)}
         <br />
         Slot : {makeSlot(props.singleScheduledClass.start)}
       </div>

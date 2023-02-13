@@ -6,7 +6,7 @@ import Router from 'next/router';
 import React, { useEffect } from 'react';
 
 // Redux
-import { useAppDispatch, useAppSelector} from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { fetchAllRequestedSCOU, setAcceptedSCOU, setRejectedSCOU, setRequestedSCOU } from '../../../redux/reducers/scheduledclassReducer';
 import { setSelectedContent, requestHistorySeen, resetAuthUserInfo } from '../../../redux/reducers/userReducer';
 import { toggleLoading, setErrorList } from '../../../redux/reducers/elementsSlice';
@@ -115,15 +115,15 @@ function RequesthistoryIndex() {
   };
 
   useEffect(() => {
-    if (authUserInfo.id) {
-      (async () => {
+    (async () => {
+      if (authUserInfo.id) {
         await Promise.all([dispatch(fetchAllRequestedSCOU(authUserInfo.id))]);
         if (userUnseenNotifications.length > 0) {
           await dispatch(requestHistorySeen());
         }
-      })();
-      // seen request history
-    }
+      }
+    })();
+    // seen request history
   }, [authUserInfo]);
 
   return (
@@ -152,7 +152,7 @@ function RequesthistoryIndex() {
                 <div className="content-for-classlist">{showContent()}</div>
               </div>
             </div>
-          </div> 
+          </div>
         </div>
       </section>
     </Layout>

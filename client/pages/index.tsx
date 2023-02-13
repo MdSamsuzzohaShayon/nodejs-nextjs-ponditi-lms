@@ -63,10 +63,12 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Layout from '../components/layouts/Layout';
 import Section1 from '../components/home/Section1';
-import { fetchAllClassTypesSearch } from '../redux/reducers/classtypeReducer';
-import { fetchAllSubjectsSearch } from '../redux/reducers/subjectReducer';
-import { fetchAllTuitionmsSearch } from '../redux/reducers/tuitionmReducer';
+import { fetchAllClassTypes } from '../redux/reducers/classtypeReducer';
+import { fetchAllSubjects } from '../redux/reducers/subjectReducer';
+import { fetchAllTuitionms } from '../redux/reducers/tuitionmReducer';
 import { AppDispatch, useAppSelector } from '../redux/store';
+import { setSearchParams } from '../redux/reducers/searchReducer';
+import { TuitionStyleEnum } from '../types/enums';
 
 function Home() {
   let isMounted = true;
@@ -74,12 +76,27 @@ function Home() {
   const dispatch: AppDispatch = useDispatch();
 
   const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const tuitionmList = useAppSelector((state) => state.tuitionm.tuitionmList);
 
   useEffect(() => {
     window.localStorage.removeItem('search');
     (async () => {
       if (isMounted) {
-        await Promise.all([dispatch(fetchAllClassTypesSearch(null)), dispatch(fetchAllSubjectsSearch(null)), dispatch(fetchAllTuitionmsSearch(null))]);
+        await Promise.all([dispatch(fetchAllClassTypes(null)), dispatch(fetchAllSubjects(null)), dispatch(fetchAllTuitionms(null))]);
+
+        // if (tuitionmList.length > 0) {
+        //   // Get first element
+        //   const firstTuitionmElement = tuitionmList[0].
+        //   // SET DEFAULT SEARCH PARAMS
+        //   dispatch(
+        //     setSearchParams({
+        //       // location: '',
+        //       TuitionmId: tuitionmList[0].id,
+        //       // ClassTypeId: 0, // id
+        //       // SubjectId: 0, // id
+        //     }),
+        //   );
+        // }
       }
     })();
     isMounted = false;

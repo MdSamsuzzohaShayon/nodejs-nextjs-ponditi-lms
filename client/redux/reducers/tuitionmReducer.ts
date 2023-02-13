@@ -3,20 +3,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { setErrorList } from './elementsSlice';
 import axios from '../../config/axios';
+import { TuitionmInterface } from '../../types/redux/SubjectClassTuitionmInterface';
 
 const initialAddTuitionm = {
   name: '',
   ClassTypeId: [],
 };
 
-const fetchTuitionm = async (args, { dispatch, rejectWithValue }) => {
+const initialTuitionmList: TuitionmInterface[] = [];
+
+const fetchTuitionm = async (args: null, { dispatch, rejectWithValue }) => {
   try {
     // dispatch(toggleLoading(true));
     // console.log('try');
     const response = await axios.get('/tuitionm/all');
     // console.log(response);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     if (error?.response?.data?.msg) {
       dispatch(setErrorList([error?.response?.data?.msg]));
@@ -26,7 +29,7 @@ const fetchTuitionm = async (args, { dispatch, rejectWithValue }) => {
 };
 
 export const fetchAllTuitionms = createAsyncThunk('scheduledclass/getTuitionms', fetchTuitionm);
-export const fetchAllTuitionmsSearch = createAsyncThunk('scheduledclass/getTuitionmsSearch', fetchTuitionm);
+// export const fetchAllTuitionmsSearch = createAsyncThunk('scheduledclass/getTuitionmsSearch', fetchTuitionm);
 
 export const tuitionmSlice = createSlice({
   name: 'tuitionm',
@@ -34,7 +37,7 @@ export const tuitionmSlice = createSlice({
     /**
      * @dynamic or changable elements of the website
      */
-    tuitionmList: [],
+    tuitionmList: initialTuitionmList,
     constTuitionmList: [],
     selectedTuitionmList: [],
     addTuitionm: initialAddTuitionm,
@@ -66,13 +69,13 @@ export const tuitionmSlice = createSlice({
         state.constTuitionmList = action.payload.tuitionms;
       }
     });
-    builder.addCase(fetchAllTuitionmsSearch.fulfilled, (state, action) => {
-      if (action.payload.tuitionms.length > 0) {
-        state.constTuitionmList = action.payload.tuitionms;
-        const defaultTuitionm = { id: 0, name: 'Any Medium' };
-        state.tuitionmList = [defaultTuitionm, ...action.payload.tuitionms];
-      }
-    });
+    // builder.addCase(fetchAllTuitionmsSearch.fulfilled, (state, action) => {
+    //   if (action.payload.tuitionms.length > 0) {
+    //     state.constTuitionmList = action.payload.tuitionms;
+    //     const defaultTuitionm = { id: 0, name: 'Any Medium' };
+    //     state.tuitionmList = [defaultTuitionm, ...action.payload.tuitionms];
+    //   }
+    // });
   },
 });
 

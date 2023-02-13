@@ -26,6 +26,5 @@ export interface DisplayNotificationPropsInterface {
   showNotificationBar: boolean; 
   natificationBarCloseHandler: MouseEventHandler<HTMLImageElement>;
   userNotifications: any; 
-  linkRedirectHandler: any;
 }
 

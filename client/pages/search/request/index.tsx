@@ -102,6 +102,7 @@ function RequestIndex() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const newUserId = params.get('receiverId');
+
     if (newUserId && authUserInfo.id) {
       // console.log("Request searching")
       const userIdInt: number = parseInt(newUserId, 10);
@@ -112,7 +113,7 @@ function RequestIndex() {
           router.push('/user/login');
         }
         (async () => {
-          await Promise.all([dispatch(fetchSelectedSingleUser(userIdInt)), initializeScheduleValue(userIdInt), dispatch(fetchAllRequestedSCOU(userIdInt))]);
+          await Promise.all([dispatch(fetchSelectedSingleUser(userIdInt)), dispatch(fetchAllRequestedSCOU(userIdInt))]);
           // Initialize scheduled class here
           initializeScheduleValue(userIdInt);
         })();

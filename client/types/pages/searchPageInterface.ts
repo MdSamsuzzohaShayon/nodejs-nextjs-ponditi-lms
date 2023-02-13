@@ -3,3 +3,7 @@ export interface ClassAndSubjectInterface {
   ClassTypeId?: number;
   SubjectId?: number;
 }
+
+export interface SearchFormPropsInterface {
+  fromHome: boolean;
+}

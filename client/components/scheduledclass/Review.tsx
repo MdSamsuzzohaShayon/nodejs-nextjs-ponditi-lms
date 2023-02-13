@@ -1,34 +1,47 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/destructuring-assignment */
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useState } from 'react';
+
+// React/next
+import React, { useEffect, useState } from 'react';
 import Router from 'next/router';
+
+// Redux
 import { setShowReviewFields, setLeaveAReview, fetchSingleScheduledClass, resetLeaveAReview } from '../../redux/reducers/scheduledclassReducer';
-import MakeStar from '../elements/MakeStar';
-import axios from '../../config/axios';
-import { setErrorList, resetErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
-import { roles } from '../../config/keys';
+import { setErrorList, resetErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 
-const { TEACHER, STUDENT } = roles;
+// Components
+import MakeStar from '../elements/MakeStar';
 
-function Review(props) {
-  const dispatch = useDispatch();
-  const [reviewList, setReviewList] = useState(props.singleScheduledClass.Reviews);
-  const [reviewerIds, setReviewerIds] = useState([...props.singleScheduledClass.Reviews.map((r) => r.reviewerId)]);
+// Config/utils
+import axios from '../../config/axios';
 
-  const leaveAReview = useSelector((state) => state.scheduledclass.leaveAReview);
-  const authUserInfo = useSelector((state) => state.user.authUserInfo);
+// Types
+import { UserRoleEnum } from '../../types/enums';
+import { RefiewPropsIn, ScheduledClassReviewIn } from '../../types/pages/scheduledclassInterface';
 
-  // console.log(reviewList);
+function Review({ singleScheduledClass }: RefiewPropsIn) {
+  const dispatch = useAppDispatch();
+  const [reviewList, setReviewList] = useState<ScheduledClassReviewIn[]>([]);
+  const [reviewerIds, setReviewerIds] = useState<number[]>([]);
 
-  const cancelSCHandler = (csce) => {
+  const leaveAReview = useAppSelector((state) => state.scheduledclass.leaveAReview);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+
+  useEffect(() => {
+    if (singleScheduledClass.Reviews && singleScheduledClass.Reviews.length > 0) {
+      setReviewList(structuredClone(singleScheduledClass.Reviews));
+      setReviewerIds([...singleScheduledClass.Reviews.map((r) => r.reviewerId)]);
+    }
+  }, []);
+
+  const cancelSCHandler = (csce: React.SyntheticEvent) => {
     csce.preventDefault();
     dispatch(setShowReviewFields(false));
   };
 
-  const inputChangeHandler = (ice) => {
+  const inputChangeHandler = (ice: React.ChangeEvent<HTMLTextAreaElement>) => {
     ice.preventDefault();
     dispatch(setLeaveAReview({ [ice.target.name]: ice.target.value }));
   };
@@ -43,9 +56,9 @@ function Review(props) {
           <div className="col-md-2">
             <div className="rounded-circle bg-danger text-uppercase comment-maker text-white d-flex align-items-center justify-content-center">
               <p className="m-0">
-                {reviewList[i].reviewerId === props.singleScheduledClass.Sender.id
-                  ? props.singleScheduledClass.Sender.firstname[0] + props.singleScheduledClass.Sender.lastname[0]
-                  : props.singleScheduledClass.Recever.firstname[0] + props.singleScheduledClass.Recever.lastname[0]}
+                {reviewList[i].reviewerId === singleScheduledClass.Sender.id
+                  ? singleScheduledClass.Sender.name.slice(0, 2)
+                  : singleScheduledClass.Recever.name.slice(0, 2)}
               </p>
             </div>
             {/* {reviewList[i].reviewerId === authUserInfo.id && (
@@ -62,13 +75,13 @@ function Review(props) {
     return <div className="comments mx-0">{commentItems}</div>;
   };
 
-  const setStarsReview = (sse, numOfStar) => {
+  const setStarsReview = (sse: React.SyntheticEvent, numOfStar: number) => {
     sse.preventDefault();
     // console.log(leaveAReview);
     dispatch(setLeaveAReview({ stars: numOfStar }));
   };
 
-  const leaveAReviewHandler = async (lare) => {
+  const leaveAReviewHandler = async (lare: React.SyntheticEvent) => {
     lare.preventDefault();
     if (leaveAReview.stars < 1) {
       return dispatch(setErrorList(['You must give atleast one star']));
@@ -81,16 +94,18 @@ function Review(props) {
     }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.post(`/review/leave/${props.singleScheduledClass.id}`, leaveAReview);
+      const response = await axios.post(`/review/leave/${singleScheduledClass.id}`, leaveAReview);
       if (response.status === 202 || response.status === 201 || response.status === 200) {
         dispatch(resetLeaveAReview());
         dispatch(dispatch(resetErrorList()));
         // Fetch one more time
-        await dispatch(fetchSingleScheduledClass(props.singleScheduledClass.id));
+        if (singleScheduledClass.id) {
+          await dispatch(fetchSingleScheduledClass(singleScheduledClass.id));
+        }
       }
       // console.log(response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error?.response?.data?.msg]));
@@ -103,6 +118,7 @@ function Review(props) {
     } finally {
       dispatch(toggleLoading(false));
     }
+    return null;
   };
 
   const reviewForm = () => (
@@ -117,7 +133,7 @@ function Review(props) {
           <label htmlFor="comment" className="comment">
             Comment
           </label>
-          <textarea rows={2} type="text" name="comment" onChange={inputChangeHandler} className="form-control rounded-1" />
+          <textarea rows={2} name="comment" onChange={inputChangeHandler} className="form-control rounded-1" />
         </div>
       </div>
       <div className="row mx-0 mb-3">
@@ -136,15 +152,15 @@ function Review(props) {
   const showForm = () => {
     // console.log(reviewerIds.length === 1, reviewerIds, authUserInfo.id);
     // console.log("Working");
-    // console.log(props.singleScheduledClass.Reviews);
+    // console.log(singleScheduledClass.Reviews);
     // console.log(reviewerIds);
-    if (authUserInfo.role === TEACHER && reviewerIds.length === 0) {
+    if (authUserInfo.role === UserRoleEnum.TEACHER && reviewerIds.length === 0) {
       return null;
     }
-    if (reviewerIds.length === 0 && authUserInfo.role === STUDENT) {
+    if (reviewerIds.length === 0 && authUserInfo.role === UserRoleEnum.STUDENT) {
       return reviewForm();
     }
-    if (reviewerIds.length === 1 && authUserInfo.role === TEACHER) {
+    if (reviewerIds.length === 1 && authUserInfo.role === UserRoleEnum.TEACHER) {
       return reviewForm();
     }
 
@@ -157,7 +173,11 @@ function Review(props) {
 
   return (
     <div className="Review">
-      {reviewList.length > 0 && showComment()}
+      {reviewList.length === 0 && authUserInfo.role === UserRoleEnum.TEACHER ? (
+        <p className="alert alert-info"> The class is been completed please wait for the review</p>
+      ) : (
+        showComment()
+      )}
       {showForm()}
     </div>
   );

@@ -20,8 +20,12 @@ export const convertISOToReadableTime = (isoTime) => {
 export const formatAsDate = (isoTime: string) => {
   //     const isoToReadAble = new Date(isoTime);
   const newTimeDate = new Date(isoTime);
-  const newDate = `${newTimeDate.getDate()}-${newTimeDate.getMonth()}-${newTimeDate.getFullYear()}`;
-  return newDate;
+  const year = newTimeDate.getFullYear();
+  const month = (newTimeDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = newTimeDate.getDate().toString().padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
 };
 
 export const makeSlot = (isoTime) => {

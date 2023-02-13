@@ -8,7 +8,7 @@ import React from 'react';
 function MakeStar(props) {
   // console.log(props.limit);
 
-  const setStars = (see, selectedStar)=>{
+  const setStars = (see: React.SyntheticEvent, selectedStar: number)=>{
     if(props.setStars){
       props.setStars(see, selectedStar);
     }else{

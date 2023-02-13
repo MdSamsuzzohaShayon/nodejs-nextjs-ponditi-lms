@@ -28,19 +28,19 @@ const { ANY } = TuitionStyleEnum;
 const { ONLINE } = types;
 
 function SearchResult() {
+  // Hooks
   const dispatch = useAppDispatch();
 
-  // state
+  // Redux state
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const searchUserList = useAppSelector((state) => state.search.searchUserList);
   const searchParams = useAppSelector((state) => state.search.searchParams);
-  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
-  const subjectList = useAppSelector((state) => state.subject.subjectList);
   const searchAllUserList = useAppSelector((state) => state.search.searchAllUserList);
   const rpStart = useAppSelector((state) => state.search.rpStart);
   const rpTotal = useAppSelector((state) => state.search.rpTotal);
   const rpTotalPage = useAppSelector((state) => state.search.rpTotalPage);
   const rpCurrentPage = useAppSelector((state) => state.search.rpCurrentPage);
+  const errorList = useAppSelector((state) => state.elements.errorList);
 
   const changePageHandler = (cpe: React.ChangeEvent<HTMLBodyElement>, selectedPage: number) => {
     cpe.preventDefault();
@@ -135,7 +135,7 @@ function SearchResult() {
     <div className="SearchResult">
       {searchUserList && (
         <div className="container search-result">
-          {searchUserList.length > 0 ? (
+          {searchUserList.length > 0 && errorList.length === 0 ? (
             <>
               {searchUserList.map((sul) => (
                 <div className="card my-3" key={sul.id}>

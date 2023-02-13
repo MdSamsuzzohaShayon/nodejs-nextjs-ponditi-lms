@@ -10,7 +10,7 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 
 // Redux
 import { setInitializeSchedule } from '../../redux/reducers/scheduledclassReducer';
-import { setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
+import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
 
@@ -26,6 +26,7 @@ import axios from '../../config/axios';
 import { TuitionStyleEnum, TimeAMPMEnum } from '../../types/enums';
 import { SlotInterface, FetchedScheduledClassInterface } from '../../types/redux/scheduledclassInterface';
 import { ClassTypeInterface } from '../../types/redux/SubjectClassTuitionmInterface';
+import { formatAsDate } from '../../utils/timeFunction';
 
 function SendRequest() {
   const dateInputEl = useRef<HTMLInputElement>(null);
@@ -48,7 +49,7 @@ function SendRequest() {
   const selectedSearchUser = useAppSelector((state) => state.user.selectedUser);
   const initializeSchedule = useAppSelector((state) => state.scheduledclass.initializeSchedule);
   const slotList = useAppSelector((state) => state.scheduledclass.slotList);
-  const acceptedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU); // Later make it acceptedSCOU
+  const acceptedSCOU = useAppSelector((state) => state.scheduledclass.acceptedSCOU); // Later make it acceptedSCOU
   const tuitionStyle = useAppSelector((state) => state.scheduledclass.tuitionStyle);
   const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
   const subjectList = useAppSelector((state) => state.subject.subjectList);
@@ -73,7 +74,7 @@ function SendRequest() {
     ice.preventDefault();
     dispatch(setInitializeSchedule({ [ice.target.name]: ice.target.value }));
   };
-  const inputNumChangeHandler = (ince: React.ChangeEvent<HTMLSelectElement>) => {
+  const inputNumChangeHandler = (ince: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     ince.preventDefault();
     dispatch(setInitializeSchedule({ [ince.target.name]: parseInt(ince.target.value, 10) }));
   };
@@ -131,17 +132,18 @@ function SendRequest() {
    */
   const scheduledClassSubmitHandler = async (isce: React.FormEvent<HTMLFormElement>) => {
     isce.preventDefault();
-    console.log(initializeSchedule.date);
-    if (!initializeSchedule.time) {
-      return dispatch(setErrorList(['You must select a slot']));
+    dispatch(resetErrorList());
+    const errList = [];
+    if (!initializeSchedule.time || initializeSchedule.time === '') {
+      errList.push('You must select a slot');
     }
-    if (!initializeSchedule.tutionplace) {
-      return dispatch(setErrorList(['You must select a tution place']));
+    if (!initializeSchedule.tuitionlocation || initializeSchedule.tuitionlocation === '') {
+      errList.push('You must select a tution place');
     }
     // console.log(startDateTime.toISOString());
     // console.log('Send request with current time of client');
     if (!initializeSchedule.receiverId || initializeSchedule.receiverId === 0) {
-      return dispatch(setErrorList(['You must have a receiver']));
+      errList.push('You must need a receiver');
     }
 
     // if (!initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) {
@@ -151,6 +153,11 @@ function SendRequest() {
     //   return dispatch(setErrorList(['You must have a subject']));
     // }
     // console.log(initializeSchedule);
+    if (errList.length > 0) {
+      // console.log(initializeSchedule);      
+      return dispatch(setErrorList(errList));
+    }
+
     const newObj = { ...initializeSchedule };
     newObj.ClassTypeId = 1;
     newObj.SubjectId = 1;
@@ -202,19 +209,30 @@ function SendRequest() {
   const timeSlotDisplay = (offset: number, timeSlotList: SlotInterface[], slotLimit: number, additionalClasses: string) => {
     const slotItemList = [];
     // acceptedSCOU
+    // console.log({ initializeSchedule_date: formatAsDate(initializeSchedule.date), acceptedSCOU: formatAsDate(acceptedSCOU[0].start)});
+    // console.log(acceptedSCOU);
+
+    // console.log(acceptedSCOU);
     for (let i = offset; i < slotLimit; i += 1) {
-      const slotBooked = acceptedSCOU.find((sc: FetchedScheduledClassInterface) => {
+      const slotBooked = acceptedSCOU.find((sc) => {
         const startedDate = new Date(sc.start).toISOString().substring(0, 10);
+        // console.log({date: initializeSchedule.date, iso: new Date(initializeSchedule.date).toISOString()});
+
         let slotTime = timeSlotList[i].slot;
         if (timeSlotList[i].ampm === TimeAMPMEnum.PM) {
           slotTime += 12;
         }
-        if (initializeSchedule.date && initializeSchedule.date === startedDate && new Date(sc.start).getHours() === slotTime) {
+        if (initializeSchedule.date && formatAsDate(new Date(initializeSchedule.date).toISOString()) === startedDate && new Date(sc.start).getHours() === slotTime) {
           return sc;
         }
         return null;
       });
       let newItem: React.ReactElement | null = null;
+      // console.log({slotBooked});
+      // if (slotBooked) {
+      //   console.log('===============BOOKED');
+      // }
+
       if (slotBooked) {
         newItem = (
           <button type="button" key={timeSlotList[i].id} className="btn mb-2 btn-secondary" disabled>
@@ -261,7 +279,7 @@ function SendRequest() {
             {timeSlotDisplay(slotList.length / 2, slotList, slotList.length, 'justify-content-end')}
           </div>
         </div>
-        <div className="row mb-3">
+        {/* <div className="row mb-3">
           {(initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) && (
             <div className="col-md-12">
               <label htmlFor="classtype">Class Name</label>
@@ -286,7 +304,7 @@ function SendRequest() {
               </select>
             </div>
           )}
-        </div>
+        </div> */}
         <div className="row mb-3">
           <div className="col-md-12">
             <label htmlFor="tutionplace">Tuition Style</label>

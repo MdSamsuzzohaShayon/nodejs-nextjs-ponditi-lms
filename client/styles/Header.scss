@@ -31,6 +31,9 @@
 
   .notification-bar {
     @include display_overlap(20rem);
+    a{
+      color: white !important;
+    }
   }
   .inbox-bar{
     @include display_overlap(20rem);

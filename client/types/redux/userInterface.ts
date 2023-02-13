@@ -66,6 +66,8 @@ export interface SingleUserInterface {
   updatedAt?: string;
 }
 
+
+
 export interface UserRegPriceCalcPropsInterface {
   title: string;
   inputPriceChangeHandler: React.ChangeEventHandler<HTMLInputElement>;

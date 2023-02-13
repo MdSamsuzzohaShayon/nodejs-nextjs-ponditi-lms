@@ -1,24 +1,30 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+// React/next
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
+
+// Components
 import Layout from '../../../components/layouts/Layout';
 import Loader from '../../../components/elements/Loader';
 import MessageList from '../../../components/elements/MessageList';
 import PassChangeReq from '../../../components/user/passwordrecover/PassChangeReq';
 import VerifyPassOtp from '../../../components/user/passwordrecover/VerifyPassOtp';
 // import SetNewPass from '../../../components/user/passwordrecover/SetNewPass';
+
+// Redux
 import { setResetPassStep, setChangeResetPassReq } from '../../../redux/reducers/userReducer';
+import { useAppSelector, useAppDispatch } from '../../../redux/store';
 
-function passwordrecover() {
-  const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.elements.isLoading);
-  const resetPassStep = useSelector((state) => state.user.resetPassStep);
-  const resetPassReq = useSelector((state) => state.user.resetPassReq);
+function PasswordrecoverIndex() {
+  // Hooks
+  const dispatch = useAppDispatch();
 
-  const resetPasswordRequest = () => {};
+  // Redux state
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
+  const resetPassStep = useAppSelector((state) => state.user.resetPassStep);
+  const resetPassReq = useAppSelector((state) => state.user.resetPassReq);
 
-  const inputChangeHandler = (iche) => {
+  const inputChangeHandler = (iche: React.ChangeEvent<HTMLInputElement>) => {
     // iche.preventDefault();
     dispatch(setChangeResetPassReq({ [iche.target.name]: iche.target.value }));
   };
@@ -52,12 +58,14 @@ function passwordrecover() {
           {showStep()}
           <div className="row mb-3">
             <div className="col d-flex flex-column">
-              <Link href="/user/passwordrecover">
-                Login
-              </Link>
-              <Link href="/user/register">
-                Don&apos;t have an account?
-              </Link>
+              <div className="col d-flex flex-column">
+                <Link href="/user/login" className="text-decoration-underline text-capitalize text-dark">
+                  Login
+                </Link>
+                <Link href="/user/register" className="text-decoration-underline text-capitalize text-dark">
+                  Don&apos;t have an account?
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -66,4 +74,4 @@ function passwordrecover() {
   );
 }
 
-export default passwordrecover;
+export default PasswordrecoverIndex;

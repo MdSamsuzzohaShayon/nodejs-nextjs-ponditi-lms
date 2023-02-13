@@ -263,31 +263,30 @@
 
  - **Requirement update-10**
  - ✅ Can not send message to all browser in the room
- - Profile page, on off in jamal
- - duplicate database and keep backup in excel file
  - ✅ 150px card
  - ✅ bold tk
  - ✅ top bar shadow in detail
- - send request from chat
  - ✅ Available Status not in search detail page
- - Notifications on menu need to resize and align properly (from teacher's)
  - ✅ send request and chat button
- send request page
- tuition style
- location of student can be edited edit
- Description to notes
- - ✅ Booked slot will be disabled
- - no hourly rate
  - ✅ Chat page
- send request
- delete useless images from AWS
- - A teacher can block a student or a student can block a teacher
- - AI Detects mobile number and social media links
  - ✅ Prebook slot disabled
-no any option in search with class, medium, subject
-No professional institution for student
-Complete button only
-Chat is not working properly
+ - ✅ Description to notes
+ - ✅ no hourly rate
+ - ✅ Notifications on menu need to resize and align properly (from teacher's)
+ - ✅ send request from chat
+ - ✅ no any option in search with class, medium, subject
+ - ✅ Booked slot will be disabled
+ - ✅ No professional institution for student
+ - send request page
+ - tuition style
+ - location of student can be edited edit
+ - Complete button only
+ - Chat is not working properly
+ - AI Detects mobile number and social media links
+ - A teacher can block a student or a student can block a teacher
+ - delete useless images from AWS
+ - Profile page, on off in jamal
+ - duplicate database and keep backup in excel file
 
 
 ### Sequelize problems
