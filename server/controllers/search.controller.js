@@ -15,12 +15,12 @@ const { roles, types, scheduledClassStatus } = require('../config/keys.js');
 
 const { TEACHER, STUDENT } = roles;
 const { ANY, ONLINE, TL, SL } = types;
-const { APPROVED } = scheduledClassStatus;
+const { APPROVED, INCOMPLETE } = scheduledClassStatus;
 
 const searchTeacher = async (req, res) => {
   try {
     const searchQuery = {};
-    let where = { isActive: APPROVED, role: TEACHER, isAvailable: true };
+    let where = { isActive: { [Op.or]: [INCOMPLETE, APPROVED] }, role: TEACHER, isAvailable: true };
     const include = [
       {
         model: Review,

@@ -3,7 +3,6 @@
 const { validationResult } = require('express-validator');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
@@ -16,14 +15,14 @@ const { s3, uploadImageToS3 } = require('../config/s3-config');
 const { unlinkFile, compressImage, bufferToReadableStream } = require('../utils/fileFunctions');
 
 // eslint-disable-next-line object-curly-newline
-const { Customer, ClassType, Subject, Notification, Education, Tuitionm } = db;
+const { Customer, ClassType, Subject, Notification, Education, Tuitionm, Review } = db;
 const { ADMIN, TEACHER, STUDENT } = keys.roles;
 const {
-  PENDING, APPROVED, REJECTED, REQUEST_REGISTER
+ PENDING, APPROVED, REJECTED, REQUEST_REGISTER 
 } = keys.scheduledClassStatus;
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
-
+const { MALE, FEMALE, OTHERS } = keys.gender;
 /**
  * @param {type} req phone          raw phone number without any country code
  * @param {type} req cc             country code without plus
@@ -193,6 +192,14 @@ const registerUser = async (req, res) => {
   delete userObj.major;
 
   userObj.otp = null;
+
+  if (userObj.gender.toUpperCase() === FEMALE) {
+    userObj.gender = FEMALE;
+  } else if (userObj.gender.toUpperCase() === OTHERS) {
+    userObj.gender = OTHERS;
+  } else {
+    userObj.gender = MALE;
+  }
 
   try {
     const userFindById = await Customer.findOne({
@@ -577,28 +584,27 @@ const getSingleUser = async (req, res) => {
   try {
     const userId = parseInt(id, 10);
     // include: [{ model: Education }],
+    const include = [{ model: ClassType }, { model: Tuitionm }, { model: Subject }, { model: Notification }, { model: Education }];
     const userExist = await Customer.findOne({
       where: { id: userId },
-      // include: [{ model: ClassType }, { model: Tuitionm }, { model: Subject }, { model: Notification }, { model: Education }],
+      include,
     });
     if (userExist === null) {
       return res.status(404).json({ msg: 'user not found' });
     }
-    const classTypes = await userExist.getClassTypes();
-    const tuitionms = await userExist.getTuitionms();
-    const subjects = await userExist.getSubjects();
-    const notifications = await userExist.getNotifications();
-    const educations = await userExist.getEducation();
+
+    let reviews = [];
+    if (userExist.dataValues.role === TEACHER) {
+      reviews = await userExist.getReviewtaker();
+    }
+
+    // console.log({include, role: req.userRole});
     const { password, otp, ...user } = userExist.dataValues;
     // console.log(user);
     return res.status(200).json({
       msg: 'Single user found',
       user,
-      tuitionms,
-      classTypes,
-      subjects,
-      notifications,
-      educations,
+      reviews,
     });
   } catch (error) {
     console.log(error);
@@ -832,6 +838,55 @@ const updateImageUser = async (req, res) => {
   return res.status(500).json({ msg: 'Something went wrong' });
 };
 
+const updatePersonalInfoUser = async (req, res) => {
+  const { id } = req.params;
+  const pId = parseInt(id, 10);
+  if (pId !== req.userId) {
+    return res.status(406).json({ msg: 'You can not update someon else detail' });
+  }
+  try {
+    const userUpdateObj = structuredClone(req.body);
+    const findUser = await Customer.findOne({
+      where: { id: req.userId },
+      include: [{ model: Education }],
+    });
+    if (findUser.role === ADMIN) {
+      return res.status(406).json({ msg: "Admin can't be updated" });
+    }
+    if (findUser === null) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    console.log(findUser);
+
+    // console.log(req.file);
+    if (req.file) {
+      const filePath = `${__dirname}/../uploads/${req.file.filename}`;
+      await uploadImageToS3(req.file); // Upload compressed file
+      await unlinkFile(filePath); // Delete orginal file
+      // Delete file if it exist
+
+      // If there is a file already delete that file first
+      if (findUser.dataValues.id_proof) {
+        const params = {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: findUser.dataValues.id_proof,
+        };
+        // console.log(params);
+        await s3.deleteObject(params).promise();
+      }
+      userUpdateObj.id_proof = req.file.filename;
+    }
+
+    await Customer.update(userUpdateObj, { where: { id } });
+
+    return res.status(202).json({ msg: 'A user personal info is been updated', userUpdateObj });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Something went wrong' });
+};
+
 const notificationSeen = async (req, res) => {
   try {
     const seenNotifications = await Notification.update({ viewed: true }, { where: { CustomerId: req.userId } });
@@ -980,6 +1035,7 @@ module.exports = {
   getSingleUser,
   updateUser,
   updateExamUser,
+  updatePersonalInfoUser,
   updateImageUser,
   logout,
   forgetPassword,

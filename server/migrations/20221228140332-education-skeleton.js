@@ -11,5 +11,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) =>
-    queryInterface.sequelize.transaction((t) => Promise.all([queryInterface.removeColumn('Education', 'board', { transaction: t })])),
+    queryInterface.sequelize.transaction((t) => Promise.all([
+      // queryInterface.removeColumn('Education', 'board', { transaction: t })
+    ])),
 };

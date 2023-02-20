@@ -6,6 +6,11 @@ module.exports = {
     TEACHER: 'TEACHER',
     STUDENT: 'STUDENT',
   },
+  gender: {
+    MALE: 'MALE',
+    FEMALE: 'FEMALE',
+    OTHERS: 'OTHERS',
+  },
   tuitionmedums: {
     BANGLA: 'BANGLA',
     ENGLISH: 'ENGLISH',
@@ -19,6 +24,7 @@ module.exports = {
   },
   scheduledClassStatus: {
     PAYMENT_DUE: 'PAYMENT_DUE',
+    CANCEL: 'CANCEL',
     REQUEST_REGISTER: 'REQUEST_REGISTER',
     PENDING: 'PENDING',
     APPROVED: 'APPROVED',
@@ -26,6 +32,7 @@ module.exports = {
     COMPLETE_REQUESTED: 'COMPLETE_REQUESTED',
     START_CLASS: 'START_CLASS',
     FINISH_CLASS: 'FINISH_CLASS',
+    INCOMPLETE: 'INCOMPLETE', // For user
   },
   notificationTypes: {
     INITIATED_CLASS: 'INITIATED_CLASS',

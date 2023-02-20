@@ -14,13 +14,15 @@ export default function App({ Component, pageProps }: AppProps) {
 
 // Javascript
 import React, { useEffect } from 'react';
+import Router from 'next/router';
 import Head from 'next/head';
 import { Provider } from 'react-redux';
 import { AppProps } from 'next/app';
 // import TagManager from 'react-gtm-module';
-import store from '../redux/store';
+import store, { useAppDispatch } from '../redux/store';
 import '../styles/globals.scss';
 import ThemeProvider from '../context/ThemeProvider';
+import { toggleLoading } from '../redux/reducers/elementsSlice';
 
 // const tagManagerArgs = {
 //   gtmId: process.env.NEXT_PUBLIC_GTM_ID
@@ -30,6 +32,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   // useEffect(()=>{
   //   TagManager.initialize(tagManagerArgs);
   // }, []);
+
+
 
   return (
     <div>

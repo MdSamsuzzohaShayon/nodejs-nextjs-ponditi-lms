@@ -39,6 +39,7 @@ function Review({ singleScheduledClass }: RefiewPropsIn) {
   const cancelSCHandler = (csce: React.SyntheticEvent) => {
     csce.preventDefault();
     dispatch(setShowReviewFields(false));
+    Router.push('/');
   };
 
   const inputChangeHandler = (ice: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -89,8 +90,8 @@ function Review({ singleScheduledClass }: RefiewPropsIn) {
     if (leaveAReview.comment === '') {
       return dispatch(setErrorList(['You must write something']));
     }
-    if (leaveAReview.comment.length < 10) {
-      return dispatch(setErrorList(['You must write something', 'Comment must be more than 10 character long']));
+    if (leaveAReview.comment.length < 1) {
+      return dispatch(setErrorList(['You must write something', 'Comment must be more than 1 character long']));
     }
     try {
       dispatch(toggleLoading(true));
@@ -160,9 +161,9 @@ function Review({ singleScheduledClass }: RefiewPropsIn) {
     if (reviewerIds.length === 0 && authUserInfo.role === UserRoleEnum.STUDENT) {
       return reviewForm();
     }
-    if (reviewerIds.length === 1 && authUserInfo.role === UserRoleEnum.TEACHER) {
-      return reviewForm();
-    }
+    // if (reviewerIds.length === 1 && authUserInfo.role === UserRoleEnum.TEACHER) {
+    //   return reviewForm();
+    // }
 
     // if (reviewerIds.length < 2 && reviewerIds.includes(authUserInfo.id)) {
     //   return reviewForm();
@@ -174,7 +175,7 @@ function Review({ singleScheduledClass }: RefiewPropsIn) {
   return (
     <div className="Review">
       {reviewList.length === 0 && authUserInfo.role === UserRoleEnum.TEACHER ? (
-        <p className="alert alert-info"> The class is been completed please wait for the review</p>
+        <p className="alert alert-info"> The class has been completed please wait for the review</p>
       ) : (
         showComment()
       )}

@@ -9,10 +9,15 @@ export function useSocket() {
   return useContext(ThemeContext);
 }
 
+// console.log("w2");
+
+
 function ThemeProvider({ children }: ThemeProviderProps) {
   const [socket, setSocket] = React.useState<any | null>(null);
 
   React.useEffect(() => {
+    // console.log("Working");
+    
     setSocket(io(BACKEND_URL));
   }, []);
 

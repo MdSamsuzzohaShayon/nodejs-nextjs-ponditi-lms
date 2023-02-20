@@ -1,6 +1,7 @@
 // React/next
 import React from 'react';
 import Router from 'next/router';
+import Link from 'next/link';
 
 // Components
 import StopWatch from '../elements/StopWatch';
@@ -11,17 +12,26 @@ import axios from '../../config/axios';
 // Redux
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { fetchSingleScheduledClass, setUpdateScheduledClass } from '../../redux/reducers/scheduledclassReducer';
-import { resetErrorList, setErrorList } from '../../redux/reducers/elementsSlice';
+import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducers/elementsSlice';
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
 
 // Types
 import { StatusEnum, UserRoleEnum } from '../../types/enums';
 import { RunningClassElementsPropsIn } from '../../types/pages/scheduledclassInterface';
 
+// Socket
+import { useSocket } from '../../context/ThemeProvider';
+
 function RunningClassElements({ singleScheduledClass, authUserInfo, scheduledclassId }: RunningClassElementsPropsIn) {
   const dispatch = useAppDispatch();
+  // Socket - Use socket from context
+  const socket = useSocket(); // useContext
+
+
   const generateBill = useAppSelector((state) => state.scheduledclass.generateBill);
   const updateScheduledClass = useAppSelector((state) => state.scheduledclass.updateScheduledClass);
+
+  // console.log(authUserInfo.role === UserRoleEnum.TEACHER, singleScheduledClass.status === StatusEnum.START_CLASS);
 
   /**
    * ================================================================================================
@@ -30,9 +40,13 @@ function RunningClassElements({ singleScheduledClass, authUserInfo, scheduledcla
   const finishClassHandler = async (fce: React.SyntheticEvent) => {
     fce.preventDefault();
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.put(`/scheduledclass/finishclass/${scheduledclassId}`);
       if (response.status === 202) {
         dispatch(resetErrorList());
+        const newDataObj = { receiverId: authUserInfo.id, senderId: singleScheduledClass.senderId };
+        console.log("Scoket - ",newDataObj);
+        await socket.emit('update-notification-from-client', newDataObj);
         if (scheduledclassId) await dispatch(fetchSingleScheduledClass(scheduledclassId));
       }
     } catch (error: any) {
@@ -46,6 +60,7 @@ function RunningClassElements({ singleScheduledClass, authUserInfo, scheduledcla
         Router.push('/user/login');
       }
     }
+    dispatch(toggleLoading(false));
   };
 
   /**
@@ -62,6 +77,7 @@ function RunningClassElements({ singleScheduledClass, authUserInfo, scheduledcla
       if (response.status === 202) {
         dispatch(dispatch(resetErrorList()));
         if (scheduledclassId) await dispatch(fetchSingleScheduledClass(scheduledclassId));
+        amle.target.reset();
       }
     } catch (error: any) {
       console.log(error);
@@ -88,28 +104,42 @@ function RunningClassElements({ singleScheduledClass, authUserInfo, scheduledcla
 
   return (
     <div>
-      {singleScheduledClass.status === StatusEnum.APPROVED && (
-        <>
-          {singleScheduledClass.meetlink && <div className="alert alert-primary mt-3 rounded-1">{singleScheduledClass.meetlink}</div>}
+      {singleScheduledClass.meetlink && singleScheduledClass.status === StatusEnum.APPROVED && (
+        <div className="alert alert-primary mt-3 rounded-1 d-flex justify-content-between w-full align-items-center">
+          <p>{singleScheduledClass.meetlink}</p>
+          {authUserInfo.role === UserRoleEnum.STUDENT && (<button type="button" className="btn btn-primary">
+            <Link href={singleScheduledClass.meetlink} target="_blank">
+              Join
+            </Link>
+          </button>) }
+          
+        </div>
+      )}
 
-          <form className="my-3" onSubmit={addMeetLinkHandler}>
-            <h5>Submit google meet link</h5>
+      <form className="my-3" onSubmit={addMeetLinkHandler}>
+        {authUserInfo.role === UserRoleEnum.TEACHER && singleScheduledClass.status === StatusEnum.APPROVED && (
+          <>
+            <h5>Share class link</h5>
             <div className="row mx-0 mb-3">
               <input type="text" className="form-control" name="meetlink" onChange={inputChangeHandler} />
             </div>
-            <div className="row mx-0 mb-3">
-              <button type="submit" className="btn btn-primary w-fit">
-                Add Link
+          </>
+        )}
+        <div className="row mx-0 mb-3">
+          {authUserInfo.role === UserRoleEnum.TEACHER && singleScheduledClass.status === StatusEnum.APPROVED && (
+            <button type="submit" className="btn btn-primary w-fit">
+              Share Link
+            </button>
+          )}
+
+          {authUserInfo.role === UserRoleEnum.TEACHER &&
+            (singleScheduledClass.status === StatusEnum.START_CLASS || singleScheduledClass.status === StatusEnum.APPROVED) && (
+              <button type="button" className="btn btn-success text-white w-fit mx-2" onClick={finishClassHandler}>
+                Completed
               </button>
-              {authUserInfo.role === UserRoleEnum.TEACHER && (
-                <button type="button" className="btn btn-danger w-fit" onClick={finishClassHandler}>
-                  Finish
-                </button>
-              )}
-            </div>
-          </form>
-        </>
-      )}
+            )}
+        </div>
+      </form>
     </div>
   );
 

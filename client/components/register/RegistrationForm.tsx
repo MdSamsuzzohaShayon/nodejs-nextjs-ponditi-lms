@@ -31,12 +31,26 @@ import ClassSubjectStudentForm from './ClassSubjectStudentForm';
 
 // Types
 import { UserRegFormPropsInterface } from '../../types/redux/userInterface';
-import { UserRoleEnum } from '../../types/enums';
-
+import { UserRoleEnum, GenderEnum } from '../../types/enums';
 
 const online = 'online';
 const tl = 'tl';
 const sl = 'sl';
+
+const genderList = [
+  {
+    id: 1,
+    val: GenderEnum.MALE,
+  },
+  {
+    id: 2,
+    val: GenderEnum.FEMALE,
+  },
+  {
+    id: 3,
+    val: GenderEnum.OTHERS,
+  },
+];
 
 // Register form component
 function RegistrationForm(props: UserRegFormPropsInterface) {
@@ -124,7 +138,7 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
     // (e) => setDisplayTuitionOl((prevState) => !prevState)
   };
   // CHANGE EVENT HANDLER 2
-  const inputChangeHandler = (iche: React.ChangeEvent<HTMLInputElement>) => {
+  const inputChangeHandler = (iche: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     // iche.preventDefault();
     dispatch(setRegisterableUser({ [iche.target.name]: iche.target.value }));
   };
@@ -340,15 +354,25 @@ function RegistrationForm(props: UserRegFormPropsInterface) {
   return (
     <>
       <div className="row ">
-        <div className="col-md-6 mb-3">
+        <div className="col-md-4 mb-3">
           <label htmlFor="firstname">Name*</label>
           <input type="text" className="form-control" name="name" id="name" defaultValue={registerableUser?.name} onChange={inputChangeHandler} required />
           {inputEmptyPrevent(registerableUser.name, 'Name')}
         </div>
-        <div className="col-md-6 mb-3">
+        <div className="col-md-4 mb-3">
           <label htmlFor="email">Email*</label>
           <input type="email" className="form-control" name="email" id="email" defaultValue={registerableUser?.email} onChange={inputChangeHandler} required />
           {inputEmptyPrevent(registerableUser.email, 'Email')}
+        </div>
+        <div className="col-md-4 mb-3">
+          <label htmlFor="gender">Gender*</label>
+          <select name="gender" className="form-control" id="gender" defaultValue={registerableUser?.gender} onChange={inputChangeHandler} >
+            {genderList.map((gender) => (
+              <option value={gender.val} key={gender.id}>
+                {gender.val}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
       <div className="row ">

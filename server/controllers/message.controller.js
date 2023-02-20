@@ -18,7 +18,29 @@ const getAllMessageOfARoom = async (req, res) => {
     });
     if (!existingRoom) return res.status(404).json({ msg: 'No previous message found' });
     const allMessages = await existingRoom.getMessages();
-    return res.status(200).json({ msg: 'getting all messages', messages: allMessages });
+    return res.status(200).json({ msg: 'getting all messages', messages: allMessages, roomId: existingRoom.dataValues.id });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Internal server error' });
+};
+
+const getAllUnseenMessageOfARoom = async (req, res) => {
+  try {
+    // Find existing room with status of running or initialized
+    const allUnseenMessages = await Message.findAll({
+      where: {
+        messagereceverId: req.userId,
+        publish: false,
+      },
+      // include: {
+      //   model: Customer,
+      //   as: 'Messagesender',
+      // }
+    });
+    // console.log(allUnseenMessages);
+    if (allUnseenMessages.length < 0) return res.status(204).json({ msg: 'No unseen messages' });
+    return res.status(200).json({ msg: 'getting all unseen messages', messages: allUnseenMessages });
   } catch (error) {
     console.log(error);
   }
@@ -46,4 +68,38 @@ const getAllRoomsOfAUser = async (req, res) => {
   return res.status(500).json({ msg: 'Internal server error' });
 };
 
-module.exports = { getAllMessageOfARoom, getAllRoomsOfAUser };
+const seenAllMessageOfARoom = async (req, res) => {
+  try {
+    // console.log({ receiverId: req.body.roomId });
+    const findARoom = await Room.findOne({ where: { id: req.body.roomId } });
+    if (!findARoom) return res.status(404).json({ msg: 'No room found!' });
+    const messages = await findARoom.getMessages();
+    const unseenMessageIdList = [];
+    for (let i = 0; i < messages.length; i += 1) {
+      if (messages[i].publish === false) {
+        unseenMessageIdList.push(messages[i].id);
+      }
+    }
+    await Message.update(
+      { publish: true },
+      {
+        where: {
+          id: {
+            [Op.in]: unseenMessageIdList, // this will update all the records
+          },
+        },
+      },
+    );
+    return res.status(200).json({ msg: 'Seen all messages of this room' });
+  } catch (error) {
+    console.log(error);
+  }
+  return res.status(500).json({ msg: 'Internal server error' });
+};
+
+module.exports = {
+  getAllMessageOfARoom,
+  getAllRoomsOfAUser,
+  getAllUnseenMessageOfARoom,
+  seenAllMessageOfARoom,
+};

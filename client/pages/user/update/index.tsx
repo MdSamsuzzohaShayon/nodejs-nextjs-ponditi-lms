@@ -1,6 +1,6 @@
 // React/next
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 // Components
 import TutionDetail from '../../../components/user/Update/TutionDetail';
@@ -14,7 +14,7 @@ import MessageList from '../../../components/elements/MessageList';
 
 // Redux
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { resetUpdateUser, setUpdatePart, setUpdateUser } from '../../../redux/reducers/userReducer';
+import { resetUpdateUser, setUpdatePart, setUpdateUser, setCurrentUser } from '../../../redux/reducers/userReducer';
 import { fetchAllTuitionms } from '../../../redux/reducers/tuitionmReducer';
 import { fetchAllClassTypes } from '../../../redux/reducers/classtypeReducer';
 import { fetchAllSubjects } from '../../../redux/reducers/subjectReducer';
@@ -27,24 +27,33 @@ import { roles } from '../../../config/keys';
 const { TEACHER } = roles;
 
 function UpdateIndex() {
+  // Variables
   let isMounted = true;
+
+  // Hooks
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const nidInputEl = useRef<HTMLInputElement | null>(null);
 
+  // Local state
   const [userId, setUserId] = useState<number | null>(null);
 
+  // Redux state
   const updatePart = useAppSelector((state) => state.user.updatePart);
   const updateUser = useAppSelector((state) => state.user.updateUser);
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const isLoading = useAppSelector((state) => state.elements.isLoading);
   const educationUpdateList = useAppSelector((state) => state.education.educationUpdateList);
-
-
   const userTuitionmList = useAppSelector((state) => state.user.userTuitionmList);
   const userClassTypes = useAppSelector((state) => state.user.userClassTypes);
 
   // const { userId } = router.query;
 
+
+  /**
+   * ===============================================================
+   * CHANGE INPUT VALUES
+   */
   const inputChangeHandler = (ice: React.ChangeEvent<HTMLInputElement>) => {
     ice.preventDefault();
     dispatch(setUpdateUser({ [ice.target.name]: ice.target.value }));
@@ -59,6 +68,11 @@ function UpdateIndex() {
     dispatch(setUpdateUser({ ClassTypeId: [classtypeId] }));
   };
 
+
+  /**
+   * ===============================================================
+   * FETCH ON MOUNT
+   */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const newUserId = params.get('userId');
@@ -88,7 +102,12 @@ function UpdateIndex() {
     }
   }, []);
 
-  const userChangeHandler = async (uce) => {
+
+    /**
+   * ===============================================================
+   * UPDATE USER INFO
+   */
+  const userChangeHandler = async (uce: React.ChangeEvent<HTMLFormElement>) => {
     uce.preventDefault();
     try {
       dispatch(toggleLoading(true));
@@ -96,7 +115,7 @@ function UpdateIndex() {
         headers: { 'Content-Type': 'application/json' },
       };
 
-      const userObj = { ...updateUser };
+      const userObj = structuredClone(updateUser);
       if (userObj.district === 'Select a district') {
         delete userObj.district;
       }
@@ -110,7 +129,7 @@ function UpdateIndex() {
         dispatch(resetErrorList());
         router.push('/user/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error?.response?.data?.msg) {
         dispatch(setErrorList([error.response.data.msg]));
@@ -124,6 +143,10 @@ function UpdateIndex() {
     }
   };
 
+    /**
+   * ===============================================================
+   * CHANGE USER EXAM DETAILS
+   */
   const userExamSubmitHandler = async (uce: React.FormEvent<HTMLFormElement>) => {
     uce.preventDefault();
     try {
@@ -155,6 +178,60 @@ function UpdateIndex() {
     }
   };
 
+
+    /**
+   * ===============================================================
+   * UPDATE USER'S PERSONAL DETAILS
+   */
+  const personalInformationSubmitHandler = async (piue: React.FormEvent<HTMLFormElement>) => {
+    // UPDATE FILE START
+    // File validation succeed. now upload the file
+    const formData = new FormData();
+    piue.preventDefault();
+    const fileExist = nidInputEl.current.files[0];
+    // console.log(fileExist);
+    console.log(nidInputEl.current.files[0], updateUser);
+    for (const [key, value] of Object.entries(updateUser)) {
+      console.log(`${key}: ${value}`);
+      if(value !== '' || value !== null){
+        formData.set(key, value)
+      }
+    }
+    
+    if (fileExist) {
+      await formData.set('nid_proof', fileExist);
+    }
+    try {
+      dispatch(toggleLoading(true));
+      const controller = new AbortController();
+      const options = {
+        signal: controller.signal,
+      };
+
+      const response = await axios.put(`/user/updatepersonalinfo/${authUserInfo.id}`, formData, options);
+      controller.abort();
+      if (response.status === 202 || response.status === 201 || response.status === 200) {
+        // console.log(response);
+        // window.localStorage.removeItem('updatePart');
+        dispatch(setCurrentUser({ image: response.data.image }));
+        dispatch(resetErrorList());
+        router.push('/user/dashboard');
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        router.push('/user/login');
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+    // UPDATE FILE ENDS
+  };
+
   const cancelBtnHandler = (cbe: React.SyntheticEvent) => {
     cbe.preventDefault();
     window.localStorage.removeItem('updatePart');
@@ -177,8 +254,7 @@ function UpdateIndex() {
             classtypeChangeHandler={classtypeChangeHandler}
           />
         );
-      case 2:
-        return <PersonalInformationForm inputChangeHandler={inputChangeHandler} />;
+
       case 3:
         return <TutionDetail inputChangeHandler={inputChangeHandler} />;
 
@@ -190,10 +266,26 @@ function UpdateIndex() {
   // Outside the form
   const changeWholeForm = () => {
     switch (updatePart) {
+      case 2:
+        return (
+          <form onSubmit={personalInformationSubmitHandler}>
+            <PersonalInformationForm inputChangeHandler={inputChangeHandler} nidInputEl={nidInputEl} />
+            <div className="row mx-0 mb-3">
+              <div className="col-md-12 d-flex">
+                <button className="btn btn-primary w-fit" type="submit">
+                  Update
+                </button>
+                <button className="btn btn-danger w-fit" onClick={cancelBtnHandler} type="button">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        );
       case 4:
         return (
           <form onSubmit={userExamSubmitHandler}>
-            <ExamDetailForm inputChangeHandler={inputChangeHandler} />
+            <ExamDetailForm inputChangeHandler={inputChangeHandler} nidInputEl={nidInputEl} />
             <div className="row mx-0 mb-3">
               <div className="col-md-12 d-flex">
                 <button className="btn btn-primary w-fit" type="submit">

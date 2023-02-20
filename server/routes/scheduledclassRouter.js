@@ -11,6 +11,7 @@ const {
   startScheduledClass,
   completeRequestedScheduledClass,
   updateScheduledClass,
+  cancelScheduledClass
 } = require('../controllers/scheduledclass.controller');
 
 const { ensureAuth, ensureStudent, ensureAdmin, ensureTeacher } = require('../middleware/auth');
@@ -40,6 +41,7 @@ router.get('/single/:scheduledclassId', ensureAuth, getSingleScheduledClass);
 router.get('/member/:memberId', ensureAuth, getAllScheduledClassofAMember);
 router.put('/accept/:scheduledclassId', ensureTeacher, acceptRequestedScheduledClass);
 router.put('/reject/:scheduledclassId', ensureTeacher, rejectRequestedScheduledClass);
+router.put('/cancel/:scheduledclassId', ensureTeacher, cancelScheduledClass);
 
 router.put('/start/:scheduledclassId', ensureTeacher, startScheduledClass);
 

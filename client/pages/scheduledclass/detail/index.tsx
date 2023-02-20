@@ -23,16 +23,22 @@ import axios from '../../../config/axios';
 
 import { StatusEnum, UserRoleEnum } from '../../../types/enums';
 
+// Socket
+import { useSocket } from '../../../context/ThemeProvider';
+
 // Single scheduled class component
 function ScheduledclassIndex() {
   // HOOKS
   const router = useRouter();
   const dispatch = useAppDispatch();
+  // Socket - Use socket from context
+  const socket = useSocket(); // useContext
 
   // LOCAL STATE
   const [scheduledclassId, setScheduledclassId] = useState<number | null>(null);
 
   // REDUX STATE
+  const isLoading = useAppSelector((state) => state.elements.isLoading);
   const singleScheduledClass = useAppSelector((state) => state.scheduledclass.singleScheduledClass);
   const requestedSCOU = useAppSelector((state) => state.scheduledclass.requestedSCOU);
   const acceptedSCOU = useAppSelector((state) => state.scheduledclass.acceptedSCOU);
@@ -48,6 +54,7 @@ function ScheduledclassIndex() {
     (async () => {
       const params = new URLSearchParams(window.location.search);
       const newScheduledclassId = params.get('scheduledclassId');
+      
       if (newScheduledclassId) {
         const newScheduledclassIdInt = parseInt(newScheduledclassId, 10);
         setScheduledclassId(newScheduledclassIdInt);
@@ -56,6 +63,7 @@ function ScheduledclassIndex() {
           // Make request to see all notifications
           await dispatch(requestHistorySeen());
         }
+        dispatch(toggleLoading(false));
       }
     })();
   }, []);
@@ -100,6 +108,8 @@ function ScheduledclassIndex() {
       const response = await axios.put(`/scheduledclass/accept/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
         // find Item and move from  requestedSCOU to acceptedSCOU
+        const newDataObj = { receiverId: authUserInfo.id, senderId: singleScheduledClass.senderId };
+        await socket.emit('update-notification-from-client', newDataObj);
         const newAcceptedSCOU = requestedSCOU.find((rs) => rs.id === scheduledclassId);
         const newRequestedSCOU = requestedSCOU.filter((rs) => rs.id !== scheduledclassId);
         dispatch(setAcceptedSCOU([...acceptedSCOU, newAcceptedSCOU]));
@@ -132,6 +142,8 @@ function ScheduledclassIndex() {
       // check recever id and current user id
       const response = await axios.put(`/scheduledclass/reject/${scheduledclassId}`);
       if (response.status === 200 || response.status === 202) {
+        const newDataObj = { receiverId: authUserInfo.id, senderId: singleScheduledClass.senderId };
+        await socket.emit('update-notification-from-client', newDataObj);
         const newRejectedSCOU = requestedSCOU.find((rs) => rs.id === scheduledclassId);
         const newRequestedSCOU = requestedSCOU.filter((rs) => rs.id !== scheduledclassId);
         dispatch(setRejectedSCOU([...rejectedSCOU, newRejectedSCOU]));
@@ -152,34 +164,40 @@ function ScheduledclassIndex() {
     <Layout title="Scheduled Class | Ponditi">
       <section className="section section-1">
         <div className="container">
-          <MessageList />
-          <div>
-            {/*
-             * ================================================================================================
-             * DETAIL OF A SINGLE SCHEDULED CLASS
-             */}
-            <SingleScheduledClassInfo authUserInfo={authUserInfo} singleScheduledClass={singleScheduledClass} />
-            <p>{singleScheduledClass?.desc}</p>
-            {/* {singleScheduledClass.status === APPROVED && authUserInfo.role === StatusEnum.TEACHER && (
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
+              <MessageList />
+              <div>
+                {/*
+                 * ================================================================================================
+                 * DETAIL OF A SINGLE SCHEDULED CLASS
+                 */}
+                <SingleScheduledClassInfo authUserInfo={authUserInfo} singleScheduledClass={singleScheduledClass} />
+                <p>{singleScheduledClass?.desc}</p>
+                {/* {singleScheduledClass.status === APPROVED && authUserInfo.role === StatusEnum.TEACHER && (
               <button type="button" className="btn btn-primary" onClick={startClassHandler}>
                 Start Class
               </button>
             )} */}
-            {singleScheduledClass.status === StatusEnum.PENDING && authUserInfo.role === UserRoleEnum.TEACHER && (
-              <div className="btn-group" role="group" aria-label="Basic example">
-                <button type="button" className="btn btn-primary" onClick={acceptRequestHandler}>
-                  Accept
-                </button>
-                <button type="button" className="btn btn-danger" onClick={rejectRequestHandler}>
-                  Reject
-                </button>
+                {singleScheduledClass.status === StatusEnum.PENDING && authUserInfo.role === UserRoleEnum.TEACHER && (
+                  <div className="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" className="btn btn-primary" onClick={acceptRequestHandler}>
+                      Accept
+                    </button>
+                    <button type="button" className="btn btn-danger" onClick={rejectRequestHandler}>
+                      Reject
+                    </button>
+                  </div>
+                )}
+
+                {scheduledclassId && <RunningClassElements authUserInfo={authUserInfo} scheduledclassId={scheduledclassId} singleScheduledClass={singleScheduledClass} />}
+
+                {singleScheduledClass.status === StatusEnum.FINISH_CLASS && <Review singleScheduledClass={singleScheduledClass} />}
               </div>
-            )}
-
-            {scheduledclassId && <RunningClassElements authUserInfo={authUserInfo} scheduledclassId={scheduledclassId} singleScheduledClass={singleScheduledClass} />}
-
-            {singleScheduledClass.status === StatusEnum.FINISH_CLASS && <Review singleScheduledClass={singleScheduledClass} authUserInfo={authUserInfo} />}
-          </div>
+            </>
+          )}
         </div>
       </section>
     </Layout>

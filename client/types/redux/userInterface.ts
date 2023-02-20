@@ -1,4 +1,5 @@
 import React from 'react';
+import { GenderEnum } from '../enums';
 import { TDateISO } from '../utils/dateFunctions';
 
 export interface AuthUserInfoInterface {
@@ -20,6 +21,7 @@ export interface RegisterableUserInterface {
   profession: string;
   experience: number | null;
   passing_year: number | null;
+  gender: GenderEnum.MALE | GenderEnum.FEMALE | GenderEnum.OTHERS;
   role: string;
   sl_rate?: number | null;
   tl_rate?: number | null;
@@ -49,6 +51,8 @@ export interface SingleUserInterface {
   presentaddress: string;
   role: string;
   age?: number | null;
+  gender: GenderEnum.MALE | GenderEnum.FEMALE | GenderEnum.OTHERS;
+  id_proof: string;
   profession: string;
   institution: string;
   experience: string;
@@ -65,8 +69,6 @@ export interface SingleUserInterface {
   createdAt?: string;
   updatedAt?: string;
 }
-
-
 
 export interface UserRegPriceCalcPropsInterface {
   title: string;
@@ -90,4 +92,16 @@ export interface UserNotificationInterface {
   createdAt: TDateISO;
   updatedAt: TDateISO;
   CustomerId: number;
+}
+
+export interface UserReviewIn {
+  id: number;
+  stars: number;
+  comment: string;
+  publish: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewerId: number;
+  reviewtakerId: number;
+  ScheduledClassId: number;
 }

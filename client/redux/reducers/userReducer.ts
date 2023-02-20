@@ -16,6 +16,7 @@ import axios from '../../config/axios';
 
 // Types
 import { AuthUserInfoInterface, SingleUserInterface, RegisterableUserInterface, UserNotificationInterface, ResetPassReqInterface } from '../../types/redux/userInterface';
+import { GenderEnum } from '../../types/enums';
 // import { tuitionplace } from '../../utils/types';
 
 const { REJECTED, PROFILE } = userDashboardSidebarList;
@@ -91,6 +92,8 @@ const initialCurrentUser: SingleUserInterface = {
   district: '',
   presentaddress: '',
   age: null,
+  gender: GenderEnum.MALE,
+  id_proof: '',
   profession: '',
   institution: '',
   experience: '',
@@ -111,6 +114,7 @@ const initialRegisterableUser: RegisterableUserInterface = {
   profession: '',
   experience: null,
   // district: '',
+  gender: GenderEnum.MALE,
   passing_year: null,
   role: TEACHER,
   tutionplace: [],
@@ -123,8 +127,10 @@ const initialRegisterableUser: RegisterableUserInterface = {
   major: '',
   institution: '',
   pinstitution: '',
-  ref: null
+  ref: null,
 };
+
+const initialReviewList: UserReviewIn[]= [];
 
 const initialLoginInfo = {
   phone: null,
@@ -273,6 +279,7 @@ export const userSlice = createSlice({
     userExamList: [],
     userTuitionmList: [],
     userClassTypes: [],
+    userReviews: initialReviewList,
     selectedUser: { ...initialCurrentUser, role: TEACHER }, // the user whose detail will be shown
     selectedUserRole: TEACHER, // the user whose detail will be shown
 
@@ -402,13 +409,15 @@ export const userSlice = createSlice({
     // })
     builder.addCase(fetchCurrentSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
-      state.userUnseenNotifications = action.payload.notifications.filter((n) => n.viewed === false);
-      state.userNotifications = action.payload.notifications;
+      state.userUnseenNotifications = action.payload.user.Notifications.filter((n) => n.viewed === false).reverse();
+      state.userNotifications = action.payload.user.Notifications.reverse();
       state.currentUser = action.payload.user;
-      state.userTuitionmList = action.payload.tuitionms;
-      state.userClassTypes = action.payload.classTypes;
-      state.userSubjects = action.payload.subjects;
-      state.userExamList = action.payload.educations;
+      state.userTuitionmList = action.payload.user.Tuitionms;
+      state.userClassTypes = action.payload.user.ClassTypes;
+      state.userSubjects = action.payload.user.Subjects;
+      state.userExamList = action.payload.user.Education;
+      state.userReviews = action.payload.reviews;
+      // console.log(action.payload.user);
     });
     builder.addCase(fetchCurrentSingleUser.rejected, (state) => {
       // console.log(action.payload, state);
@@ -419,10 +428,11 @@ export const userSlice = createSlice({
     builder.addCase(fetchSelectedSingleUser.fulfilled, (state, action) => {
       // console.log(action.payload, state);
       state.selectedUser = action.payload.user;
-      state.userTuitionmList = action.payload.tuitionms;
-      state.userClassTypes = action.payload.classTypes;
-      state.userSubjects = action.payload.subjects;
-      state.userExamList = action.payload.educations;
+      state.userTuitionmList = action.payload.user.Tuitionms;
+      state.userClassTypes = action.payload.user.ClassTypes;
+      state.userSubjects = action.payload.user.Subjects;
+      state.userReviews = action.payload.reviews;
+      state.userExamList = action.payload.user.Education;
     });
     builder.addCase(fetchSelectedSingleUser.rejected, (state) => {
       // console.log(action.payload, state);

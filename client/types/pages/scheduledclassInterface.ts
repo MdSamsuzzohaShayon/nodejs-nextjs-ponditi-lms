@@ -45,8 +45,9 @@ export interface CreatedScheduledClassIn extends SingleScheduledClassInterface {
 
 export interface ScheduledclassListPropsInterface {
   scheduledClassList: SingleScheduledClassInterface[];
-  acceptRequestHandler: (are: React.SyntheticEvent, scheduledclassId: number) => void;
-  rejectRequestHandler: (are: React.SyntheticEvent, scheduledclassId: number) => void;
+  acceptRequestHandler: (are: React.SyntheticEvent, singleScheduledClass: CreatedScheduledClassIn) => void;
+  rejectRequestHandler: (are: React.SyntheticEvent, singleScheduledClass: CreatedScheduledClassIn) => void;
+  finishClassHandler: (are: React.SyntheticEvent, singleScheduledClass: CreatedScheduledClassIn) => void;
 }
 
 export interface RunningClassElementsPropsIn {

@@ -5,7 +5,7 @@ const { leaveAReview } = require('../controllers/review.controller');
 
 const { ensureAuth } = require('../middleware/auth');
 // Complete request
-router.post('/leave/:scheduledclassId', ensureAuth, check('stars').notEmpty().isDecimal(), check('comment').notEmpty().isLength({ min: 10 }), leaveAReview);
+router.post('/leave/:scheduledclassId', ensureAuth, check('stars').notEmpty().isDecimal(), check('comment').notEmpty().isLength({ min: 1 }), leaveAReview);
 
 // after completation
 

@@ -20,6 +20,14 @@ module.exports = {
           { transaction: t },
         ),
         */
+        queryInterface.addColumn(
+          'Customer',
+          'id_proof',
+          {
+            type: Sequelize.DataTypes.STRING(15),
+          },
+          { transaction: t },
+        ),
       ])
     );
   },

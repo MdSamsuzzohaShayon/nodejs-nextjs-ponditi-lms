@@ -87,7 +87,6 @@ section,
   }
 }
 
-
 .profile-image-wrapper {
   @include profile_img_wrapper();
 }
@@ -99,4 +98,24 @@ section,
 }
 .upload-img {
   @include upload_img();
+}
+
+.tooptip-wrapper:hover{
+  .tooltip-custom {
+    // position-absolute bg-dark text-white p-2 top-0 w-fit
+    display: block;
+  }
+}
+.tooptip-wrapper{
+  position: relative;
+  .tooltip-custom {
+    // position-absolute bg-dark text-white p-2 top-0 w-fit
+    display: none;
+    padding: 0.5rem;
+    background: $dark-color;
+    color: $light-color;
+    position: absolute;
+    left: 0;
+    top: -47px;
+  }
 }

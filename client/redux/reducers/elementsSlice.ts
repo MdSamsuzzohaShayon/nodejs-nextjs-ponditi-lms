@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { MenuItem, SocialLinksInterface } from '../../types/redux/elementsInterface';
+import { ModalStateIn } from '../../types/components/ElementsInterface';
 
-const initialModalState = {
+const initialModalState: ModalStateIn = {
   open: false,
   text: { heading: 'Heading', body: 'Body' },
 };

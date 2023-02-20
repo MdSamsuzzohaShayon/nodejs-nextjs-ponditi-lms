@@ -62,14 +62,14 @@ const initialAScheduledClass: ScheduledClassInterface = {
 
 const initialSCTabElements = [
   {
-    id: 1,
-    name: StatusEnum.APPROVED,
-    text: 'Approved Class',
-  },
-  {
     id: 2,
     name: StatusEnum.PENDING,
     text: 'Pending Class',
+  },
+  {
+    id: 1,
+    name: StatusEnum.APPROVED,
+    text: 'Approved Class',
   },
   {
     id: 3,
@@ -347,11 +347,11 @@ export const scheduledclassSlice = createSlice({
     builder.addCase(fetchAllRequestedSCOU.fulfilled, (state, action) => {
       if (action.payload.classScheduledList && action.payload.classScheduledList.length > 0) {
         state.allScheduledClassList = action.payload.classScheduledList;
-        state.requestedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.PENDING);
-        state.acceptedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.APPROVED);
-        state.rejectedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.REJECTED);
-        state.runningSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.START_CLASS);
-        state.completedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.FINISH_CLASS);
+        state.requestedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.PENDING).reverse();
+        state.acceptedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.APPROVED).reverse();
+        state.rejectedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.REJECTED).reverse();
+        state.runningSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.START_CLASS).reverse();
+        state.completedSCOU = action.payload?.classScheduledList.filter((csl: SingleScheduledClassInterface) => csl.status === StatusEnum.FINISH_CLASS).reverse();
       }
     });
 

@@ -1,5 +1,5 @@
 import { MouseEventHandler } from 'react';
-import { RoomListInterface } from './messageinterface';
+import { RoomListInterface, RoomMessageInterface } from './messageinterface';
 import { AuthUserInfoInterface } from './userInterface';
 
 export interface MenuItem {
@@ -20,6 +20,7 @@ export interface DisplayInboxPropsInterface {
   setShowInboxes: any;
   roomListOfAUser: RoomListInterface[];
   authUserInfo: AuthUserInfoInterface;
+  unseenMessageList: RoomMessageInterface[];
 }
 
 export interface DisplayNotificationPropsInterface {

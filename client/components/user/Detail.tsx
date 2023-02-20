@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -11,12 +12,12 @@ import Link from 'next/link';
 import React, { useRef } from 'react';
 
 // config and utils
-import { roles, scheduledclassStatus, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
+import { roles, scheduledclassStatus, AWS_S3_URL } from '../../config/keys';
 import { locationSelection } from '../../utils/helper';
 import axios from '../../config/axios';
 
 // redux
-import { setUpdatePart, setCurrentUser, setUpdateUser } from '../../redux/reducers/userReducer';
+import { setUpdatePart, setCurrentUser, setUpdateUser, resetUpdateUser } from '../../redux/reducers/userReducer';
 import { setErrorList, toggleLoading, resetErrorList } from '../../redux/reducers/elementsSlice';
 import { setSelectedTuitionm } from '../../redux/reducers/tuitionmReducer';
 import { setSelectedClasstype, setDisplayClassType } from '../../redux/reducers/classtypeReducer';
@@ -28,6 +29,9 @@ import { useAppSelector, useAppDispatch } from '../../redux/store';
 import { DetailPropsInterface } from '../../types/pages/userPageInterface';
 import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
 import { TuitionStyleEnum, UserRoleEnum } from '../../types/enums';
+
+// Components
+import MakeStar from '../elements/MakeStar';
 
 // destructure
 const { STUDENT, TEACHER } = roles;
@@ -42,6 +46,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
   const userSubjects = useAppSelector((state) => state.user.userSubjects);
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const userExamList = useAppSelector((state) => state.user.userExamList);
+  const userReviews = useAppSelector((state) => state.user.userReviews);
   const userTuitionmList = useAppSelector((state) => state.user.userTuitionmList);
   const userClassTypes = useAppSelector((state) => state.user.userClassTypes);
   const searchParams = useAppSelector((state) => state.search.searchParams);
@@ -73,6 +78,11 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
     Router.push({ pathname: '/user/update', query: { userId } });
   };
 
+  const setStars = (see: React.SyntheticEvent, selectedStar: number) => {
+    see.preventDefault();
+    console.log('not able to set star', selectedStar);
+  };
+
   // handleFileSelect = (e) => {
   //   e.preventDefault();
   //   fileSelector.click();
@@ -84,7 +94,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
     }
   };
 
-  const fileInputChangeHandler = async (fice) => {
+  const fileInputChangeHandler = async (fice: React.ChangeEvent<HTMLInputElement>) => {
     // fice.preventDefault();
     // console.log('Upload a file');
     const fileExist = imageInputEl.current.files[0];
@@ -145,11 +155,15 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
     htsre.preventDefault();
     // Under dev
 
+    if (!authUserInfo.id) {
+      return Router.push(`/user/register`);
+    }
+
     const receiverId = userId;
     // return Router.push('/development');
     // eslint-disable-next-line no-unreachable
     const classAndSubject: ClassAndSubjectInterface = { receiverId };
-    // console.log(searchParams);
+    // console.log(classtypeList);
     if (searchParams.ClassTypeId === 0 || searchParams.ClassTypeId === null) {
       classAndSubject.ClassTypeId = classtypeList[1].id;
     } else {
@@ -174,6 +188,41 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
       window.localStorage.setItem('search', JSON.stringify(newSearch));
       Router.push(`/search/request/?receiverId=${receiverId}`);
     }
+    return null;
+  };
+
+  const toggleUserAvailableHandler = async (tuae: React.SyntheticEvent, isAvailable: boolean) => {
+    tuae.preventDefault();
+    try {
+      dispatch(toggleLoading(true));
+      const options = {
+        headers: { 'Content-Type': 'application/json' },
+      };
+
+      const userObj = { isAvailable };
+
+      //   console.log(currentUser);
+      const response = await axios.put(`/user/update/${userId}`, userObj, options);
+      if (response.status === 202 || response.status === 201 || response.status === 200) {
+        // console.log(response);
+        window.localStorage.removeItem('updatePart');
+        dispatch(setCurrentUser(userObj));
+        dispatch(resetUpdateUser());
+        dispatch(resetErrorList());
+        Router.push('/user/dashboard');
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error.response.data.msg]));
+      }
+      if (error?.response?.status === 401 || error?.response?.status === 405) {
+        window.localStorage.removeItem('user');
+        Router.push('/user/login');
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
   };
 
   return (
@@ -188,7 +237,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                   {userDetail?.role === TEACHER && userDetail.experience && <p className="p-0 mb-3">{userDetail.experience} years Experience</p>}
                 </div>
               )}
-              <div className="shadow rounded-circle profile-image-wrapper position-relative">
+              <div className="shadow rounded-circle profile-image-wrapper position-relative mb-3">
                 {/* https://ponditistorage.s3.ap-southeast-1.amazonaws.com/ramos.jpg-42-image.jpg */}
                 <img
                   src={userDetail.image ? `${AWS_S3_URL}/${userDetail.image}` : '/img/default-img.jpg'}
@@ -203,14 +252,50 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                 )}
               </div>
             </div>
-            <div className="col-md-9">
-              {userDetail.location && (
+            {/* UPDATE ACTIVE STATUS START  */}
+            {update && userDetail?.role === TEACHER && (
+              <div className="col-12 d-flex justify-content-center align-items-center flex-column">
+                <div className="btn-group border border-primary" role="group" aria-label="Basic example">
+                  <button type="button" onClick={(e) => toggleUserAvailableHandler(e, true)} className={userDetail.isAvailable ? 'btn btn-primary' : 'btn btn-light'}>
+                    On
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => toggleUserAvailableHandler(e, false)}
+                    className={userDetail.isAvailable === false ? 'btn btn-primary' : 'btn btn-light'}
+                  >
+                    Off
+                  </button>
+                </div>
+              </div>
+            )}
+            {/* UPDATE ACTIVE STATUS END  */}
+          </div>
+          {/* SEND REQUEST & CHAT START  */}
+          {search && authUserInfo.role !== UserRoleEnum.TEACHER && (
+            <div className="row position-sticky top-0 mb-3">
+              <div className="btn-group" role="group" aria-label="Basic example">
+                <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre)}>
+                  Send Request
+                </button>
+                <button className="btn btn-danger" type="button">
+                  <Link href={!authUserInfo.id ? `/user/register` : `/user/chat/?receiverId=${userId}`}>Chat</Link>
+                </button>
+              </div>
+            </div>
+          )}
+          {/* SEND REQUEST & CHAT END  */}
+
+          {/* PRESENT ADDRESS START  */}
+          <div className="row">
+            <div className="col">
+              {userDetail.presentaddress && (
                 <>
                   <div className="d-flex">
                     <span className="location-icon mx-2">
                       <img src="/icons/location.svg" alt="" />
                     </span>
-                    <p>{userDetail.location}</p>
+                    <p>{userDetail.presentaddress}</p>
                   </div>
                   <p>{userDetail?.role}</p>
                   <p>
@@ -225,38 +310,11 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
               )}
             </div>
           </div>
-          {search && authUserInfo.role === UserRoleEnum.STUDENT && (
-            <div className="row">
-              <div className="btn-group mt-2" role="group" aria-label="Basic example">
-                <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre)}>
-                  Send Request
-                </button>
-                <button className="btn btn-danger" type="button">
-                  <Link href={`/user/chat/?receiverId=${userId}`}>Chat</Link>
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="row  mb-5">
-            {userDetail.degree && (
-              <div className="col-md-4 d-flex justify-content-start">
-                <div className="icon">
-                  <img src="/icons/experience.svg" className="img-fluid explain-icon" alt="" />
-                </div>
-                <div className="info">
-                  <h2>
-                    {userDetail.degree} - {userDetail.major}
-                  </h2>
-                  <p>Education</p>
-                </div>
-              </div>
-            )}
-          </div>
-          <hr />
+          {/* PRESENT ADDRESS END  */}
 
           {/* personal detail start  */}
-          <div className="row  mb-3 py-3">
-            <div className="heading d-flex justify-content-between align-items-center row py-3">
+          <div className="row  mb-3 pb-3">
+            <div className="heading d-flex justify-content-between align-items-center row pb-3">
               <h3 className="h5 w-fit">Personal Detail</h3>
               {update && (
                 <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 2)}>
@@ -290,14 +348,32 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                   <p className="fw-semibold">{userDetail.presentaddress && userDetail.presentaddress.split('(')[0]}</p>
                 </div>
               </div>
+              <div className="row  mb-1">
+                <div className="col-md-6">Gender</div>
+                <div className="col-md-6">
+                  <p className="fw-semibold">{userDetail.gender}</p>
+                </div>
+              </div>
+              {authUserInfo.role === UserRoleEnum.ADMIN && (
+                <div className="row  mb-1">
+                  <div className="col-md-6">NID</div>
+                  <div className="col-md-6">{userDetail.id_proof && <img src={`${AWS_S3_URL}/${userDetail.id_proof}`} />}</div>
+                </div>
+              )}
+              <div className="row  mb-1">
+                <div className="col-md-6">NID</div>
+                <div className="col-md-6">
+                  {userDetail.id_proof && userDetail.id_proof !== '' ? <p className="fw-semibold">Uploaded</p> : <p className="fw-semibold">Not Uploaded</p>}
+                </div>
+              </div>
             </div>
           </div>
           {/* personal detail end  */}
 
           {/* tution detail start  */}
           {userDetail?.role === TEACHER && (
-            <div className="row  mb-3 py-3">
-              <div className="heading d-flex justify-content-between align-items-center row py-3">
+            <div className="row  mb-3 pb-3">
+              <div className="heading d-flex justify-content-between align-items-center row pb-3">
                 <h3 className="h5 w-fit">Tution Detail</h3>
                 {update && (
                   <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 3)}>
@@ -311,7 +387,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                   <div className="row  mb-1">
                     <div className="col-md-6">Per Hour Rate</div>
                     <div className="table-responsive">
-                      <table className="table">
+                      <table className="table border">
                         <thead>
                           <tr>
                             {userDetail.ol_rate && <th> Online (Tk)</th>}
@@ -359,7 +435,7 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
 
           {/* Subject and class start  */}
           {(userDetail?.role === TEACHER || userDetail?.role === STUDENT) && (
-            <div className="row  mb-3 py-3">
+            <div className="row  mb-3 pb-3">
               <div className="col-12 d-flex justify-content-between row align-items-center my-3">
                 <h3 className="h5 w-fit">{userDetail.role === TEACHER ? 'Preffered Subjects' : 'Mediums & Class'}</h3>
                 {update && (
@@ -374,8 +450,8 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                   <div className="teacher-med-cls-sub row">
                     {userTuitionmList.length > 0 && (
                       <div className="col-md-4">
-                        <h5>Tuition Medium</h5>
-                        <div className="d-flex flex-wrap bg-white p-3">
+                        <div>Tuition Medium</div>
+                        <div className="d-flex flex-wrap pe-3">
                           {userTuitionmList.map((us, usi) => (
                             <p className="fw-semibold" key={us.id}>
                               {usi === userTuitionmList.length - 1 ? us.name : `${us.name}, `} &nbsp;
@@ -386,8 +462,8 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                     )}
                     {userClassTypes.length > 0 && (
                       <div className="col-md-4">
-                        <h5>Classes</h5>
-                        <div className="d-flex flex-wrap bg-white p-3">
+                        <div>Classes</div>
+                        <div className="d-flex flex-wrap pe-3">
                           {userClassTypes.map((uct, ucti) => (
                             <p className="fw-semibold" key={uct.id}>
                               {ucti === userClassTypes.length - 1 ? uct.name : `${uct.name}, `} &nbsp;
@@ -398,8 +474,8 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
                     )}
                     {userSubjects.length > 0 && (
                       <div className="col-md-4">
-                        <h5>Subjects</h5>
-                        <div className="d-flex flex-wrap bg-white p-3">
+                        <div>Subjects</div>
+                        <div className="d-flex flex-wrap pe-3">
                           {userSubjects.map((us, usi) => (
                             <p className="fw-semibold" key={us.id}>
                               {usi === userSubjects.length - 1 ? us.name : `${us.name}, `} &nbsp;
@@ -424,8 +500,8 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
 
           {/* Exam detail start  */}
           {authUserInfo.id !== null && userDetail.role === TEACHER && (
-            <div className="row  mb-3 py-3">
-              <div className="heading d-flex justify-content-between align-items-center row py-3">
+            <div className="row  mb-3 pb-3">
+              <div className="heading d-flex justify-content-between align-items-center row pb-3">
                 <h3 className="h5 w-fit">Educational Qualification</h3>
                 {update && (
                   <button className="btn btn-primary w-fit" type="button" onClick={(epse) => editPartToUpdateHandler(epse, 4)}>
@@ -456,8 +532,25 @@ function Detail({ userDetail, update, search, userId }: DetailPropsInterface) {
               </div>
             </div>
           )}
-
           {/* Exam detail end  */}
+
+          {/* Feedback start  */}
+          {userDetail.role === TEACHER && userReviews.length > 0 && (
+            <div className="row  mb-3 pb-3">
+              <div className="heading d-flex justify-content-between align-items-center row pb-3">
+                <h3 className="h5 w-fit">Feedback</h3>
+              </div>
+              <hr />
+              <div className="body-content">
+                <ul className="list-group">
+                  {userReviews.map((ur) => (
+                    <li className="list-group-item" key={ur.id}><div className="row"><div className="col-md-3"><MakeStar limit={ur.stars} setStars={setStars} /></div><div className="col-md-9">{ur.comment}</div></div></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          {/* Feedback end  */}
         </>
       )}
     </div>

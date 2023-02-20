@@ -35,3 +35,9 @@ export enum StatusEnum {
   ANY = 'ANY',
   FINISH_CLASS = 'FINISH_CLASS',
 }
+
+export enum GenderEnum {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHERS = 'OTHERS'
+}

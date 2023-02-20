@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeModal } from '../../redux/reducers/elementsSlice';
 // import useStyles from '../../styles/Home.style.js';
 
+import { useAppSelector, useAppDispatch } from '../../redux/store';
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -18,37 +20,40 @@ const style = {
   p: 4,
 };
 
-function CustomModal() {
+function ModalQuestion() {
   // const classes = useStyles();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   // const [open, setOpen] = React.useState(false);
-  const open = useSelector((state) => state.elements.modal.open);
-  const text = useSelector((state) => state.elements.modal.text);
+  const open = useAppSelector((state) => state.elements.modal.open);
+  const text = useAppSelector((state) => state.elements.modal.text);
   // const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false);
 
   // onClose={() => dispatch(closeModal())}
+  const modalCloseHandler = (mce: React.SyntheticEvent) => {
+    mce.preventDefault();
+    dispatch(closeModal());
+  };
   return (
-    <div className="modal" tabIndex="-1">
+    <div className={open ? 'modal d-block' : 'modal d-none'}>
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Modal title</h5>
-            <button type="button" className="btn-close" />
+            <h5 className="modal-title">{text.heading}</h5>
+            <button type="button" className="btn-close" onClick={modalCloseHandler} />
           </div>
           <div className="modal-body">
-            <p>Modal body text goes here.</p>
+            <p>{text.body}</p>
           </div>
           <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
             <button type="button" className="btn btn-primary">
-              Save changes
+              Yes
+            </button>
+            <button type="button" className="btn btn-danger">
+              No
+            </button>
+            <button type="button" className="btn btn-danger">
+              Cancel
             </button>
           </div>
         </div>
@@ -57,4 +62,4 @@ function CustomModal() {
   );
 }
 
-export default CustomModal;
+export default ModalQuestion;

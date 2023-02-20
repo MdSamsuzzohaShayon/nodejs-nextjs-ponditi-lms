@@ -30,7 +30,6 @@ import DisplayNotificationBar from './DisplayNotificationBar';
 import { UserNotificationInterface } from '../../types/redux/userInterface';
 import { ClassStatusEnum, StatusEnum, UserRoleEnum } from '../../types/enums';
 
-
 function Header() {
   let isMounted = false;
 
@@ -46,6 +45,7 @@ function Header() {
   const authenticatedUser = useAppSelector((state) => state.user.authenticatedUser);
   const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const roomListOfAUser = useAppSelector((state) => state.message.roomListOfAUser);
+  const unseenMessageList = useAppSelector((state) => state.message.unseenMessageList); // unseenMessageList
 
   // State local
   const [dashboardUrl, setDashboardUrl] = useState('/user/dashboard');
@@ -92,8 +92,6 @@ function Header() {
     nbce.preventDefault();
     setShowNotificationBar(false);
   };
-
-  
 
   const dropdownMenuHandler = (dme: React.SyntheticEvent) => {
     dme.preventDefault();
@@ -165,7 +163,7 @@ function Header() {
                       </button>
                     </li>
                     <li className="d-flex justify-content-center w-full">
-                      <button type="button" className="btn btn-transparent p-0 m-0 " onClick={notificationBarHandler} ref={notificationMenuItem}>
+                      <button type="button" className="btn btn-transparent p-0 m-0 open-notification" onClick={notificationBarHandler} ref={notificationMenuItem}>
                         {userUnseenNotifications.length > 0 ? (
                           <img src="/icons/notification-dot.svg" alt="notification" height={35} />
                         ) : (
@@ -173,8 +171,9 @@ function Header() {
                         )}
                         {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{userUnseenNotifications.length}</div>}
                       </button>
-                      <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
+                      <button className="btn btn-transparent p-0 m-0 open-inbox" type="button" onClick={inboxBarHandler}>
                         <img src="/icons/inbox.svg" className="f-full" alt="" height={30} />
+                        {userUnseenNotifications.length > 0 && <div className="bg-danger text-white p-1 w-fit rounded-3">{unseenMessageList.length}</div>}
                       </button>
                     </li>
                   </ul>
@@ -194,7 +193,13 @@ function Header() {
                   showNotificationBar={showNotificationBar}
                   userNotifications={userNotifications}
                 />
-                <DisplayInbox authUserInfo={authUserInfo} roomListOfAUser={roomListOfAUser} showInboxes={showInboxes} setShowInboxes={setShowInboxes} />
+                <DisplayInbox
+                  authUserInfo={authUserInfo}
+                  unseenMessageList={unseenMessageList}
+                  roomListOfAUser={roomListOfAUser}
+                  showInboxes={showInboxes}
+                  setShowInboxes={setShowInboxes}
+                />
               </>
             )}
 
@@ -257,7 +262,13 @@ function Header() {
                           ) : null}
                           <li>
                             <div className="dropdown-item text-white">
-                              <Link href={authUserInfo.role === UserRoleEnum.STUDENT || authUserInfo.role === UserRoleEnum.TEACHER ? '/user/changepassword' : '/admin/changepassword'}>
+                              <Link
+                                href={
+                                  authUserInfo.role === UserRoleEnum.STUDENT || authUserInfo.role === UserRoleEnum.TEACHER
+                                    ? '/user/changepassword'
+                                    : '/admin/changepassword'
+                                }
+                              >
                                 Change Password
                               </Link>
                             </div>
@@ -269,7 +280,12 @@ function Header() {
                           </li>
                         </ul>
                       </div>
-                      <button type="button" className="btn btn-transparent p-0 m-0 position-relative" onClick={notificationBarHandler} ref={notificationMenuItem}>
+                      <button
+                        type="button"
+                        className="btn btn-transparent p-0 m-0 position-relative open-notification"
+                        onClick={notificationBarHandler}
+                        ref={notificationMenuItem}
+                      >
                         {userUnseenNotifications.length > 0 ? (
                           <img src="/icons/notification-dot.svg" alt="notification" height={35} />
                         ) : (
@@ -279,11 +295,12 @@ function Header() {
                           <div className="bg-danger text-white p-1 w-fit rounded-3 position-absolute top-0">{userUnseenNotifications.length}</div>
                         )}
                       </button>
-                      <div className="d-flex">
-                        <button className="btn btn-transparent p-0 m-0" type="button" onClick={inboxBarHandler}>
-                          <img src="/icons/inbox.svg" className="f-full" alt="" height={25} />
-                        </button>
-                      </div>
+                      <button className="btn btn-transparent p-0 m-0 position-relative open-inbox" type="button" onClick={inboxBarHandler}>
+                        <img src="/icons/inbox.svg" className="f-full" alt="" height={30} />
+                        {userUnseenNotifications.length > 0 && (
+                          <div className="bg-danger text-white p-1 w-fit rounded-3 position-absolute top-0">{unseenMessageList.length}</div>
+                        )}
+                      </button>
                     </>
                   ) : (
                     <div className="d-flex justify-content-start align-items-start">
@@ -300,7 +317,13 @@ function Header() {
                     showNotificationBar={showNotificationBar}
                     userNotifications={userNotifications}
                   />
-                  <DisplayInbox authUserInfo={authUserInfo} roomListOfAUser={roomListOfAUser} showInboxes={showInboxes} setShowInboxes={setShowInboxes} />
+                  <DisplayInbox
+                    authUserInfo={authUserInfo}
+                    unseenMessageList={unseenMessageList}
+                    roomListOfAUser={roomListOfAUser}
+                    showInboxes={showInboxes}
+                    setShowInboxes={setShowInboxes}
+                  />
                 </div>
               </div>
               {/* <div className="border-of-header w-full bg-primary-deep" /> */}

@@ -40,6 +40,14 @@ module.exports = {
       age: {
         type: Sequelize.INTEGER,
       },
+      gender: {
+        type: Sequelize.STRING(15),
+        allowNull: false,
+        defaultValue: 'MALE',
+      },
+      id_proof: {
+        type: Sequelize.STRING(100),
+      },
       profession: {
         type: Sequelize.STRING(100),
       },

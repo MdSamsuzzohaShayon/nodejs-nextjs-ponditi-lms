@@ -3,7 +3,7 @@ export const BACKEND_URL: string = 'http://localhost:9000';
 // export const BACKEND_URL = 'https://backend.ryansoftbd.com';
 // export const BACKEND_URL = 'https://ponditi-api.onrender.com';
 
-export const AWS_S3_URL = 'https://ponditistorage.s3.ap-southeast-1.amazonaws.com';
+export const AWS_S3_URL: string = 'https://ponditistorage.s3.ap-southeast-1.amazonaws.com';
 
 export const APP_NAME = 'Ponditi';
 export const GOOGLE_PLACE_API_KEY = 'AIzaSyAF8GtQJ6sD_O731EUBO3ATruUYjObZYdg';

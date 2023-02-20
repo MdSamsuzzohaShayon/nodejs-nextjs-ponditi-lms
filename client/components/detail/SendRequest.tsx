@@ -14,6 +14,9 @@ import { resetErrorList, setErrorList, toggleLoading } from '../../redux/reducer
 import { resetAuthUserInfo } from '../../redux/reducers/userReducer';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
 
+// Socket
+import { useSocket } from '../../context/ThemeProvider';
+
 // Components
 import Loader from '../elements/Loader';
 import Calendar from '../elements/Calendar';
@@ -26,7 +29,7 @@ import axios from '../../config/axios';
 import { TuitionStyleEnum, TimeAMPMEnum } from '../../types/enums';
 import { SlotInterface, FetchedScheduledClassInterface } from '../../types/redux/scheduledclassInterface';
 import { ClassTypeInterface } from '../../types/redux/SubjectClassTuitionmInterface';
-import { formatAsDate } from '../../utils/timeFunction';
+import { formatAsDate, formatDate } from '../../utils/timeFunction';
 
 function SendRequest() {
   const dateInputEl = useRef<HTMLInputElement>(null);
@@ -39,26 +42,37 @@ function SendRequest() {
     libraries,
   });
 
+  // Socket - Use socket from context
+  const socket = useSocket(); // useContext
+
   // Local state
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedAmpm, setSelectedAmpm] = useState<string | null>(null);
+  const [selectedNow, setSelectedNow] = useState<boolean | null>(false);
   const [autocomplete, setAutocomplete] = useState(null);
+  const [minDate, setMinDate] = useState<string>();
+  const [maxDate, setMaxDate] = useState<string>();
   const dispatch = useAppDispatch();
 
   // Redux state
   const selectedSearchUser = useAppSelector((state) => state.user.selectedUser);
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
   const initializeSchedule = useAppSelector((state) => state.scheduledclass.initializeSchedule);
   const slotList = useAppSelector((state) => state.scheduledclass.slotList);
   const acceptedSCOU = useAppSelector((state) => state.scheduledclass.acceptedSCOU); // Later make it acceptedSCOU
   const tuitionStyle = useAppSelector((state) => state.scheduledclass.tuitionStyle);
-  const classtypeList = useAppSelector((state) => state.classtype.classtypeList);
-  const subjectList = useAppSelector((state) => state.subject.subjectList);
+  const classtypeList = useAppSelector((state) => state.classtype.constClasstypeList);
+  const subjectList = useAppSelector((state) => state.subject.constSubjectList);
 
   /**
    * SET DEFAUL TODAY DATE
    * =========================================================================================================
    */
   useEffect(() => {
+    const now = new Date();
+    setMinDate(formatDate(now.toISOString(), 'yyyy-mm-dd'));
+    // 2023-12-31
+    setMaxDate(formatDate(now.toISOString(), 'yyyy-mm-dd', 5));
     setTimeout(() => {
       if (dateInputEl.current) {
         dateInputEl.current.valueAsDate = new Date();
@@ -100,12 +114,22 @@ function SendRequest() {
     sse.preventDefault();
     setSelectedSlot(slot);
     setSelectedAmpm(ampm);
+    setSelectedNow(false);
     if (ampm === TimeAMPMEnum.PM) {
       dispatch(setInitializeSchedule({ time: `${slot + 12}:00` }));
     } else {
       dispatch(setInitializeSchedule({ time: `${slot}:00` }));
     }
   };
+
+  const currentTimeSelecthandler = (ctse: React.SyntheticEvent) => {
+    ctse.preventDefault();
+    setSelectedSlot(null);
+    setSelectedAmpm(null);
+    setSelectedNow(true);
+    // dispatch(setInitializeSchedule({ time: new Date(), date: new Date() }));
+  };
+
   const placeChangedHandler = () => {
     try {
       if (autocomplete) {
@@ -130,39 +154,52 @@ function SendRequest() {
    * SEND REQUEST / SUBMIT REQUEST
    * =========================================================================================================
    */
-  const scheduledClassSubmitHandler = async (isce: React.FormEvent<HTMLFormElement>) => {
-    isce.preventDefault();
+  const scheduledClassSubmitHandler = async () => {
+    // isce.preventDefault();
     dispatch(resetErrorList());
+    const newObj = structuredClone(initializeSchedule);
+    newObj.ClassTypeId = 1;
+    newObj.SubjectId = 1;
+    if (selectedNow) {
+      newObj.start = new Date().toISOString();
+    } else {
+      newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
+    }
+
     const errList = [];
-    if (!initializeSchedule.time || initializeSchedule.time === '') {
+
+    // console.log(newObj);
+    // return;
+
+    if ((!newObj.time || newObj.time === '') && !selectedNow) {
       errList.push('You must select a slot');
     }
-    if (!initializeSchedule.tuitionlocation || initializeSchedule.tuitionlocation === '') {
+    if (!newObj.tutionplace || newObj.tutionplace === '') {
       errList.push('You must select a tution place');
+    }
+
+    if (newObj.tutionplace === TuitionStyleEnum.SL && newObj.tuitionlocation === '') {
+      errList.push('You must put a location');
     }
     // console.log(startDateTime.toISOString());
     // console.log('Send request with current time of client');
-    if (!initializeSchedule.receiverId || initializeSchedule.receiverId === 0) {
+    if (!newObj.receiverId || newObj.receiverId === 0) {
       errList.push('You must need a receiver');
     }
 
-    // if (!initializeSchedule.ClassTypeId || initializeSchedule.ClassTypeId === 0) {
+    // if (!newObj.ClassTypeId || newObj.ClassTypeId === 0) {
     //   return dispatch(setErrorList(['You must have a class type']));
     // }
-    // if (!initializeSchedule.SubjectId || initializeSchedule.SubjectId === 0) {
+    // if (!newObj.SubjectId || newObj.SubjectId === 0) {
     //   return dispatch(setErrorList(['You must have a subject']));
     // }
-    // console.log(initializeSchedule);
+    // console.log(newObj);
     if (errList.length > 0) {
-      // console.log(initializeSchedule);      
+      // console.log(newObj);
       return dispatch(setErrorList(errList));
     }
 
-    const newObj = { ...initializeSchedule };
-    newObj.ClassTypeId = 1;
-    newObj.SubjectId = 1;
-    newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
-    // newObj.start = new Date([initializeSchedule.date, initializeSchedule.time]).toISOString();
+    // newObj.start = new Date([newObj.date, newObj.time]).toISOString();
     delete newObj.date;
     delete newObj.time;
     // console.log(newObj);
@@ -171,6 +208,8 @@ function SendRequest() {
       dispatch(toggleLoading(true));
       const response = await axios.post('/scheduledclass/initiate', newObj);
       if (response.status === 201) {
+        const newDataObj = { senderId: authUserInfo.id, receiverId: newObj.receiverId };
+        await socket.emit('update-notification-from-client', newDataObj);
         window.localStorage.removeItem('search');
         Router.push('/user/dashboard');
       }
@@ -257,6 +296,9 @@ function SendRequest() {
     return <div className={`time-slot d-flex w-full justify-content-md-between align-items-center flex-wrap ${additionalClasses}`}>{slotItemList}</div>;
   };
 
+  const findSubject = (sId: number) => subjectList.find((s) => s.id === sId);
+  const findClass = (ctId: number) => classtypeList.find((ct) => ct.id === ctId);
+
   return (
     <div className="SendRequest">
       <div className="row mb-3">
@@ -267,7 +309,17 @@ function SendRequest() {
           <div className="my-2 week-calendar col-md-12">
             {/* <Calendar onDateChange={dateChangeHandler} /> */}
             <label htmlFor="date">Date</label>
-            <input type="date" ref={dateInputEl} name="date" id="date" className="form-control" defaultValue={initializeSchedule.date} onChange={inputNumChangeHandler} />
+            <input
+              type="date"
+              ref={dateInputEl}
+              name="date"
+              id="date"
+              max={maxDate}
+              min={minDate}
+              className="form-control"
+              defaultValue={initializeSchedule.date}
+              onChange={inputNumChangeHandler}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -275,8 +327,16 @@ function SendRequest() {
             <label htmlFor="slot">Slot</label>
           </div>
           <div className="col-md-12 d-flex justify-content-between flex-md-column">
+            {/* ROW 1 OF TIME SLOT  */}
             {timeSlotDisplay(0, slotList, slotList.length / 2, '')}
+            {/* ROW 2 OF TIME SLOT  */}
             {timeSlotDisplay(slotList.length / 2, slotList, slotList.length, 'justify-content-end')}
+          </div>
+          {/* ROW 3 OF TIME SLOT  */}
+          <div className="col-md-12">
+            <button type="button" onClick={currentTimeSelecthandler} className={selectedNow ? 'btn mb-2 w-full btn-primary' : 'btn mb-2 w-full btn-outline-primary'}>
+              Now
+            </button>
           </div>
         </div>
         {/* <div className="row mb-3">
@@ -346,13 +406,21 @@ function SendRequest() {
           </div>
         </div> */}
         <hr />
-        <div className="row mb-3 mx-0">
+        <div className="row mb-3">
           {/* <div className="col-md-12">
             <h5>Estimated bill </h5>
             <span>{initializeSchedule.hours * selectedSearchUser.rate} TK</span>
           </div> */}
         </div>
-        <div className="row mb-3 mx-0">
+        <div className="row mb-3 ">
+          <div className="col-md-6">
+            <p>Class: {findClass(initializeSchedule.ClassTypeId)?.name}</p>
+          </div>
+          <div className="col-md-6">
+            <p>Subject: {findSubject(initializeSchedule.SubjectId)?.name}</p>
+          </div>
+        </div>
+        <div className="row mb-3">
           <div className="col-md-12">
             <button type="submit" className="btn btn-primary w-fit">
               Submit Request

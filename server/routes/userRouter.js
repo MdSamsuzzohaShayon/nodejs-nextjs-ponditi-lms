@@ -12,6 +12,7 @@ const {
   sendOTP,
   getSingleUser,
   updateUser,
+  updatePersonalInfoUser,
   logout,
   notificationSeen,
   seedUsers,
@@ -21,7 +22,7 @@ const {
   resetPassword,
 } = require('../controllers/user.controller');
 const { changePassword } = require('../controllers/common.controller');
-const { ensureAuth, ensureAdmin } = require('../middleware/auth');
+const { ensureAuth, ensureAdmin, ensureTeacher } = require('../middleware/auth');
 // const { upload } = require('../config/s3-config');
 const upload = require('../config/multer-config');
 
@@ -52,6 +53,7 @@ router.put(
   // check('phone').notEmpty().isString(),
   check('role').notEmpty().isString(),
   check('email').isEmail().notEmpty(),
+  check('gender').notEmpty().isString(),
   // check('age').notEmpty(),
   // check('profession').notEmpty().isString(),
   // check('institution').notEmpty().isString(),
@@ -75,6 +77,7 @@ router.put('/accept/:userId', ensureAdmin, acceptUser);
 router.put('/update/:id', ensureAuth, updateUser);
 router.put('/updateexam/:id', ensureAuth, check('examlist').isArray(), updateExamUser);
 router.put('/updateimage/:id', ensureAuth, upload.single('image'), updateImageUser);
+router.put('/updatepersonalinfo/:id', ensureTeacher, upload.single('nid_proof'), updatePersonalInfoUser);
 
 router.post('/login', check('phone').notEmpty().isString(), check('password').notEmpty().isLength({ min: 6 }), login);
 router.post('/logout', logout);

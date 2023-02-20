@@ -21,9 +21,10 @@ router.post(
   check('experience').notEmpty(),
   check('location').notEmpty(),
   check('password').notEmpty().isLength({ min: 6 }),
-  addAdmin
+  addAdmin,
 );
 */
+
 
 /**
  * @route

@@ -107,25 +107,17 @@ function SearchForm({ fromHome }: SearchFormPropsInterface) {
    * @submit form event to redirect to /search page
    */
   const searchSubmitHandler = (sshe: React.FormEvent) => {
+    // console.log(sshe);
+    
     sshe.preventDefault();
     dispatch(resetErrorList());
-    const errList = [];
-    if (!searchParams.TuitionmId) {
-      errList.push('You must need to select a tuition medium');
+
+    if (!searchParams.SubjectId || !searchParams.ClassTypeId || !searchParams.TuitionmId) {
+      return dispatch(setErrorList(['Required fields can not be empty']));
     }
-    if (!searchParams.ClassTypeId) {
-      errList.push('You must need to select a class');
-    }
-    if (!searchParams.SubjectId) {
-      errList.push('You must need to select a subject');
-    }
-    if (errList.length > 0) {
-      dispatch(setErrorList(errList));
-    } else {
-      dispatch(resetErrorList());
-      window.localStorage.setItem('search', JSON.stringify(searchParams));
-      Router.push('/search');
-    }
+    dispatch(resetErrorList());
+    window.localStorage.setItem('search', JSON.stringify(searchParams));
+    return Router.push('/search');
   };
 
   /**
@@ -266,7 +258,7 @@ function SearchForm({ fromHome }: SearchFormPropsInterface) {
             <label htmlFor="TuitionmId">Tuition Medium</label>
             <select name="TuitionmId" id="TuitionmId" className="form-control" defaultValue={searchParams.TuitionmId} onChange={tuitionmInputChangeHandler}>
               <option value="0" disabled>
-                Select a medium
+                Select a medium*
               </option>
               {tuitionmList.map((tm) => (
                 <option key={tm.id} value={tm.id}>
@@ -281,7 +273,7 @@ function SearchForm({ fromHome }: SearchFormPropsInterface) {
             <label htmlFor="ClassTypeId">Class</label>
             <select name="ClassTypeId" id="ClassTypeId" className="form-control" onChange={classtypeInputChangeHandler} value={searchParams.ClassTypeId?.toString()}>
               <option value="0" disabled>
-                Select a class
+                Select a class*
               </option>
               {classtypeList.map((ctl) => (
                 <option key={ctl.id} value={ctl.id}>
@@ -294,7 +286,7 @@ function SearchForm({ fromHome }: SearchFormPropsInterface) {
             <label htmlFor="SubjectId">Subject</label>
             <select name="SubjectId" id="SubjectId" className="form-control" onChange={inputNumChangeHandler} value={searchParams.SubjectId?.toString()}>
               <option value="0" disabled>
-                Select a subject
+                Select a subject*
               </option>
               {subjectList.map((ctl) => (
                 <option key={ctl.id} value={ctl.id}>

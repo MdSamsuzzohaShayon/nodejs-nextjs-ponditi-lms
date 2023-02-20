@@ -13,14 +13,14 @@ import { setInitializeSchedule } from '../../redux/reducers/scheduledclassReduce
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
 // Config/utils
-import { roles, types, BACKEND_URL } from '../../config/keys';
+import { roles, types, BACKEND_URL, AWS_S3_URL } from '../../config/keys';
 
 // Components
 import MakeStar from '../elements/MakeStar';
 
 // Types
 import { ClassAndSubjectInterface } from '../../types/pages/searchPageInterface';
-import { TuitionStyleEnum } from '../../types/enums';
+import { TuitionStyleEnum, UserRoleEnum } from '../../types/enums';
 import { TuitionRateInterface } from '../../types/redux/userInterface';
 
 const { STUDENT } = roles;
@@ -80,6 +80,9 @@ function SearchResult() {
 
   const headToSendRequestHandler = (htsre: React.SyntheticEvent, receiverId: number) => {
     htsre.preventDefault();
+    if (!authUserInfo.id) {
+      return Router.push(`/user/register`);
+    }
     const classAndSubject: ClassAndSubjectInterface = { receiverId };
     classAndSubject.ClassTypeId = searchParams.ClassTypeId;
     classAndSubject.SubjectId = searchParams.SubjectId;
@@ -109,7 +112,7 @@ function SearchResult() {
     return limit;
   };
 
-  const makeTheUrl = (userImage: string) => `${BACKEND_URL}/${userImage}`;
+  const makeTheUrl = (userImage: string) => `${AWS_S3_URL}/${userImage}`;
 
   const displayRates = (sul: TuitionRateInterface) => (
     <div className="hstack gap-3">
@@ -131,6 +134,11 @@ function SearchResult() {
     </div>
   );
 
+  const setStars = (see: React.SyntheticEvent, selectedStar: number) => {
+    see.preventDefault();
+    console.log('not able to set star', selectedStar);
+  };
+
   return (
     <div className="SearchResult">
       {searchUserList && (
@@ -147,9 +155,9 @@ function SearchResult() {
                       <Link href={`/search/detail/?userId=${sul.id}`}>
                         <div className="img-wrapper d-flex w-full h-full justify-content-center align-items-center">
                           {sul.image ? (
-                            <img src={makeTheUrl(sul.image)} className="rounded-circle" alt={sul?.name} />
+                            <img src={makeTheUrl(sul.image)} className="teacher-item-img rounded-circle" alt={sul?.name} />
                           ) : (
-                            <img src="/img/default-img.jpg" className="rounded-circle" alt={sul?.name} />
+                            <img src="/img/default-img.jpg" className="teacher-item-img rounded-circle" alt={sul?.name} />
                           )}
                         </div>
                       </Link>
@@ -160,7 +168,7 @@ function SearchResult() {
                           <div className="d-flex justify-content-between">
                             <h5 className="card-title text-capitalize m-0">{sul?.name}</h5>
                             <h5 className="card-title text-capitalize m-0">
-                              <MakeStar limit={findStarLimit(sul)} />
+                              <MakeStar limit={findStarLimit(sul)} setStars={setStars} />
                             </h5>
                           </div>
                           <p className="card-text mb-0 mb-md-2">Experience: {sul?.experience} years</p>
@@ -177,13 +185,13 @@ function SearchResult() {
                       >
                         <Link href={`/search/detail/?userId=${sul.id}`}>View Details</Link>
                       </button>
-                      {authUserInfo?.role === STUDENT && (
+                      {authUserInfo?.role !== UserRoleEnum.TEACHER && (
                         <div className="btn-group request-details" role="group" aria-label="Basic example">
                           <button type="button" className="btn btn-primary" onClick={(htsre) => headToSendRequestHandler(htsre, sul.id)}>
                             Send Request
                           </button>
                           <button type="button" className="btn btn-danger">
-                            <Link href={`/user/chat/?receiverId=${sul.id}`}>Chat</Link>
+                            <Link href={authUserInfo.role === UserRoleEnum.STUDENT ? `/user/chat/?receiverId=${sul.id}` : `/user/register`}>Chat</Link>
                           </button>
                         </div>
                       )}

@@ -36,6 +36,8 @@
   top: $header-height;
   right: 0;
   z-index: 1;
+  max-height: 70vh;
+  overflow-y: scroll;
 }
 
 @mixin display_ban_mobile{

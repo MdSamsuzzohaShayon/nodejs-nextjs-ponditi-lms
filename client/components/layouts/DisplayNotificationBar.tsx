@@ -3,7 +3,7 @@
 
 // React/nextjs
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Router from 'next/router';
 
 // Redux
@@ -18,6 +18,7 @@ import { ClassStatusEnum, StatusEnum } from '../../types/enums';
 
 function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandler, userNotifications }: DisplayNotificationPropsInterface) {
   const dispatch = useAppDispatch();
+  const notificationBarEl = useRef<HTMLDivElement | null>(null);
 
   const linkRedirectHandler = async (lre: React.SyntheticEvent, notification: UserNotificationInterface) => {
     lre.preventDefault();
@@ -56,8 +57,26 @@ function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandl
     Router.push(newUrl);
   };
 
+  // close notification bar on display click
+  useEffect(() => {
+    // console.log(notificationBarEl);
+    document.addEventListener('click', (domCE) => {
+      if (!notificationBarEl.current) return;
+      const withinBoundary = domCE.composedPath().includes(notificationBarEl.current);
+
+      if (withinBoundary === false && showNotificationBar === true && !domCE.target.parentElement.classList.contains('open-notification')) {
+        // console.log('Click happened Outside element', {showNotificationBar, elm: domCE.target.parentElement});
+        // console.log({withinBoundary, showNotificationBar});
+        natificationBarCloseHandler(domCE);
+      }
+    });
+  }, [showNotificationBar]);
+
   return (
-    <div className={showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`}>
+    <div
+      ref={notificationBarEl}
+      className={showNotificationBar ? `notification-bar card text-bg-primary position-absolute` : `notification-bar card text-bg-primary position-absolute d-none`}
+    >
       <div className="card-body">
         <div className="d-flex w-full justify-content-between align-items-center mb-2">
           <h5 className="card-title">Notifications</h5>
@@ -66,8 +85,13 @@ function DisplayNotificationBar({ showNotificationBar, natificationBarCloseHandl
         <ul className="list-group">
           {userNotifications.length > 0 ? (
             userNotifications.map((un: UserNotificationInterface, unI: number) => (
-              <li className={un.viewed ? 'list-group-item bg-transparent border-none' : 'list-group-item bg-transparent text-white border-none'} key={unI}>
-                <button type="button" className="btn btn-transparent p-0 m-0 text-white" onClick={(lre) => linkRedirectHandler(lre, un)}>
+              <li
+                className={
+                  un.viewed ? 'list-group-item border border-info bg-transparent border-none' : 'list-group-item border border-info bg-transparent text-white border-none'
+                }
+                key={unI}
+              >
+                <button type="button" className="btn btn-transparent p-0 m-0 text-white text-start" onClick={(lre) => linkRedirectHandler(lre, un)}>
                   {un.comment}
                 </button>
                 {/* <Link href={`http://localhost:3000/scheduledclass/detail/?scheduledclassId=${un.id}`} className="list-group-item bg-transparent text-white border-none">

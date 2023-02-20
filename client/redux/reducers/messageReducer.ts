@@ -7,6 +7,7 @@ import { RoomMessageInterface, RoomMessageStateType, MessageFetchParamsInterface
 
 const initialMessagesOfARoom: RoomMessageInterface[] = [];
 const initialRoomListOfAUser: RoomListInterface[] = [];
+const initialCurrentRoomId: number | null = null;
 
 const setANewMessageType: CaseReducer<RoomMessageStateType, PayloadAction<RoomMessageInterface>> = (state, action) => {
   // console.log(action.payload);
@@ -49,6 +50,24 @@ export const fetchAllRoomsOfAUser = createAsyncThunk('message/getRoomsOfAUser', 
   }
 });
 
+
+export const fetchAllUnseenMessagesOfAUser = createAsyncThunk('message/getUnseenMessagesOfAUser', async (args, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.get('/message/all/unseen');
+    // console.log(response);
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    if (error?.response?.data?.msg) {
+      dispatch(setErrorList([error?.response?.data?.msg]));
+    }
+    return rejectWithValue(error.response.data);
+  }
+});
+
+
+
+
 export const classtypeSlice = createSlice({
   name: 'message',
   initialState: {
@@ -57,6 +76,9 @@ export const classtypeSlice = createSlice({
      */
     roomListOfAUser: initialRoomListOfAUser,
     messagesOfARoom: initialMessagesOfARoom,
+    currentRoomId: initialCurrentRoomId,
+
+    unseenMessageList: initialMessagesOfARoom,
   },
   reducers: {
     setANewMessage: setANewMessageType,
@@ -65,12 +87,20 @@ export const classtypeSlice = createSlice({
     builder.addCase(fetchAllMessagesOfARoom.fulfilled, (state, action) => {
       if (action.payload.messages.length > 0) {
         state.messagesOfARoom = action.payload.messages;
+        state.currentRoomId = action.payload.roomId;
+        // publish(pin):false
       }
     });
     builder.addCase(fetchAllRoomsOfAUser.fulfilled, (state, action) => {
       if (action.payload.rooms.length > 0) {
         // console.log(action.payload.rooms);
-        state.roomListOfAUser = action.payload.rooms;
+        state.roomListOfAUser = action.payload.rooms.reverse();
+      }
+    });
+    builder.addCase(fetchAllUnseenMessagesOfAUser.fulfilled, (state, action) => {
+      if (action.payload.messages.length > 0) {
+        // console.log(action.payload.messages);
+        state.unseenMessageList = action.payload.messages;
       }
     });
   },

@@ -1,25 +1,48 @@
+// React/nextjs
 import React, { useEffect, useState } from 'react';
 import Router from 'next/router';
+
+// Redux
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import Chat from '../../../components/user/Chat/Chat';
-import useMediaQuery from '../../../hooks/useMediaQuery';
-import Layout from '../../../components/layouts/Layout';
-import { resetErrorList, toggleLoading } from '../../../redux/reducers/elementsSlice';
+import { resetErrorList, toggleLoading, setErrorList } from '../../../redux/reducers/elementsSlice';
 import { fetchSelectedSingleUser, toggleAuthUser } from '../../../redux/reducers/userReducer';
 import { fetchAllMessagesOfARoom } from '../../../redux/reducers/messageReducer';
+
+// Components
+import Chat from '../../../components/user/Chat/Chat';
+import Layout from '../../../components/layouts/Layout';
+
+// Hooks
+import useMediaQuery from '../../../hooks/useMediaQuery';
+
+// Config/utils
+import axios from '../../../config/axios';
 
 // Types
 import { UserRoleEnum } from '../../../types/enums';
 
-// Check authentication and fetch previous messages
 function ChatIndex() {
   let isMounted: boolean = true;
   const [receiverId, setReceiver] = useState<number | null>(null);
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const isBreakpoint = useMediaQuery(786);
-  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
 
+  const authUserInfo = useAppSelector((state) => state.user.authUserInfo);
+  const currentRoomId = useAppSelector((state) => state.message.currentRoomId);
+
+  const seenAllMessagesOfTheRoom = async (roomId: number) => {
+    try {
+      await axios.put(`/message/seen`, { roomId });
+    } catch (error: any) {
+      console.log(error);
+      if (error?.response?.data?.msg) {
+        dispatch(setErrorList([error?.response?.data?.msg]));
+      }
+    }
+  };
+
+  // Check authentication and fetch previous messages
   useEffect(() => {
     if (isMounted && authUserInfo.id) {
       const params = new URLSearchParams(window.location.search);
@@ -33,6 +56,7 @@ function ChatIndex() {
           await Promise.all([
             dispatch(fetchSelectedSingleUser(receiverIdInt)),
             dispatch(fetchAllMessagesOfARoom({ receiverId: receiverIdInt, senderId: parseInt(authUserInfo.id, 10) })),
+            // seen all message
           ]);
         })();
         isMounted = false;
@@ -41,6 +65,12 @@ function ChatIndex() {
       }
     }
   }, [authUserInfo]);
+
+  useEffect(() => {
+    if (currentRoomId) {
+      seenAllMessagesOfTheRoom(currentRoomId);
+    }
+  }, [currentRoomId]);
 
   useEffect(() => {
     if (isMounted) {

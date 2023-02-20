@@ -17,6 +17,9 @@ import { ChatPropsInterface, DataInterface } from '../../../types/pages/userPage
 import { RoomMessageInterface } from '../../../types/redux/messageinterface';
 import { UserRoleEnum } from '../../../types/enums';
 
+// Config/utils
+import { isoToDateTime } from '../../../utils/timeFunction';
+
 // React Chat Component
 function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
   // Reference to React Element
@@ -53,6 +56,8 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
           publish: false,
           messagesenderId: authUserInfo.id,
           messagereceverId: receiverId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           text: data.message,
         };
         dispatch(setANewMessage(newMsg));
@@ -78,7 +83,7 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
     socket.emit('join-room-from-client', { receiverId, senderId: authUserInfo.id });
     // Getting message from server
     socket.on('message-from-server', (data) => {
-      // console.log(data);
+      // Fetch unseen message
       // add message to the state for receiving message
       // const newMessage:RoomMessageInterface = {};
       // const newMsg = { messagesenderId: data.senderId, messagereceverId: data.receiverId, text: data.message };
@@ -86,7 +91,7 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
       if (data.senderId && data.receiverId && data.message) {
         const newMsg: RoomMessageInterface = {
           id: Math.random(),
-          publish: false,
+          publish: true,
           messagesenderId: data.senderId,
           messagereceverId: data.receiverId,
           text: data.message,
@@ -155,13 +160,18 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
         singleMessageCls = 'alert alert-light w-fit rounded-pill py-2 shadow';
       }
 
+      const { date, time } = isoToDateTime(messagesOfARoom[i].createdAt);
+
       // For last message
       if (i === messagesOfARoom.length - 1) {
         prevMessageUserId = messagesOfARoom[i].messagesenderId;
         messageSetList.push(
-          <p key={i} className={singleMessageCls} style={{ margin: '3px 0' }}>
-            {messagesOfARoom[i].text}
-          </p>,
+          <div key={i}>
+            <p className={singleMessageCls} style={{ margin: '3px 0' }}>
+              {messagesOfARoom[i].text}
+            </p>
+            <p className="fw-lighter mb-0 mx-1 time-date">{`${date}, ${time}`}</p>
+          </div>,
         );
         // console.log(prevMessageUserId, authUserInfo.id);
         balanceLeftRightMessage(i, prevMessageUserId, messageList, messageSetList);
@@ -173,15 +183,21 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
         balanceLeftRightMessage(i, prevMessageUserId, messageList, messageSetList);
         messageSetList = [];
         messageSetList.push(
-          <p key={i} className={singleMessageCls} style={{ margin: '3px 0' }}>
-            {messagesOfARoom[i].text}
-          </p>,
+          <div key={i}>
+            <p className={singleMessageCls} style={{ margin: '3px 0' }}>
+              {messagesOfARoom[i].text}
+            </p>
+            <p className="fw-lighter mb-0 mx-1 time-date">{`${date}, ${time}`}</p>
+          </div>,
         );
       } else {
         messageSetList.push(
-          <p key={i} className={singleMessageCls} style={{ margin: '3px 0' }}>
-            {messagesOfARoom[i].text}
-          </p>,
+          <div key={i}>
+            <p className={singleMessageCls} style={{ margin: '3px 0' }}>
+              {messagesOfARoom[i].text}
+            </p>
+            <p className="fw-lighter mb-0 mx-1 time-date">{`${date}, ${time}`}</p>
+          </div>,
         );
       }
 
@@ -198,12 +214,14 @@ function Chat({ receiverId, authUserInfo }: ChatPropsInterface) {
   };
 
   return (
-    <div className="bg-light card">
+    <div className="bg-light card chat-window">
       <div className="chat-header bg-white px-0 py-3 m-0">
         <div className="container d-flex justify-content-between">
           <h4 className="text-capitalize">{selectedUser?.name}</h4>
           <span>
-            <img src="/icons/close.svg" alt="" />
+            <Link href="/">
+              <img src="/icons/close.svg" alt="" />
+            </Link>
           </span>
         </div>
       </div>

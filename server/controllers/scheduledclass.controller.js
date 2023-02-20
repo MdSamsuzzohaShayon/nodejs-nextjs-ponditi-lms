@@ -6,14 +6,24 @@ const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const db = require('../models');
 
-const { roles, scheduledClassStatus, types, notificationTypes } = require('../config/keys');
+const sendSMS = require('../utils/sendSMS');
+const { roles, scheduledClassStatus, types, notificationTypes, roomStatus } = require('../config/keys');
+const {
+  scheduledClassStartOnTime,
+  userStatusChangeOnIncomplete,
+  userCompletePendingClasses,
+  selectStatus,
+  makeStatusMessage,
+  createNotroom,
+} = require('../utils/scheduledClassFunc');
 
 const { STUDENT, TEACHER } = roles;
-const { PENDING, APPROVED, REJECTED, START_CLASS, PAYMENT_DUE, FINISH_CLASS } = scheduledClassStatus;
+const { PENDING, APPROVED, REJECTED, START_CLASS, PAYMENT_DUE, FINISH_CLASS, CANCEL } = scheduledClassStatus;
 const { ONLINE, TL, SL } = types;
 const { INITIATED_CLASS, ACCEPT_REQUEST, REJECTED_REQUEST } = notificationTypes;
+const { RUNNING } = roomStatus;
 
-const { ScheduledClass, Customer, ClassType, Subject, Review, Notification } = db;
+const { ScheduledClass, Customer, ClassType, Subject, Review, Notification, Notroom } = db;
 const initiateScheduledClass = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -25,20 +35,6 @@ const initiateScheduledClass = async (req, res) => {
   // console.log(req.userId);
 
   try {
-    switch (scObj.tutionplace.toUpperCase()) {
-      case ONLINE:
-        scObj.tutionplace = ONLINE;
-        break;
-      case TL:
-        scObj.tutionplace = TL;
-        break;
-      case SL:
-        scObj.tutionplace = SL;
-        break;
-      default:
-        scObj.tutionplace = ONLINE;
-        break;
-    }
     // console.log(scObj);
     const findSender = await Customer.findOne({
       where: { id: req.userId },
@@ -58,17 +54,17 @@ const initiateScheduledClass = async (req, res) => {
     } else {
       return res.status(406).json({ msg: 'Only student and teacher can send request' });
     }
+
     const findRecever = await Customer.findOne({
       where: { id: scObj.receiverId },
     });
-    // console.log(req.userRole);
-    // console.log("Sender - student");
-    // console.log("recever - teacher");
-    // console.log(findSender);
-    // console.log(findRecever);
 
     if (findRecever === null) {
       return res.status(404).json({ msg: 'Recever not found' });
+    }
+
+    if (findRecever.dataValues.isActive !== APPROVED) {
+      return res.status(404).json({ msg: 'This teacher can not accept any request now!' });
     }
 
     if (studentSender === true) {
@@ -80,11 +76,33 @@ const initiateScheduledClass = async (req, res) => {
     } else {
       // eslint-disable-next-line no-lonely-if
       if (findRecever.role === TEACHER) {
-        return res.status(406).json({
-          msg: 'Invalid recever - sender and recever both can not be teacher or student',
-        });
+        return res.status(406).json({ msg: 'Invalid recever - sender and recever both can not be teacher or student' });
       }
     }
+
+    // Conditional check for student's location
+    if (scObj.tutionplace === SL && (scObj.tuitionlocation === null || scObj.tuitionlocation === '')) {
+      return res.status(406).json({ msg: "If you select studnet's location you must put a location" });
+    }
+
+    switch (scObj.tutionplace.toUpperCase()) {
+      case ONLINE:
+        scObj.tutionplace = ONLINE;
+        scObj.tuitionlocation = ONLINE;
+        break;
+      case TL:
+        scObj.tutionplace = TL;
+        scObj.tuitionlocation = findRecever.dataValues.presentaddress;
+        break;
+      case SL:
+        scObj.tutionplace = SL;
+        break;
+      default:
+        scObj.tutionplace = ONLINE;
+        scObj.tuitionlocation = ONLINE;
+        break;
+    }
+
     // find classtype and subject
     const findClassType = await ClassType.findOne({
       where: { id: scObj.ClassTypeId },
@@ -138,11 +156,13 @@ const initiateScheduledClass = async (req, res) => {
       newScheduledClass.setClassType(findClassType),
       newScheduledClass.setSubject(findSubject),
     ]);
-
+    const classStatus = selectStatus(INITIATED_CLASS);
+    const comment = makeStatusMessage(classStatus);
     const notification = await Notification.create({
-      type: INITIATED_CLASS,
-      comment: `A scheduled calss is been initialized (${newScheduledClass.id})`,
+      type: classStatus,
+      comment: `${comment} (${newScheduledClass.id})`,
     });
+    createNotroom(findSender, findRecever);
     // console.log(notification);
     await notification.setCustomer(findRecever);
     return res.status(201).json({
@@ -197,6 +217,23 @@ const getSingleScheduledClass = async (req, res) => {
     newSingleScheduledClass.Sender = newSender;
     newSingleScheduledClass.Recever = newRecever;
     // const { password, ...restRecever} = Recever;
+
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
     return res.status(200).json({
       msg: 'found scheduled class',
       scheduledclass: newSingleScheduledClass,
@@ -216,6 +253,23 @@ const getAllScheduledClassofAMember = async (req, res) => {
     return res.status(406).json({ error: errors.array() });
   }
   try {
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClassToUpdate = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClassToUpdate);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
+
     const memberId = parseInt(req.params.memberId, 10); // getAllScheduledClassofAMember
     // console.log(memberId, req.userId, req.userRole);
     // if (memberId !== req.userId) {
@@ -233,6 +287,7 @@ const getAllScheduledClassofAMember = async (req, res) => {
     } else {
       return res.status(404).json({ msg: 'no class found' });
     }
+
     const allScheduledClass = await ScheduledClass.findAll({
       include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
       where,
@@ -293,17 +348,44 @@ const acceptRequestedScheduledClass = async (req, res) => {
     const findScheduledClass = await ScheduledClass.findOne({
       where: {
         id: req.params.scheduledclassId,
-        [Op.or]: [{ status: PENDING }, { status: REJECTED }],
+        // [Op.or]: [{ status: PENDING }, { status: REJECTED }],
       },
     });
+    // console.log(findScheduledClass);
     if (!findScheduledClass) {
       return res.status(406).json({
         msg: 'No class found to accept. Note: class must be pending or rejected',
       });
     }
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * IF THE USER IS CANCELING HIS LAST CLASS, HE WILL BE APPROVED USER AGAIN
+     */
+    const clearedPendingClasses = await userCompletePendingClasses(allScheduledClass, req.userId);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    if (!clearedPendingClasses) {
+      const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
+      if (!userTaskComplete) {
+        return res.status(406).json({ msg: 'You can not reject any request until you complete all of your previous running class!' });
+      }
+    }
 
     if (findScheduledClass.dataValues.receverId !== req.userId) {
-      return res.status(406).json({ msg: 'You are not request recever' });
+      return res.status(406).json({ msg: 'You are not request receiver' });
     }
     const updatedScheduledClass = await findScheduledClass.update({
       status: APPROVED,
@@ -311,11 +393,17 @@ const acceptRequestedScheduledClass = async (req, res) => {
     const findSender = await Customer.findOne({
       where: { id: findScheduledClass.dataValues.senderId },
     });
-    // console.log(findScheduledClass);
+
+    sendSMS(
+      findSender.dataValues.phone,
+      `A class is been accepted \n Class ID: ${findScheduledClass.dataValues.id} \n URL: ${process.env.FRONTEND_URL}/scheduledclass/detail/?scheduledclassId=${findScheduledClass.dataValues.id}`
+    );
+    const comment = makeStatusMessage(ACCEPT_REQUEST);
     const notification = await Notification.create({
       type: ACCEPT_REQUEST,
-      comment: `A scheduled calss request is accepted (${findScheduledClass.dataValues.id})`,
+      comment: `${comment} (${findScheduledClass.dataValues.id})`,
     });
+
     // console.log(notification);
     await notification.setCustomer(findSender);
     return res.status(202).json({ msg: 'Request accepted successfully', updatedScheduledClass });
@@ -331,12 +419,33 @@ const rejectRequestedScheduledClass = async (req, res) => {
     const findScheduledClass = await ScheduledClass.findOne({
       where: { id: req.params.scheduledclassId, status: PENDING },
     });
+
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
+    if (!userTaskComplete) {
+      return res.status(406).json({ msg: 'You can not reject any request until you complete all of your previous running class!' });
+    }
+
     if (!findScheduledClass) {
       return res.status(406).json({ msg: 'No class found to reject' });
     }
 
     if (findScheduledClass.dataValues.receverId !== req.userId) {
-      return res.status(406).json({ msg: 'You are not request recever' });
+      return res.status(406).json({ msg: 'You are not request receiver' });
     }
     const updatedScheduledClass = await findScheduledClass.update({
       status: REJECTED,
@@ -345,14 +454,85 @@ const rejectRequestedScheduledClass = async (req, res) => {
     const findSender = await Customer.findOne({
       where: { id: findScheduledClass.dataValues.senderId },
     });
-    // console.log(findScheduledClass);
+    const comment = makeStatusMessage(REJECTED_REQUEST);
     const notification = await Notification.create({
       type: REJECTED_REQUEST,
-      comment: `A scheduled calss request is rejected (${findScheduledClass.dataValues.id})`,
+      comment: `${comment} (${findScheduledClass.dataValues.id})`,
     });
     // console.log(notification);
     await notification.setCustomer(findSender);
     return res.status(202).json({ msg: 'Request rejected successfully', updatedScheduledClass });
+  } catch (error) {
+    console.log(error);
+  }
+
+  return res.status(500).json({ msg: 'server error' });
+};
+
+const cancelScheduledClass = async (req, res) => {
+  try {
+    const findScheduledClass = await ScheduledClass.findOne({
+      where: { id: req.params.scheduledclassId },
+    });
+
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * IF THE USER IS CANCELING HIS LAST CLASS, HE WILL BE APPROVED USER AGAIN
+     */
+    const clearedPendingClasses = await userCompletePendingClasses(allScheduledClass, req.userId);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    if (!clearedPendingClasses) {
+      const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
+      if (!userTaskComplete) {
+        return res.status(406).json({ msg: 'You can not reject any request until you complete all of your previous running class!' });
+      }
+    }
+
+    if (!findScheduledClass) {
+      return res.status(406).json({ msg: 'No class found to reject' });
+    }
+
+    if (findScheduledClass.dataValues.receverId !== req.userId) {
+      return res.status(406).json({ msg: 'You are not request receiver' });
+    }
+
+    // APPROVED
+    if (findScheduledClass.dataValues.status !== APPROVED) {
+      return res.status(406).json({ msg: 'This class can not be canceled' });
+    }
+
+    const classStatus = selectStatus(CANCEL);
+    const comment = makeStatusMessage(CANCEL);
+    const updatedScheduledClass = await findScheduledClass.update({
+      status: classStatus,
+    });
+    // console.log(findScheduledClass);
+    const findSender = await Customer.findOne({
+      where: { id: findScheduledClass.dataValues.senderId },
+    });
+    // console.log(findScheduledClass);
+
+    const notification = await Notification.create({
+      type: classStatus,
+      comment: `${comment} (${findScheduledClass.dataValues.id})`,
+    });
+    // console.log(notification);
+    await notification.setCustomer(findSender);
+    return res.status(202).json({ msg: `Class status is ${classStatus.toLowerCase()}`, updatedScheduledClass });
   } catch (error) {
     console.log(error);
   }
@@ -385,9 +565,11 @@ const startScheduledClass = async (req, res) => {
       where: { id: findScheduledClass.dataValues.senderId },
     });
     // console.log(findScheduledClass);
+    const classStatus = selectStatus(START_CLASS);
+    const comment = makeStatusMessage(START_CLASS);
     const notification = await Notification.create({
-      type: START_CLASS,
-      comment: `You class is started (${findScheduledClass.dataValues.id})`,
+      type: classStatus,
+      comment: `${comment} (${findScheduledClass.dataValues.id})`,
     });
     // console.log(notification);
     await notification.setCustomer(findSender);
@@ -402,16 +584,41 @@ const startScheduledClass = async (req, res) => {
 const updateScheduledClass = async (req, res) => {
   try {
     const findScheduledClass = await ScheduledClass.findOne({
-      where: { id: req.params.scheduledclassId, types: ONLINE },
+      where: { id: req.params.scheduledclassId },
     });
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    const userTaskComplete = await userStatusChangeOnIncomplete(hasARunningClass, req.userId);
+    // if (userTaskComplete) {
+    //   return res.status(406).json({ msg: 'You can not update any request until you complete all of your previous running class!' });
+    // }
     if (!findScheduledClass) {
       return res.status(406).json({
-        msg: 'No class found to reject or class may not online based',
+        msg: 'No class found',
       });
     }
     await findScheduledClass.update({
       meetlink: req.body.meetlink,
     });
+
+    const findSender = await Customer.findOne({ where: { id: findScheduledClass.dataValues.senderId } });
+    sendSMS(
+      findSender.dataValues.phone,
+      `A class link is been shared \n Class ID: ${findScheduledClass.dataValues.id} \n URL: ${process.env.FRONTEND_URL}/scheduledclass/detail/?scheduledclassId=${findScheduledClass.dataValues.id}`
+    );
     return res.status(202).json({ msg: 'Updated class successfully', meetlink: req.body.meetlink });
   } catch (error) {
     console.log(error);
@@ -437,12 +644,28 @@ const completeRequestedScheduledClass = async (req, res) => {
     }
     */
 
+    /**
+     * ===================================================================
+     * UPDATE CLASS STATUS IF TIME EXCEED
+     */
+    const allScheduledClass = await ScheduledClass.findAll({
+      include: [{ model: Customer, as: 'Sender' }, { model: Customer, as: 'Recever' }, { model: ClassType }, { model: Subject }],
+      where: {
+        [Op.or]: [{ receverId: req.userId }, { senderId: req.userId }],
+      },
+    });
+    const hasARunningClass = await scheduledClassStartOnTime(allScheduledClass);
+    /**
+     * ===================================================================
+     * CUSTOMER STATUS WILL BE INCOMPLETE IF SHE/SHE DOES NOT COMPLETE THE CLASS
+     */
+    const clearedPendingClasses = await userCompletePendingClasses(allScheduledClass, req.userId);
     // APPROVED CLASS CAN BE COMPLETED
     const findScheduledClass = await ScheduledClass.findOne({
-      where: { id: req.params.scheduledclassId, status: APPROVED },
+      where: { id: req.params.scheduledclassId, status: { [Op.or]: [START_CLASS, APPROVED] } },
     });
     if (!findScheduledClass) {
-      return res.status(406).json({ msg: 'No class found to reject or class may not approved' });
+      return res.status(406).json({ msg: 'No class found, class may not started or approved' });
     }
     await Promise.all([
       findScheduledClass.update({
@@ -456,9 +679,12 @@ const completeRequestedScheduledClass = async (req, res) => {
     const findSender = await Customer.findOne({
       where: { id: findScheduledClass.dataValues.senderId },
     });
+
+    const classStatus = selectStatus(FINISH_CLASS);
+    const comment = makeStatusMessage(FINISH_CLASS);
     const notification = await Notification.create({
-      type: FINISH_CLASS,
-      comment: `Your class is finished (${findScheduledClass.dataValues.id})`,
+      type: classStatus,
+      comment: `${comment} (${findScheduledClass.dataValues.id})`,
     });
     await notification.setCustomer(findSender);
     return res.status(202).json({
@@ -482,4 +708,5 @@ module.exports = {
   startScheduledClass,
   completeRequestedScheduledClass,
   updateScheduledClass,
+  cancelScheduledClass,
 };

@@ -1,5 +1,6 @@
 // React/next
 import React, { useEffect } from 'react';
+import Router from 'next/router';
 
 // Redux
 import { toggleLoading, setErrorList, resetErrorList } from '../../redux/reducers/elementsSlice';
@@ -20,6 +21,7 @@ import Loader from '../../components/elements/Loader';
 
 // Config/utils
 import axios from '../../config/axios';
+import { UserRoleEnum } from '../../types/enums';
 
 // Page component
 function SearchIndex() {
@@ -58,10 +60,10 @@ function SearchIndex() {
     }
   };
 
-  // Fetch class, subject, and tution medium
-  useEffect(() => {
+  const fetchData = async () => {
     if (isMounted === false) {
       dispatch(toggleLoading(true));
+
       if (JSON.stringify(initialSearchParams) === JSON.stringify(searchParams)) {
         // Set local storage from home page
         const searchData = localStorage.getItem('search');
@@ -98,6 +100,21 @@ function SearchIndex() {
       dispatch(toggleLoading(false));
     }
     isMounted = true;
+  };
+
+  // Fetch class, subject, and tution medium if the logged in user is not teacher
+  useEffect(() => {
+    const user = window.localStorage.getItem('user');
+    if (user) {
+      const userData = JSON.parse(user);
+      if (userData && userData.role === UserRoleEnum.TEACHER) {
+        Router.push('/');
+      } else {
+        fetchData();
+      }
+    } else {
+      fetchData();
+    }
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Room extends Model {
+  class Notroom extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,18 +11,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       //   has many Scheduled Class
       // has many users
-      Room.belongsTo(models.Customer, {
-        foreignKey: 'invitorId',
-        as: 'Roominvitor',
+      Notroom.belongsTo(models.Customer, {
+        foreignKey: 'notroominvitorId',
+        as: 'Notroominvitor',
       });
-      Room.belongsTo(models.Customer, {
-        foreignKey: 'invitereceverId',
-        as: 'Inviterecever',
+      Notroom.belongsTo(models.Customer, {
+        foreignKey: 'invitereceiverId',
+        as: 'Invitereceiver',
       });
-      Room.hasMany(models.Message);
     }
   }
-  Room.init(
+  Notroom.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -44,8 +43,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       freezeTableName: true,
-      modelName: 'Room',
+      modelName: 'Notroom',
     },
   );
-  return Room;
+  return Notroom;
 };

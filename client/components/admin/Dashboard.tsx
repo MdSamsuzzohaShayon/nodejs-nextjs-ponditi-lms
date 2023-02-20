@@ -1,26 +1,40 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/anchor-is-valid */
+
+// React/next
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+// Components
 import ClassTypeContent from './ClassTypeContent';
 import SubjectContent from './SubjectContent';
 import UserContent from './UserContent';
-import { adminSidebarList } from '../../config/keys';
-import { setSelectedContent } from '../../redux/reducers/adminReducer';
-import useMediaQuery from '../../hooks/useMediaQuery';
 import TuitionmContent from './TuitionmContent';
+
+// Config/utils
+import { adminSidebarList } from '../../config/keys';
+
+// Redux
+import { setSelectedContent } from '../../redux/reducers/adminReducer';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
+
+// Hooks
+import useMediaQuery from '../../hooks/useMediaQuery';
 
 const { CLASS_TYPE, SUBJECT, USERS, MEDIUM } = adminSidebarList;
 
 function Dashboard() {
   const isMounted = false;
-  const dispatch = useDispatch();
-  const isMobileBr = useMediaQuery(768);
-  const adminSidebarElements = useSelector((state) => state.admin.adminSidebarElements);
-  const selectedContent = useSelector((state) => state.admin.selectedContent);
 
-  const selectSidebarElement = (ssee, selectedElement) => {
+  // Hooks
+  const dispatch = useAppDispatch();
+  const isMobileBr = useMediaQuery(768);
+
+  // Redux state
+  const adminSidebarElements = useAppSelector((state) => state.admin.adminSidebarElements);
+  const selectedContent = useAppSelector((state) => state.admin.selectedContent);
+
+  const selectSidebarElement = (ssee: React.SyntheticEvent, selectedElement: string) => {
     ssee.preventDefault();
     dispatch(setSelectedContent(selectedElement));
   };

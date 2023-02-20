@@ -277,16 +277,22 @@
  - ✅ no any option in search with class, medium, subject
  - ✅ Booked slot will be disabled
  - ✅ No professional institution for student
- - send request page
- - tuition style
- - location of student can be edited edit
- - Complete button only
+ - ✅ NCheck current date is greater than previously saved date
+ - ✅ Nlocation of student can be edited edit
+ - ✅ Complete button only
+ - ✅ add gender and nid card field
+ - ✅ Profile page, on off in jamal
+ - fix chat time on sending sms
+ - Notification sms on phone (Accept, share link)
+ - Disable slot is not working
+ - Not getting right notigication message
+ - SMS Unseen ribbon
  - Chat is not working properly
  - AI Detects mobile number and social media links
  - A teacher can block a student or a student can block a teacher
  - delete useless images from AWS
- - Profile page, on off in jamal
  - duplicate database and keep backup in excel file
+ - Search button
 
 
 ### Sequelize problems
@@ -297,6 +303,7 @@ Ask questions
 
 ### Advancing
  - [Update next js 13](https://www.youtube.com/watch?v=6aP9nyTcd44)
+ - Microservices
  - Dockerizing
  - Using sequelize cli properly to migrate, and undo with associations
  - Testing
@@ -318,22 +325,6 @@ Ask questions
  - 
 
 
-### Nest.js entities
- - Controller - Creating endpoints
- - Module
- - Services
- - Guards
- - Data transform objects
- - Pipe - transform and validate
- - Type orm [tutorial](https://www.youtube.com/watch?v=W1gvIw0GNl8) - https://docs.nestjs.com/recipes/sql-typeorm
- - [Tutorial 1](https://www.makeuseof.com/nestjs-typeorm-sql-databases/) - [tutorial 2](https://lagliam.medium.com/how-to-integrate-an-existing-mssql-database-using-nestjs-and-sequelize-21ff62c4c5ff)
- - Create module, controller, service 
-    ```
-    nest g module report
-    nest g controller report
-    nest g service report
-    ```
- - [mssql Installation on linux](https://www.youtube.com/watch?v=tT9UlXwBarw&t=50s)
 ### MsSQL queries
  - Delete all rows
  ```
@@ -368,8 +359,7 @@ Ask questions
 ### Docker
  - [Dockerize Your Full-Stack App](https://www.youtube.com/watch?v=Jo5TVUBjbIs), [Dockerizing Full Stack Web App REACTJS & NODEJS](https://www.youtube.com/watch?v=IDVUy34vlSE)
 
-ALTER TABLE Customers
-ADD Email varchar(255);
+
 ### Track
  - We must make all the tracking of database changes
 
@@ -409,7 +399,7 @@ ADD Email varchar(255);
     );
     ```    
 
-- _Create Message ane make relation of customer multiple times and relation with room_
+- *Create Message ane make relation of customer multiple times and relation with room*
   ```
   CREATE TABLE Message (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -425,12 +415,26 @@ ADD Email varchar(255);
     FOREIGN KEY (RoomId) REFERENCES Room(id) 
   );
   ```
+ - *Add gender and NID card*
+ ```
+ ALTER TABLE Customer ADD COLUMN gender VARCHAR(15) NOT NULL SET DEFAULT 'MALE';
+ ALTER TABLE Customer ADD COLUMN id_proof VARCHAR(100);
+ ```
+ - *Add notification room table*
+  ```
+  CREATE TABLE Notroom(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'RUNNING',
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL,
+    notroominvitorId INT,
+    FOREIGN KEY (notroominvitorId) REFERENCES Customer(id),
+    invitereceiverId INT,
+    FOREIGN KEY (invitereceiverId) REFERENCES Customer(id)
+  );
+  ```
 
-
-
-
-  ipoh, perak
-  +6012-5252754
 
 
 
