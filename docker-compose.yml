@@ -3,33 +3,51 @@ services:
   nginx:
     restart: always
     image: nginx:latest
+    container_name: nginx_con
     build:
       dockerfile: Dockerfile.dev
       context: ./nginx
     ports:
       - "3050:3051"
     depends_on:
-      - api
-      - client
+      - backend
+      - frontend
+      - mysqldb
   
-  api:
-    build: 
-      dockerfile: Dockerfile.dev
-      context: ./server
-    volumes:
-      - '/app/node_modules'
-      - './server:/app'
-    env_file:
-      - ./server/.env.local
   
-  client:
+  frontend:
     build: 
       dockerfile: Dockerfile.dev
       context: ./client
+    container_name: frontend_con
     volumes:
       - "/app/node_modules"
       - "./client:/app"
     command: npm run start
     tty: true
+
+
+  backend:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./server
+    container_name: backend_con
+    volumes:
+      - '/app/node_modules'
+      - './server:/app'
+    env_file:
+      - ./server/.env.local
+
+  mysqldb:
+    image: mysql:5.7
+    restart: always 
+    container_name: mysql_con
+    volumes:
+      - ./dbdata:/var/lib/mysql
+    env_file:
+      - ./config/.env
+    ports:
+      - 3306:3306
+
 
     

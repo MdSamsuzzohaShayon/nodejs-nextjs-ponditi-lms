@@ -9,19 +9,19 @@ const { changePassword } = require('../controllers/common.controller');
  * @route
  * Register an admin, later for production this route will be disabled
  */
-router.post(
-  '/add',
-  check('name').notEmpty(),
-  check('phone').notEmpty(),
-  check('email').isEmail().notEmpty(),
-  check('age').notEmpty(),
-  check('profession').notEmpty(),
-  check('institution').notEmpty(),
-  check('experience').notEmpty(),
-  check('location').notEmpty(),
-  check('password').notEmpty().isLength({ min: 6 }),
-  addAdmin
-);
+// router.post(
+//   '/add',
+//   check('name').notEmpty(),
+//   check('phone').notEmpty(),
+//   check('email').isEmail().notEmpty(),
+//   check('age').notEmpty(),
+//   check('profession').notEmpty(),
+//   check('institution').notEmpty(),
+//   check('experience').notEmpty(),
+//   check('location').notEmpty(),
+//   check('password').notEmpty().isLength({ min: 6 }),
+//   addAdmin
+// );
 
 /**
  * @route

@@ -1,0 +1,7 @@
+name: Ponditi Deployment
+
+on:
+  push:
+    branches:
+      - master
+

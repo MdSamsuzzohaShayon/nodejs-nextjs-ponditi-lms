@@ -1,7 +1,11 @@
-FROM node:latest
-WORKDIR /server
-COPY package.json ./
+FROM node:lts-alpine3.17
+
+WORKDIR /app
+
+COPY package.json .
+
 RUN npm install
-COPY . /server
+
+COPY . .
+
 EXPOSE 9000
-CMD ["npm", "run", "dev"]

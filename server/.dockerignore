@@ -6,3 +6,5 @@ Dockerfile
 .gitignore
 .env
 .env.example
+.github
+nginx
