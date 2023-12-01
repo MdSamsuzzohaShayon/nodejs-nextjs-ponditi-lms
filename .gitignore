@@ -1,8 +1,13 @@
+/secrets/mysql-secrets.txt
+
 /server/node_modules
 /server/.env.local
 /server/.env
 /server/dist
+/server/data.sqlite
+
 /res
+
 /client/bootstrap
 /client/node_modules
 /client/dist

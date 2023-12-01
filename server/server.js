@@ -1,10 +1,7 @@
 const dotenv = require('dotenv');
 
-if (process.env.NODE_ENV === 'development') {
-  dotenv.config({ path: './.env.local' });
-} else {
-  dotenv.config({ path: './.env' });
-}
+dotenv.config({ path: './.env' });
+
 // dotenv.config({ path: './.env' });
 const cookieParser = require('cookie-parser');
 const express = require('express');

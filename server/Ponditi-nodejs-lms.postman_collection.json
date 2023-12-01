@@ -1,0 +1,1292 @@
+{
+	"info": {
+		"_postman_id": "338cf4b0-0b66-43a2-b072-73e2ca5447b9",
+		"name": "Ponditi-nodejs-lms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14178218"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"T1\",\n    \"email\": \"t21@gmail.com\",\n    \"role\": \"TEACHER\",\n    \"institution\": \"DIU\",\n    \"pinstitution\": \"DIU P\",\n    \"profession\": \"athlate\",\n    \"experience\": \"string\",\n    \"presentaddress\": \"Dhaka\",\n    \"SubjectId\": [\n        1,\n        2\n    ],\n    \"ClassTypeId\": [\n        1,\n        2\n    ],\n    \"TuitionmId\": [\n        1,\n        2\n    ],\n    \"tutionplace\": [\"TL\", \"SL\"],\n    \"tl_rate\": 120,\n    \"sl_rate\": 140,\n\n    \"degree\": \"BBA\",\n    \"major\": \"finance\",\n    \"passing_year\": 2020,\n    \"running_study\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/register/10",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"register",
+								"10"
+							]
+						},
+						"description": "In order to register user you must make a request to send otp \\`/user/sendotp\\` and verify your otp \\`/user/verifyotp\\`"
+					},
+					"response": []
+				},
+				{
+					"name": "Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01785208562\",\n    \"cc\": \"88\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/sendotp",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"sendotp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01785208590\",\n    \"password\": \"Test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/login",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend OTP Code",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+8801785208590\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/resendotp",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"resendotp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01785208522\",\n    \"otp\": \"706599\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/verifyotp",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"verifyotp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/logout",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"logout"
+							]
+						},
+						"description": "This will work for all type of users (admin, teacher, student)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get single user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/single/20",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"single",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tutionplace\": [\"SL\", \"TL\", \"ONLINE\"],\n    \"presentaddress\": \"Dhanmondi, Dhaka, Bangladesh\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/update/3",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"update",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Seed users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/seed",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"seed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make request with review to complete the class",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stars\": 8,\n    \"comment\": \"This is comment\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/completerequest/1",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"completerequest",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users by admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user exam",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"examlist\": [\n        {\n            \"level\": \"SSC\",\n            \"group\": \"Science\",\n            \"institution\": \"SDPSC\",\n            \"grade\": \"C\",\n            \"cgpa\": \"3.63\",\n            \"passing_year\": 2013\n        },\n        {\n            \"level\": \"HSC\",\n            \"group\": \"Commerce\",\n            \"institution\": \"SDPSC\",\n            \"grade\": \"C\",\n            \"cgpa\": \"3.33\",\n            \"passing_year\": 2015\n        },\n        {\n            \"level\": \"BBA\",\n            \"group\": \"Commerce\",\n            \"institution\": \"DIU\",\n            \"grade\": \"A\",\n            \"cgpa\": \"3.05\",\n            \"passing_year\": 2020\n        }\n        ,\n        {\n            \"level\": \"Masters\",\n            \"group\": \"Commerce\",\n            \"institution\": \"DIU\",\n            \"grade\": \"A\",\n            \"cgpa\": \"3.05\",\n            \"passing_year\": 2022\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/updateexam/1",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"updateexam",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user image",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/home/shayon/Pictures/pic-4-flower-plant-petal-purple-terrestrial-plant-violet.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/updateimage/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"updateimage",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Updater user personal info",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nid_proof",
+									"type": "file",
+									"src": "/home/shayon/Pictures/pic-2-sun-cloud-water-sky-water-resources-atmosphere.jpg"
+								},
+								{
+									"key": "name",
+									"value": "Shayon",
+									"type": "text"
+								},
+								{
+									"key": "district",
+									"value": "Bhola",
+									"type": "text"
+								},
+								{
+									"key": "experience",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "institution",
+									"value": "DIU",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/updatepersonalinfo/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"updatepersonalinfo",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forget Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01785208513\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/forgetpassword",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"forgetpassword"
+							]
+						},
+						"description": "There is only one field\n\n1. \\`email\\` or \\`phone\\` must use any of them"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"01785208513\",\n    \"otp\": \"043310\",\n    \"password\": \"Test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/resetpassword",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"resetpassword"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "search",
+			"item": [
+				{
+					"name": "Search teacher or students",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/search/teacher",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"search",
+								"teacher"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "Bangladesh",
+									"disabled": true
+								},
+								{
+									"key": "SubjectId",
+									"value": "7",
+									"disabled": true
+								},
+								{
+									"key": "ClassTypeId",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "tutionplace",
+									"value": "SL",
+									"disabled": true
+								},
+								{
+									"key": "TuitionmId",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search user by params",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/search/user?phone=01785208590",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"search",
+								"user"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "01785208590"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Add Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Md Shayon (Admin)\",\n    \"phone\": \"01785208590\",\n    \"email\": \"mdshayon0@gmail.com\",\n    \"password\": \"Test1234\",\n    \"age\": 25,\n    \"profession\": \"Admin\",\n    \"institution\": \"DIU\",\n    \"experience\": \"string\",\n    \"location\": \"Dhaka\",\n    \"degree\": \"BBA\",\n    \"major\": \"finance\",\n    \"passing_year\": 2020,\n    \"cgpa\": 3.04\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/admin/add",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"admin",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"mdshayon0@gmail.com\",\n    \"password\": \"Test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/admin/login",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"admin",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/accept/10",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"accept",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/user/reject/9",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"user",
+								"reject",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current\": \"Test4321\",\n    \"password\": \"Test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/admin/changepassword",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"admin",
+								"changepassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/admin/temp/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"admin",
+								"temp",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All unverified users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/admin/temp/unverified",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"admin",
+								"temp",
+								"unverified"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ClassType",
+			"item": [
+				{
+					"name": "Add Class Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Class 2\",\n    \"subjectId\": [5, 6, 7, 8],\n    \"tuitionmId\": [1,2]\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/classtype/add",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"classtype",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all classtypes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/classtype/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"classtype",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a classtype",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/classtype/delete/5",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"classtype",
+								"delete",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subject",
+			"item": [
+				{
+					"name": "Add subject",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Math\",\n    \"classTypeId\": [\n        2,3, 1\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/subject/add",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"subject",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a subject",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/subject/delete/1",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"subject",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/subject/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"subject",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tuitionm",
+			"item": [
+				{
+					"name": "Add tuitionm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"English\",\n    \"classTypeId\": [\n        1\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/tuitionm/add",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"tuitionm",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a tuitionm",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/tuitionm/delete/3",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"tuitionm",
+								"delete",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all tuitionm",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/tuitionm/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"tuitionm",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ScheduledClass",
+			"item": [
+				{
+					"name": "Initiate a scheduled class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"receverId\": 15,\n    \"ClassTypeId\": 5,\n    \"SubjectId\": 1,\n    \"desc\": \"This is description\",\n    \"start\": \"2022-10-03T07:49:11.836Z\",\n    \"tutionplace\": \"SL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/initiate",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"initiate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all scheduled class",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/all",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all schuduled class of a member",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/member/8",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"member",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Request to start class",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/accept/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"accept",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel a class",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/cancel/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"cancel",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject class",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/reject/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"reject",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get single scheduled class",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/single/1",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"single",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Strt the process",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/start/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"start",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add meet link",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"meetlink\": \"https://meet.google.com/tko-ebor-inm\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/scheduledclass/update/2",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"scheduledclass",
+								"update",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Review",
+			"item": [
+				{
+					"name": "Leave a review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stars\": 4,\n    \"comment\": \"It was a nice experience\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/review/leave/1",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"review",
+								"leave",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Message",
+			"item": [
+				{
+					"name": "Get all messages of a room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/message/all?receiverId=2&senderId=3",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"message",
+								"all"
+							],
+							"query": [
+								{
+									"key": "receiverId",
+									"value": "2"
+								},
+								{
+									"key": "senderId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all rooms of a user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/message/rooms",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"message",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all unseen messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_URL}}/message/all/unseen",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"message",
+								"all",
+								"unseen"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Seen all messages of a room",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roomId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_URL}}/message/seen",
+							"host": [
+								"{{BACKEND_URL}}"
+							],
+							"path": [
+								"message",
+								"seen"
+							],
+							"query": [
+								{
+									"key": "roomId",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BACKEND_URL}}",
+					"host": [
+						"{{BACKEND_URL}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BACKEND_URL",
+			"value": "http://localhost:9000/api",
+			"type": "string"
+		},
+		{
+			"key": "BACKEND_URL",
+			"value": "https://ponditi-api.onrender.com/api",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "BACKEND_URL",
+			"value": "https://ponditi-backend-api.onrender.com/api",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "BACKEND_URL",
+			"value": "https://ponditi.com/api",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

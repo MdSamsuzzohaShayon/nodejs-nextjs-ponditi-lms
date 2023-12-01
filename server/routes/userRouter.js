@@ -26,17 +26,12 @@ const { ensureAuth, ensureAdmin, ensureTeacher } = require('../middleware/auth')
 // const { upload } = require('../config/s3-config');
 const upload = require('../config/multer-config');
 
-// if (process.env.NODE_ENV === 'development') {
-//   upload = require('../config/multer-config');
-// } else {
-//   upload = require('../config/s3-config')(upload);
-// }
-router.post('/sendotp', check('phone').notEmpty(), check('cc').notEmpty(), sendOTP);
 
 /**
  * @step 1 - regestration process
  * same step in case,  he has forgotten
  */
+router.post('/sendotp', check('phone').notEmpty(), check('cc').notEmpty(), sendOTP);
 router.put('/resendotp', check('phone').notEmpty(), resendOTP);
 
 /**
@@ -50,21 +45,10 @@ router.put('/verifyotp', check('otp').notEmpty(), check('phone').notEmpty(), ver
 router.put(
   '/register/:userId',
   check('name').notEmpty().isString().isLength({ min: 2 }),
-  // check('phone').notEmpty().isString(),
   check('role').notEmpty().isString(),
-  check('email').isEmail().notEmpty(),
+  // check('email').isEmail().notEmpty(),
   check('gender').notEmpty().isString(),
-  // check('age').notEmpty(),
-  // check('profession').notEmpty().isString(),
-  // check('institution').notEmpty().isString(),
-  // check('subjects').notEmpty(), // In update section
-  // check('experience').notEmpty(),
   check('presentaddress').notEmpty().isString(),
-  // check('district').notEmpty().isString(),
-  // check('password').notEmpty().isLength({ min: 6 }),
-  // Relational
-  // check('classTypeId').notEmpty(), // In update section
-  // check('subjectId').notEmpty(), // In update section
   registerUser,
 );
 

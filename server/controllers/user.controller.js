@@ -7,7 +7,6 @@ const bcrypt = require('bcryptjs');
 // See your keys here: https://dashboard.stripe.com/apikeys
 const jwt = require('jsonwebtoken');
 const sendSMS = require('../utils/sendSMS');
-// bcryptjs
 const db = require('../models');
 const keys = require('../config/keys');
 const cookieOptions = require('../config/cookie-config');
@@ -23,9 +22,11 @@ const {
 const { BANGLA, ENGLISH, ARABIC } = keys.tuitionmedums;
 const { ONLINE, TL, SL } = keys.types;
 const { MALE, FEMALE, OTHERS } = keys.gender;
+
 /**
  * @param {type} req phone          raw phone number without any country code
  * @param {type} req cc             country code without plus
+ * Change in database isVerified is true and isActive === APPROVED
  * @returns response 201            If the number you is correct a verification OTP code will be sent there
  */
 const sendOTP = async (req, res) => {
@@ -35,23 +36,14 @@ const sendOTP = async (req, res) => {
   }
 
   try {
-    // isVerified === true
-    // isActive === APPROVED
     const { phone, cc } = req.body;
     const phoneWithSufix = `+${cc}${phone}`;
-    // if (cc === '88') {
-    //   phoneWithSufix = cc.substring(cc.length - 1) + phone; // Not for bangladesh
-    // } else {
-    //   phoneWithSufix = cc + phone;
-    // }
-    // const phoneForMSG = cc + phone;
     const otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
 
-    // It is not loging out everytime we register
     if (process.env.NODE_ENV === 'development') {
       console.log({ otp });
     }
@@ -59,8 +51,7 @@ const sendOTP = async (req, res) => {
     const findByPhone = await Customer.findOne({
       where: { phone },
     });
-    // console.log({otp});
-    // console.log(findByPhone);
+
     if (findByPhone) {
       if (findByPhone.dataValues.isActive !== REQUEST_REGISTER) {
         return res.status(406).json({ msg: 'User is already registred with this phone number' });
@@ -75,7 +66,6 @@ const sendOTP = async (req, res) => {
         // show them that they are already registered
         return res.status(406).json({ msg: 'You already registered yourself with this phone number' });
       }
-      // console.log(phoneWithSufix, '+8801785208590');
       // let them register
       const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is : ${otp}`);
       if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
@@ -87,7 +77,9 @@ const sendOTP = async (req, res) => {
       });
     }
     const response = await sendSMS(phoneWithSufix, `Your Ponditi verification code is : ${otp}`);
-    if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
+    if (process.env.NODE_ENV === 'development') {
+      if (response.status !== 200) return res.status(406).json({ msg: 'Invalid phone number' });
+    }
     await Customer.create({
       phone,
       cc,
